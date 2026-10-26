@@ -4,7 +4,7 @@ The AI-driven techno-economic assessment copilot for Chemical & CleanTech Engine
 
 ## Development environment
 
-Requires Node.js 24 (`.nvmrc`), npm, Python 3.12, and Make.
+Requires Node.js 24 (`.nvmrc`), npm, Python 3.12, uv, and Make. Install uv with `python3 -m pip install --user uv` (commands use `python3 -m uv`, so no PATH changes are needed).
 
 ```sh
 make install
@@ -35,8 +35,35 @@ GitHub Actions runs the same checks on pushes and pull requests.
 
 Local environment files, virtual environments, dependencies, and build outputs are ignored by Git. Never put secrets in `NEXT_PUBLIC_*` variables: these are exposed to browsers.
 
-This is the development foundation. Simulation ingestion, equipment costing, financial models, LLM integration, exports, authentication, storage, and deployment are not implemented yet. DWSIM and domain-specific TEA integrations will be validated and added separately. No cloud services or paid APIs are required to run this foundation.
+Phase 1 is implemented: standardized JSON/CSV stream ingestion. Equipment costing, financial models, LLM integration, exports, authentication, storage, and cloud deployment are not implemented yet. DWSIM and domain-specific TEA integrations will be validated and added separately. No cloud services or paid APIs are required to run this foundation.
+
+## Stream ingestion (Phase 1)
+
+`POST /api/streams/parse/json` accepts `{"streams": [...]}`. Each stream requires `stream_id`, `mass_flow_kg_h`, `temperature_c`, `pressure_bar_abs`, and `phase`. Optional `source_unit` and `destination_unit` preserve flowsheet connectivity when provided; connectivity is not inferred. Phases: liquid, vapor, gas, solid, mixed.
+
+`POST /api/streams/parse/csv` accepts a multipart `file` with the same column names. UTF-8 and UTF-8 BOM are supported. Uploads are limited to 5 MiB and 10,000 streams. Invalid rows, duplicate IDs, missing/unknown columns, nonfinite numbers, and nonphysical values are rejected with HTTP 422 (oversized files: 413).
+
+Units are explicit: kg/h, Celsius, absolute bar. Convert simulator output to these units before upload. XML/DWSIM ingestion is a later phase.
+
+```sh
+curl -F 'file=@backend/examples/streams.csv' http://localhost:8000/api/streams/parse/csv
+```
+
+The backend includes `parsers`, `engine`, `financial`, `reports`, and `agent` packages for the phased implementation. Frontend routes remain in `frontend/src/app` as initialized.
+
+## API keys
+
+No key is needed for Phase 1. Optional `OPENAI_API_KEY` and `ANTHROPIC_API_KEY` placeholders are in `backend/.env.example` for the future copilot. Add real keys only to ignored local backend environment files, never frontend public variables or Git.
+
+## Docker
+
+```sh
+docker build -t flowvalue-api backend
+docker run --rm -p 8000:8000 --env-file backend/.env flowvalue-api
+```
 
 ## Dependency updates
 
-Frontend dependencies are pinned by `frontend/package-lock.json`. Backend development dependencies are pinned by `backend/requirements-dev.lock` for Python 3.12. To update backend dependencies, install `-e ".[dev]" --upgrade` in the virtual environment, then regenerate the lock with `pip freeze --exclude flowvalue-api`.
+Frontend dependencies are pinned by `frontend/package-lock.json`. Backend dependencies are pinned by `backend/uv.lock`; run `python3 -m uv lock --upgrade` followed by `python3 -m uv sync --frozen --extra dev` inside `backend` to update. `requirements-dev.lock` is a pip-compatible export; regenerate with `python3 -m uv export --frozen --extra dev --no-hashes --output-file requirements-dev.lock`.
+
+Framework setup references: [Next.js installation](https://nextjs.org/docs/app/getting-started/installation), [FastAPI](https://fastapi.tiangolo.com/tutorial/first-steps/).

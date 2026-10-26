@@ -1,7 +1,6 @@
 .PHONY: install api web check
 install:
-	python3 -m venv backend/.venv
-	cd backend && .venv/bin/python -m pip install -r requirements-dev.lock
+	cd backend && python3 -m uv sync --frozen --extra dev
 	cd frontend && npm ci
 api:
 	cd backend && .venv/bin/python -m uvicorn app.main:app --reload --port 8000
