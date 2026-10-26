@@ -287,7 +287,7 @@ def build_excel(
         for cell in row:
             cell.number_format = CURRENCY
     cash.freeze_panes = "C6"
-    cash.auto_filter.ref = "A5:S106"
+    cash.auto_filter.ref = "A5:V106"
     metrics = [
         (
             6,
@@ -328,6 +328,11 @@ def build_excel(
         summary.cell(row, 3, formula).number_format = fmt
     for row in range(12, 18):
         inputs.cell(row, 3).number_format = CURRENCY
+    inputs["C28"].number_format = '"$"0.00'
+    inputs["C29"].number_format = "0.0%"
+    for row in cash.iter_rows(min_row=6, max_row=106, min_col=20, max_col=22):
+        for cell in row:
+            cell.number_format = CURRENCY
     for row in range(6, 107):
         cash.cell(row, 2).number_format = "#,##0"
         cash.cell(row, 17).number_format = "#,##0"
@@ -400,7 +405,7 @@ def build_excel(
                 if cell.number_format == "General" and isinstance(cell.value, float):
                     cell.number_format = NUMBER
         ws.sheet_properties.outlinePr.summaryRight = False
-    for ws, end in ((equipment, 20), (cash, 19)):
+    for ws, end in ((equipment, 20), (cash, 22)):
         ws.row_dimensions[5].height = 34
         for cell in ws[5][:end]:
             cell.fill = PatternFill("solid", fgColor=NAVY)

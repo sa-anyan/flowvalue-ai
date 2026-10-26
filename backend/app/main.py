@@ -394,7 +394,9 @@ async def save_project(
     assessment(body.project)
     if body.streams:
         try:
-            StreamTable.model_validate({"streams": body.streams})
+            body.streams = StreamTable.model_validate(
+                {"streams": body.streams}
+            ).model_dump(mode="json")["streams"]
         except ValidationError as exc:
             raise HTTPException(422, exc.errors(include_context=False)) from exc
     snapshot = {
