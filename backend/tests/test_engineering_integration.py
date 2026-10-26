@@ -221,6 +221,7 @@ def test_real_openpytea_adapter_and_quoted_equipment_export():
 def test_biosteam_snapshot_becomes_valid_assessment():
     payload = {
         "schema_version": "flowvalue-biosteam-v1",
+        "is_demo": True,
         "library_version": "2.52.0",
         "reference_cepci": 800,
         "provenance": "Synthetic exported snapshot, not an actual simulation",
@@ -236,6 +237,7 @@ def test_biosteam_snapshot_becomes_valid_assessment():
     }
     r = client.post("/api/integrations/biosteam/import", json=payload)
     assert r.status_code == 200
+    assert r.json()["is_demo"] is True
     evaluated = client.post("/api/assessment", json=r.json())
     assert evaluated.status_code == 200
     assert evaluated.json()["bom"]["total_bare_module_cost_usd"] == 3000
@@ -295,6 +297,10 @@ def test_incomplete_scope_survives_assessment_and_exports():
     result = assessment(request)
     assert note in result.bom.assumptions
     assert note in result.financial.warnings
+    profile = client.post(
+        "/api/assessment/universal-suggestions", json=request.model_dump()
+    )
+    assert note in profile.json()["warnings"]
     wb = load_workbook(BytesIO(build_excel(result.bom, result.financial)))
     assert any(note in str(c.value) for row in wb["Notes"] for c in row)
     reader = PdfReader(
@@ -302,3 +308,14 @@ def test_incomplete_scope_survives_assessment_and_exports():
     )
     assert len(reader.pages) == 2
     assert note in reader.pages[0].extract_text()
+
+
+def test_unconnected_unit_does_not_invent_atmospheric_design_pressure():
+    data = (
+        FIXTURE.read_bytes()
+        .replace(b'AttachedToObjID="hx"', b'AttachedToObjID="unknown"')
+        .replace(b'AttachedFromObjID="hx"', b'AttachedFromObjID="unknown"')
+    )
+    result = parse_dwxml(data)
+    assert result.units[0].equipment is None
+    assert "design_pressure_barg" in result.units[0].missing_inputs

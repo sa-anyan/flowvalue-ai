@@ -163,7 +163,9 @@ def parse_dwxml(content: bytes) -> DWSIMImport:
         outgoing = [s for s in streams if s.source_unit == unit_id]
         spec = {"unit_id": unit_id, "material": "carbon_steel"}
         pressures = [s.pressure_bar_abs for s in incoming + outgoing]
-        spec["design_pressure_barg"] = max(0, max(pressures, default=1.01325) - 1.01325)
+        spec["design_pressure_barg"] = (
+            max(0, max(pressures) - 1.01325) if pressures else None
+        )
         kind = {
             "HeatExchanger": "heat_exchanger",
             "Pump": "pump",

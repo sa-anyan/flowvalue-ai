@@ -214,7 +214,7 @@ def calculate_dcf(inputs: FinancialInputs) -> FinancialResult:
     warnings = []
     if irr is None:
         warnings.append(
-            "IRR/DCFROR undefined: no positive operating cash flow or rate indistinguishable from -100%"
+            "IRR/DCFROR undefined: nonconventional cash flows, no positive operating return, or rate indistinguishable from -100%"
         )
     return FinancialResult(
         inputs=inputs,

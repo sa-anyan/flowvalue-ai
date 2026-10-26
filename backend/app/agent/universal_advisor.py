@@ -211,6 +211,16 @@ class UniversalProcessAdvisor:
     def analyze(self) -> AdvisorResult:
         self.warnings = []
         p, f = self.project, self.financial
+        engineering_notes = p.get("engineering_notes", [])
+        if (
+            not isinstance(engineering_notes, list)
+            or len(engineering_notes) > 100
+            or any(not isinstance(n, str) or len(n) > 1500 for n in engineering_notes)
+        ):
+            raise ValueError(
+                "engineering_notes must contain at most 100 text notes, each at most 1500 characters"
+            )
+        self.warnings.extend(engineering_notes)
         if str(p.get("currency", "USD")).upper() != "USD":
             raise ValueError(
                 "Advisor economic inputs use USD. Convert other currencies before profiling; no FX conversion is inferred."

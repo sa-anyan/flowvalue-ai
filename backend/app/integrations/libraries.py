@@ -63,6 +63,7 @@ class ExternalUnit(Model):
 
 
 class BioSTEAMSnapshot(Model):
+    is_demo: bool = False
     schema_version: Literal["flowvalue-biosteam-v1"]
     library_version: str = Field(min_length=1, max_length=50)
     reference_cepci: float = Field(gt=0, le=1e6)
@@ -86,7 +87,7 @@ def biosteam_project(snapshot: BioSTEAMSnapshot) -> dict:
         for u in snapshot.equipment
     ]
     return {
-        "is_demo": False,
+        "is_demo": snapshot.is_demo,
         "costing": {
             "equipment": equipment,
             "settings": {"cepci_current": snapshot.reference_cepci},

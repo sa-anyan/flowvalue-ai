@@ -238,6 +238,7 @@ def advisor_profile(project: dict) -> AdvisorResult:
                 "financial": result.financial.inputs.model_dump(),
                 "advisor_context": request.advisor_context.model_dump(),
                 "streams": project.get("streams", []),
+                "engineering_notes": request.engineering_notes,
             }
         return UniversalProcessAdvisor(project).analyze()
     except (ValueError, TypeError) as exc:
@@ -256,7 +257,7 @@ def research_sensitivities(request: ResearchRequest):
     if not config.openai_api_key.get_secret_value().strip():
         raise HTTPException(
             status_code=503,
-            detail="Configure OPENAI_API_KEY in backend/.env to run live market research. Cost profiling remains available without a key.",
+            detail="Configure the backend OPENAI_API_KEY environment variable to run live market research. Cost profiling remains available without a key.",
         )
     return StreamingResponse(
         research_events(profile, request, config),

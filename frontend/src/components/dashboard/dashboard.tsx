@@ -721,7 +721,7 @@ export default function Dashboard() {
           </span>
           <div>
             <strong>{base?.advisor_context?.name ?? "Untitled process"}</strong>
-            <small>Local development</small>
+            <small>Process economics</small>
           </div>
           <ChevronDown size={14} />
         </div>
@@ -758,7 +758,7 @@ export default function Dashboard() {
           <strong>From process to possibility.</strong>
           <p>Explore the economics behind your next engineering decision.</p>
           <span>
-            <i /> LOCAL ENVIRONMENT
+            <i /> ENGINEERING WORKSPACE
           </span>
         </div>
         <div className="sidebar-bottom">
@@ -1750,11 +1750,7 @@ export default function Dashboard() {
               FlowValue AI
             </span>
             <p>Transparent calculations. Better engineering decisions.</p>
-            <a
-              href="http://localhost:8000/docs"
-              target="_blank"
-              rel="noreferrer"
-            >
+            <a href="/api/reference" target="_blank" rel="noreferrer">
               API reference
               <ArrowRight size={12} />
             </a>
