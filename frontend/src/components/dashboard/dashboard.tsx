@@ -489,8 +489,8 @@ export default function Dashboard() {
       );
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      setUploadMessage("The file exceeds the 5 MiB upload limit.");
+    if (file.size > 4 * 1024 * 1024) {
+      setUploadMessage("The file exceeds the 4 MiB dashboard upload limit.");
       return;
     }
     setUploading(true);
@@ -1516,7 +1516,7 @@ export default function Dashboard() {
                   {filename || "Drop a stream table or project here"}
                 </strong>
                 <span>
-                  or <b>browse files</b> · CSV, JSON or DWXML · up to 5 MiB
+                  or <b>browse files</b> · CSV, JSON or DWXML · up to 4 MiB
                 </span>
               </button>
               <p className="upload-message" role="status">
