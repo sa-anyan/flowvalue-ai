@@ -1,5 +1,10 @@
+import json
+from importlib.resources import files
+from io import BytesIO
+
 from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -15,6 +20,8 @@ from app.financial.dcf_model import (
     monte_carlo,
 )
 from app.parsers.stream_parser import StreamTable, parse_csv
+from app.reports.excel_builder import build_excel
+from app.reports.pdf_builder import build_pdf
 
 
 class Settings(BaseSettings):
@@ -81,6 +88,7 @@ def financial_monte_carlo(request: MonteCarloRequest) -> MonteCarloResult:
 
 
 class AssessmentRequest(Model):
+    is_demo: bool = False
     costing: CostingRequest
     financial: FinancialAssumptions
     simulation: MonteCarloSettings | None = None
@@ -109,3 +117,51 @@ def assessment(request: AssessmentRequest) -> AssessmentResult:
         if request.simulation is not None
         else None,
     )
+
+
+@app.get("/api/demo", response_model=AssessmentRequest)
+def demo_assessment() -> AssessmentRequest:
+    return AssessmentRequest.model_validate(
+        json.loads(files("app.data").joinpath("demo_assessment.json").read_text())
+    ).model_copy(update={"is_demo": True})
+
+
+def export_response(request: AssessmentRequest, format: str, *, demo: bool = False):
+    result = assessment(request)
+    demo = demo or request.is_demo
+    if format == "excel":
+        content = build_excel(result.bom, result.financial, demo=demo)
+        media_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        extension = "xlsx"
+    else:
+        risk = result.uncertainty or monte_carlo(result.financial.inputs)
+        content = build_pdf(result.bom, result.financial, risk, demo=demo)
+        media_type, extension = "application/pdf", "pdf"
+    return StreamingResponse(
+        BytesIO(content),
+        media_type=media_type,
+        headers={
+            "Content-Disposition": f'attachment; filename="flowvalue-{"demo-" if demo else ""}assessment.{extension}"',
+            "Cache-Control": "no-store",
+        },
+    )
+
+
+@app.post("/api/export/excel")
+def export_excel(request: AssessmentRequest):
+    return export_response(request, "excel")
+
+
+@app.get("/api/export/excel")
+def export_demo_excel():
+    return export_response(demo_assessment(), "excel", demo=True)
+
+
+@app.post("/api/export/pdf")
+def export_pdf(request: AssessmentRequest):
+    return export_response(request, "pdf")
+
+
+@app.get("/api/export/pdf")
+def export_demo_pdf():
+    return export_response(demo_assessment(), "pdf", demo=True)

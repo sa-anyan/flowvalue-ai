@@ -207,6 +207,12 @@ class MonteCarloRequest(Model):
     simulation: MonteCarloSettings = Field(default_factory=MonteCarloSettings)
 
 
+class HistogramBin(Model):
+    lower_npv_usd: float
+    upper_npv_usd: float
+    count: int
+
+
 class MonteCarloResult(Model):
     iterations: int
     seed: int
@@ -219,6 +225,7 @@ class MonteCarloResult(Model):
     min_npv_usd: float
     max_npv_usd: float
     distribution: str
+    histogram: list[HistogramBin]
     warnings: list[str]
 
 
@@ -258,6 +265,14 @@ def monte_carlo(
         (margin - taxes) / (1 + inputs.discount_rate) ** periods, axis=1
     )
     p10, p50, p90 = np.percentile(samples, [10, 50, 90])
+    if np.min(samples) == np.max(samples):
+        midpoint = float(samples[0])
+        half_width = max(1.0, abs(midpoint) * 1e-9)
+        counts, edges = np.histogram(
+            samples, bins=np.linspace(midpoint - half_width, midpoint + half_width, 25)
+        )
+    else:
+        counts, edges = np.histogram(samples, bins=24)
     warnings = []
     if inputs.feedstock_opex_usd_per_year == inputs.utility_opex_usd_per_year == 0:
         warnings.append(
@@ -274,6 +289,14 @@ def monte_carlo(
         probability_positive_npv=float(np.mean(samples > 0)),
         min_npv_usd=float(np.min(samples)),
         max_npv_usd=float(np.max(samples)),
+        histogram=[
+            HistogramBin(
+                lower_npv_usd=float(edges[i]),
+                upper_npv_usd=float(edges[i + 1]),
+                count=int(count),
+            )
+            for i, count in enumerate(counts)
+        ],
         distribution="Independent uniform feedstock/utility price multipliers; fixed consumption; lifetime scenario draws; P10/P50/P90 are ascending NPV percentiles",
         warnings=warnings,
     )

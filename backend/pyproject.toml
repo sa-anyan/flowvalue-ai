@@ -7,13 +7,32 @@ name = "flowvalue-api"
 version = "0.1.0"
 description = "FlowValue AI techno-economic assessment API"
 requires-python = ">=3.12,<3.13"
-dependencies = ["fastapi", "uvicorn[standard]", "pydantic-settings", "python-multipart", "pandas", "numpy", "scipy", "openpyxl", "defusedxml"]
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "pydantic-settings",
+    "python-multipart",
+    "pandas",
+    "numpy",
+    "scipy",
+    "openpyxl",
+    "defusedxml",
+    "reportlab>=5.1.0",
+]
 
 [project.optional-dependencies]
-dev = ["pytest", "httpx", "ruff"]
+dev = [
+    "pytest",
+    "httpx",
+    "ruff",
+    "pypdf>=6.21.2",
+]
 
 [tool.setuptools.packages.find]
 include = ["app*"]
 
 [tool.ruff]
 target-version = "py312"
+
+[tool.setuptools.package-data]
+"app.data" = ["*.json"]

@@ -55,3 +55,12 @@ Both paybacks linearly interpolate the recovery year and return null if recovery
 Default 1,000 runs, seed 42, independent [SciPy uniform](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.uniform.html) multipliers from 0.8 to 1.2 for annual feedstock and utility expense at fixed consumption. These expenses must be supplied as **components** of total variable OPEX. The remainder of variable OPEX is unchanged. Each scenario draws each multiplier once and holds it across operating years, preserving project-level price uncertainty rather than averaging it away across years. All tax/depreciation conventions match the deterministic engine.
 
 P10/P50/P90 are ascending NPV percentiles (P10 is the lower outcome), not exceedance probabilities. Seed, sample count, bounds and probability of positive NPV are returned. Zero exposure produces a constant distribution and a warning. No correlations, price trends or distribution calibration are implied. API sample count is capped at 10,000.
+
+
+## Export and dashboard conventions (Phases 4-5)
+
+Exports are generated from validated assessment inputs, not uploaded financial results. The dashboard's CSV/JSON uploader only validates/inspects stream data; sizing inputs are explicit. Debounced assessment requests cancel superseded requests, and downloads are disabled until the current scenario has a matching successful result.
+
+Excel contains only formulas in numeric cash-flow cells. Inputs and BOM correlation data feed cash flows and summary metrics. The schedule reserves years 0-100; years after plant life contribute zero, and IRR uses only the active horizon through a bounded OFFSET reference. A one-year project uses the equivalent closing cash flow / initial CAPEX - 1 expression to avoid spreadsheet solver edge cases. The PDF is a two-page snapshot with category-grouped equipment costs; the workbook retains full equipment detail. Monte Carlo histograms return bin boundaries and counts summing to the number of runs. Constant outcomes use a small expanded display range around the common NPV so large-valued constant scenarios remain representable.
+
+Workbook verification includes native LibreOffice recalculation against the API and changes to operating life, discount rate, product price and feedstock OPEX. The workbook is flagged to recalculate on opening; openpyxl does not provide precomputed formula caches. Formula display in lightweight previews can differ from Excel/LibreOffice.

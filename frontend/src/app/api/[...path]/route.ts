@@ -1,0 +1,56 @@
+import { NextRequest } from "next/server";
+
+const paths = new Set([
+  "health",
+  "api/demo",
+  "api/assessment",
+  "api/costing/bom",
+  "api/financial/dcf",
+  "api/financial/monte-carlo",
+  "api/streams/parse/json",
+  "api/streams/parse/csv",
+  "api/export/excel",
+  "api/export/pdf",
+]);
+
+async function proxy(
+  request: NextRequest,
+  context: { params: Promise<{ path: string[] }> },
+) {
+  const { path } = await context.params;
+  const target = `api/${path.join("/")}`;
+  if (!paths.has(target))
+    return Response.json({ detail: "Unknown API route" }, { status: 404 });
+  try {
+    const upstream = await fetch(
+      `${(process.env.API_INTERNAL_URL ?? "http://127.0.0.1:8000").replace(/\/$/, "")}/${target}`,
+      {
+        method: request.method,
+        headers: request.headers.has("content-type")
+          ? { "Content-Type": request.headers.get("content-type")! }
+          : {},
+        body:
+          request.method === "GET" ? undefined : await request.arrayBuffer(),
+        cache: "no-store",
+        signal: AbortSignal.timeout(120000),
+      },
+    );
+    const headers = new Headers({ "Cache-Control": "no-store" });
+    for (const name of ["content-type", "content-disposition"]) {
+      const value = upstream.headers.get(name);
+      if (value) headers.set(name, value);
+    }
+    return new Response(upstream.body, { status: upstream.status, headers });
+  } catch {
+    return Response.json(
+      {
+        detail:
+          "Backend unavailable. Start it with make api, or check API_INTERNAL_URL.",
+      },
+      { status: 503 },
+    );
+  }
+}
+
+export const GET = proxy;
+export const POST = proxy;
