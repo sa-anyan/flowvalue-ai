@@ -146,7 +146,7 @@ export function ProjectAccount({
   }
   return (
     <section className="panel extension-panel">
-      <details>
+      <details open={!workspace || undefined}>
         <summary>
           Accounts & saved projects {user ? `· ${user}` : "· sign in to sync"}
         </summary>

@@ -676,6 +676,33 @@ export default function Dashboard() {
     ]),
   ];
 
+  if (!base && initialError.startsWith("Sign in"))
+    return (
+      <main className="auth-screen">
+        <a className="auth-brand" href="/dashboard">
+          <Waves size={26} /> flowvalue AI
+        </a>
+        <div className="eyebrow">PROCESS ECONOMICS WORKSPACE</div>
+        <h1>
+          Bring your process.
+          <br />
+          Explore its potential.
+        </h1>
+        <p>
+          Sign in to size equipment, explore project economics, and keep a
+          private history of your assessments.
+        </p>
+        <ProjectAccount
+          workspace={null}
+          onLoad={loadWorkspace}
+          onAuth={authChanged}
+        />
+        <small>
+          Engineering calculations are protected by your account. Your projects
+          are visible only to you.
+        </small>
+      </main>
+    );
   return (
     <div className="app-shell">
       <aside className="sidebar">
