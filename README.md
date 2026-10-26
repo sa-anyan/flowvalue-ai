@@ -35,7 +35,7 @@ GitHub Actions runs the same checks on pushes and pull requests.
 
 Local environment files, virtual environments, dependencies, and build outputs are ignored by Git. Never put secrets in `NEXT_PUBLIC_*` variables: these are exposed to browsers.
 
-Phase 1 is implemented: standardized JSON/CSV stream ingestion. Equipment costing, financial models, LLM integration, exports, authentication, storage, and cloud deployment are not implemented yet. DWSIM and domain-specific TEA integrations will be validated and added separately. No cloud services or paid APIs are required to run this foundation.
+Phases 1–3 are implemented: JSON/CSV stream ingestion, equipment sizing/costing, and DCF/Monte Carlo analysis. LLM integration, exports, the financial dashboard, authentication, storage, and cloud deployment are not implemented yet. DWSIM and domain-specific TEA integrations will be validated and added separately. No cloud services or paid APIs are required to run this foundation.
 
 ## Stream ingestion (Phase 1)
 
@@ -50,6 +50,21 @@ curl -F 'file=@backend/examples/streams.csv' http://localhost:8000/api/streams/p
 ```
 
 The backend includes `parsers`, `engine`, `financial`, `reports`, and `agent` packages for the phased implementation. Frontend routes remain in `frontend/src/app` as initialized.
+
+## Equipment costing and financial analysis (Phases 2–3)
+
+- `POST /api/costing/bom`: typed heat exchanger, vessel/reactor, pump and compressor specifications; returns sizing, factor provenance, per-unit purchased/bare-module costs and quantity-weighted totals.
+- `POST /api/financial/dcf`: annual cash flows, NPV, IRR/DCFROR, both paybacks and pre-tax LCOP. Supply `total_capex_usd` directly.
+- `POST /api/financial/monte-carlo`: `financial` inputs plus optional `simulation` settings. Defaults to 1,000 runs and ±20% feedstock/utility price variation.
+- `POST /api/assessment`: `costing` specifications plus `financial` assumptions **without CAPEX**. CAPEX is derived from total bare module cost; optional `simulation` runs uncertainty analysis.
+
+```sh
+curl -H 'Content-Type: application/json' \
+  --data-binary @backend/examples/assessment.json \
+  http://localhost:8000/api/assessment
+```
+
+The example is synthetic and demonstrates the API; it is not a validated process or investment case. Full units, cost sources, limits, factor assumptions, exclusions and financial conventions are in [the calculation basis](docs/calculation_basis.md). Default CEPCI 800/397 is a planning assumption. Unsupported equipment sizes are rejected by default; explicit extrapolation is flagged. Input schemas are available in `/docs`.
 
 ## API keys
 
