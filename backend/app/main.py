@@ -1,10 +1,13 @@
 import json
 from importlib.resources import files
 from io import BytesIO
+from typing import Annotated
+from uuid import UUID
 
-from fastapi import FastAPI, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from openai import APIError
 from pydantic import Field, ValidationError
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -13,12 +16,15 @@ from app.agent.copilot_research import (
     ResearchSettings,
     research_events,
 )
+from app.agent.executive_memo import draft_memo
 from app.agent.universal_advisor import (
     AdvisorResult,
     ProjectContext,
     UniversalProcessAdvisor,
 )
+from app.auth import AuthSettings, authenticated_user, project_rest, public_config
 from app.engine.costing import CostingRequest, EquipmentBOM, Model, build_bom
+from app.engine.indices import index_catalog
 from app.financial.dcf_model import (
     FinancialAssumptions,
     FinancialInputs,
@@ -29,6 +35,14 @@ from app.financial.dcf_model import (
     calculate_dcf,
     monte_carlo,
 )
+from app.financial.sensitivity import tornado
+from app.integrations.libraries import (
+    BioSTEAMSnapshot,
+    OpenPyTEARequest,
+    biosteam_project,
+    openpytea_equipment,
+)
+from app.parsers.dwsim_parser import DWSIMImport, parse_dwxml
 from app.parsers.stream_parser import StreamTable, parse_csv
 from app.reports.excel_builder import build_excel
 from app.reports.pdf_builder import build_pdf
@@ -48,6 +62,28 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def protect_api(request: Request, call_next):
+    if (
+        AuthSettings().require_auth
+        and request.url.path.startswith("/api/")
+        and request.url.path != "/api/config"
+        and request.method != "OPTIONS"
+    ):
+        try:
+            await authenticated_user(request)
+        except HTTPException as exc:
+            from fastapi.responses import JSONResponse
+
+            return JSONResponse({"detail": exc.detail}, status_code=exc.status_code)
+    return await call_next(request)
+
+
+@app.get("/api/config")
+def client_config():
+    return public_config()
 
 
 @app.get("/health")
@@ -98,6 +134,9 @@ def financial_monte_carlo(request: MonteCarloRequest) -> MonteCarloResult:
 
 
 class AssessmentRequest(Model):
+    engineering_notes: list[Annotated[str, Field(max_length=1500)]] = Field(
+        default_factory=list, max_length=100
+    )
     advisor_context: ProjectContext = Field(default_factory=ProjectContext)
     is_demo: bool = False
     costing: CostingRequest
@@ -121,9 +160,12 @@ def assessment(request: AssessmentRequest) -> AssessmentResult:
         )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+    bom.assumptions.extend(request.engineering_notes)
+    financial = calculate_dcf(inputs)
+    financial.warnings.extend(request.engineering_notes)
     return AssessmentResult(
         bom=bom,
-        financial=calculate_dcf(inputs),
+        financial=financial,
         uncertainty=monte_carlo(inputs, request.simulation)
         if request.simulation is not None
         else None,
@@ -220,4 +262,157 @@ def research_sensitivities(request: ResearchRequest):
         research_events(profile, request, config),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache, no-transform", "X-Accel-Buffering": "no"},
+    )
+
+
+@app.post("/api/streams/parse/dwxml", response_model=DWSIMImport)
+async def ingest_dwxml(file: UploadFile):
+    try:
+        content = await file.read(5 * 1024 * 1024 + 1)
+    finally:
+        await file.close()
+    if len(content) > 5 * 1024 * 1024:
+        raise HTTPException(413, "DWSIM file exceeds 5 MiB")
+    try:
+        return parse_dwxml(content)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
+@app.post("/api/assessment/tornado")
+def assessment_tornado(request: AssessmentRequest):
+    return tornado(assessment(request).financial.inputs)
+
+
+@app.get("/api/indices/cepci")
+def cepci_catalog():
+    return index_catalog()
+
+
+@app.get("/api/integrations/catalog")
+def integration_catalog():
+    from importlib.metadata import version
+
+    from openpytea.equipment import COST_DB_DF
+
+    rows = (
+        COST_DB_DF[["category", "type", "units", "s_lower", "s_upper"]]
+        .fillna("")
+        .to_dict(orient="records")
+    )
+    return {
+        "openpytea_version": version("openpytea"),
+        "correlations": rows,
+        "biosteam_mode": "Validated JSON snapshot from an already simulated trusted environment",
+    }
+
+
+@app.post("/api/integrations/openpytea/equipment")
+def library_equipment(request: OpenPyTEARequest):
+    try:
+        return openpytea_equipment(request)
+    except (ValueError, KeyError, TypeError) as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
+@app.post("/api/integrations/biosteam/import", response_model=AssessmentRequest)
+def import_biosteam(snapshot: BioSTEAMSnapshot):
+    try:
+        return AssessmentRequest.model_validate(biosteam_project(snapshot))
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
+@app.post("/api/copilot/executive-memo")
+async def executive_memo(request: AssessmentRequest):
+    result = assessment(request)
+    settings = ResearchSettings()
+    if not settings.openai_api_key.get_secret_value().strip():
+        raise HTTPException(
+            503, "Configure OPENAI_API_KEY to generate an executive memo"
+        )
+    try:
+        memo = await draft_memo(
+            {
+                "project": request.advisor_context.model_dump(),
+                "is_demo": request.is_demo,
+                "financial": result.financial.model_dump(),
+                "bom": result.bom.model_dump(),
+                "sensitivity": tornado(result.financial.inputs),
+            },
+            settings,
+        )
+    except (APIError, ValueError) as exc:
+        raise HTTPException(
+            502, "Memo provider unavailable or returned no text; retry later"
+        ) from exc
+    return {"markdown": memo, "model": settings.openai_model, "review_required": True}
+
+
+class SavedProject(Model):
+    name: str = Field(min_length=1, max_length=120)
+    project_id: UUID | None = None
+    expected_revision: int = Field(default=0, ge=0)
+    project: AssessmentRequest
+    streams: list = Field(default_factory=list, max_length=10000)
+    native_import: DWSIMImport | None = None
+
+
+@app.get("/api/projects")
+async def list_projects(
+    request: Request, user: Annotated[dict, Depends(authenticated_user)]
+):
+    return await project_rest(
+        request,
+        "GET",
+        "project_versions?select=id,project_id,name,revision,created_at&order=created_at.desc&limit=100",
+    )
+
+
+@app.get("/api/projects/{version_id}")
+async def load_project(
+    version_id: UUID,
+    request: Request,
+    user: Annotated[dict, Depends(authenticated_user)],
+):
+    rows = await project_rest(
+        request, "GET", f"project_versions?id=eq.{version_id}&select=*"
+    )
+    if not rows:
+        raise HTTPException(404, "Project version not found")
+    return rows[0]
+
+
+@app.post("/api/projects")
+async def save_project(
+    body: SavedProject,
+    request: Request,
+    user: Annotated[dict, Depends(authenticated_user)],
+):
+    # Validate before persistence; version insert and revision check are atomic in Postgres.
+    assessment(body.project)
+    if body.streams:
+        try:
+            StreamTable.model_validate({"streams": body.streams})
+        except ValidationError as exc:
+            raise HTTPException(422, exc.errors(include_context=False)) from exc
+    snapshot = {
+        "project": body.project.model_dump(mode="json"),
+        "streams": body.streams,
+        "native_import": body.native_import.model_dump(mode="json")
+        if body.native_import
+        else None,
+    }
+    if len(json.dumps(snapshot)) > 2_000_000:
+        raise HTTPException(413, "Project snapshot exceeds 2 MB")
+    return await project_rest(
+        request,
+        "POST",
+        "rpc/save_project_version",
+        body={
+            "p_name": body.name,
+            "p_project_id": str(body.project_id) if body.project_id else None,
+            "p_expected_revision": body.expected_revision,
+            "p_payload": snapshot,
+        },
     )

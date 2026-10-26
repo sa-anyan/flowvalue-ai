@@ -90,8 +90,8 @@ Use the supplied computed shares and stress tests. These percentages are scenari
 forecasts or probabilities. Do not assign a probability of CAPEX overrun: no calibrated
 CAPEX distribution is provided. Do not describe OPEX Monte Carlo results as CAPEX overrun risk.
 Never assume a tax credit/carbon price applies. Verify current policy, jurisdiction, dates,
-eligibility and sunset conditions from primary sources; policy credits are not modeled by
-this app. Do not imply a 45V toggle is active or change the financial model in prose.
+eligibility and sunset conditions from primary sources. Only explicitly enabled, user-confirmed
+incentive scenarios are modeled. Do not infer eligibility or change the financial model in prose.
 Imported market contexts are user-provided and unverified until independently checked.
 Be concise (about 450 words), with short sections: Exposure; Market evidence; Stress tests;
 Optimizations; Unknowns. Explicitly state that no CAPEX-overrun probability is estimated.

@@ -165,6 +165,11 @@ def build_pdf(
             money(bom.total_bare_module_cost_usd),
         ]
     )
+    incomplete = next(
+        (n for n in financial.warnings if n.startswith("INCOMPLETE")), None
+    )
+    if incomplete:
+        story.append(p(incomplete[:280], "FVSmall"))
     story += [
         table(group_rows, [280, 65, 183]),
         p(
@@ -194,7 +199,7 @@ def build_pdf(
     story += [
         chart,
         p(
-            "Constant-dollar, unlevered cash flow. Full CAPEX at year zero. No debt, working capital, salvage or tax credits.",
+            "Constant-dollar, unlevered cash flow. Full CAPEX at year zero. No debt, working capital or salvage. Credits follow the explicit scenario assumptions.",
             "FVSmall",
         ),
         PageBreak(),
@@ -251,7 +256,12 @@ def build_pdf(
             "This is a configurable assumption, not a verified current index. Turton module correlations are used within stated size ranges unless extrapolation is explicitly enabled."
         ),
         p(
-            "Straight-line depreciation; taxes floored at zero with no loss carryforward. LCOP is discounted capital plus operating costs divided by discounted output, before tax."
+            "Straight-line depreciation; taxes floored at zero with no loss carryforward. LCOP is before tax and credits. "
+            + (
+                f"Incentive scenario: {f.incentive.name[:100]}, ${f.incentive.rate_usd_per_unit:g}/unit, {f.incentive.duration_years} years from Y{f.incentive.start_year}, {f.incentive.treatment}. Eligibility: user-confirmed; see workbook basis."
+                if f.incentive.enabled
+                else "Production incentives disabled."
+            )
         ),
         p("Engineering review notes", "FVSection"),
     ]

@@ -81,6 +81,16 @@ def build_excel(
         (18, "Target CEPCI (assumption)", bom.settings.cepci_current),
         (19, "Reference CEPCI", bom.settings.cepci_base),
         (20, "Capital stress multiplier", bom.settings.capital_cost_multiplier),
+        (27, "Incentive enabled (1/0)", int(f.incentive.enabled)),
+        (28, "Credit rate (USD/product unit)", f.incentive.rate_usd_per_unit),
+        (29, "Eligible production fraction", f.incentive.eligible_fraction),
+        (30, "Credit first operating year", f.incentive.start_year),
+        (31, "Credit duration (years)", f.incentive.duration_years),
+        (
+            32,
+            "Cash payment (1) / tax offset (0)",
+            int(f.incentive.treatment == "cash_payment"),
+        ),
     ]
     for row, label, value in input_values:
         inputs.cell(row, 2, label)
@@ -94,6 +104,11 @@ def build_excel(
     )
     inputs["B23"] = "CEPCI 800/397 is configurable, not a verified current index."
     inputs["B24"] = "OPEX is annual at the selected utilization; no additional scaling."
+    literal(inputs["B34"], f"Incentive: {f.incentive.name}")
+    literal(
+        inputs["B35"],
+        f"Eligibility basis: {f.incentive.basis or 'not supplied; disabled'}",
+    )
     for cell_range, typ, low, high in (
         ("C5:C6", "whole", 1, 100),
         ("C7", "decimal", 0, 10),
@@ -144,7 +159,9 @@ def build_excel(
     )
     for row, item in enumerate(bom.items, 6):
         key = "vessel" if item.kind == "reactor" else item.kind
-        k1, k2, k3, b1, b2, *_ = CORRELATIONS[key]
+        k1, k2, k3, b1, b2, *_ = CORRELATIONS.get(
+            key, (0, 0, 0, 0, item.bare_module_factor)
+        )
         values = [
             item.unit_id,
             item.kind,
@@ -174,6 +191,16 @@ def build_excel(
             19: f"=P{row}*C{row}",
             20: f"=R{row}*C{row}",
         }
+        if item.kind == "quoted":
+            equipment.cell(row, 14, item.base_purchase_cost_usd)
+            # Reverse the applied ratio to preserve the external reference index.
+            reference = (
+                bom.settings.cepci_current
+                * item.base_purchase_cost_usd
+                / item.indexed_base_purchase_cost_usd
+            )
+            formulas.pop(14)
+            formulas[15] = f"=N{row}*Inputs!$C$18/{reference:.15g}"
         for col, formula in formulas.items():
             equipment.cell(row, col, formula)
         for col in (14, 15, 16, 18, 19, 20):
@@ -208,6 +235,7 @@ def build_excel(
         "Payback recovery year",
         "Discounted recovery year",
     ]
+    cash_headers += ["Credit generated", "Credit cash payment", "Credit tax offset"]
     for col, header in enumerate(cash_headers, 1):
         cash.cell(5, col, header)
         cash.column_dimensions[get_column_letter(col)].width = 22 if col > 1 else 9
@@ -217,7 +245,7 @@ def build_excel(
     for row in range(6, 107):
         cash.cell(row, 1, "=0" if row == 6 else f"=A{row - 1}+1")
         if row == 6:
-            for col in range(2, 20):
+            for col in range(2, 23):
                 cash.cell(row, col, "=0")
             for col, formula in {
                 11: "=Inputs!C17",
@@ -238,10 +266,13 @@ def build_excel(
             6: f"SUM(D{row}:E{row})",
             7: f"IF($A{row}<=Inputs!$C$6,Inputs!$C$17/Inputs!$C$6,0)",
             8: f"C{row}-F{row}-G{row}",
-            9: f"MAX(0,H{row})*Inputs!$C$8",
-            10: f"H{row}-I{row}",
+            9: f"MAX(0,H{row})*Inputs!$C$8-V{row}",
+            10: f"H{row}-I{row}+U{row}",
             11: "0",
-            12: f"C{row}-F{row}-I{row}-K{row}",
+            12: f"C{row}-F{row}-I{row}-K{row}+U{row}",
+            20: f"IF(AND(Inputs!$C$27=1,A{row}>=Inputs!$C$30,A{row}<Inputs!$C$30+Inputs!$C$31),B{row}*Inputs!$C$28*Inputs!$C$29,0)",
+            21: f"IF(Inputs!$C$32=1,T{row},0)",
+            22: f"IF(Inputs!$C$32=0,MIN(MAX(0,H{row})*Inputs!$C$8,T{row}),0)",
             13: f"L{row}/(1+Inputs!$C$7)^$A{row}",
             16: f"(K{row}+F{row})/(1+Inputs!$C$7)^$A{row}",
             17: f"B{row}/(1+Inputs!$C$7)^$A{row}",
@@ -267,7 +298,7 @@ def build_excel(
         (
             7,
             "IRR / DCFROR",
-            "=IF(MAX('Cash Flow'!L7:L106)<=0,\"n.a.\",IF(Inputs!C5=1,'Cash Flow'!L7/(-'Cash Flow'!L6)-1,IRR(OFFSET('Cash Flow'!$L$6,0,0,Inputs!$C$5+1,1),IF(SUM('Cash Flow'!L7:L106)<Inputs!C17,-0.1,0.1))))",
+            "=IF(OR(COUNTIF('Cash Flow'!L7:L106,\"<0\")>0,MAX('Cash Flow'!L7:L106)<=0),\"n.a.\",IF(Inputs!C5=1,'Cash Flow'!L7/(-'Cash Flow'!L6)-1,IRR(OFFSET('Cash Flow'!$L$6,0,0,Inputs!$C$5+1,1),IF(SUM('Cash Flow'!L7:L106)<Inputs!C17,-0.1,0.1))))",
             "0.0%",
         ),
         (
@@ -333,7 +364,7 @@ def build_excel(
         "Module factors: Cloete et al., Journal of Cleaner Production 275 (2020), 123024.",
         "https://www.mdpi.com/1996-1073/8/4/2714",
         "Mechanical sizing, material names and pressure factors are export snapshots. Editable sizes/factors drive equipment cost formulas.",
-        "All monetary values USD. No debt, working capital, tax credits, salvage or cost escalation.",
+        "All monetary values USD. No debt, working capital, salvage or cost escalation. Incentives are user-confirmed scenarios, not eligibility advice.",
         "IRR uses the active horizon. For one operating year the equivalent return is closing cash flow / initial CAPEX - 1.",
     ]
     notes.column_dimensions["B"].width = 120

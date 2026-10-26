@@ -17,3 +17,6 @@ dist/
 output/
 outputs/
 tmp/
+
+supabase/.temp/
+.vercel/

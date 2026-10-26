@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: flowvalue-api
+    runtime: docker
+    repo: https://github.com/sa-anyan/flowvalue-ai
+    branch: main
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    region: frankfurt
+    healthCheckPath: /health
+    envVars:
+      - key: REQUIRE_AUTH
+        value: "true"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-5.4-mini
+      - key: CORS_ORIGINS
+        value: '[]'

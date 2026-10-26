@@ -1,6 +1,7 @@
 """Unlevered, constant-dollar DCF and reproducible project-level cost uncertainty."""
 
 from math import expm1, fsum
+from typing import Literal
 
 import numpy as np
 from pydantic import Field, model_validator
@@ -11,7 +12,30 @@ from scipy.stats import uniform
 from app.engine.costing import Model
 
 
+class ProductionIncentive(Model):
+    enabled: bool = False
+    name: str = Field(
+        default="User-defined production credit", min_length=1, max_length=150
+    )
+    rate_usd_per_unit: float = Field(default=0, ge=0, le=1e9)
+    eligible_fraction: float = Field(default=1, ge=0, le=1)
+    start_year: int = Field(default=1, ge=1, le=100)
+    duration_years: int = Field(default=10, ge=1, le=100)
+    treatment: Literal["cash_payment", "tax_offset"] = "cash_payment"
+    eligibility_confirmed: bool = False
+    basis: str = Field(default="", max_length=2000)
+
+    @model_validator(mode="after")
+    def eligibility(self):
+        if self.enabled and (not self.eligibility_confirmed or not self.basis.strip()):
+            raise ValueError(
+                "Enabled incentives require confirmed eligibility and a documented basis; no eligibility is inferred"
+            )
+        return self
+
+
 class FinancialAssumptions(Model):
+    incentive: ProductionIncentive = Field(default_factory=ProductionIncentive)
     fixed_opex_usd_per_year: float = Field(default=0, ge=0, le=1e15)
     variable_opex_usd_per_year: float = Field(default=0, ge=0, le=1e15)
     # These are components of variable OPEX, not additional expenses.
@@ -50,6 +74,9 @@ class CashFlowYear(Model):
     opex_usd: float
     depreciation_usd: float
     taxable_income_usd: float
+    credit_generated_usd: float = 0
+    credit_cash_usd: float = 0
+    credit_tax_offset_usd: float = 0
     taxes_usd: float
     net_income_usd: float
     capital_expenditure_usd: float
@@ -136,8 +163,18 @@ def calculate_dcf(inputs: FinancialInputs) -> FinancialResult:
         )
         taxable_income = revenue - opex - depreciation
         taxes = max(0, taxable_income) * inputs.tax_rate
-        net_income = taxable_income - taxes
-        fcf = revenue - opex - taxes
+        policy = inputs.incentive
+        generated = (
+            production * policy.rate_usd_per_unit * policy.eligible_fraction
+            if policy.enabled
+            and policy.start_year <= year < policy.start_year + policy.duration_years
+            else 0
+        )
+        offset = min(taxes, generated) if policy.treatment == "tax_offset" else 0
+        cash_credit = generated if policy.treatment == "cash_payment" else 0
+        taxes -= offset
+        net_income = taxable_income - taxes + cash_credit
+        fcf = revenue - opex - taxes + cash_credit
         discounted = fcf / (1 + inputs.discount_rate) ** year
         rows.append(
             CashFlowYear(
@@ -149,6 +186,9 @@ def calculate_dcf(inputs: FinancialInputs) -> FinancialResult:
                 opex_usd=opex,
                 depreciation_usd=depreciation,
                 taxable_income_usd=taxable_income,
+                credit_generated_usd=generated,
+                credit_cash_usd=cash_credit,
+                credit_tax_offset_usd=offset,
                 taxes_usd=taxes,
                 net_income_usd=net_income,
                 capital_expenditure_usd=0,
@@ -164,7 +204,10 @@ def calculate_dcf(inputs: FinancialInputs) -> FinancialResult:
         )
     flows = [row.free_cash_flow_usd for row in rows]
     discounted_flows = [row.discounted_free_cash_flow_usd for row in rows]
-    irr = internal_rate_of_return(flows)
+    try:
+        irr = internal_rate_of_return(flows)
+    except ValueError:
+        irr = None
     # Pre-tax LCOP: discounted capital and operating costs / discounted production.
     annuity = fsum((1 + inputs.discount_rate) ** -year for year in range(1, years + 1))
     lcop = (inputs.total_capex_usd / annuity + opex) / production
@@ -187,7 +230,9 @@ def calculate_dcf(inputs: FinancialInputs) -> FinancialResult:
             "Year-zero CAPEX, end-of-year cash flows, constant annual production and OPEX",
             "Annual OPEX inputs reflect the selected capacity factor; not scaled again",
             "Full CAPEX depreciated straight-line; default depreciation life equals operating life",
-            "Taxes floored at zero; no loss carryforward, debt, working capital, salvage, escalation or credits",
+            "Taxes floored at zero; no loss carryforward, debt, working capital, salvage or escalation",
+            "Production incentive is a user-confirmed scenario, not a legal eligibility determination. Cash-payment credits are modeled outside taxable income; tax-offset credits are capped by annual tax with no carryforward.",
+            f"Incentive basis: {inputs.incentive.basis if inputs.incentive.enabled else 'disabled'}",
             "LCOP is pre-tax discounted (CAPEX + OPEX) / discounted production",
             "Payback uses linear interpolation within the recovery year; null if unrecovered",
             "IRR and DCFROR are the same annual project return",
@@ -261,8 +306,23 @@ def monte_carlo(
     )
     margin = revenue - inputs.fixed_opex_usd_per_year - variable[:, None]
     taxes = np.maximum(0, margin - depreciation) * inputs.tax_rate
+    policy = inputs.incentive
+    generated = np.where(
+        (periods >= policy.start_year)
+        & (periods < policy.start_year + policy.duration_years),
+        inputs.plant_capacity_units_per_year
+        * inputs.capacity_factor
+        * policy.rate_usd_per_unit
+        * policy.eligible_fraction
+        if policy.enabled
+        else 0,
+        0,
+    )
+    cash_credit = generated if policy.treatment == "cash_payment" else 0
+    if policy.treatment == "tax_offset":
+        taxes = np.maximum(0, taxes - generated)
     samples = -inputs.total_capex_usd + np.sum(
-        (margin - taxes) / (1 + inputs.discount_rate) ** periods, axis=1
+        (margin - taxes + cash_credit) / (1 + inputs.discount_rate) ** periods, axis=1
     )
     p10, p50, p90 = np.percentile(samples, [10, 50, 90])
     if np.min(samples) == np.max(samples):

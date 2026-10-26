@@ -77,8 +77,17 @@ class Compressor(EquipmentBase):
         return self
 
 
+class QuotedEquipment(EquipmentBase):
+    kind: Literal["quoted"] = "quoted"
+    purchased_cost_usd: Positive
+    installed_cost_usd: Positive
+    reference_cepci: Positive = 800
+    source: str = Field(min_length=1, max_length=2000)
+
+
 Equipment = Annotated[
-    HeatExchanger | Vessel | Pump | Compressor, Field(discriminator="kind")
+    HeatExchanger | Vessel | Pump | Compressor | QuotedEquipment,
+    Field(discriminator="kind"),
 ]
 
 
@@ -211,6 +220,36 @@ def size_equipment(unit: Equipment) -> tuple[float, dict[str, float]]:
 
 
 def cost_equipment(unit: Equipment, settings: CostSettings) -> EquipmentCost:
+    if isinstance(unit, QuotedEquipment):
+        factor = (
+            settings.cepci_current
+            / unit.reference_cepci
+            * settings.capital_cost_multiplier
+        )
+        return EquipmentCost(
+            unit_id=unit.unit_id,
+            kind="quoted",
+            material=unit.material,
+            quantity=unit.quantity,
+            sizing={},
+            correlation_key="quoted",
+            correlation_size=1,
+            correlation_size_unit="quoted unit",
+            valid_size_range=(1, 1),
+            material_factor=1,
+            pressure_factor=1,
+            bare_module_factor=unit.installed_cost_usd / unit.purchased_cost_usd,
+            base_purchase_cost_usd=unit.purchased_cost_usd,
+            indexed_base_purchase_cost_usd=unit.purchased_cost_usd
+            * settings.cepci_current
+            / unit.reference_cepci,
+            purchased_equipment_cost_usd=unit.purchased_cost_usd * factor,
+            bare_module_cost_usd=unit.installed_cost_usd * factor,
+            warnings=[
+                f"External quote/model: {unit.source}",
+                f"Reference CEPCI {unit.reference_cepci}; pressure/material factors embedded in imported costs; material dropdown does not re-price external estimates.",
+            ],
+        )
     key = "vessel" if unit.kind == "reactor" else unit.kind
     k1, k2, k3, b1, b2, lower, upper, size_unit = CORRELATIONS[key]
     size, sizing = size_equipment(unit)

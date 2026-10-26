@@ -2,6 +2,15 @@ import { NextRequest } from "next/server";
 
 const paths = new Set([
   "health",
+  "api/config",
+  "api/projects",
+  "api/streams/parse/dwxml",
+  "api/assessment/tornado",
+  "api/copilot/executive-memo",
+  "api/indices/cepci",
+  "api/integrations/catalog",
+  "api/integrations/openpytea/equipment",
+  "api/integrations/biosteam/import",
   "api/demo",
   "api/assessment",
   "api/assessment/universal-suggestions",
@@ -21,16 +30,18 @@ async function proxy(
 ) {
   const { path } = await context.params;
   const target = `api/${path.join("/")}`;
-  if (!paths.has(target))
+  if (!paths.has(target) && !/^api\/projects\/[0-9a-f-]{36}$/i.test(target))
     return Response.json({ detail: "Unknown API route" }, { status: 404 });
   try {
     const upstream = await fetch(
       `${(process.env.API_INTERNAL_URL ?? "http://127.0.0.1:8000").replace(/\/$/, "")}/${target}`,
       {
         method: request.method,
-        headers: request.headers.has("content-type")
-          ? { "Content-Type": request.headers.get("content-type")! }
-          : {},
+        headers: Object.fromEntries(
+          ["content-type", "authorization"]
+            .filter((name) => request.headers.has(name))
+            .map((name) => [name, request.headers.get(name)!]),
+        ),
         body:
           request.method === "GET" ? undefined : await request.arrayBuffer(),
         cache: "no-store",

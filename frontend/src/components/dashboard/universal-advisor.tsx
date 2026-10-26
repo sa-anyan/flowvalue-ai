@@ -1,5 +1,7 @@
 "use client";
 
+import { apiFetch } from "@/lib/client-api";
+
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowUpRight,
@@ -161,7 +163,7 @@ export function UniversalAdvisor({
     const controller = new AbortController();
     const timer = setTimeout(
       () =>
-        fetch("/api/assessment/universal-suggestions", {
+        apiFetch("/api/assessment/universal-suggestions", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: signature,
@@ -222,7 +224,7 @@ export function UniversalAdvisor({
           );
         market_context = parsed;
       }
-      const response = await fetch("/api/copilot/research-sensitivities", {
+      const response = await apiFetch("/api/copilot/research-sensitivities", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

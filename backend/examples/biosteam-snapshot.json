@@ -1,0 +1,13 @@
+{
+ "schema_version":"flowvalue-biosteam-v1",
+ "library_version":"example-snapshot",
+ "reference_cepci":800,
+ "provenance":"Synthetic bridge example only; not validated BioSTEAM simulation output",
+ "equipment":[{"unit_id":"BIO-R101","purchased_cost_usd":500000,"installed_cost_usd":1500000}],
+ "fixed_opex_usd_per_year":300000,
+ "variable_opex_usd_per_year":1900000,
+ "feedstock_opex_usd_per_year":600000,
+ "utility_opex_usd_per_year":1200000,
+ "production_units_per_year":5000000,
+ "selling_price_usd_per_unit":1
+}

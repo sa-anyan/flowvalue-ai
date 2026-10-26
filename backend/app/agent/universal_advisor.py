@@ -139,6 +139,7 @@ RULES = [
 class AdvisorResult(Model):
     project_description: str
     equipment_summary: list[dict[str, Any]]
+    incentive_scenario: dict[str, Any] = Field(default_factory=dict)
     financial_basis: dict[str, float]
     stream_summary: dict[str, Any]
     project_name: str
@@ -488,6 +489,7 @@ class UniversalProcessAdvisor:
             "basis": "Stream observations only; no energy duties, chemistry, yields or cost inferred from flow rates",
         }
         return AdvisorResult(
+            incentive_scenario=f.get("incentive", {"enabled": False}),
             stream_summary=stream_summary,
             project_description=self.context.description,
             equipment_summary=[

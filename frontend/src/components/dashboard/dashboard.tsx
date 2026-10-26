@@ -1,6 +1,15 @@
 "use client";
 
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { apiFetch } from "@/lib/client-api";
+
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Activity,
   ArrowDownToLine,
@@ -42,6 +51,15 @@ import {
   Stream,
   usd,
 } from "@/lib/assessment";
+import { ProjectAccount } from "./project-account";
+import { EngineeringTools } from "./engineering-tools";
+import {
+  importScopeNotes,
+  readWorkspace,
+  writeWorkspace,
+  type Workspace,
+  type NativeImport,
+} from "@/lib/workspace";
 import { CapexChart, CashFlowChart, RiskChart } from "./charts";
 import {
   UniversalAdvisor,
@@ -155,7 +173,18 @@ export default function Dashboard() {
   );
   const [expanded, setExpanded] = useState<string | null>(null);
   const [kind, setKind] = useState<Kind>("heat_exchanger");
+  const [nativeImport, setNativeImport] = useState<NativeImport | null>(null);
   const [streams, setStreams] = useState<Stream[]>([]);
+  const authChanged = useCallback((clear = false) => {
+    if (clear) {
+      setBase(null);
+      setEnvelope(null);
+      setStreams([]);
+      setNativeImport(null);
+    }
+    setRetry((r) => r + 1);
+  }, []);
+
   const [filename, setFilename] = useState("");
   const [uploadMessage, setUploadMessage] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -169,12 +198,18 @@ export default function Dashboard() {
   }, [dark]);
   useEffect(() => {
     const controller = new AbortController();
-    fetch("/api/demo", { signal: controller.signal })
+    apiFetch("/api/demo", { signal: controller.signal })
       .then(async (r) => {
         if (!r.ok) throw new Error(await apiError(r));
         return r.json();
       })
       .then((data: AssessmentRequest) => {
+        const local = readWorkspace();
+        if (local) {
+          data = local.project;
+          setStreams(local.streams || []);
+          setNativeImport(local.native_import || null);
+        }
         setBase(data);
         setControls({
           feed: 0,
@@ -251,7 +286,7 @@ export default function Dashboard() {
     if (!payload) return;
     const controller = new AbortController();
     const timer = setTimeout(() => {
-      fetch("/api/assessment", {
+      apiFetch("/api/assessment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: signature,
@@ -275,6 +310,32 @@ export default function Dashboard() {
       controller.abort();
     };
   }, [payload, signature]);
+  const workspace = useMemo(
+    () =>
+      payload
+        ? { project: payload, streams, native_import: nativeImport }
+        : null,
+    [payload, streams, nativeImport],
+  );
+  useEffect(() => {
+    if (workspace) writeWorkspace(workspace);
+  }, [workspace]);
+  function loadWorkspace(w: Workspace) {
+    setBase(w.project);
+    setStreams(w.streams || []);
+    setNativeImport(w.native_import || null);
+    setControls({
+      feed: 0,
+      utility: 0,
+      discount: w.project.financial.discount_rate * 100,
+      life: w.project.financial.operating_years,
+      capex: 0,
+      price: 0,
+      fixed: 0,
+      other: 0,
+    });
+    setNotice("Saved project version loaded.");
+  }
   const data = envelope?.data;
   const error =
     failure?.signature === signature ? failure.message : initialError;
@@ -303,6 +364,9 @@ export default function Dashboard() {
     while (base.costing.equipment.some((e) => e.unit_id === `U${index}`))
       index++;
     const unit = {
+      ...(kind === "quoted"
+        ? { source: "User-provided estimate; verify scope" }
+        : {}),
       unit_id: `U${index}`,
       kind,
       material: "carbon_steel",
@@ -405,8 +469,10 @@ export default function Dashboard() {
     );
   }
   async function upload(file: File) {
-    if (!/\.(csv|json)$/i.test(file.name)) {
-      setUploadMessage("Choose a CSV or JSON stream table.");
+    if (!/\.(csv|json|dwxml)$/i.test(file.name)) {
+      setUploadMessage(
+        "Choose a CSV, JSON, BioSTEAM snapshot or native DWSIM .dwxml file.",
+      );
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
@@ -417,10 +483,57 @@ export default function Dashboard() {
     setUploadMessage("");
     try {
       let response: Response;
+      if (/\.dwxml$/i.test(file.name)) {
+        const form = new FormData();
+        form.append("file", file);
+        const r = await apiFetch("/api/streams/parse/dwxml", {
+          method: "POST",
+          body: form,
+        });
+        if (!r.ok) throw Error(await apiError(r));
+        const imported = (await r.json()) as NativeImport;
+        setNativeImport(imported);
+        setStreams(imported.streams);
+        setFilename(file.name);
+        if (base && imported.equipment.length) {
+          const costing = { ...base.costing, equipment: imported.equipment };
+          const check = await apiFetch("/api/costing/bom", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(costing),
+          });
+          if (check.ok) {
+            setBase({
+              ...base,
+              costing,
+              engineering_notes: importScopeNotes(imported, imported.equipment),
+            });
+            setUploadMessage(
+              `Imported ${imported.streams.length} streams and ${imported.equipment.length} equipment estimates. Financial assumptions retained. Review excluded units and design basis below.`,
+            );
+          } else
+            setUploadMessage(
+              `Streams and topology imported. BOM not replaced: ${await apiError(check)}. Review mapping below.`,
+            );
+        } else
+          setUploadMessage(
+            "Streams and topology imported; no complete supported sizing found. Complete equipment mapping below. Existing financial assumptions and BOM retained.",
+          );
+        return;
+      }
       if (/\.json$/i.test(file.name)) {
-        const content = JSON.parse(await file.text());
+        let content = JSON.parse(await file.text());
+        if (content.schema_version === "flowvalue-biosteam-v1") {
+          const r = await apiFetch("/api/integrations/biosteam/import", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(content),
+          });
+          if (!r.ok) throw Error(await apiError(r));
+          content = await r.json();
+        }
         if (content.costing && content.financial) {
-          const validation = await fetch("/api/assessment", {
+          const validation = await apiFetch("/api/assessment", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(
@@ -434,8 +547,8 @@ export default function Dashboard() {
           const financial = { ...canonical.financial.inputs };
           delete financial.total_capex_usd;
           let importedStreams: Stream[] = [];
-          if (content.streams !== undefined) {
-            const streamResponse = await fetch("/api/streams/parse/json", {
+          if (content.streams?.length) {
+            const streamResponse = await apiFetch("/api/streams/parse/json", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ streams: content.streams }),
@@ -445,6 +558,7 @@ export default function Dashboard() {
             importedStreams = (await streamResponse.json()).streams;
           }
           setBase({
+            engineering_notes: content.engineering_notes || [],
             financial,
             costing: {
               ...content.costing,
@@ -475,6 +589,7 @@ export default function Dashboard() {
             fixed: 0,
             other: 0,
           });
+          setNativeImport(null);
           setStreams(importedStreams);
           setFilename(file.name);
           setUploadMessage(
@@ -482,7 +597,7 @@ export default function Dashboard() {
           );
           return;
         }
-        response = await fetch("/api/streams/parse/json", {
+        response = await apiFetch("/api/streams/parse/json", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(content),
@@ -490,13 +605,14 @@ export default function Dashboard() {
       } else {
         const form = new FormData();
         form.append("file", file);
-        response = await fetch("/api/streams/parse/csv", {
+        response = await apiFetch("/api/streams/parse/csv", {
           method: "POST",
           body: form,
         });
       }
       if (!response.ok) throw new Error(await apiError(response));
       const table = await response.json();
+      setNativeImport(null);
       setStreams(table.streams);
       setFilename(file.name);
       setUploadMessage(
@@ -516,7 +632,7 @@ export default function Dashboard() {
     setExporting(format);
     setNotice("");
     try {
-      const response = await fetch(`/api/export/${format}`, {
+      const response = await apiFetch(`/api/export/${format}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -570,6 +686,10 @@ export default function Dashboard() {
         </div>
         <div className="nav-caption">ANALYSIS</div>
         <nav>
+          <a href="/process-flow">
+            <Layers3 size={18} />
+            Interactive process flow
+          </a>
           <a href="#overview" className="nav-selected">
             <LayoutDashboard size={18} />
             Overview
@@ -634,6 +754,11 @@ export default function Dashboard() {
           </div>
         </header>
         <main className="dashboard-main" id="overview">
+          <ProjectAccount
+            workspace={workspace}
+            onLoad={loadWorkspace}
+            onAuth={authChanged}
+          />
           <section className="page-heading">
             <div>
               <div className="eyebrow">
@@ -672,6 +797,11 @@ export default function Dashboard() {
               </Button>
             </div>
           </section>
+          {base?.engineering_notes?.some((n) => n.startsWith("INCOMPLETE")) && (
+            <div role="alert" className="engineering-warning">
+              {base.engineering_notes.find((n) => n.startsWith("INCOMPLETE"))}
+            </div>
+          )}
           <div className="scenario-bar">
             <div>
               <span className="scenario-badge">
@@ -1315,7 +1445,8 @@ export default function Dashboard() {
                 <div>
                   <h2>Bring your process data</h2>
                   <p>
-                    Import a stream table or complete assessment JSON project.
+                    Import CSV, JSON, a BioSTEAM snapshot, or a native DWSIM
+                    .dwxml simulation.
                   </p>
                 </div>
                 <Upload size={18} className="muted-icon" />
@@ -1324,7 +1455,7 @@ export default function Dashboard() {
                 ref={fileRef}
                 className="sr-only"
                 type="file"
-                accept=".csv,.json"
+                accept=".csv,.json,.dwxml"
                 aria-label="Upload stream table"
                 onChange={(e) => {
                   if (e.target.files?.[0]) upload(e.target.files[0]);
@@ -1356,7 +1487,7 @@ export default function Dashboard() {
                   {filename || "Drop a stream table or project here"}
                 </strong>
                 <span>
-                  or <b>browse files</b> · CSV or JSON · up to 5 MiB
+                  or <b>browse files</b> · CSV, JSON or DWXML · up to 5 MiB
                 </span>
               </button>
               <p className="upload-message" role="status">
@@ -1547,6 +1678,16 @@ export default function Dashboard() {
               </p>
             </div>
           </details>
+          {base && payload && (
+            <EngineeringTools
+              project={base}
+              scenario={payload}
+              ready={ready}
+              onProject={setBase}
+              native={nativeImport}
+              onNative={setNativeImport}
+            />
+          )}
           <footer className="dashboard-footer">
             <span>
               <Waves size={15} />

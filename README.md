@@ -35,7 +35,7 @@ GitHub Actions runs the same checks on pushes and pull requests.
 
 Local environment files, virtual environments, dependencies, and build outputs are ignored by Git. Never put secrets in `NEXT_PUBLIC_*` variables: these are exposed to browsers.
 
-Phases 1–5 are implemented: JSON/CSV stream ingestion, equipment sizing/costing, DCF/Monte Carlo analysis, Excel/PDF exports, and the interactive dashboard. Authentication, persistent project storage, and cloud deployment are not implemented yet. A research copilot is available as described below. DWSIM and domain-specific TEA integrations will be validated and added separately. No cloud services or paid APIs are required to run this foundation.
+The local workspace implements stream/native DWSIM ingestion, equipment costing, DCF/Monte Carlo, dynamic reports, a research copilot, process diagrams, sensitivities and incentive scenarios. Supabase authentication and project-version storage are configured; hosting targets are Vercel and Render (see rollout notes below). BioSTEAM integration imports trusted result snapshots. Core local calculations run without paid APIs.
 
 ## Stream ingestion (Phase 1)
 
@@ -43,7 +43,7 @@ Phases 1–5 are implemented: JSON/CSV stream ingestion, equipment sizing/costin
 
 `POST /api/streams/parse/csv` accepts a multipart `file` with the same column names. UTF-8 and UTF-8 BOM are supported. Uploads are limited to 5 MiB and 10,000 streams. Invalid rows, duplicate IDs, missing/unknown columns, nonfinite numbers, and nonphysical values are rejected with HTTP 422 (oversized files: 413).
 
-Units are explicit: kg/h, Celsius, absolute bar. Convert simulator output to these units before upload. XML/DWSIM ingestion is a later phase.
+CSV/JSON stream units are explicit: kg/h, Celsius, absolute bar. The native DWSIM parser converts saved SI values automatically.
 
 ```sh
 curl -F 'file=@backend/examples/streams.csv' http://localhost:8000/api/streams/parse/csv
@@ -104,7 +104,7 @@ Set project name, process description, classification and region in the advisor 
 
 **Run Market Risk Scan** uses the backend's `OPENAI_API_KEY` and optional `OPENAI_MODEL` (default `gpt-5.4-mini`). It uses the [OpenAI Responses API with live web search](https://developers.openai.com/api/docs/guides/tools-web-search) and [streamed output](https://developers.openai.com/api/docs/guides/streaming-responses). Search is restricted to a configurable primary-source host list, including energy agencies, governments and statistical bodies. `RESEARCH_DOMAINS` can override that list as a JSON array. Sources are linked inline and results show retrieval time. Raw uploads, full stream tables and unknown project fields are not sent to the model; the model receives a computed profile, equipment summary, project context and the research question. Only an explicit scan sends a paid API request. Ordinary profiling remains local and works without a key.
 
-The copilot returns commentary; executable slider actions remain calculated server-side and require a human click. Partial/failed scans are marked unavailable, and briefings are marked stale when the scenario changes. No numeric probability of CAPEX overrun is produced because the current Monte Carlo model samples operating costs, not CAPEX. Tax credits, including 45V, are research topics only; no eligibility or credit toggle is applied automatically.
+The copilot returns commentary; executable slider actions remain calculated server-side and require a human click. Partial/failed scans are marked unavailable, and briefings are marked stale when the scenario changes. No numeric probability of CAPEX overrun is produced because the current Monte Carlo model samples operating costs, not CAPEX. Policy research does not establish eligibility. Production-credit scenarios are enabled only through explicit user-confirmed assumptions (see below).
 
 The uploader accepts stream CSV/JSON and complete assessment JSON with `costing`, `financial`, optional `advisor_context`, and optional normalized `streams`. The separate generic profiling endpoint does not imply arbitrary equipment can be mechanically costed by the dashboard. Try `backend/examples/biological-assessment.json` for a clearly labelled, synthetic biological cost-profile example. No performance or profitability validation is implied by that example.
 
@@ -134,3 +134,38 @@ docker run --rm -p 8000:8000 --env-file backend/.env flowvalue-api
 Frontend dependencies are pinned by `frontend/package-lock.json`. Backend dependencies are pinned by `backend/uv.lock`; run `python3 -m uv lock --upgrade` followed by `python3 -m uv sync --frozen --extra dev` inside `backend` to update. `requirements-dev.lock` is a pip-compatible export; regenerate with `python3 -m uv export --frozen --extra dev --no-hashes --output-file requirements-dev.lock`.
 
 Framework setup references: [Next.js installation](https://nextjs.org/docs/app/getting-started/installation), [FastAPI](https://fastapi.tiangolo.com/tutorial/first-steps/).
+
+## Native engineering and reporting workspace
+
+- Upload `.dwxml` alongside CSV and JSON. The parser uses `defusedxml`, a 5 MiB limit, native object tags/connectors and saved SI results (K→°C, Pa→bar absolute, kg/s→kg/h). It never runs scripts, calls DWSIM automation, or re-converges the simulation. Supported complete saved sizing maps to the BOM; unsupported or incomplete operations remain visible in import review. Their exclusion is carried into dashboard warnings, Excel notes and PDF. Operating pressure is only a provisional design-pressure basis; review design margins and material assumptions.
+- `/process-flow` displays connected material streams in an editable React Flow diagram and an orbitable Three.js 3D block view. Click nodes to edit supported sizing, recalculate and return to the dashboard. This is a schematic, not a mechanical layout. Tab-local draft state links these pages; cloud revisions are saved explicitly.
+- OpenPyTEA **3.2.1** is installed and called through `POST /api/integrations/openpytea/equipment`. The integration catalog lists correlation families and units. External installed-cost estimates become editable, source-labelled quoted equipment; they are not asserted to have the same scope as a Turton bare-module estimate. Source: [OpenPyTEA](https://github.com/pbtamarona/OpenPyTEA), MIT.
+- BioSTEAM integration accepts a **validated result snapshot**, not executable Python. From a trusted, already simulated BioSTEAM environment, call `app.integrations.libraries.snapshot_biosteam(tea, product, reference_cepci=..., provenance=...)`, serialize its return value as JSON, then upload it. The API recomputes economics on FlowValue's disclosed DCF basis. It does not rebuild an arbitrary biochemical process from stream totals or claim independently validated thermodynamics. See [BioSTEAM TEA documentation](https://biosteam.readthedocs.io/en/latest/API/TEA.html) and `backend/examples/biosteam-snapshot.json` (synthetic example).
+- `POST /api/assessment/tornado` runs ±20% one-at-a-time sensitivities. The dashboard ranks NPV impacts without interpreting them as probabilities.
+- `POST /api/copilot/executive-memo` drafts an investment memo from computed results and assumptions, using the server-side OpenAI key. Download the editable Markdown draft and review it before distributing it; it is separate from the deterministic two-page financial PDF.
+
+### Incentive scenarios and cost-index provenance
+
+`financial.incentive` supports a per-product-unit credit, eligible production fraction, first operating year, duration, cash-payment or nonrefundable tax-offset treatment. Enabling it requires an explicit eligibility confirmation and written basis. Cash-payment credits are modeled outside taxable income; tax offsets are capped by annual tax liability without carryforward. These assumptions flow through DCF, Monte Carlo, charts and active Excel formulas. LCOP remains before tax and credits. A label such as “45V” is not an eligibility engine: the operator must verify current legislation, dates, emissions intensity, wage conditions, product units and monetization using the [IRS source](https://www.irs.gov/credits-deductions/clean-hydrogen-production-credit).
+
+`GET /api/indices/cepci` returns a versioned source catalog; it is **not a live feed**. The default 800 remains an unverified planning assumption. New licensed observations are validated and appended with:
+
+```sh
+cd backend
+.venv/bin/python scripts/import_cepci.py /path/to/reviewed-observation.json
+```
+
+The JSON requires `period`, `value`, `source_url`, `source_title`, `retrieved_on`, `reviewed_by`, `status` (`verified` or `assumption`), and optional `note`. Commit reviewed changes to preserve the audit trail. Obtain update rights from the [CEPCI publisher](https://www.chemengonline.com/pci-home/); no subscription data is scraped or redistributed automatically.
+
+### Accounts, saved versions and hosting
+
+Supabase project `flowvalue-ai` (`ywrqkclxwcjungkrtlpq`, London) is separate from unrelated account projects. Schema is in `supabase/migrations/20261026105814_flowvalue_projects.sql`. Owner-based RLS protects immutable project-version rows, and the save RPC checks the expected revision atomically. No service-role key is used by this app. Email/password sign-in and registration live under **Accounts & saved projects**; email confirmation follows Supabase's settings. Explicitly save a new revision to retain scenario, stream and native-import history. Loading an older version then saving requires resolving a revision conflict or saving as a new project.
+
+Set backend `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`. Local engineering mode defaults to `REQUIRE_AUTH=false`; **public deployment must use `REQUIRE_AUTH=true`**. The backend validates bearer tokens against Supabase Auth before protected API calls. The same-origin frontend proxy forwards tokens. Public `/api/config` exposes only the publishable client configuration; OpenAI credentials remain on the backend.
+
+Deployment targets selected for this project:
+
+1. **Render:** `render.yaml` defines a free Docker service rooted at `backend`, `/health`, and required authentication. Configure the two Supabase values, the server-only OpenAI key if authorized, and optional primary-source research hosts. No local `.env` files are committed.
+2. **Vercel:** import the GitHub repository with root directory `frontend`, Next.js preset, and `API_INTERNAL_URL=https://<actual-render-service>.onrender.com`. `frontend/vercel.json` allows a 300-second research proxy duration where the plan supports it.
+3. Confirm the frontend origin in Supabase Auth Site URL/redirect configuration before sending confirmation or password-recovery links to users. Provider account terms and any paid plans require the account owner's approval. Free Render instances can sleep, so first requests may be slow.
+4. Verify `/health`, anonymous API rejection, authenticated project save/load and tenant isolation after deployment. Source checks passing do not by themselves prove a live deployment.

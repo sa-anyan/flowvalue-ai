@@ -1,10 +1,6 @@
 import type { AdvisorContext } from "@/components/dashboard/universal-advisor";
 export type Kind =
-  | "heat_exchanger"
-  | "vessel"
-  | "reactor"
-  | "pump"
-  | "compressor";
+  "quoted" | "heat_exchanger" | "vessel" | "reactor" | "pump" | "compressor";
 export type EquipmentSpec = {
   unit_id: string;
   kind: Kind;
@@ -12,7 +8,30 @@ export type EquipmentSpec = {
   quantity?: number;
   [key: string]: number | string | boolean | undefined;
 };
+export type Incentive = {
+  enabled: boolean;
+  name: string;
+  rate_usd_per_unit: number;
+  eligible_fraction: number;
+  start_year: number;
+  duration_years: number;
+  treatment: "cash_payment" | "tax_offset";
+  eligibility_confirmed: boolean;
+  basis: string;
+};
+export const defaultIncentive: Incentive = {
+  enabled: false,
+  name: "User-defined production credit",
+  rate_usd_per_unit: 0,
+  eligible_fraction: 1,
+  start_year: 1,
+  duration_years: 10,
+  treatment: "cash_payment",
+  eligibility_confirmed: false,
+  basis: "",
+};
 export type Financial = {
+  incentive?: Incentive;
   fixed_opex_usd_per_year: number;
   variable_opex_usd_per_year: number;
   feedstock_opex_usd_per_year: number;
@@ -26,6 +45,7 @@ export type Financial = {
   depreciation_years?: number | null;
 };
 export type AssessmentRequest = {
+  engineering_notes?:string[];
   is_demo: boolean;
   advisor_context?: AdvisorContext;
   costing: {
@@ -104,6 +124,7 @@ export type Stream = {
   destination_unit?: string | null;
 };
 export const kindLabels: Record<Kind, string> = {
+  quoted: "External library / quote",
   heat_exchanger: "Heat exchanger",
   vessel: "Pressure vessel",
   reactor: "Reactor shell",
@@ -111,6 +132,11 @@ export const kindLabels: Record<Kind, string> = {
   compressor: "Compressor",
 };
 export const defaults: Record<Kind, Record<string, number>> = {
+  quoted: {
+    purchased_cost_usd: 100000,
+    installed_cost_usd: 300000,
+    reference_cepci: 800,
+  },
   heat_exchanger: {
     duty_kw: 1000,
     overall_u_w_m2_k: 500,
