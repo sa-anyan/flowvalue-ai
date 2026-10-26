@@ -1,5 +1,6 @@
 """Explicit library adapters. Never import or execute user-supplied Python/pickle."""
 
+import warnings
 from importlib.metadata import version
 from typing import Literal
 
@@ -21,28 +22,37 @@ class OpenPyTEARequest(Model):
 def openpytea_equipment(request: OpenPyTEARequest) -> dict:
     from openpytea.equipment import CEPCI_DF, Equipment
 
-    eq = Equipment(
-        name=request.name,
-        param=request.parameter,
-        process_type=request.process_type,
-        category=request.category,
-        type=request.equipment_type,
-        material=request.material,
-        target_year=request.target_year,
-    )
+    with warnings.catch_warnings(record=True) as captured:
+        warnings.simplefilter("always")
+        eq = Equipment(
+            name=request.name,
+            param=request.parameter,
+            process_type=request.process_type,
+            category=request.category,
+            type=request.equipment_type,
+            material=request.material,
+            target_year=request.target_year,
+        )
+    library_notes = [str(w.message)[:400] for w in captured]
+
     cepci = float(CEPCI_DF.loc[request.target_year, "cepci"])
     quoted = QuotedEquipment(
         unit_id=request.name,
         purchased_cost_usd=float(eq.purchased_cost),
         installed_cost_usd=float(eq.direct_cost),
         reference_cepci=cepci,
-        source=f"OpenPyTEA {version('openpytea')}, {request.category}/{request.equipment_type}, {request.material}, target {request.target_year}",
+        source=(
+            f"OpenPyTEA {version('openpytea')}, {request.category}/{request.equipment_type}, {request.material}, {request.process_type}, target {request.target_year}. "
+            + " ".join(library_notes)
+        )[:2000],
     )
     return {
         "equipment": quoted.model_dump(),
         "library": "OpenPyTEA",
         "version": version("openpytea"),
-        "warning": "External direct-cost basis differs from Turton bare-module basis. Review scope before combining estimates.",
+        "warning": "External direct-cost basis differs from Turton bare-module basis. Review scope before combining estimates. "
+        + " ".join(library_notes),
+        "library_warnings": library_notes,
     }
 
 

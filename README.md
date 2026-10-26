@@ -163,6 +163,8 @@ Supabase project `flowvalue-ai` (`ywrqkclxwcjungkrtlpq`, London) is separate fro
 
 Set backend `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`. Local engineering mode defaults to `REQUIRE_AUTH=false`; **public deployment must use `REQUIRE_AUTH=true`**. The backend validates bearer tokens against Supabase Auth before protected API calls. The same-origin frontend proxy forwards tokens. Public `/api/config` exposes only the publishable client configuration; OpenAI credentials remain on the backend.
 
+Deployment status (26 October 2026): the authenticated Render backend is live at [flowvalue-api.onrender.com](https://flowvalue-api.onrender.com/health), service `srv-dbfnag6i0phs73ba5pgg`, Frankfurt, free plan. Anonymous `/api/demo` is rejected with HTTP 401. The cloud OpenAI key is intentionally absent at the owner's request; research and memo endpoints need a separately configured key. Vercel frontend setup is pending repository-app permission/setup until a successful frontend deploy is recorded.
+
 Deployment targets selected for this project:
 
 1. **Render:** `render.yaml` defines a free Docker service rooted at `backend`, `/health`, and required authentication. Configure the two Supabase values, the server-only OpenAI key if authorized, and optional primary-source research hosts. No local `.env` files are committed.

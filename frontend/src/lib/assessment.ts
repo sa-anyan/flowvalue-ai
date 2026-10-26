@@ -45,7 +45,7 @@ export type Financial = {
   depreciation_years?: number | null;
 };
 export type AssessmentRequest = {
-  engineering_notes?:string[];
+  engineering_notes?: string[];
   is_demo: boolean;
   advisor_context?: AdvisorContext;
   costing: {
@@ -176,6 +176,9 @@ export const defaults: Record<Kind, Record<string, number>> = {
   },
 };
 export const fieldLabels: Record<string, string> = {
+  purchased_cost_usd: "External purchased cost · USD/unit",
+  installed_cost_usd: "External installed cost · USD/unit",
+  reference_cepci: "External reference CEPCI",
   duty_kw: "Duty · kW",
   overall_u_w_m2_k: "Overall U · W/m²/K",
   lmtd_k: "LMTD · K",

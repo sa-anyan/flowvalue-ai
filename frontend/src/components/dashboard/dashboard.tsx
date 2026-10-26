@@ -55,6 +55,7 @@ import { ProjectAccount } from "./project-account";
 import { EngineeringTools } from "./engineering-tools";
 import {
   importScopeNotes,
+  workspaceKey,
   readWorkspace,
   writeWorkspace,
   type Workspace,
@@ -206,7 +207,20 @@ export default function Dashboard() {
       .then((data: AssessmentRequest) => {
         const local = readWorkspace();
         if (local) {
-          data = local.project;
+          data = local.native_import
+            ? {
+                ...local.project,
+                engineering_notes: [
+                  ...new Set([
+                    ...(local.project.engineering_notes || []),
+                    ...importScopeNotes(
+                      local.native_import,
+                      local.project.costing.equipment,
+                    ),
+                  ]),
+                ].slice(0, 100),
+              }
+            : local.project;
           setStreams(local.streams || []);
           setNativeImport(local.native_import || null);
         }
@@ -818,6 +832,12 @@ export default function Dashboard() {
             </div>
             <button
               onClick={() => {
+                sessionStorage.removeItem(workspaceKey);
+                setBase(null);
+                setEnvelope(null);
+                setStreams([]);
+                setNativeImport(null);
+                setFilename("");
                 setRetry((x) => x + 1);
                 setNotice("");
               }}
@@ -1373,6 +1393,15 @@ export default function Dashboard() {
                                 <Settings2 size={14} />
                                 Per-unit sizing inputs
                               </div>
+                              {spec.kind === "quoted" && (
+                                <p className="factor-note">
+                                  Source:{" "}
+                                  {String(
+                                    spec.source ||
+                                      "User estimate; verify provenance",
+                                  )}
+                                </p>
+                              )}
                               <div className="equipment-fields">
                                 {Object.entries(defaults[spec.kind]).map(
                                   ([key, value]) => (
@@ -1646,8 +1675,8 @@ export default function Dashboard() {
                 </>
               )}
               <p className="model-basis">
-                Straight-line depreciation · No loss carryforward · No tax
-                credits
+                Straight-line depreciation · No loss carryforward · Explicit
+                incentive scenarios
                 <br />
                 CEPCI 800 / 397 is a configurable planning basis.
               </p>

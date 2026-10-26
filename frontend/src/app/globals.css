@@ -2062,10 +2062,10 @@ select {
 /* Engineering workspace extensions share the dashboard's existing color tokens. */
 .extension-panel{padding:24px;margin-bottom:22px;min-width:0}
 .extension-panel h2{font-size:17px;font-weight:650;margin-bottom:8px}
-.extension-panel p{font-size:12px;line-height:1.7;color:var(--muted);margin:10px 0}
+.extension-panel p{font-size:12px;line-height:1.7;color:var(--muted-foreground);margin:10px 0}
 .extension-panel details{padding:12px 0;border-top:1px solid var(--border)}
 .extension-panel summary{cursor:pointer;font-size:13px;font-weight:600}
-.extension-panel input,.extension-panel select,.extension-panel textarea,.flow-inspector input,.flow-inspector select{border:1px solid var(--border);background:var(--surface,#fff);color:var(--ink,#213c34);border-radius:7px;padding:9px;font-size:12px;max-width:100%}
+.extension-panel input,.extension-panel select,.extension-panel textarea,.flow-inspector input,.flow-inspector select{border:1px solid var(--border);background:var(--card);color:var(--foreground);border-radius:7px;padding:9px;font-size:12px;max-width:100%}
 .extension-panel textarea{display:block;width:100%;margin:12px 0}
 .extension-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin:14px 0}
 .extension-actions label{display:grid;gap:6px;font-size:11px;flex:1;min-width:140px}
@@ -2080,7 +2080,7 @@ select {
 .project-history button{text-align:left;padding:10px;background:var(--background);border-radius:6px;font-size:12px}
 .flow-link{font-size:12px;font-weight:600;color:#167566}
 .index-record{display:flex;gap:14px;align-items:center;padding:12px 0;font-size:12px;flex-wrap:wrap}
-.index-record small{color:var(--muted)}
+.index-record small{color:var(--muted-foreground)}
 .tornado-row{display:grid;grid-template-columns:105px 1fr 190px;gap:14px;align-items:center;font-size:11px;padding:10px 0}
 .tornado-track{position:relative;height:22px;background:linear-gradient(to right,transparent 49.8%,#94a59b 49.8%,#94a59b 50.2%,transparent 50.2%)}
 .tornado-track span{position:absolute;height:18px;top:2px;border-radius:2px}
