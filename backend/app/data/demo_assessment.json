@@ -47,5 +47,13 @@
   "simulation": {
     "iterations": 1000,
     "seed": 42
+  },
+  "advisor_context": {
+    "name": "CleanTech process",
+    "description": "Synthetic screening scenario with a compressor, vessel, pump and heat exchanger. Product chemistry and region are unspecified.",
+    "classification": "auto",
+    "region": "Not specified",
+    "raw_materials": [],
+    "utilities": []
   }
 }

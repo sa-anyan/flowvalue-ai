@@ -247,7 +247,7 @@ def build_pdf(
         ),
         p("Estimate basis", "FVSection"),
         p(
-            f"CEPCI target/reference: {bom.settings.cepci_current:g}/{bom.settings.cepci_base:g}. "
+            f"CEPCI target/reference: {bom.settings.cepci_current:g}/{bom.settings.cepci_base:g}. Capital stress multiplier: {bom.settings.capital_cost_multiplier:g}x. "
             "This is a configurable assumption, not a verified current index. Turton module correlations are used within stated size ranges unless extrapolation is explicitly enabled."
         ),
         p(

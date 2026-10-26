@@ -1,3 +1,4 @@
+import type { AdvisorContext } from "@/components/dashboard/universal-advisor";
 export type Kind =
   | "heat_exchanger"
   | "vessel"
@@ -26,9 +27,11 @@ export type Financial = {
 };
 export type AssessmentRequest = {
   is_demo: boolean;
+  advisor_context?: AdvisorContext;
   costing: {
     equipment: EquipmentSpec[];
     settings: {
+      capital_cost_multiplier?: number;
       cepci_current: number;
       cepci_base: number;
       allow_extrapolation: boolean;

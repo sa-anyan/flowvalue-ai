@@ -80,6 +80,7 @@ def build_excel(
         (17, "Total CAPEX (USD)", f"='Equipment BOM'!T{6 + len(bom.items)}"),
         (18, "Target CEPCI (assumption)", bom.settings.cepci_current),
         (19, "Reference CEPCI", bom.settings.cepci_base),
+        (20, "Capital stress multiplier", bom.settings.capital_cost_multiplier),
     ]
     for row, label, value in input_values:
         inputs.cell(row, 2, label)
@@ -101,6 +102,7 @@ def build_excel(
         ("C9", "decimal", 0.000001, 1e15),
         ("C11:C15", "decimal", 0, 1e15),
         ("C18:C19", "decimal", 0.000001, 1e12),
+        ("C20", "decimal", 0.5, 1.5),
     ):
         dv = DataValidation(type=typ, operator="between", formula1=low, formula2=high)
         dv.showErrorMessage = True
@@ -166,9 +168,9 @@ def build_excel(
         formulas = {
             14: f"=10^(G{row}+H{row}*LOG10(E{row})+I{row}*LOG10(E{row})^2)",
             15: f"=N{row}*Inputs!$C$18/Inputs!$C$19",
-            16: f"=O{row}*L{row}*M{row}",
+            16: f"=O{row}*L{row}*M{row}*Inputs!$C$20",
             17: f"=J{row}+K{row}*L{row}*M{row}",
-            18: f"=O{row}*Q{row}",
+            18: f"=O{row}*Q{row}*Inputs!$C$20",
             19: f"=P{row}*C{row}",
             20: f"=R{row}*C{row}",
         }

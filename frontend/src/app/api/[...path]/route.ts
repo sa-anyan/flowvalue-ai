@@ -4,6 +4,8 @@ const paths = new Set([
   "health",
   "api/demo",
   "api/assessment",
+  "api/assessment/universal-suggestions",
+  "api/copilot/research-sensitivities",
   "api/costing/bom",
   "api/financial/dcf",
   "api/financial/monte-carlo",
@@ -32,11 +34,15 @@ async function proxy(
         body:
           request.method === "GET" ? undefined : await request.arrayBuffer(),
         cache: "no-store",
-        signal: AbortSignal.timeout(120000),
+        signal: AbortSignal.timeout(240000),
       },
     );
     const headers = new Headers({ "Cache-Control": "no-store" });
-    for (const name of ["content-type", "content-disposition"]) {
+    for (const name of [
+      "content-type",
+      "content-disposition",
+      "x-accel-buffering",
+    ]) {
       const value = upstream.headers.get(name);
       if (value) headers.set(name, value);
     }

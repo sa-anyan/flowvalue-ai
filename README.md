@@ -35,7 +35,7 @@ GitHub Actions runs the same checks on pushes and pull requests.
 
 Local environment files, virtual environments, dependencies, and build outputs are ignored by Git. Never put secrets in `NEXT_PUBLIC_*` variables: these are exposed to browsers.
 
-Phases 1–5 are implemented: JSON/CSV stream ingestion, equipment sizing/costing, DCF/Monte Carlo analysis, Excel/PDF exports, and the interactive dashboard. LLM integration, authentication, persistent project storage, and cloud deployment are not implemented yet. DWSIM and domain-specific TEA integrations will be validated and added separately. No cloud services or paid APIs are required to run this foundation.
+Phases 1–5 are implemented: JSON/CSV stream ingestion, equipment sizing/costing, DCF/Monte Carlo analysis, Excel/PDF exports, and the interactive dashboard. Authentication, persistent project storage, and cloud deployment are not implemented yet. A research copilot is available as described below. DWSIM and domain-specific TEA integrations will be validated and added separately. No cloud services or paid APIs are required to run this foundation.
 
 ## Stream ingestion (Phase 1)
 
@@ -91,9 +91,26 @@ curl -H 'Content-Type: application/json' --data-binary @backend/examples/assessm
   -o assessment.pdf http://localhost:8000/api/export/pdf
 ```
 
+## Universal cost advisor and market research
+
+The dashboard's **AI Market & Risk Advisor** profiles the active cost structure automatically. It annualizes CAPEX using the capital recovery factor, ranks the top three cost leaves, and reports raw materials/utilities as subsets of variable OPEX. Cost contributions therefore reconcile to LCOP without double counting. Deterministic rules suggest 20-50% screening stresses and compute NPV impacts with the financial engine. These are scenarios, not forecasts or calibrated probability ranges.
+
+Clicking a recommendation compounds its change from the current scenario and updates the corresponding slider. Actions beyond the +/-50% range are disabled. Named-material/utility recommendations explicitly stress the entire cost category; commodity-specific consumption models are not implied. CAPEX stress has a separate 0.5-1.5 multiplier, preserved in Excel's editable Inputs C20 and BOM formulas and labelled in the PDF. Selling-price, fixed-OPEX and other variable-OPEX stresses are available under additional sensitivities. Cash flows support cumulative and waterfall views.
+
+Set project name, process description, classification and region in the advisor panel. The optional detailed-cost editor names base annual raw-material and electricity/steam/water components; these must fit within the base category totals and are not additional expenses. Auto-classification uses provisional keyword rules for electrochemical, thermal, biological, separation, circular and specialty processes; users can override it. There is a general fallback, and rules are extensible in `app/agent/universal_advisor.py`. Stream observations are summarized without inferring thermodynamics, consumption or equipment sizing.
+
+- `POST /api/assessment/universal-suggestions`: accepts an assessment request, a result state containing `bom` plus `financial.inputs`, or generic explicit economics. Generic fields include `total_capex_usd`, annual fixed/variable/feedstock/utility OPEX, plant capacity, discount rate and operating years. `equipment_bom` may contain arbitrary equipment names with `cost_usd` and `quantity`; this profiles quoted equipment without creating a new mechanical cost correlation. Alternatively `opex_breakdown` accepts `fixed`, `variable`, `raw_materials` and `utilities`; named entries use `name` and `annual_cost` in USD/year. Missing assumptions are disclosed; incomplete stream-only projects cannot produce an economic profile.
+- `POST /api/copilot/research-sensitivities`: accepts `{project, question?, market_context?}` and streams SSE events: `profile`, `recommendations`, `status`, `delta`, `citation`, `complete` or `error`. Market context entries contain `title`, `summary`, `url` and optional `published_at`; supplied context is unverified until independently researched.
+
+**Run Market Risk Scan** uses the backend's `OPENAI_API_KEY` and optional `OPENAI_MODEL` (default `gpt-5.4-mini`). It uses the [OpenAI Responses API with live web search](https://developers.openai.com/api/docs/guides/tools-web-search) and [streamed output](https://developers.openai.com/api/docs/guides/streaming-responses). Search is restricted to a configurable primary-source host list, including energy agencies, governments and statistical bodies. `RESEARCH_DOMAINS` can override that list as a JSON array. Sources are linked inline and results show retrieval time. Raw uploads, full stream tables and unknown project fields are not sent to the model; the model receives a computed profile, equipment summary, project context and the research question. Only an explicit scan sends a paid API request. Ordinary profiling remains local and works without a key.
+
+The copilot returns commentary; executable slider actions remain calculated server-side and require a human click. Partial/failed scans are marked unavailable, and briefings are marked stale when the scenario changes. No numeric probability of CAPEX overrun is produced because the current Monte Carlo model samples operating costs, not CAPEX. Tax credits, including 45V, are research topics only; no eligibility or credit toggle is applied automatically.
+
+The uploader accepts stream CSV/JSON and complete assessment JSON with `costing`, `financial`, optional `advisor_context`, and optional normalized `streams`. The separate generic profiling endpoint does not imply arbitrary equipment can be mechanically costed by the dashboard. Try `backend/examples/biological-assessment.json` for a clearly labelled, synthetic biological cost-profile example. No performance or profitability validation is implied by that example.
+
 ## API keys
 
-No key is needed for Phase 1. Optional `OPENAI_API_KEY` and `ANTHROPIC_API_KEY` placeholders are in `backend/.env.example` for the future copilot. Add real keys only to ignored local backend environment files, never frontend public variables or Git.
+No key is needed for deterministic calculations or cost profiling. `OPENAI_API_KEY` enables live market research; `ANTHROPIC_API_KEY` is reserved and is not currently used. Add real keys only to ignored local backend environment files, never frontend public variables or Git.
 
 ## Docker
 

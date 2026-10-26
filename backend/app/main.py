@@ -5,9 +5,19 @@ from io import BytesIO
 from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-from pydantic import ValidationError
+from pydantic import Field, ValidationError
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.agent.copilot_research import (
+    ResearchRequest,
+    ResearchSettings,
+    research_events,
+)
+from app.agent.universal_advisor import (
+    AdvisorResult,
+    ProjectContext,
+    UniversalProcessAdvisor,
+)
 from app.engine.costing import CostingRequest, EquipmentBOM, Model, build_bom
 from app.financial.dcf_model import (
     FinancialAssumptions,
@@ -88,6 +98,7 @@ def financial_monte_carlo(request: MonteCarloRequest) -> MonteCarloResult:
 
 
 class AssessmentRequest(Model):
+    advisor_context: ProjectContext = Field(default_factory=ProjectContext)
     is_demo: bool = False
     costing: CostingRequest
     financial: FinancialAssumptions
@@ -165,3 +176,48 @@ def export_pdf(request: AssessmentRequest):
 @app.get("/api/export/pdf")
 def export_demo_pdf():
     return export_response(demo_assessment(), "pdf", demo=True)
+
+
+def advisor_profile(project: dict) -> AdvisorResult:
+    if len(json.dumps(project)) > 300000:
+        raise HTTPException(status_code=413, detail="Advisor payload exceeds 300 KB")
+    try:
+        if "costing" in project:
+            request = AssessmentRequest.model_validate(
+                {
+                    k: v
+                    for k, v in project.items()
+                    if k in AssessmentRequest.model_fields
+                }
+            )
+            result = assessment(request)
+            project = {
+                "bom": result.bom.model_dump(),
+                "financial": result.financial.inputs.model_dump(),
+                "advisor_context": request.advisor_context.model_dump(),
+                "streams": project.get("streams", []),
+            }
+        return UniversalProcessAdvisor(project).analyze()
+    except (ValueError, TypeError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@app.post("/api/assessment/universal-suggestions", response_model=AdvisorResult)
+def universal_suggestions(project: dict) -> AdvisorResult:
+    return advisor_profile(project)
+
+
+@app.post("/api/copilot/research-sensitivities")
+def research_sensitivities(request: ResearchRequest):
+    profile = advisor_profile(request.project)
+    config = ResearchSettings()
+    if not config.openai_api_key.get_secret_value().strip():
+        raise HTTPException(
+            status_code=503,
+            detail="Configure OPENAI_API_KEY in backend/.env to run live market research. Cost profiling remains available without a key.",
+        )
+    return StreamingResponse(
+        research_events(profile, request, config),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache, no-transform", "X-Accel-Buffering": "no"},
+    )

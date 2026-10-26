@@ -17,6 +17,7 @@ class Model(BaseModel):
 
 
 class CostSettings(Model):
+    capital_cost_multiplier: float = Field(default=1, ge=0.5, le=1.5)
     cepci_current: Positive = 800
     cepci_base: Positive = 397
     allow_extrapolation: bool = False
@@ -300,8 +301,11 @@ def cost_equipment(unit: Equipment, settings: CostSettings) -> EquipmentCost:
         bare_module_factor=fbm,
         base_purchase_cost_usd=base,
         indexed_base_purchase_cost_usd=indexed,
-        purchased_equipment_cost_usd=indexed * fm * fp,
-        bare_module_cost_usd=indexed * fbm,
+        purchased_equipment_cost_usd=indexed
+        * fm
+        * fp
+        * settings.capital_cost_multiplier,
+        bare_module_cost_usd=indexed * fbm * settings.capital_cost_multiplier,
         warnings=warnings,
     )
 
@@ -319,6 +323,7 @@ def build_bom(request: CostingRequest) -> EquipmentBOM:
         ),
         assumptions=[
             "Per-item costs are per unit; totals include quantity",
+            f"Capital stress multiplier {request.settings.capital_cost_multiplier:g} applied to purchased and bare module costs; this is a scenario, not a probability",
             "CEPCI 800/397 is a configurable planning basis, not a verified current index",
             "Bare module totals exclude offsites, working capital, contingency and owner costs",
             "Sources and validity: docs/calculation_basis.md",

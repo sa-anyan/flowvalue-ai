@@ -43,6 +43,11 @@ import {
   usd,
 } from "@/lib/assessment";
 import { CapexChart, CashFlowChart, RiskChart } from "./charts";
+import {
+  UniversalAdvisor,
+  defaultContext,
+  type Suggestion,
+} from "./universal-advisor";
 
 function RangeControl({
   label,
@@ -129,6 +134,10 @@ export default function Dashboard() {
     utility: 0,
     discount: 10,
     life: 20,
+    capex: 0,
+    price: 0,
+    fixed: 0,
+    other: 0,
   });
   const [envelope, setEnvelope] = useState<{
     signature: string;
@@ -141,6 +150,9 @@ export default function Dashboard() {
   const [initialError, setInitialError] = useState("");
   const [retry, setRetry] = useState(0);
   const [dark, setDark] = useState(false);
+  const [chartView, setChartView] = useState<"cumulative" | "waterfall">(
+    "cumulative",
+  );
   const [expanded, setExpanded] = useState<string | null>(null);
   const [kind, setKind] = useState<Kind>("heat_exchanger");
   const [streams, setStreams] = useState<Stream[]>([]);
@@ -169,6 +181,10 @@ export default function Dashboard() {
           utility: 0,
           discount: data.financial.discount_rate * 100,
           life: data.financial.operating_years,
+          capex: 0,
+          price: 0,
+          fixed: 0,
+          other: 0,
         });
         setInitialError("");
       })
@@ -185,8 +201,34 @@ export default function Dashboard() {
       base.financial.utility_opex_usd_per_year * (1 + controls.utility / 100);
     return {
       ...base,
+      costing: {
+        ...base.costing,
+        settings: {
+          ...base.costing.settings,
+          capital_cost_multiplier:
+            (base.costing.settings.capital_cost_multiplier ?? 1) *
+            (1 + (controls.capex ?? 0) / 100),
+        },
+      },
+      advisor_context: {
+        ...(base.advisor_context ?? defaultContext),
+        raw_materials: (base.advisor_context?.raw_materials ?? []).map((x) => ({
+          ...x,
+          annual_cost: x.annual_cost * (1 + controls.feed / 100),
+        })),
+        utilities: (base.advisor_context?.utilities ?? []).map((x) => ({
+          ...x,
+          annual_cost: x.annual_cost * (1 + controls.utility / 100),
+        })),
+      },
       financial: {
         ...base.financial,
+        fixed_opex_usd_per_year:
+          base.financial.fixed_opex_usd_per_year *
+          (1 + (controls.fixed ?? 0) / 100),
+        product_selling_price_usd_per_unit:
+          base.financial.product_selling_price_usd_per_unit *
+          (1 + (controls.price ?? 0) / 100),
         discount_rate: controls.discount / 100,
         operating_years: controls.life,
         feedstock_opex_usd_per_year: feed,
@@ -197,7 +239,8 @@ export default function Dashboard() {
             base.financial.variable_opex_usd_per_year -
               base.financial.feedstock_opex_usd_per_year -
               base.financial.utility_opex_usd_per_year,
-          ) +
+          ) *
+            (1 + (controls.other ?? 0) / 100) +
           feed +
           utility,
       },
@@ -313,6 +356,54 @@ export default function Dashboard() {
       };
     });
   }
+  function stressTarget(r: Suggestion) {
+    const key = (
+      {
+        feedstock: "feed",
+        utility: "utility",
+        capex: "capex",
+        selling_price: "price",
+        fixed_opex: "fixed",
+        other_opex: "other",
+      } as const
+    )[
+      r.parameter as
+        | "feedstock"
+        | "utility"
+        | "capex"
+        | "selling_price"
+        | "fixed_opex"
+        | "other_opex"
+    ];
+    if (!key) return null;
+    const value =
+      Math.round(
+        ((1 + (controls[key] ?? 0) / 100) * (1 + r.suggested_change_pct / 100) -
+          1) *
+          1000000,
+      ) / 10000;
+    if (value < -50 || value > 50) return null;
+    if (
+      key === "capex" &&
+      base &&
+      ((base.costing.settings.capital_cost_multiplier ?? 1) *
+        (1 + value / 100) >
+        1.5 ||
+        (base.costing.settings.capital_cost_multiplier ?? 1) *
+          (1 + value / 100) <
+          0.5)
+    )
+      return null;
+    return { key, value };
+  }
+  function applyStress(r: Suggestion) {
+    const target = stressTarget(r);
+    if (!target) return;
+    setControls((c) => ({ ...c, [target.key]: target.value }));
+    setNotice(
+      `Applied ${r.parameter.replaceAll("_", " ")} ${r.suggested_change_pct > 0 ? "+" : ""}${r.suggested_change_pct}% to the current scenario (${r.scope}).`,
+    );
+  }
   async function upload(file: File) {
     if (!/\.(csv|json)$/i.test(file.name)) {
       setUploadMessage("Choose a CSV or JSON stream table.");
@@ -328,6 +419,69 @@ export default function Dashboard() {
       let response: Response;
       if (/\.json$/i.test(file.name)) {
         const content = JSON.parse(await file.text());
+        if (content.costing && content.financial) {
+          const validation = await fetch("/api/assessment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(
+              Object.fromEntries(
+                Object.entries(content).filter(([key]) => key !== "streams"),
+              ),
+            ),
+          });
+          if (!validation.ok) throw new Error(await apiError(validation));
+          const canonical = await validation.json();
+          const financial = { ...canonical.financial.inputs };
+          delete financial.total_capex_usd;
+          let importedStreams: Stream[] = [];
+          if (content.streams !== undefined) {
+            const streamResponse = await fetch("/api/streams/parse/json", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ streams: content.streams }),
+            });
+            if (!streamResponse.ok)
+              throw new Error(await apiError(streamResponse));
+            importedStreams = (await streamResponse.json()).streams;
+          }
+          setBase({
+            financial,
+            costing: {
+              ...content.costing,
+              settings: {
+                ...canonical.bom.settings,
+                capital_cost_multiplier: 1,
+              },
+            },
+            simulation: content.simulation ?? {
+              iterations: 1000,
+              variation_fraction: 0.2,
+              seed: 42,
+            },
+            is_demo: content.is_demo ?? false,
+            advisor_context: {
+              ...defaultContext,
+              name: file.name.replace(/\.json$/i, ""),
+              ...content.advisor_context,
+            },
+          });
+          setControls({
+            feed: 0,
+            utility: 0,
+            discount: financial.discount_rate * 100,
+            life: financial.operating_years,
+            capex: (canonical.bom.settings.capital_cost_multiplier - 1) * 100,
+            price: 0,
+            fixed: 0,
+            other: 0,
+          });
+          setStreams(importedStreams);
+          setFilename(file.name);
+          setUploadMessage(
+            "Project loaded and validated. Advisor recommendations now use this project's economics.",
+          );
+          return;
+        }
         response = await fetch("/api/streams/parse/json", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -409,7 +563,7 @@ export default function Dashboard() {
             <FlaskConical size={17} />
           </span>
           <div>
-            <strong>CleanTech process</strong>
+            <strong>{base?.advisor_context?.name ?? "Untitled process"}</strong>
             <small>Local development</small>
           </div>
           <ChevronDown size={14} />
@@ -523,7 +677,9 @@ export default function Dashboard() {
               <span className="scenario-badge">
                 {base?.is_demo !== false ? "DEMO SCENARIO" : "CURRENT SCENARIO"}
               </span>
-              <strong>CleanTech process</strong>
+              <strong>
+                {base?.advisor_context?.name ?? "Untitled process"}
+              </strong>
               <span className="scenario-description">
                 {base?.is_demo !== false
                   ? "Synthetic equipment & economics · USD"
@@ -653,25 +809,58 @@ export default function Dashboard() {
               </div>
             </div>
           </section>
+          <UniversalAdvisor
+            project={payload}
+            streams={streams}
+            ready={ready}
+            context={base?.advisor_context ?? defaultContext}
+            onContext={(context) =>
+              setBase((prev) =>
+                prev ? { ...prev, advisor_context: context } : prev,
+              )
+            }
+            onApply={applyStress}
+            canApply={(r) => stressTarget(r) !== null}
+          />
           <div className="primary-grid">
             <section className="panel cash-panel">
               <div className="panel-heading">
                 <div>
-                  <h2>Cumulative cash flow</h2>
+                  <h2>
+                    {chartView === "waterfall"
+                      ? "Annual cash-flow waterfall"
+                      : "Cumulative cash flow"}
+                  </h2>
                   <p>The long view on your process economics.</p>
                 </div>
-                <span className="quiet-badge">
-                  {controls.life}-year horizon
-                </span>
+                <div className="chart-view-control">
+                  <select
+                    aria-label="Cash flow chart view"
+                    value={chartView}
+                    onChange={(e) =>
+                      setChartView(e.target.value as "cumulative" | "waterfall")
+                    }
+                  >
+                    <option value="cumulative">Cumulative curve</option>
+                    <option value="waterfall">Cash-flow waterfall</option>
+                  </select>
+                  <span className="quiet-badge">
+                    {controls.life}-year horizon
+                  </span>
+                </div>
               </div>
               <div className="line-legend">
                 <span>
                   <i />
-                  Undiscounted
+                  {chartView === "waterfall"
+                    ? "Operating cash flow"
+                    : "Undiscounted"}
                 </span>
                 <span>
                   <i className="gold" />
-                  Discounted
+                  {chartView === "waterfall"
+                    ? "Initial investment"
+                    : "Discounted"}
                 </span>
                 <span className="calculation-status" role="status">
                   {error ? (
@@ -691,7 +880,7 @@ export default function Dashboard() {
               </div>
               <div className="chart-area">
                 {data ? (
-                  <CashFlowChart data={data} />
+                  <CashFlowChart data={data} view={chartView} />
                 ) : (
                   <div className="chart-placeholder">
                     <LoaderCircle className="spin" />
@@ -720,8 +909,8 @@ export default function Dashboard() {
               <RangeControl
                 label="Feedstock price"
                 value={controls.feed}
-                min={-20}
-                max={20}
+                min={-50}
+                max={50}
                 unit="%"
                 change={(v) => setControls((c) => ({ ...c, feed: v }))}
                 detail={
@@ -733,8 +922,8 @@ export default function Dashboard() {
               <RangeControl
                 label="Utility rates"
                 value={controls.utility}
-                min={-20}
-                max={20}
+                min={-50}
+                max={50}
                 unit="%"
                 change={(v) => setControls((c) => ({ ...c, utility: v }))}
                 detail={
@@ -743,6 +932,53 @@ export default function Dashboard() {
                     : "Annual utility cost"
                 }
               />
+              <details className="additional-stresses">
+                <summary>Capital, price & other sensitivities</summary>
+                <RangeControl
+                  label="CAPEX stress"
+                  value={controls.capex ?? 0}
+                  min={-50}
+                  max={50}
+                  step={0.1}
+                  unit="%"
+                  change={(v) => setControls((c) => ({ ...c, capex: v }))}
+                  detail="Scales purchased and bare module costs; retained in exports"
+                />
+                <RangeControl
+                  label="Selling price stress"
+                  value={controls.price ?? 0}
+                  min={-50}
+                  max={50}
+                  step={0.1}
+                  unit="%"
+                  change={(v) => setControls((c) => ({ ...c, price: v }))}
+                  detail={
+                    payload
+                      ? `$${payload.financial.product_selling_price_usd_per_unit.toFixed(2)} per product unit`
+                      : "Product price at fixed output"
+                  }
+                />
+                <RangeControl
+                  label="Fixed OPEX stress"
+                  value={controls.fixed ?? 0}
+                  min={-50}
+                  max={50}
+                  step={0.1}
+                  unit="%"
+                  change={(v) => setControls((c) => ({ ...c, fixed: v }))}
+                  detail="Annual fixed operating cost"
+                />
+                <RangeControl
+                  label="Other variable OPEX stress"
+                  value={controls.other ?? 0}
+                  min={-50}
+                  max={50}
+                  step={0.1}
+                  unit="%"
+                  change={(v) => setControls((c) => ({ ...c, other: v }))}
+                  detail="Excludes raw materials and utilities"
+                />
+              </details>
               <RangeControl
                 label="Discount rate"
                 value={controls.discount}
@@ -1079,8 +1315,7 @@ export default function Dashboard() {
                 <div>
                   <h2>Bring your process data</h2>
                   <p>
-                    Import a standardized stream table to inspect your
-                    simulation.
+                    Import a stream table or complete assessment JSON project.
                   </p>
                 </div>
                 <Upload size={18} className="muted-icon" />
@@ -1117,14 +1352,16 @@ export default function Dashboard() {
                     <Upload size={21} />
                   )}
                 </span>
-                <strong>{filename || "Drop a stream table here"}</strong>
+                <strong>
+                  {filename || "Drop a stream table or project here"}
+                </strong>
                 <span>
                   or <b>browse files</b> · CSV or JSON · up to 5 MiB
                 </span>
               </button>
               <p className="upload-message" role="status">
                 {uploadMessage ||
-                  "Required: stream_id, mass_flow_kg_h, temperature_c, pressure_bar_abs, phase."}
+                  "Streams: stream_id, mass_flow_kg_h, temperature_c, pressure_bar_abs, phase. Project JSON: costing, financial, and optional advisor_context."}
               </p>
               {streams.length > 0 && (
                 <details className="stream-details">
