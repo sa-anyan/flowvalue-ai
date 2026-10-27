@@ -1080,9 +1080,9 @@ export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "
               <div className="eyebrow">
                 <span /> PROCESS ECONOMICS PLAYGROUND
               </div>
-              <h1>See the value in your process.</h1>
+              <h1>Analysis tools</h1>
               <p>
-                From equipment costs to investment returns. One connected view.
+                Model assumptions and costs alongside engineering and market analysis.
               </p>
             </div>
             <div className="export-actions">
@@ -1181,21 +1181,8 @@ export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "
               </button>
             </div>
           )}
-          <AIConnection {...ai} />
-          <UniversalAdvisor
-            aiAvailable={!!ai.status?.can_generate}
-            project={payload}
-            streams={streams}
-            ready={ready}
-            context={base?.advisor_context ?? defaultContext}
-            onContext={(context) =>
-              setBase((prev) =>
-                prev ? { ...prev, advisor_context: context } : prev,
-              )
-            }
-            onApply={applyStress}
-            canApply={(r) => stressTarget(r) !== null}
-          />
+          <div className="analysis-tools-grid">
+            <div className="analysis-tools-column" aria-label="Model and costing tools">
           <section className="panel playground-panel" id="playground">
               <div className="panel-heading">
                 <div>
@@ -1586,6 +1573,23 @@ export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "
               onProject={setBase}
             />
           )}
+            </div>
+            <div className="analysis-tools-column" aria-label="Engineering and intelligence tools">
+          <AIConnection {...ai} />
+          <UniversalAdvisor
+            aiAvailable={!!ai.status?.can_generate}
+            project={payload}
+            streams={streams}
+            ready={ready}
+            context={base?.advisor_context ?? defaultContext}
+            onContext={(context) =>
+              setBase((prev) =>
+                prev ? { ...prev, advisor_context: context } : prev,
+              )
+            }
+            onApply={applyStress}
+            canApply={(r) => stressTarget(r) !== null}
+          />
           {base && (
             <EngineeringAnalyst
               project={base}
@@ -1604,6 +1608,8 @@ export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "
               native={nativeImport}
             />
           )}
+            </div>
+          </div>
             </>
           )}
           <footer className="dashboard-footer">

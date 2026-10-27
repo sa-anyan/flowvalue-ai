@@ -2188,3 +2188,73 @@ select {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Two working columns beside the left navigation in Analysis tools. */
+.analysis-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.analysis-tools-column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 20px;
+}
+.analysis-tools-column > .panel,
+.analysis-tools-column > .basis-details,
+.analysis-tools-column > .engineering-tools {
+  min-width: 0;
+  width: 100%;
+  margin-bottom: 0;
+}
+.analysis-tools-column .engineering-tools {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.analysis-tools-column .engineering-tools > .panel,
+.analysis-tools-column .engineering-tools > details.panel {
+  width: 100%;
+  min-width: 0;
+  margin-bottom: 0;
+}
+.analysis-tools-column .equipment-panel .panel-heading {
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.analysis-tools-column .equipment-panel .table-scroll {
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+.analysis-tools-column .equipment-panel .equipment-fields {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.analysis-tools-column .tornado-row {
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 10px;
+}
+.analysis-tools-column .tornado-row small {
+  grid-column: 2;
+}
+.analysis-tools-column .advisor-top-drivers,
+.analysis-tools-column .recommendation-grid {
+  min-width: 0;
+}
+/* Stack the work areas before their controls become too narrow. */
+@media (max-width: 1230px) {
+  .analysis-tools-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 760px) {
+  .analysis-tools-grid,
+  .analysis-tools-column,
+  .analysis-tools-column .engineering-tools {
+    gap: 16px;
+  }
+}
