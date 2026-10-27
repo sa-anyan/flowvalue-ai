@@ -52,6 +52,10 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
             Entry
             {active === "entry" && <span className="nav-dot" />}
           </a>
+          <a href="/entry#streams">
+            <Upload size={18} />
+            Simulation data
+          </a>
         </nav>
         <div className="nav-caption">ANALYSIS</div>
         <nav>
@@ -79,10 +83,6 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
           <a href={dashboardHref("#risk")}>
             <ShieldCheck size={18} />
             Risk & uncertainty
-          </a>
-          <a href={dashboardHref("#streams")}>
-            <Upload size={18} />
-            Simulation data
           </a>
           <a href={dashboardHref("#engineering-analyst")}>
             <FlaskConical size={18} />

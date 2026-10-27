@@ -53,6 +53,7 @@ import {
 import { AIConnection, useAIStatus } from "./ai-connection";
 import { ProjectAccount } from "./project-account";
 import { WorkspaceSidebar } from "./workspace-sidebar";
+import { ProjectContextEditor } from "./project-context-editor";
 import { EngineeringAnalyst } from "./engineering-analyst";
 import { StudyWorkspace } from "./study-workspace";
 import { EngineeringTools } from "./engineering-tools";
@@ -150,7 +151,8 @@ function NumberField({
   );
 }
 
-export default function Dashboard() {
+export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "entry" }) {
+  const isEntry = mode === "entry";
   const [base, setBase] = useState<AssessmentRequest | null>(null);
   const [controls, setControls] = useState({
     feed: 0,
@@ -718,12 +720,12 @@ export default function Dashboard() {
     );
   return (
     <div className="app-shell">
-      <WorkspaceSidebar name={base?.advisor_context?.name ?? "Untitled process"} active="overview" />
+      <WorkspaceSidebar name={base?.advisor_context?.name ?? "Untitled process"} active={isEntry ? "entry" : "overview"} />
       <div className="main-shell">
         <header className="topbar">
           <div className="breadcrumb">
             Workspace <ChevronRight size={13} />
-            <span>Techno-economic assessment</span>
+            <span>{isEntry ? "Project entry" : "Techno-economic assessment"}</span>
           </div>
           <div className="top-actions">
             <span className={`connection ${error ? "connection-error" : ""}`}>
@@ -744,12 +746,290 @@ export default function Dashboard() {
             <span className="top-avatar">FV</span>
           </div>
         </header>
-        <main className="dashboard-main" id="overview">
+        <main className="dashboard-main" id={isEntry ? "entry" : "overview"}>
           <ProjectAccount
             workspace={workspace}
             onLoad={loadWorkspace}
             onAuth={authChanged}
           />
+          {isEntry ? (
+            <>
+              <section className="page-heading">
+                <div>
+                  <div className="eyebrow"><span /> PROJECT ENTRY</div>
+                  <h1>Set up your project.</h1>
+                  <p>Import process data, describe the project and set the base economic assumptions.</p>
+                </div>
+                <div className="export-actions">
+                  <a href="/dashboard" className="entry-analysis-link">
+                    Continue to Analysis <ArrowRight size={15} />
+                  </a>
+                </div>
+              </section>
+              {error && (
+                <div className="error-banner" role="alert">
+                  <CircleHelp size={18} />
+                  <div>
+                    <strong>Project needs attention</strong>
+                    <p>{error}</p>
+                  </div>
+                  <button onClick={() => initialError ? setRetry((x) => x + 1) : setCalculationRetry((x) => x + 1)}>
+                    Retry calculation
+                  </button>
+                </div>
+              )}
+              {notice && (
+                <div className="notice-banner" role="status">
+                  <Check size={17} />
+                  {notice}
+                  <button aria-label="Dismiss notification" onClick={() => setNotice("")}>
+                    <X size={15} />
+                  </button>
+                </div>
+              )}
+          <div className="entry-input-grid">
+            <section className="panel upload-panel" id="streams">
+              <div className="panel-heading">
+                <div>
+                  <h2>Bring your process data</h2>
+                  <p>
+                    Import CSV, JSON, a BioSTEAM snapshot, or a native DWSIM
+                    .dwxml simulation.
+                  </p>
+                </div>
+                <Upload size={18} className="muted-icon" />
+              </div>
+              <p>
+                <a href="/examples/sample-streams.csv" download>
+                  Download sample CSV
+                </a>
+                {" · "}
+                <a href="/examples/demo-project.json" download>
+                  Download demo project JSON
+                </a>
+              </p>
+              <input
+                ref={fileRef}
+                className="sr-only"
+                type="file"
+                accept=".csv,.json,.dwxml"
+                aria-label="Upload stream table"
+                onChange={(e) => {
+                  if (e.target.files?.[0]) upload(e.target.files[0]);
+                }}
+              />
+              <button
+                className={`dropzone ${dragging ? "dragging" : ""}`}
+                disabled={uploading}
+                onClick={() => fileRef.current?.click()}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragging(true);
+                }}
+                onDragLeave={() => setDragging(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setDragging(false);
+                  if (!uploading && e.dataTransfer.files[0])
+                    upload(e.dataTransfer.files[0]);
+                }}
+              >
+                <span className="upload-icon">
+                  {uploading ? (
+                    <LoaderCircle size={21} className="spin" />
+                  ) : (
+                    <Upload size={21} />
+                  )}
+                </span>
+                <strong>
+                  {uploading
+                    ? "Validating import…"
+                    : filename || "Drop a stream table or project here"}
+                </strong>
+                <span>
+                  or <b>browse files</b> · CSV, JSON or DWXML · up to 4 MiB
+                </span>
+              </button>
+              <p className="upload-message" role="status">
+                {uploadMessage ||
+                  "Streams: stream_id, mass_flow_kg_h, temperature_c, pressure_bar_abs, phase. Project JSON: costing, financial, and optional advisor_context."}
+              </p>
+              {streams.length > 0 && (
+                <details className="stream-details">
+                  <summary>
+                    {streams.length} validated streams <ChevronDown size={12} />
+                  </summary>
+                  <div className="table-scroll">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Stream</th>
+                          <th>kg/h</th>
+                          <th>°C</th>
+                          <th>bar abs</th>
+                          <th>Phase</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {streams.slice(0, 100).map((s) => (
+                          <tr key={s.stream_id}>
+                            <td>{s.stream_id}</td>
+                            <td>{s.mass_flow_kg_h}</td>
+                            <td>{s.temperature_c}</td>
+                            <td>{s.pressure_bar_abs}</td>
+                            <td>{s.phase}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {streams.length > 100 && (
+                    <p>Showing the first 100 streams.</p>
+                  )}
+                </details>
+              )}
+            </section>
+            <ProjectContextEditor
+              context={base?.advisor_context ?? defaultContext}
+              onContext={(context) =>
+                setBase((prev) => prev ? { ...prev, advisor_context: context } : prev)
+              }
+            />
+            <section className="panel assumptions-panel" id="base-assumptions">
+              <div className="panel-heading">
+                <div>
+                  <h2>Make the assumptions yours</h2>
+                  <p>Annual values at the selected capacity factor.</p>
+                </div>
+                <Settings2 size={18} className="muted-icon" />
+              </div>
+              {base && (
+                <>
+                  <div className="assumption-fields">
+                    <NumberField
+                      label="Selling price · USD/unit"
+                      value={base.financial.product_selling_price_usd_per_unit}
+                      change={(v) =>
+                        updateFinancial("product_selling_price_usd_per_unit", v)
+                      }
+                    />
+                    <NumberField
+                      label="Plant capacity · units/year"
+                      value={base.financial.plant_capacity_units_per_year}
+                      change={(v) =>
+                        updateFinancial("plant_capacity_units_per_year", v)
+                      }
+                    />
+                    <NumberField
+                      label="Fixed OPEX · USD/year"
+                      value={base.financial.fixed_opex_usd_per_year}
+                      change={(v) =>
+                        updateFinancial("fixed_opex_usd_per_year", v)
+                      }
+                    />
+                    <NumberField
+                      label="Base feedstock · USD/year"
+                      value={base.financial.feedstock_opex_usd_per_year}
+                      change={(v) =>
+                        updateExpense("feedstock_opex_usd_per_year", v)
+                      }
+                    />
+                    <NumberField
+                      label="Base utilities · USD/year"
+                      value={base.financial.utility_opex_usd_per_year}
+                      change={(v) =>
+                        updateExpense("utility_opex_usd_per_year", v)
+                      }
+                    />
+                    <NumberField
+                      label="Other variable OPEX · USD/year"
+                      value={Math.max(
+                        0,
+                        base.financial.variable_opex_usd_per_year -
+                          base.financial.feedstock_opex_usd_per_year -
+                          base.financial.utility_opex_usd_per_year,
+                      )}
+                      change={(v) => updateExpense("other", v)}
+                    />
+                    <NumberField
+                      label="Tax rate · %"
+                      value={base.financial.tax_rate * 100}
+                      change={(v) => updateFinancial("tax_rate", v / 100)}
+                    />
+                    <NumberField
+                      label="Target CEPCI"
+                      value={base.costing.settings.cepci_current}
+                      change={(v) =>
+                        setBase({
+                          ...base,
+                          costing: {
+                            ...base.costing,
+                            settings: {
+                              ...base.costing.settings,
+                              cepci_current: v,
+                              cepci_basis:
+                                "Manual planning assumption; source selection cleared by index edit",
+                            },
+                          },
+                        })
+                      }
+                    />
+                    <NumberField
+                      label="Capacity factor · %"
+                      value={base.financial.capacity_factor * 100}
+                      change={(v) =>
+                        updateFinancial("capacity_factor", v / 100)
+                      }
+                    />
+                  </div>
+                  <label className="extrapolation-control">
+                    <input
+                      type="checkbox"
+                      checked={base.is_demo}
+                      onChange={(e) =>
+                        setBase({ ...base, is_demo: e.target.checked })
+                      }
+                    />
+                    Label exports as a demonstration
+                  </label>
+                  <label className="extrapolation-control">
+                    <input
+                      type="checkbox"
+                      checked={base.costing.settings.allow_extrapolation}
+                      onChange={(e) =>
+                        setBase({
+                          ...base,
+                          costing: {
+                            ...base.costing,
+                            settings: {
+                              ...base.costing.settings,
+                              allow_extrapolation: e.target.checked,
+                            },
+                          },
+                        })
+                      }
+                    />
+                    Allow flagged correlation extrapolation
+                  </label>
+                </>
+              )}
+              <p className="model-basis">
+                Straight-line depreciation · No loss carryforward · Explicit
+                incentive scenarios
+                <br />
+                CEPCI 800 / 397 is a configurable planning basis.
+              </p>
+            </section>
+          </div>
+              <div className="entry-next-step">
+                <p>Project data and assumptions carry through to the analysis workspace.</p>
+                <a href="/dashboard" className="entry-analysis-link">
+                  Continue to Analysis <ArrowRight size={15} />
+                </a>
+              </div>
+            </>
+          ) : (
+            <>
           <section className="page-heading">
             <div>
               <div className="eyebrow">
@@ -1455,234 +1735,6 @@ export default function Dashboard() {
               </span>
             </div>
           </section>
-          <div className="bottom-grid">
-            <section className="panel upload-panel" id="streams">
-              <div className="panel-heading">
-                <div>
-                  <h2>Bring your process data</h2>
-                  <p>
-                    Import CSV, JSON, a BioSTEAM snapshot, or a native DWSIM
-                    .dwxml simulation.
-                  </p>
-                </div>
-                <Upload size={18} className="muted-icon" />
-              </div>
-              <p>
-                <a href="/examples/sample-streams.csv" download>
-                  Download sample CSV
-                </a>
-                {" · "}
-                <a href="/examples/demo-project.json" download>
-                  Download demo project JSON
-                </a>
-              </p>
-              <input
-                ref={fileRef}
-                className="sr-only"
-                type="file"
-                accept=".csv,.json,.dwxml"
-                aria-label="Upload stream table"
-                onChange={(e) => {
-                  if (e.target.files?.[0]) upload(e.target.files[0]);
-                }}
-              />
-              <button
-                className={`dropzone ${dragging ? "dragging" : ""}`}
-                disabled={uploading}
-                onClick={() => fileRef.current?.click()}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  setDragging(true);
-                }}
-                onDragLeave={() => setDragging(false)}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  setDragging(false);
-                  if (!uploading && e.dataTransfer.files[0])
-                    upload(e.dataTransfer.files[0]);
-                }}
-              >
-                <span className="upload-icon">
-                  {uploading ? (
-                    <LoaderCircle size={21} className="spin" />
-                  ) : (
-                    <Upload size={21} />
-                  )}
-                </span>
-                <strong>
-                  {uploading
-                    ? "Validating import…"
-                    : filename || "Drop a stream table or project here"}
-                </strong>
-                <span>
-                  or <b>browse files</b> · CSV, JSON or DWXML · up to 4 MiB
-                </span>
-              </button>
-              <p className="upload-message" role="status">
-                {uploadMessage ||
-                  "Streams: stream_id, mass_flow_kg_h, temperature_c, pressure_bar_abs, phase. Project JSON: costing, financial, and optional advisor_context."}
-              </p>
-              {streams.length > 0 && (
-                <details className="stream-details">
-                  <summary>
-                    {streams.length} validated streams <ChevronDown size={12} />
-                  </summary>
-                  <div className="table-scroll">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Stream</th>
-                          <th>kg/h</th>
-                          <th>°C</th>
-                          <th>bar abs</th>
-                          <th>Phase</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {streams.slice(0, 100).map((s) => (
-                          <tr key={s.stream_id}>
-                            <td>{s.stream_id}</td>
-                            <td>{s.mass_flow_kg_h}</td>
-                            <td>{s.temperature_c}</td>
-                            <td>{s.pressure_bar_abs}</td>
-                            <td>{s.phase}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  {streams.length > 100 && (
-                    <p>Showing the first 100 streams.</p>
-                  )}
-                </details>
-              )}
-            </section>
-            <section className="panel assumptions-panel">
-              <div className="panel-heading">
-                <div>
-                  <h2>Make the assumptions yours</h2>
-                  <p>Annual values at the selected capacity factor.</p>
-                </div>
-                <Settings2 size={18} className="muted-icon" />
-              </div>
-              {base && (
-                <>
-                  <div className="assumption-fields">
-                    <NumberField
-                      label="Selling price · USD/unit"
-                      value={base.financial.product_selling_price_usd_per_unit}
-                      change={(v) =>
-                        updateFinancial("product_selling_price_usd_per_unit", v)
-                      }
-                    />
-                    <NumberField
-                      label="Plant capacity · units/year"
-                      value={base.financial.plant_capacity_units_per_year}
-                      change={(v) =>
-                        updateFinancial("plant_capacity_units_per_year", v)
-                      }
-                    />
-                    <NumberField
-                      label="Fixed OPEX · USD/year"
-                      value={base.financial.fixed_opex_usd_per_year}
-                      change={(v) =>
-                        updateFinancial("fixed_opex_usd_per_year", v)
-                      }
-                    />
-                    <NumberField
-                      label="Base feedstock · USD/year"
-                      value={base.financial.feedstock_opex_usd_per_year}
-                      change={(v) =>
-                        updateExpense("feedstock_opex_usd_per_year", v)
-                      }
-                    />
-                    <NumberField
-                      label="Base utilities · USD/year"
-                      value={base.financial.utility_opex_usd_per_year}
-                      change={(v) =>
-                        updateExpense("utility_opex_usd_per_year", v)
-                      }
-                    />
-                    <NumberField
-                      label="Other variable OPEX · USD/year"
-                      value={Math.max(
-                        0,
-                        base.financial.variable_opex_usd_per_year -
-                          base.financial.feedstock_opex_usd_per_year -
-                          base.financial.utility_opex_usd_per_year,
-                      )}
-                      change={(v) => updateExpense("other", v)}
-                    />
-                    <NumberField
-                      label="Tax rate · %"
-                      value={base.financial.tax_rate * 100}
-                      change={(v) => updateFinancial("tax_rate", v / 100)}
-                    />
-                    <NumberField
-                      label="Target CEPCI"
-                      value={base.costing.settings.cepci_current}
-                      change={(v) =>
-                        setBase({
-                          ...base,
-                          costing: {
-                            ...base.costing,
-                            settings: {
-                              ...base.costing.settings,
-                              cepci_current: v,
-                              cepci_basis:
-                                "Manual planning assumption; source selection cleared by index edit",
-                            },
-                          },
-                        })
-                      }
-                    />
-                    <NumberField
-                      label="Capacity factor · %"
-                      value={base.financial.capacity_factor * 100}
-                      change={(v) =>
-                        updateFinancial("capacity_factor", v / 100)
-                      }
-                    />
-                  </div>
-                  <label className="extrapolation-control">
-                    <input
-                      type="checkbox"
-                      checked={base.is_demo}
-                      onChange={(e) =>
-                        setBase({ ...base, is_demo: e.target.checked })
-                      }
-                    />
-                    Label exports as a demonstration
-                  </label>
-                  <label className="extrapolation-control">
-                    <input
-                      type="checkbox"
-                      checked={base.costing.settings.allow_extrapolation}
-                      onChange={(e) =>
-                        setBase({
-                          ...base,
-                          costing: {
-                            ...base.costing,
-                            settings: {
-                              ...base.costing.settings,
-                              allow_extrapolation: e.target.checked,
-                            },
-                          },
-                        })
-                      }
-                    />
-                    Allow flagged correlation extrapolation
-                  </label>
-                </>
-              )}
-              <p className="model-basis">
-                Straight-line depreciation · No loss carryforward · Explicit
-                incentive scenarios
-                <br />
-                CEPCI 800 / 397 is a configurable planning basis.
-              </p>
-            </section>
-          </div>
           <details className="basis-details">
             <summary>
               <ShieldCheck size={15} />
@@ -1733,6 +1785,8 @@ export default function Dashboard() {
               onProject={setBase}
               native={nativeImport}
             />
+          )}
+            </>
           )}
           <footer className="dashboard-footer">
             <span>
