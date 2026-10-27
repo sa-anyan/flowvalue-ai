@@ -9,6 +9,7 @@ from typing import Literal
 from pydantic import Field, HttpUrl, model_validator
 
 from app.engine.costing import Model
+from app.engineering.models import EngineeringCase
 
 
 class DesignBasis(Model):
@@ -70,6 +71,9 @@ class OpexApplication(Model):
 
 
 class Study(Model):
+    engineering_cases: list[EngineeringCase] = Field(
+        default_factory=list, max_length=1000
+    )
     schema_version: Literal["flowvalue-study-v1"] = "flowvalue-study-v1"
     design_basis: DesignBasis = Field(default_factory=DesignBasis)
     evidence: list[Evidence] = Field(default_factory=list, max_length=200)
@@ -81,6 +85,7 @@ class Study(Model):
         for values, key in (
             (self.evidence, "evidence_id"),
             (self.cost_items, "item_id"),
+            (self.engineering_cases, "unit_id"),
         ):
             ids = [getattr(x, key) for x in values]
             if len(set(ids)) != len(ids):
@@ -89,6 +94,11 @@ class Study(Model):
         for item in self.cost_items:
             if set(item.evidence_ids) - evidence_ids:
                 raise ValueError(f"Unknown evidence reference for {item.item_id}")
+        for case in self.engineering_cases:
+            if set(case.evidence_ids) - evidence_ids:
+                raise ValueError(
+                    f"Unknown engineering evidence reference for {case.unit_id}"
+                )
         return self
 
 
@@ -99,6 +109,11 @@ def ledger_digest(study: Study) -> str:
         "evidence": [x.model_dump(mode="json") for x in study.evidence],
         "design_basis": study.design_basis.model_dump(mode="json"),
     }
+    if study.engineering_cases:
+        payload["engineering_inputs"] = [
+            c.model_dump(mode="json", exclude={"baseline_history"})
+            for c in study.engineering_cases
+        ]
     return hashlib.sha256(
         json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
     ).hexdigest()

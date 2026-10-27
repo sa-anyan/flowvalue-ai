@@ -36,7 +36,9 @@ export function readWorkspace(): Workspace | null {
       (value.project.study.schema_version !== "flowvalue-study-v1" ||
         !value.project.study.design_basis ||
         !Array.isArray(value.project.study.cost_items) ||
-        !Array.isArray(value.project.study.evidence))
+        !Array.isArray(value.project.study.evidence) ||
+        (value.project.study.engineering_cases !== undefined &&
+          !Array.isArray(value.project.study.engineering_cases)))
     )
       return null;
     if (

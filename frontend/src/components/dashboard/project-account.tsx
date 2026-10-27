@@ -32,6 +32,8 @@ export function ProjectAccount({
   const [current, setCurrent] = useState<{
     project_id: string;
     revision: number;
+    version_id?: string;
+    read_only?: boolean;
   } | null>(null);
   useEffect(() => {
     let clean = () => {};
@@ -98,7 +100,12 @@ export function ProjectAccount({
       alive = false;
     };
   }, [user]);
-  function remember(value: { project_id: string; revision: number }) {
+  function remember(value: {
+    project_id: string;
+    revision: number;
+    version_id?: string;
+    read_only?: boolean;
+  }) {
     setCurrent(value);
     sessionStorage.setItem(
       "flowvalue-project-reference",
@@ -167,7 +174,12 @@ export function ProjectAccount({
       if (!r.ok) throw Error(await apiError(r));
       const v = await r.json();
       if (owner !== ownerRef.current) return;
-      remember({ project_id: v.project_id, revision: v.revision });
+      remember({
+        project_id: v.project_id,
+        revision: v.revision,
+        version_id: v.id,
+        read_only: v.user_id !== owner,
+      });
       setMessage(`Saved revision ${v.revision}.`);
       await list();
     } catch (e) {
@@ -185,7 +197,12 @@ export function ProjectAccount({
       const v = await r.json();
       if (owner !== ownerRef.current) return;
       onLoad(v.payload);
-      remember({ project_id: v.project_id, revision: v.revision });
+      remember({
+        project_id: v.project_id,
+        revision: v.revision,
+        version_id: v.id,
+        read_only: v.user_id !== owner,
+      });
       setMessage(`Loaded ${v.name}, revision ${v.revision}.`);
     } catch (e) {
       setMessage(e instanceof Error ? e.message : "Load failed");
@@ -208,8 +225,18 @@ export function ProjectAccount({
           </p>
         ) : user ? (
           <>
+            {current?.read_only && (
+              <p>
+                This is a shared read-only revision. Save as a new project to
+                work on your own copy; review comments belong to the shared
+                saved revision.
+              </p>
+            )}
             <div className="extension-actions">
-              <Button disabled={busy || !workspace} onClick={() => save()}>
+              <Button
+                disabled={busy || !workspace || !!current?.read_only}
+                onClick={() => save()}
+              >
                 Save revision
               </Button>
               <Button disabled={busy || !workspace} onClick={() => save(true)}>
@@ -221,6 +248,15 @@ export function ProjectAccount({
               >
                 Refresh history
               </Button>
+              <a
+                href={
+                  current?.version_id
+                    ? `/engineering-review?version=${current.version_id}`
+                    : "/engineering-review"
+                }
+              >
+                Saved-revision engineering review centre ↗
+              </a>
               <Button disabled={busy} onClick={() => sign("logout")}>
                 Sign out
               </Button>
@@ -269,7 +305,9 @@ export function ProjectAccount({
                 autoComplete="current-password"
               />
             </label>
-            <Button type="submit" disabled={busy}>Sign in</Button>
+            <Button type="submit" disabled={busy}>
+              Sign in
+            </Button>
             <Button
               type="button"
               disabled={busy || !email || password.length < 8}

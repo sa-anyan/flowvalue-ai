@@ -61,6 +61,7 @@ export function StudyWorkspace({
     title: "",
     reference: "",
     source_url: "",
+    observed_on: "",
     kind: "assumption" as Evidence["kind"],
     reviewer: "",
     limitation: "",
@@ -157,13 +158,14 @@ export function StudyWorkspace({
       ...evidenceDraft,
       evidence_id: `EV-${crypto.randomUUID()}`,
       source_url: url,
-      observed_on: null,
+      observed_on: evidenceDraft.observed_on || null,
     };
     edit({ ...study, evidence: [...study.evidence, record] });
     setEvidenceDraft({
       title: "",
       reference: "",
       source_url: "",
+      observed_on: "",
       kind: "assumption",
       reviewer: "",
       limitation: "",
@@ -373,9 +375,14 @@ export function StudyWorkspace({
                 <p>{e.limitation}</p>
                 <Button
                   variant="outline"
-                  disabled={study.cost_items.some((i) =>
-                    i.evidence_ids.includes(e.evidence_id),
-                  )}
+                  disabled={
+                    study.cost_items.some((i) =>
+                      i.evidence_ids.includes(e.evidence_id),
+                    ) ||
+                    !!study.engineering_cases?.some((c) =>
+                      c.evidence_ids.includes(e.evidence_id),
+                    )
+                  }
                   onClick={() =>
                     edit({
                       ...study,
@@ -441,6 +448,24 @@ export function StudyWorkspace({
                       source_url: e.target.value,
                     })
                   }
+                />
+              </label>
+              <label>
+                Evidence observation date
+                <input
+                  aria-label="New evidence observation date"
+                  type="date"
+                  value={evidenceDraft.observed_on}
+                  onChange={(e) =>
+                    setEvidenceDraft({
+                      ...evidenceDraft,
+                      observed_on: e.target.value,
+                    })
+                  }
+                  onBlur={(e) => {
+                    const value = e.currentTarget.value;
+                    setEvidenceDraft((d) => ({ ...d, observed_on: value }));
+                  }}
                 />
               </label>
               <label>

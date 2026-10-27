@@ -24,6 +24,10 @@ Build the design/evidence/ledger foundation first, with deterministic input revi
 
 The CAPEX register is planning-only in A. BOM equipment CAPEX still drives the financial engine; location/construction/resource totals and scheduled spending are implemented in C. No non-USD conversion, autonomous engineering analysis, accreditation assessment, collaboration permissions or external communications are implied by the foundation UI.
 
+## Phase B implementation boundary
+
+The [Phase B implementation record](phase-b-engineering-analyst.md) describes delivered unit investigations, separate wetted/shell/lining materials, supported sizing, explicit evidence and baseline gates, bounded optional research and exact-revision peer review. These are preliminary user-reviewed designs, not mechanical/material certification. 3D remains schematic; browsers without WebGL retain 2D and unit-review controls. No paid research request was required for development validation.
+
 ## Recognition ambition and current evidence
 
 Goal: develop a chemical engineering economic analyst that qualified professionals and professional institutions can meaningfully evaluate.

@@ -23,6 +23,7 @@ from app.agent.copilot_research import (
     ResearchSettings,
     research_events,
 )
+from app.agent.engineering_research import research_unit
 from app.agent.executive_memo import draft_memo
 from app.agent.universal_advisor import (
     AdvisorResult,
@@ -32,6 +33,10 @@ from app.agent.universal_advisor import (
 from app.auth import AuthSettings, authenticated_user, project_rest, public_config
 from app.engine.costing import CostingRequest, EquipmentBOM, Model, build_bom
 from app.engine.indices import index_catalog
+from app.engineering.collaboration import router as engineering_reviews_router
+from app.engineering.investigation import investigate, unit_case, unit_digest
+from app.engineering.models import EngineeringBaseline
+from app.engineering.review import engineering_notes, filter_value, open_challenges
 from app.financial.dcf_model import (
     FinancialAssumptions,
     FinancialInputs,
@@ -65,6 +70,7 @@ class Settings(BaseSettings):
 
 settings = Settings()
 app = FastAPI(title="FlowValue AI API", version="0.1.0")
+app.include_router(engineering_reviews_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
@@ -175,10 +181,12 @@ def assessment(request: AssessmentRequest) -> AssessmentResult:
     bom.assumptions.extend(request.engineering_notes)
     if request.study:
         bom.assumptions.extend(study_notes(request.study))
+        bom.assumptions.extend(engineering_notes(request))
     financial = calculate_dcf(inputs)
     financial.warnings.extend(request.engineering_notes)
     if request.study:
         financial.warnings.extend(study_notes(request.study))
+        financial.warnings.extend(engineering_notes(request))
     return AssessmentResult(
         study=request.study,
         bom=bom,
@@ -187,6 +195,123 @@ def assessment(request: AssessmentRequest) -> AssessmentResult:
         if request.simulation is not None
         else None,
     )
+
+
+class UnitInvestigation(Model):
+    project: AssessmentRequest
+    unit_id: str = Field(min_length=1, max_length=100)
+
+
+@app.post("/api/engineering/investigate")
+def engineering_investigate(body: UnitInvestigation):
+    try:
+        return investigate(body.project, body.unit_id)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
+@app.post("/api/engineering/research")
+async def engineering_research(body: UnitInvestigation):
+    settings = ResearchSettings()
+    require_ai(settings)
+    report = engineering_investigate(body)
+    try:
+        return await research_unit(
+            report,
+            body.project.study.design_basis.model_dump(mode="json")
+            if body.project.study
+            else {},
+            settings,
+        )
+    except APIStatusError as exc:
+        raise HTTPException(503, provider_message(exc.status_code)) from exc
+    except (APIError, TimeoutError) as exc:
+        raise HTTPException(
+            503,
+            "Engineering research unavailable; current design retained. Retry later.",
+        ) from exc
+
+
+class UnitBaselineRequest(UnitInvestigation):
+    reviewer: str = Field(min_length=1, max_length=150, pattern=r"\S")
+    basis: str = Field(min_length=1, max_length=2000, pattern=r"\S")
+    confirm: bool = False
+    review_version_id: UUID | None = None
+
+
+@app.post("/api/engineering/apply-baseline", response_model=AssessmentRequest)
+async def engineering_apply_baseline(body: UnitBaselineRequest, request: Request):
+    if not body.confirm or body.project.study is None:
+        raise HTTPException(
+            422, "Confirm the preliminary baseline and create a study register first"
+        )
+    actor = (
+        await authenticated_user(request)
+        if AuthSettings().require_auth or request.headers.get("authorization")
+        else None
+    )
+    project = body.project.model_copy(deep=True)
+    report = engineering_investigate(body)
+    if report["blockers"]:
+        raise HTTPException(422, "; ".join(report["blockers"])[:3500])
+    if body.review_version_id:
+        if actor is None:
+            raise HTTPException(401, "Sign in to check saved peer-review challenges")
+        rows = await project_rest(
+            request, "GET", f"project_versions?id=eq.{body.review_version_id}&select=*"
+        )
+        if not rows or rows[0]["user_id"] != actor["id"]:
+            raise HTTPException(
+                403, "Only the saved revision owner can apply this baseline"
+            )
+        events = await project_rest(
+            request,
+            "GET",
+            f"engineering_review_events?version_id=eq.{body.review_version_id}&unit_id=eq.{filter_value(body.unit_id)}&order=created_at.asc&limit=1000",
+        )
+        if open_challenges(events):
+            raise HTTPException(
+                409,
+                "Resolve open peer-review challenges for this saved unit before applying its baseline",
+            )
+    from pydantic import TypeAdapter
+
+    from app.engine.costing import Equipment
+
+    case = unit_case(project, body.unit_id)
+    spec = TypeAdapter(Equipment).validate_python(
+        case.proposed_equipment | {"unit_id": body.unit_id}
+    )
+    case.proposed_equipment = TypeAdapter(dict[str, float | str]).validate_python(
+        spec.model_dump(mode="json", exclude_none=True)
+    )
+    existed = any(e.unit_id == body.unit_id for e in project.costing.equipment)
+    project.costing.equipment = [
+        spec if e.unit_id == body.unit_id else e for e in project.costing.equipment
+    ] + ([] if existed else [spec])
+    record = EngineeringBaseline(
+        digest=unit_digest(project, case),
+        reviewed_at=datetime.now(UTC),
+        reviewer=body.reviewer.strip(),
+        actor_id=actor["id"] if actor else None,
+        basis=body.basis.strip(),
+        equipment=case.proposed_equipment,
+    )
+    case.baseline_history.append(record)
+    project.study.engineering_cases = [
+        c for c in project.study.engineering_cases if c.unit_id != body.unit_id
+    ] + [case]
+    project.engineering_notes = [
+        n
+        for n in project.engineering_notes
+        if not n.startswith(f"ENGINEERING BASELINE {body.unit_id}:")
+    ] + [
+        f"ENGINEERING BASELINE {body.unit_id}: user-reviewed preliminary; {body.reviewer}; {body.basis}"[
+            :1500
+        ]
+    ]
+    assessment(project.model_copy(update={"simulation": None}))
+    return project
 
 
 @app.post("/api/study/review")

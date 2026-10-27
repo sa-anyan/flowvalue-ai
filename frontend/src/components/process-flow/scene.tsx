@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo } from "react";
+import { Component, useEffect, useMemo, type ReactNode } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Bounds, Line, OrbitControls } from "@react-three/drei";
 import { CanvasTexture } from "three";
@@ -15,6 +15,32 @@ export type FlowEdge = {
   target: string;
   label: string;
 };
+class SceneSupport extends Component<
+  { children: ReactNode },
+  { supported: boolean | null }
+> {
+  state: { supported: boolean | null } = { supported: null };
+  componentDidMount() {
+    let supported = false;
+    try {
+      const context = document.createElement("canvas").getContext("webgl2");
+      supported = Boolean(context);
+      context?.getExtension("WEBGL_lose_context")?.loseContext();
+    } catch {
+      supported = false;
+    }
+    this.setState({ supported });
+  }
+  static getDerivedStateFromError() {
+    return { supported: false };
+  }
+  render() {
+    if (this.state.supported === null) return <p>Checking 3D support…</p>;
+    if (!this.state.supported)
+      return <p role="status">3D is unavailable in this browser. Select 2D flowsheet to inspect the process; unit selection and engineering review remain available below.</p>;
+    return this.props.children;
+  }
+}
 function Label({ text }: { text: string }) {
   const texture = useMemo(() => {
     const canvas = document.createElement("canvas");
@@ -60,6 +86,7 @@ export default function Scene({
     -(n.position.y - centerY) / 100,
   ];
   return (
+    <SceneSupport>
     <Canvas
       camera={{ position: [4, 9, 12], fov: 45 }}
       frameloop="demand"
@@ -115,5 +142,6 @@ export default function Scene({
       </Bounds>
       <OrbitControls makeDefault target={[0, 0, 0]} />
     </Canvas>
+    </SceneSupport>
   );
 }

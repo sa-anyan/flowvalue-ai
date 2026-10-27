@@ -28,6 +28,8 @@ import {
   type EquipmentSpec,
   type Assessment,
 } from "@/lib/assessment";
+import { EngineeringAnalyst } from "@/components/dashboard/engineering-analyst";
+import { useAIStatus } from "@/components/dashboard/ai-connection";
 import { Button } from "@/components/ui/button";
 const Scene = dynamic(() => import("./scene"), {
   ssr: false,
@@ -46,6 +48,18 @@ function graph(w: Workspace): { nodes: FlowNode[]; edges: FlowEdge[] } {
       position: { x: u.x || i * 240, y: u.y || 80 },
     }),
   );
+  (w.project.study?.engineering_cases || []).forEach((u, i) => {
+    if (
+      !units.has(u.unit_id) &&
+      !w.project.costing.equipment.some((e) => e.unit_id === u.unit_id)
+    )
+      units.set(u.unit_id, {
+        id: u.unit_id,
+        label: u.unit_id,
+        kind: u.unit_kind,
+        position: { x: (i % 4) * 260 + 180, y: Math.floor(i / 4) * 180 + 380 },
+      });
+  });
   w.project.costing.equipment.forEach((u, i) => {
     if (!units.has(u.unit_id))
       units.set(u.unit_id, {
@@ -90,6 +104,7 @@ function graph(w: Workspace): { nodes: FlowNode[]; edges: FlowEdge[] } {
   return { nodes, edges };
 }
 export default function ProcessFlow() {
+  const ai = useAIStatus(0);
   const [workspace, setWorkspace] = useState<Workspace | null>(null),
     [mode, setMode] = useState<"2d" | "3d">("2d"),
     [selected, setSelected] = useState(""),
@@ -355,6 +370,27 @@ export default function ProcessFlow() {
               {message && <p role="status">{message}</p>}
             </aside>
           </div>
+          {selected &&
+            !selected.startsWith("feed:") &&
+            !selected.startsWith("product:") && (
+              <EngineeringAnalyst
+                project={workspace.project}
+                native={workspace.native_import}
+                aiAvailable={!!ai.status?.can_generate}
+                selectedUnit={selected}
+                onProject={(project) => {
+                  const w = { ...workspace, project };
+                  setWorkspace(w);
+                  writeWorkspace(w);
+                  setResult(null);
+                  setDraft(
+                    project.costing.equipment.find(
+                      (e) => e.unit_id === selected,
+                    ) || null,
+                  );
+                }}
+              />
+            )}
         </>
       )}
     </main>

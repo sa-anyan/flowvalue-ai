@@ -53,6 +53,7 @@ import {
 } from "@/lib/assessment";
 import { AIConnection, useAIStatus } from "./ai-connection";
 import { ProjectAccount } from "./project-account";
+import { EngineeringAnalyst } from "./engineering-analyst";
 import { StudyWorkspace } from "./study-workspace";
 import { EngineeringTools } from "./engineering-tools";
 import {
@@ -763,6 +764,10 @@ export default function Dashboard() {
           <a href="#streams">
             <Upload size={18} />
             Simulation data
+          </a>
+          <a href="#engineering-analyst">
+            <FlaskConical size={18} />
+            Engineering analyst
           </a>
           <a href="#study">
             <FlaskConical size={18} />
@@ -1780,6 +1785,14 @@ export default function Dashboard() {
               project={base}
               streams={streams}
               onProject={setBase}
+            />
+          )}
+          {base && (
+            <EngineeringAnalyst
+              project={base}
+              onProject={setBase}
+              native={nativeImport}
+              aiAvailable={!!ai.status?.can_generate}
             />
           )}
           {base && payload && (

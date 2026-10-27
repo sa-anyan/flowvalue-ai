@@ -16,6 +16,10 @@ const paths = new Set([
   "api/study/apply-opex",
   "api/integrations/catalog",
   "api/engineering/validation",
+  "api/engineering/investigate",
+  "api/engineering/research",
+  "api/engineering/apply-baseline",
+  "api/engineering/reviews/identity",
   "api/integrations/openpytea/equipment",
   "api/integrations/biosteam/import",
   "api/demo",
@@ -37,7 +41,13 @@ async function proxy(
 ) {
   const { path } = await context.params;
   const target = `api/${path.join("/")}`;
-  if (!paths.has(target) && !/^api\/projects\/[0-9a-f-]{36}$/i.test(target))
+  if (
+    !paths.has(target) &&
+    !/^api\/projects\/[0-9a-f-]{36}$/i.test(target) &&
+    !/^api\/engineering\/reviews\/[0-9a-f-]{36}(?:\/(?:events|access|revoke))?$/i.test(
+      target,
+    )
+  )
     return Response.json({ detail: "Unknown API route" }, { status: 404 });
   try {
     const upstream = await fetch(

@@ -1,3 +1,4 @@
+import type { EngineeringCase } from "./engineering";
 export type DesignBasis = {
   description: string;
   product_specification: string;
@@ -37,6 +38,7 @@ export type CostItem = {
   evidence_ids: string[];
 };
 export type Study = {
+  engineering_cases?: EngineeringCase[];
   schema_version: "flowvalue-study-v1";
   design_basis: DesignBasis;
   evidence: Evidence[];
@@ -68,6 +70,7 @@ export type StudyReview = {
 export function newStudy(): Study {
   return {
     schema_version: "flowvalue-study-v1",
+    engineering_cases: [],
     design_basis: {
       description: "",
       product_specification: "",
