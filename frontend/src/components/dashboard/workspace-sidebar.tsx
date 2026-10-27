@@ -13,7 +13,7 @@ import {
 
 type WorkspaceSidebarProps = {
   name: string;
-  active: "entry" | "main" | "overview";
+  active: "entry" | "process" | "main" | "overview";
 };
 
 export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
@@ -57,6 +57,18 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
             Simulation data
           </a>
         </nav>
+        <div className="nav-caption">PROCESS VISUALISATION</div>
+        <nav aria-label="Process visualisation">
+          <a
+            href="/process-flow"
+            className={active === "process" ? "nav-selected" : undefined}
+            aria-current={active === "process" ? "page" : undefined}
+          >
+            <Layers3 size={18} />
+            Interactive process flow
+            {active === "process" && <span className="nav-dot" />}
+          </a>
+        </nav>
         <div className="nav-caption">ANALYSIS</div>
         <nav>
           <a
@@ -67,10 +79,6 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
             <LayoutDashboard size={18} />
             Main dashboard
             {active === "main" && <span className="nav-dot" />}
-          </a>
-          <a href="/process-flow">
-            <Layers3 size={18} />
-            Interactive process flow
           </a>
           <a
             href={dashboardHref("#overview")}

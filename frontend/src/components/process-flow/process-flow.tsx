@@ -31,6 +31,7 @@ import {
 import { EngineeringAnalyst } from "@/components/dashboard/engineering-analyst";
 import { useAIStatus } from "@/components/dashboard/ai-connection";
 import { Button } from "@/components/ui/button";
+import { WorkspaceSidebar } from "@/components/dashboard/workspace-sidebar";
 const Scene = dynamic(() => import("./scene"), {
   ssr: false,
   loading: () => <p>Loading 3D process view…</p>,
@@ -202,10 +203,16 @@ export default function ProcessFlow() {
     kind: topology.nodes.find((t) => t.id === n.id)?.kind || "unit",
   }));
   return (
-    <main className="flow-page">
+    <div className="app-shell">
+      <WorkspaceSidebar
+        name={workspace?.project.advisor_context?.name || "Untitled process"}
+        active="process"
+      />
+      <div className="main-shell">
+        <main className="flow-page">
       <header className="flow-header">
         <div>
-          <a href="/dashboard">← Return to financial dashboard</a>
+          <a href="/main-dashboard">← Return to Main dashboard</a>
           <h1>Process flow workspace</h1>
           <p>
             {workspace?.project.advisor_context?.name ||
@@ -230,7 +237,7 @@ export default function ProcessFlow() {
       {!workspace ? (
         <p>
           No active scenario in this browser tab.{" "}
-          <a href="/dashboard">Open the dashboard</a> and import a simulation.
+          <a href="/entry">Open Entry</a> and import a simulation.
         </p>
       ) : (
         <>
@@ -393,6 +400,8 @@ export default function ProcessFlow() {
             )}
         </>
       )}
-    </main>
+        </main>
+      </div>
+    </div>
   );
 }

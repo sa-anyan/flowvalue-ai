@@ -8,7 +8,12 @@ test("Main dashboard is a dedicated route and is first under Analysis", () => {
   const route = read("../src/app/main-dashboard/page.tsx");
   const nav = read("../src/components/dashboard/workspace-sidebar.tsx");
   assert.match(route, /<Dashboard mode="main"\s*\/>/);
-  assert.ok(nav.indexOf('href="/main-dashboard"') < nav.indexOf('href="/process-flow"'));
+  const processSection = nav.indexOf('PROCESS VISUALISATION');
+  const analysisSection = nav.indexOf('>ANALYSIS</div>');
+  assert.ok(processSection >= 0 && processSection < analysisSection);
+  assert.ok(nav.indexOf('href="/process-flow"') > processSection);
+  assert.ok(nav.indexOf('href="/process-flow"') < analysisSection);
+  assert.ok(nav.indexOf('href="/main-dashboard"') > analysisSection);
   assert.match(nav, /href="\/main-dashboard#risk"/);
 });
 
@@ -30,4 +35,12 @@ test("Main dashboard owns six headline metrics and three charts", () => {
 test("Entry continues to Main dashboard instead of the long analysis view", () => {
   const dashboard = read("../src/components/dashboard/dashboard.tsx");
   assert.match(dashboard, /href="\/main-dashboard" className="entry-analysis-link"/);
+});
+
+test("Process view uses shared sidebar with its own active state", () => {
+  const flow = read("../src/components/process-flow/process-flow.tsx");
+  const nav = read("../src/components/dashboard/workspace-sidebar.tsx");
+  assert.match(flow, /<WorkspaceSidebar[\s\S]*?active="process"/);
+  assert.match(nav, /active === "process" \? "nav-selected"/);
+  assert.equal((nav.match(/href="\/process-flow"/g) || []).length, 1);
 });
