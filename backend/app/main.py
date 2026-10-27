@@ -1,4 +1,5 @@
 import json
+from datetime import UTC, datetime
 from importlib.resources import files
 from io import BytesIO
 from typing import Annotated
@@ -7,10 +8,16 @@ from uuid import UUID
 from fastapi import Depends, FastAPI, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-from openai import APIError
+from openai import APIError, APIStatusError
 from pydantic import Field, ValidationError
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.agent.availability import (
+    ai_status,
+    check_connection,
+    provider_message,
+    require_ai,
+)
 from app.agent.copilot_research import (
     ResearchRequest,
     ResearchSettings,
@@ -250,15 +257,21 @@ def universal_suggestions(project: dict) -> AdvisorResult:
     return advisor_profile(project)
 
 
+@app.get("/api/copilot/status")
+def copilot_status():
+    return ai_status(ResearchSettings())
+
+
+@app.post("/api/copilot/check")
+async def copilot_check():
+    return await check_connection(ResearchSettings())
+
+
 @app.post("/api/copilot/research-sensitivities")
 def research_sensitivities(request: ResearchRequest):
     profile = advisor_profile(request.project)
     config = ResearchSettings()
-    if not config.openai_api_key.get_secret_value().strip():
-        raise HTTPException(
-            status_code=503,
-            detail="Configure the backend OPENAI_API_KEY environment variable to run live market research. Cost profiling remains available without a key.",
-        )
+    require_ai(config)
     return StreamingResponse(
         research_events(profile, request, config),
         media_type="text/event-stream",
@@ -328,26 +341,42 @@ def import_biosteam(snapshot: BioSTEAMSnapshot):
 async def executive_memo(request: AssessmentRequest):
     result = assessment(request)
     settings = ResearchSettings()
-    if not settings.openai_api_key.get_secret_value().strip():
-        raise HTTPException(
-            503, "Configure OPENAI_API_KEY to generate an executive memo"
-        )
+    require_ai(settings)
     try:
         memo = await draft_memo(
             {
                 "project": request.advisor_context.model_dump(),
                 "is_demo": request.is_demo,
+                "as_of_utc": datetime.now(UTC).isoformat(),
+                "economic_summary": {
+                    "total_capex_usd": result.bom.total_bare_module_cost_usd,
+                    "total_annual_opex_usd": result.financial.inputs.fixed_opex_usd_per_year
+                    + result.financial.inputs.variable_opex_usd_per_year,
+                    "annual_revenue_usd": result.financial.cash_flows[1].revenue_usd,
+                    "npv_usd": result.financial.npv_usd,
+                    "irr": result.financial.irr,
+                    "lcop_usd_per_unit": result.financial.lcop_usd_per_unit,
+                    "cost_accounting_basis": "Total OPEX = fixed + variable. Feedstock and utilities are included within variable OPEX, never added again.",
+                },
                 "financial": result.financial.model_dump(),
                 "bom": result.bom.model_dump(),
                 "sensitivity": tornado(result.financial.inputs),
             },
             settings,
         )
+    except APIStatusError as exc:
+        raise HTTPException(503, provider_message(exc.status_code)) from exc
     except (APIError, ValueError) as exc:
         raise HTTPException(
             502, "Memo provider unavailable or returned no text; retry later"
         ) from exc
-    return {"markdown": memo, "model": settings.openai_model, "review_required": True}
+    return {
+        "markdown": memo,
+        "model": settings.openai_model,
+        "review_required": True,
+        "generated_at": datetime.now(UTC).isoformat(),
+        "evidence_basis": "computed_scenario_only",
+    }
 
 
 class SavedProject(Model):

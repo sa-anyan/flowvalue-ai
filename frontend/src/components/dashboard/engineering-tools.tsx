@@ -30,7 +30,9 @@ export function EngineeringTools({
   ready,
   onProject,
   native,
+  aiAvailable,
 }: {
+  aiAvailable: boolean;
   project: AssessmentRequest;
   scenario: AssessmentRequest;
   ready: boolean;
@@ -69,9 +71,12 @@ export function EngineeringTools({
       signature: string;
       data: Tornado;
     } | null>(null),
-    [memo, setMemo] = useState<{ signature: string; text: string } | null>(
-      null,
-    );
+    [memo, setMemo] = useState<{
+      signature: string;
+      text: string;
+      model: string;
+      generated_at: string;
+    } | null>(null);
   const mappingText =
     draft?.native === native
       ? draft.text
@@ -182,6 +187,7 @@ export function EngineeringTools({
     }
   }
   async function generateMemo() {
+    if (!ready || !aiAvailable) return;
     setBusy("memo");
     try {
       const r = await apiFetch("/api/copilot/executive-memo", {
@@ -191,7 +197,12 @@ export function EngineeringTools({
       });
       if (!r.ok) throw Error(await apiError(r));
       const data = await r.json();
-      setMemo({ signature, text: data.markdown });
+      setMemo({
+        signature,
+        text: data.markdown,
+        model: data.model,
+        generated_at: data.generated_at,
+      });
     } catch (e) {
       setMessage(e instanceof Error ? e.message : "Memo failed");
     } finally {
@@ -202,7 +213,12 @@ export function EngineeringTools({
     if (!memo) return;
     const a = document.createElement("a"),
       url = URL.createObjectURL(
-        new Blob([memo.text], { type: "text/markdown" }),
+        new Blob(
+          [
+            `> AI draft · ${memo.generated_at} · ${memo.model}\n> Computed scenario only; no live market research. Review before distribution.\n\n${memo.text}`,
+          ],
+          { type: "text/markdown" },
+        ),
       );
     a.href = url;
     a.download = "flowvalue-executive-memo.md";
@@ -556,12 +572,25 @@ export function EngineeringTools({
               sensitivities.
             </p>
           </div>
-          <Button disabled={!!busy || !ready} onClick={generateMemo}>
+          <Button
+            disabled={!!busy || !ready || !aiAvailable}
+            onClick={generateMemo}
+          >
             {busy === "memo" ? "Drafting…" : "Draft executive memo"}
           </Button>
         </div>
+        {!aiAvailable && (
+          <p>
+            Memo generation is unavailable until the AI connection is
+            configured. Financial exports remain available.
+          </p>
+        )}
         {memo && (
           <>
+            <small>
+              Generated {new Date(memo.generated_at).toLocaleString()} ·{" "}
+              {memo.model} · Computed scenario only; no live research.
+            </small>
             <p>
               {memo.signature === signature
                 ? "Draft · review before distribution"

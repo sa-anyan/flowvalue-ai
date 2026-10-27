@@ -173,3 +173,5 @@ Deployment targets selected for this project:
 4. Verify `/health`, anonymous API rejection, authenticated project save/load and tenant isolation after deployment. Source checks passing do not by themselves prove a live deployment.
 
 Phase 2 core workflow checks and supported import/export behavior are recorded in [the acceptance checklist](docs/phase-2-acceptance.md). The uploader includes downloadable sample CSV and explicitly labelled demo project JSON. Scope warnings are recomputed from the active native mapping and carried into saved projects, Excel and the two-page PDF.
+
+AI configuration and data handling are described in [Phase 3 AI setup](docs/phase-3-ai.md). The dashboard reports AI availability, offers a model-access check, labels sourced research versus computed-only memos, and blocks stale memo downloads. Cloud generation remains off until a server key is explicitly authorized/configured.

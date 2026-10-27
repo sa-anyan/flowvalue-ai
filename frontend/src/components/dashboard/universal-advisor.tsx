@@ -133,7 +133,9 @@ export function UniversalAdvisor({
   onContext,
   onApply,
   canApply,
+  aiAvailable,
 }: {
+  aiAvailable: boolean;
   project: AssessmentRequest | null;
   streams: Stream[];
   ready: boolean;
@@ -198,7 +200,7 @@ export function UniversalAdvisor({
       brief.question !== question ||
       brief.market_context_text !== marketText);
   async function runScan() {
-    if (!current || !ready) return;
+    if (!current || !ready || !aiAvailable) return;
     scan.current?.abort();
     const controller = new AbortController();
     scan.current = controller;
@@ -263,7 +265,12 @@ export function UniversalAdvisor({
           const item = JSON.parse(raw);
           if (event === "error") throw new Error(item.message);
           setBrief((prev) => {
-            if (!prev || prev.signature !== signature) return prev;
+            if (
+              !prev ||
+              prev.signature !== signature ||
+              scan.current !== controller
+            )
+              return prev;
             if (event === "delta")
               return { ...prev, text: prev.text + item.text };
             if (event === "status") return { ...prev, status: item.message };
@@ -293,7 +300,7 @@ export function UniversalAdvisor({
     } catch (e) {
       if (!controller.signal.aborted)
         setBrief((prev) =>
-          prev?.signature === signature
+          prev?.signature === signature && scan.current === controller
             ? {
                 ...prev,
                 running: false,
@@ -304,7 +311,9 @@ export function UniversalAdvisor({
         );
     } finally {
       setBrief((prev) =>
-        prev?.signature === signature ? { ...prev, running: false } : prev,
+        prev?.signature === signature && scan.current === controller
+          ? { ...prev, running: false }
+          : prev,
       );
     }
   }
@@ -329,13 +338,19 @@ export function UniversalAdvisor({
           </div>
           <Button
             className="primary-button"
-            disabled={!current || !ready || active}
+            disabled={!current || !ready || active || !aiAvailable}
             onClick={runScan}
           >
             {active ? <LoaderCircle className="spin" /> : <Search />}Run Market
             Risk Scan
           </Button>
         </div>
+        {!aiAvailable && (
+          <p className="research-warning">
+            Live research is unavailable until the AI connection is configured.
+            Calculated recommendations below remain available.
+          </p>
+        )}
         <div className="advisor-context-grid">
           <label>
             Project name
@@ -639,7 +654,10 @@ export function UniversalAdvisor({
                 placeholder='[{"title":"Regional power outlook","summary":"…","url":"https://…","published_at":"2026-10-26"}]'
               />
             </details>
-            <Button disabled={!current || !ready || active} onClick={runScan}>
+            <Button
+              disabled={!current || !ready || active || !aiAvailable}
+              onClick={runScan}
+            >
               {active ? <LoaderCircle className="spin" /> : <Search />}
               {active ? "Researching…" : "Run Market Risk Scan"}
             </Button>
@@ -693,8 +711,24 @@ export function UniversalAdvisor({
             {brief && !brief.running && (
               <div className="research-evidence">
                 {brief.evidence === "web_search_with_citations"
-                  ? "Live search completed with linked citations."
+                  ? "AI draft from live search, with linked sources for review. Claims are not independently validated."
                   : "Live evidence not established."}
+              </div>
+            )}
+            {!!brief?.citations.length && (
+              <div className="research-evidence">
+                <h3>Research sources</h3>
+                <ul>
+                  {Array.from(
+                    new Map(brief.citations.map((c) => [c.url, c])).values(),
+                  ).map((c) => (
+                    <li key={c.url}>
+                      <a href={c.url} target="_blank" rel="noreferrer">
+                        {c.title || c.url}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
             {current && (

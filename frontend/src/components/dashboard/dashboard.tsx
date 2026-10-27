@@ -51,6 +51,7 @@ import {
   Stream,
   usd,
 } from "@/lib/assessment";
+import { AIConnection, useAIStatus } from "./ai-connection";
 import { ProjectAccount } from "./project-account";
 import { EngineeringTools } from "./engineering-tools";
 import {
@@ -169,6 +170,7 @@ export default function Dashboard() {
   } | null>(null);
   const [initialError, setInitialError] = useState("");
   const [retry, setRetry] = useState(0);
+  const ai = useAIStatus(retry);
   const [dark, setDark] = useState(false);
   const [chartView, setChartView] = useState<"cumulative" | "waterfall">(
     "cumulative",
@@ -1002,7 +1004,9 @@ export default function Dashboard() {
               </div>
             </div>
           </section>
+          <AIConnection {...ai} />
           <UniversalAdvisor
+            aiAvailable={!!ai.status?.can_generate}
             project={payload}
             streams={streams}
             ready={ready}
@@ -1765,6 +1769,7 @@ export default function Dashboard() {
           </details>
           {base && payload && (
             <EngineeringTools
+              aiAvailable={!!ai.status?.can_generate}
               project={base}
               scenario={payload}
               ready={ready}

@@ -7,6 +7,8 @@ const paths = new Set([
   "api/streams/parse/dwxml",
   "api/assessment/tornado",
   "api/copilot/executive-memo",
+  "api/copilot/status",
+  "api/copilot/check",
   "api/indices/cepci",
   "api/integrations/catalog",
   "api/integrations/openpytea/equipment",
