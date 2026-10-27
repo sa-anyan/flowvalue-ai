@@ -2,11 +2,12 @@
 
 import warnings
 from importlib.metadata import version
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from app.engine.costing import Model, QuotedEquipment
+from app.parsers.stream_parser import Stream
 
 
 class OpenPyTEARequest(Model):
@@ -63,6 +64,24 @@ class ExternalUnit(Model):
 
 
 class BioSTEAMSnapshot(Model):
+    project_name: str = Field(
+        default="BioSTEAM imported project", min_length=1, max_length=120
+    )
+    process_classification: Literal[
+        "auto",
+        "general",
+        "biological",
+        "thermal",
+        "electrochemical",
+        "separation",
+        "circular",
+        "specialty",
+    ] = "biological"
+    product_unit: Literal["kg"] = "kg"
+    streams: list[Stream] = Field(default_factory=list, max_length=10000)
+    assumptions: list[Annotated[str, Field(max_length=1500)]] = Field(
+        default_factory=list, max_length=50
+    )
     is_demo: bool = False
     schema_version: Literal["flowvalue-biosteam-v1"]
     library_version: str = Field(min_length=1, max_length=50)
@@ -76,18 +95,40 @@ class BioSTEAMSnapshot(Model):
     production_units_per_year: float = Field(gt=0, le=1e15)
     selling_price_usd_per_unit: float = Field(ge=0, le=1e12)
 
+    @model_validator(mode="after")
+    def consistent_basis(self):
+        ids = [u.unit_id for u in self.equipment]
+        if len(ids) != len(set(ids)):
+            raise ValueError("BioSTEAM equipment IDs must be unique")
+        if (
+            self.feedstock_opex_usd_per_year + self.utility_opex_usd_per_year
+            > self.variable_opex_usd_per_year + 1e-6
+        ):
+            raise ValueError(
+                "Feedstock and utility costs must be components of total variable OPEX"
+            )
+        stream_ids = [s.stream_id for s in self.streams]
+        if len(stream_ids) != len(set(stream_ids)):
+            raise ValueError("BioSTEAM stream IDs must be unique")
+        return self
+
 
 def biosteam_project(snapshot: BioSTEAMSnapshot) -> dict:
     equipment = [
         QuotedEquipment(
             **u.model_dump(),
             reference_cepci=snapshot.reference_cepci,
-            source=f"BioSTEAM {snapshot.library_version}: {snapshot.provenance}",
+            source=f"BioSTEAM {snapshot.library_version}: {snapshot.provenance}"[:2000],
         ).model_dump()
         for u in snapshot.equipment
     ]
     return {
         "is_demo": snapshot.is_demo,
+        "engineering_notes": [
+            "BioSTEAM imported costs use an external installed-equipment scope; FlowValue DCF is recomputed on its own disclosed basis, not asserted equal to BioSTEAM TEA.",
+            "BioSTEAM production basis: kg/year; selling price USD/kg. OPEX and production are already annualized; capacity factor defaults to 1.",
+            *[n[:1500] for n in snapshot.assumptions],
+        ],
         "costing": {
             "equipment": equipment,
             "settings": {"cepci_current": snapshot.reference_cepci},
@@ -101,8 +142,8 @@ def biosteam_project(snapshot: BioSTEAMSnapshot) -> dict:
             "product_selling_price_usd_per_unit": snapshot.selling_price_usd_per_unit,
         },
         "advisor_context": {
-            "name": "BioSTEAM imported project",
-            "classification": "biological",
+            "name": snapshot.project_name,
+            "classification": snapshot.process_classification,
             "description": snapshot.provenance,
         },
     }
@@ -114,6 +155,12 @@ def snapshot_biosteam(tea, product, *, reference_cepci: float, provenance: str) 
     The validated JSON is portable without coupling BioSTEAM/thermosteam dependencies to the API.
     Financial calculation is recomputed on FlowValue's disclosed basis, not asserted equal to BioSTEAM's TEA.
     """
+    if len(tea.system.products) != 1 or not any(
+        product is p for p in tea.system.products
+    ):
+        raise ValueError(
+            "The adapter supports one boundary product; reconcile coproduct revenue separately before export"
+        )
     return BioSTEAMSnapshot(
         schema_version="flowvalue-biosteam-v1",
         library_version=version("biosteam"),

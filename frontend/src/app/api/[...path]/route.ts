@@ -11,6 +11,7 @@ const paths = new Set([
   "api/copilot/check",
   "api/indices/cepci",
   "api/integrations/catalog",
+  "api/engineering/validation",
   "api/integrations/openpytea/equipment",
   "api/integrations/biosteam/import",
   "api/demo",

@@ -1,0 +1,62 @@
+{
+  "project_name": "water_heating_demo",
+  "process_classification": "general",
+  "product_unit": "kg",
+  "streams": [
+    {
+      "stream_id": "feed",
+      "mass_flow_kg_h": 10000.0,
+      "temperature_c": 25.0,
+      "pressure_bar_abs": 1.01325,
+      "phase": "liquid",
+      "source_unit": null,
+      "destination_unit": "P101"
+    },
+    {
+      "stream_id": "pressurized",
+      "mass_flow_kg_h": 10000.0,
+      "temperature_c": 25.0,
+      "pressure_bar_abs": 3.0,
+      "phase": "liquid",
+      "source_unit": "P101",
+      "destination_unit": "E101"
+    },
+    {
+      "stream_id": "product",
+      "mass_flow_kg_h": 10000.0,
+      "temperature_c": 80.0,
+      "pressure_bar_abs": 3.0,
+      "phase": "liquid",
+      "source_unit": "E101",
+      "destination_unit": null
+    }
+  ],
+  "assumptions": [
+    "Annualization: 8000 operating hours/year. Single boundary product, mass basis kg. System was simulated in a trusted local environment.",
+    "Illustrative assumptions: electricity 0.08 USD/kWh, fixed OPEX 100000 USD/year, CEPCI 800. Steam/cooling prices are BioSTEAM defaults, not current market quotations.",
+    "Template checks: mass balance within 1e-6 kg/h; duty within 3% of constant-Cp water reference. These checks do not independently validate library cost correlations."
+  ],
+  "is_demo": true,
+  "schema_version": "flowvalue-biosteam-v1",
+  "library_version": "2.54.0",
+  "reference_cepci": 800.0,
+  "provenance": "Supported water-heating template: liquid water at 25 C, pump then utility heater. Illustrative prices/fixed OPEX; no validated commercial product economics.",
+  "equipment": [
+    {
+      "unit_id": "P101",
+      "purchased_cost_usd": 6646.122328326912,
+      "installed_cost_usd": 21932.20368347881
+    },
+    {
+      "unit_id": "E101",
+      "purchased_cost_usd": 28768.573839403645,
+      "installed_cost_usd": 91933.86955054595
+    }
+  ],
+  "fixed_opex_usd_per_year": 100000.0,
+  "variable_opex_usd_per_year": 200126.23288543365,
+  "feedstock_opex_usd_per_year": 80000.0,
+  "utility_opex_usd_per_year": 120126.23288543367,
+  "production_units_per_year": 80000000.0,
+  "selling_price_usd_per_unit": 0.01
+}

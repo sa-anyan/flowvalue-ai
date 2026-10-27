@@ -53,6 +53,7 @@ from app.parsers.dwsim_parser import DWSIMImport, parse_dwxml
 from app.parsers.stream_parser import StreamTable, parse_csv
 from app.reports.excel_builder import build_excel
 from app.reports.pdf_builder import build_pdf
+from app.validation.references import reference_report
 
 
 class Settings(BaseSettings):
@@ -303,6 +304,11 @@ def cepci_catalog():
     return index_catalog()
 
 
+@app.get("/api/engineering/validation")
+def engineering_validation():
+    return reference_report()
+
+
 @app.get("/api/integrations/catalog")
 def integration_catalog():
     from importlib.metadata import version
@@ -329,10 +335,15 @@ def library_equipment(request: OpenPyTEARequest):
         raise HTTPException(422, str(exc)) from exc
 
 
-@app.post("/api/integrations/biosteam/import", response_model=AssessmentRequest)
+@app.post("/api/integrations/biosteam/import")
 def import_biosteam(snapshot: BioSTEAMSnapshot):
     try:
-        return AssessmentRequest.model_validate(biosteam_project(snapshot))
+        project = AssessmentRequest.model_validate(biosteam_project(snapshot))
+        assessment(project)
+        result = project.model_dump(mode="json")
+        if snapshot.streams:
+            result["streams"] = [s.model_dump(mode="json") for s in snapshot.streams]
+        return result
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
 

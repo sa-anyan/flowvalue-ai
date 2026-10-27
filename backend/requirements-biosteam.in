@@ -1,0 +1,6 @@
+# Isolated trusted runner; deliberately not part of the public API dependencies.
+biosteam==2.54.0
+numba==0.62.1
+llvmlite==0.45.1
+pydantic==2.14.1
+CoolProp==6.6.0

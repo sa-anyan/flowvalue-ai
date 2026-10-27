@@ -175,3 +175,5 @@ Deployment targets selected for this project:
 Phase 2 core workflow checks and supported import/export behavior are recorded in [the acceptance checklist](docs/phase-2-acceptance.md). The uploader includes downloadable sample CSV and explicitly labelled demo project JSON. Scope warnings are recomputed from the active native mapping and carried into saved projects, Excel and the two-page PDF.
 
 AI configuration and data handling are described in [Phase 3 AI setup](docs/phase-3-ai.md). The dashboard reports AI availability, offers a model-access check, labels sourced research versus computed-only memos, and blocks stale memo downloads. Cloud generation is enabled using a server-only key explicitly authorized by the owner on 27 October 2026.
+
+Phase 4 adds [engineering reference checks and the isolated BioSTEAM runner](docs/phase-4-engineering.md). Use `make validate-engineering` for the seven frozen arithmetic cases, or `make install-biosteam` / `make validate-biosteam` for the optional trusted simulator template. Native imports have reviewed unit-level completion forms. No paid AI calls are required for these workflows.

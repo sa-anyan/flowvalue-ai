@@ -20,3 +20,5 @@ tmp/
 
 supabase/.temp/
 .vercel/
+
+backend/.venv-biosteam/

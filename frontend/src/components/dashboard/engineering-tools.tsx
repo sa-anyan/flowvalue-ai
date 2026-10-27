@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { NativeUnitEditor } from "./native-unit-editor";
+import { EngineeringValidation } from "./engineering-validation";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/client-api";
 import {
@@ -227,6 +229,7 @@ export function EngineeringTools({
   }
   return (
     <div className="engineering-tools">
+      <EngineeringValidation />
       {native && (
         <details className="panel extension-panel" open>
           <summary>DWSIM import review</summary>
@@ -257,8 +260,24 @@ export function EngineeringTools({
                   <p key={i}>Missing in original simulation: {x}</p>
                 ))}
                 {u.warnings.map((x, i) => (
-                  <p key={i}>Missing in original simulation: {x}</p>
+                  <p key={i}>{x}</p>
                 ))}
+                <NativeUnitEditor
+                  key={JSON.stringify([
+                    u,
+                    project.costing.equipment.find(
+                      (e) => e.unit_id === u.unit_id,
+                    ),
+                  ])}
+                  unit={u}
+                  project={project}
+                  onProject={(p) => {
+                    onProject(p);
+                    setMessage(
+                      `${u.unit_id} inputs accepted. Review the updated scope and save a cloud revision to retain the engineering basis.`,
+                    );
+                  }}
+                />
               </div>
             ))}
           </div>
@@ -295,6 +314,38 @@ export function EngineeringTools({
             Open interactive process flow ↗
           </a>
         </div>
+        <details>
+          <summary>Supported BioSTEAM runner & example</summary>
+          <p>
+            Run the trusted water-heating template locally, then upload its
+            validated JSON snapshot here. The cloud app imports results; it does
+            not run uploaded Python. The template includes pump/heater costs,
+            connected streams, annual production and OPEX. Prices and fixed OPEX
+            are illustrative.
+          </p>
+          <p>
+            <a href="/examples/water-heating-biosteam.json" download>
+              Download simulated BioSTEAM demo
+            </a>
+            {" · "}
+            <a href="/examples/water-heating-biosteam.checks.json" download>
+              Download its mass/energy checks
+            </a>
+          </p>
+          <p>
+            From the project checkout: <code>make install-biosteam</code>, then{" "}
+            <code>make validate-biosteam</code>. Import{" "}
+            <code>backend/examples/water-heating-biosteam.json</code>. The
+            isolated runner has a five-minute limit and accepts bounded numeric
+            inputs only.
+          </p>
+          <p>
+            Single-product mass basis (kg/year, USD/kg). Coproduct revenue and
+            net utility credits require separate reconciliation. Imported
+            installed equipment cost is not full BioSTEAM fixed capital
+            investment.
+          </p>
+        </details>
         <details>
           <summary>Add an OpenPyTEA equipment estimate</summary>
           <p>
