@@ -66,7 +66,7 @@ import {
   type Workspace,
   type NativeImport,
 } from "@/lib/workspace";
-import { CapexChart, CashFlowChart, RiskChart } from "./charts";
+import { MainDashboard } from "./main-dashboard";
 import {
   UniversalAdvisor,
   defaultContext,
@@ -151,8 +151,9 @@ function NumberField({
   );
 }
 
-export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "entry" }) {
+export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "entry" | "main" }) {
   const isEntry = mode === "entry";
+  const isMain = mode === "main";
   const [base, setBase] = useState<AssessmentRequest | null>(null);
   const [controls, setControls] = useState({
     feed: 0,
@@ -720,12 +721,12 @@ export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "
     );
   return (
     <div className="app-shell">
-      <WorkspaceSidebar name={base?.advisor_context?.name ?? "Untitled process"} active={isEntry ? "entry" : "overview"} />
+      <WorkspaceSidebar name={base?.advisor_context?.name ?? "Untitled process"} active={isEntry ? "entry" : isMain ? "main" : "overview"} />
       <div className="main-shell">
         <header className="topbar">
           <div className="breadcrumb">
             Workspace <ChevronRight size={13} />
-            <span>{isEntry ? "Project entry" : "Techno-economic assessment"}</span>
+            <span>{isEntry ? "Project entry" : isMain ? "Main dashboard" : "Techno-economic assessment"}</span>
           </div>
           <div className="top-actions">
             <span className={`connection ${error ? "connection-error" : ""}`}>
@@ -746,7 +747,7 @@ export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "
             <span className="top-avatar">FV</span>
           </div>
         </header>
-        <main className="dashboard-main" id={isEntry ? "entry" : "overview"}>
+        <main className="dashboard-main" id={isEntry ? "entry" : isMain ? "main-dashboard" : "overview"}>
           <ProjectAccount
             workspace={workspace}
             onLoad={loadWorkspace}
@@ -761,7 +762,7 @@ export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "
                   <p>Import process data, describe the project and set the base economic assumptions.</p>
                 </div>
                 <div className="export-actions">
-                  <a href="/dashboard" className="entry-analysis-link">
+                  <a href="/main-dashboard" className="entry-analysis-link">
                     Continue to Analysis <ArrowRight size={15} />
                   </a>
                 </div>
@@ -1023,10 +1024,54 @@ export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "
           </div>
               <div className="entry-next-step">
                 <p>Project data and assumptions carry through to the analysis workspace.</p>
-                <a href="/dashboard" className="entry-analysis-link">
+                <a href="/main-dashboard" className="entry-analysis-link">
                   Continue to Analysis <ArrowRight size={15} />
                 </a>
               </div>
+            </>
+          ) : isMain ? (
+            <>
+              <section className="page-heading">
+                <div>
+                  <div className="eyebrow"><span /> PROJECT ECONOMICS</div>
+                  <h1>Main dashboard</h1>
+                  <p>Core financial metrics and the three main project charts in one view.</p>
+                </div>
+              </section>
+              <div className="scenario-bar">
+                <div>
+                  <span className="scenario-badge">
+                    {base?.is_demo !== false ? "DEMO SCENARIO" : "CURRENT SCENARIO"}
+                  </span>
+                  <strong>{base?.advisor_context?.name ?? "Untitled process"}</strong>
+                </div>
+              </div>
+              {payload?.engineering_notes
+                ?.filter((n) => /^(INCOMPLETE|MIXED) EQUIPMENT SCOPE:/.test(n))
+                .map((n) => (
+                  <div key={n} role="alert" className="engineering-warning">{n}</div>
+                ))}
+              {error && (
+                <div className="error-banner" role="alert">
+                  <CircleHelp size={18} />
+                  <div>
+                    <strong>Assessment needs attention</strong>
+                    <p>{error}</p>
+                  </div>
+                  <button onClick={() => initialError ? setRetry((x) => x + 1) : setCalculationRetry((x) => x + 1)}>
+                    Retry calculation
+                  </button>
+                </div>
+              )}
+              <MainDashboard
+                data={data ?? null}
+                input={payload}
+                updating={updating}
+                error={error}
+                discount={controls.discount}
+                chartView={chartView}
+                onChartViewChange={setChartView}
+              />
             </>
           ) : (
             <>
@@ -1136,94 +1181,6 @@ export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "
               </button>
             </div>
           )}
-          <section
-            className={`metric-grid ${updating && data ? "is-updating" : ""}`}
-            aria-label="Financial metrics"
-            aria-busy={updating}
-          >
-            <div className="metric-card metric-featured">
-              <div className="metric-label">
-                Net present value <ArrowUpRight size={17} />
-              </div>
-              <strong data-testid="npv">
-                {data ? usd(data.financial.npv_usd, true) : "—"}
-              </strong>
-              <div className="metric-footer">
-                <span>
-                  {data
-                    ? data.financial.npv_usd >= 0
-                      ? "Positive project value"
-                      : "Below investment hurdle"
-                    : "Calculating project value"}
-                </span>
-                <small>at {controls.discount}% discount</small>
-              </div>
-            </div>
-            <div className="metric-card">
-              <div className="metric-label">
-                Internal rate of return <Activity size={17} />
-              </div>
-              <strong
-                data-testid="irr"
-                className={
-                  data?.financial.irr === null ? "metric-text" : undefined
-                }
-              >
-                {data
-                  ? data.financial.irr === null
-                    ? "Not defined"
-                    : percent(data.financial.irr)
-                  : "—"}
-              </strong>
-              <div className="metric-footer">
-                <span>Annual project return</span>
-                <small>IRR / DCFROR</small>
-              </div>
-            </div>
-            <div className="metric-card">
-              <div className="metric-label">
-                Discounted payback <RotateCcw size={17} />
-              </div>
-              <strong
-                data-testid="payback"
-                className={
-                  data?.financial.discounted_payback_years === null
-                    ? "metric-text"
-                    : undefined
-                }
-              >
-                {data ? (
-                  data.financial.discounted_payback_years === null ? (
-                    "Not recovered"
-                  ) : (
-                    <>
-                      {data.financial.discounted_payback_years.toFixed(1)}{" "}
-                      <em>years</em>
-                    </>
-                  )
-                ) : (
-                  "—"
-                )}
-              </strong>
-              <div className="metric-footer">
-                <span>Time to recover CAPEX</span>
-                <small>Discounted basis</small>
-              </div>
-            </div>
-            <div className="metric-card">
-              <div className="metric-label">
-                Levelized cost of product <Layers3 size={17} />
-              </div>
-              <strong data-testid="lcop">
-                {data ? `$${data.financial.lcop_usd_per_unit.toFixed(2)}` : "—"}
-                <em> / unit</em>
-              </strong>
-              <div className="metric-footer">
-                <span>Lifetime production cost</span>
-                <small>Pre-tax LCOP</small>
-              </div>
-            </div>
-          </section>
           <AIConnection {...ai} />
           <UniversalAdvisor
             aiAvailable={!!ai.status?.can_generate}
@@ -1239,81 +1196,7 @@ export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "
             onApply={applyStress}
             canApply={(r) => stressTarget(r) !== null}
           />
-          <div className="primary-grid">
-            <section className="panel cash-panel">
-              <div className="panel-heading">
-                <div>
-                  <h2>
-                    {chartView === "waterfall"
-                      ? "Annual cash-flow waterfall"
-                      : "Cumulative cash flow"}
-                  </h2>
-                  <p>The long view on your process economics.</p>
-                </div>
-                <div className="chart-view-control">
-                  <select
-                    aria-label="Cash flow chart view"
-                    value={chartView}
-                    onChange={(e) =>
-                      setChartView(e.target.value as "cumulative" | "waterfall")
-                    }
-                  >
-                    <option value="cumulative">Cumulative curve</option>
-                    <option value="waterfall">Cash-flow waterfall</option>
-                  </select>
-                  <span className="quiet-badge">
-                    {controls.life}-year horizon
-                  </span>
-                </div>
-              </div>
-              <div className="line-legend">
-                <span>
-                  <i />
-                  {chartView === "waterfall"
-                    ? "Operating cash flow"
-                    : "Undiscounted"}
-                </span>
-                <span>
-                  <i className="gold" />
-                  {chartView === "waterfall"
-                    ? "Initial investment"
-                    : "Discounted"}
-                </span>
-                <span className="calculation-status" role="status">
-                  {error ? (
-                    "Check inputs"
-                  ) : updating ? (
-                    <>
-                      <LoaderCircle size={12} className="spin" />
-                      Recalculating
-                    </>
-                  ) : (
-                    <>
-                      <Check size={12} />
-                      Up to date
-                    </>
-                  )}
-                </span>
-              </div>
-              <div className="chart-area">
-                {data ? (
-                  <CashFlowChart data={data} view={chartView} />
-                ) : (
-                  <div className="chart-placeholder">
-                    <LoaderCircle className="spin" />
-                    Connecting to the financial engine
-                  </div>
-                )}
-              </div>
-              <div className="chart-bottom">
-                <span>Initial investment</span>
-                <strong>
-                  {data ? usd(data.bom.total_bare_module_cost_usd) : "—"}
-                </strong>
-                <span className="chart-bottom-note">CAPEX at year zero</span>
-              </div>
-            </section>
-            <section className="panel playground-panel" id="playground">
+          <section className="panel playground-panel" id="playground">
               <div className="panel-heading">
                 <div>
                   <span className="section-icon">
@@ -1416,71 +1299,6 @@ export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "
                 detail="Operating years after the initial investment"
               />
             </section>
-          </div>
-          <div className="secondary-grid">
-            <section className="panel" id="risk">
-              <div className="panel-heading">
-                <div>
-                  <h2>Every outcome, considered.</h2>
-                  <p>
-                    NPV distribution from{" "}
-                    {risk?.iterations.toLocaleString() ?? "1,000"} Monte Carlo
-                    scenarios.
-                  </p>
-                </div>
-                <span className="quiet-badge">±20% cost risk</span>
-              </div>
-              <div className="risk-chart">
-                {data ? (
-                  <RiskChart data={data} />
-                ) : (
-                  <div className="chart-placeholder">
-                    Waiting for the risk engine
-                  </div>
-                )}
-              </div>
-              <div className="percentile-grid">
-                {[
-                  ["P10 · lower", risk?.p10_npv_usd],
-                  ["P50 · median", risk?.p50_npv_usd],
-                  ["P90 · upper", risk?.p90_npv_usd],
-                ].map(([label, value]) => (
-                  <div key={label}>
-                    <span>{label}</span>
-                    <strong>
-                      {typeof value === "number" ? usd(value, true) : "—"}
-                    </strong>
-                  </div>
-                ))}
-              </div>
-            </section>
-            <section className="panel">
-              <div className="panel-heading">
-                <div>
-                  <h2>Where your capital goes</h2>
-                  <p>Bare module cost by equipment category.</p>
-                </div>
-                <Layers3 size={18} className="muted-icon" />
-              </div>
-              {data ? (
-                <CapexChart data={data} />
-              ) : (
-                <div className="chart-placeholder">
-                  Waiting for the costing engine
-                </div>
-              )}
-              <div className="probability-note">
-                <ShieldCheck size={17} />
-                <span>
-                  Positive NPV in{" "}
-                  <strong>
-                    {risk ? percent(risk.probability_positive_npv) : "—"}
-                  </strong>{" "}
-                  of simulated scenarios.
-                </span>
-              </div>
-            </section>
-          </div>
           <section className="panel equipment-panel" id="equipment">
             <div className="panel-heading">
               <div>

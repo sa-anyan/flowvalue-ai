@@ -1,0 +1,33 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+
+const read = (p) => readFileSync(new URL(p, import.meta.url), "utf8");
+
+test("Main dashboard is a dedicated route and is first under Analysis", () => {
+  const route = read("../src/app/main-dashboard/page.tsx");
+  const nav = read("../src/components/dashboard/workspace-sidebar.tsx");
+  assert.match(route, /<Dashboard mode="main"\s*\/>/);
+  assert.ok(nav.indexOf('href="/main-dashboard"') < nav.indexOf('href="/process-flow"'));
+  assert.match(nav, /href="\/main-dashboard#risk"/);
+});
+
+test("Main dashboard owns six headline metrics and three charts", () => {
+  const main = read("../src/components/dashboard/main-dashboard.tsx");
+  const analysis = read("../src/components/dashboard/dashboard.tsx");
+  for (const key of ["capex", "opex", "npv", "irr", "lcop", "payback"]) {
+    assert.match(main, new RegExp(`data-testid="${key}"`));
+  }
+  for (const chart of ["CashFlowChart", "RiskChart", "CapexChart"]) {
+    assert.match(main, new RegExp(`<${chart} data={data}`));
+    assert.doesNotMatch(analysis, new RegExp(`<${chart} data={data}`));
+  }
+  assert.match(analysis, /<MainDashboard/);
+  assert.match(analysis, /id="equipment"/);
+  assert.match(analysis, /id="playground"/);
+});
+
+test("Entry continues to Main dashboard instead of the long analysis view", () => {
+  const dashboard = read("../src/components/dashboard/dashboard.tsx");
+  assert.match(dashboard, /href="\/main-dashboard" className="entry-analysis-link"/);
+});

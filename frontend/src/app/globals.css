@@ -2159,3 +2159,32 @@ select {
 @media (max-width: 760px) {
   .entry-next-step { align-items: flex-start; flex-direction: column; }
 }
+
+
+/* Main dashboard: just the six headline metrics and three existing charts. */
+.main-dashboard-metrics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.main-dashboard-summary .cash-panel {
+  margin-bottom: 20px;
+}
+.main-dashboard-summary .cash-panel .chart-area {
+  height: 300px;
+}
+.main-dashboard-summary .secondary-grid {
+  margin-bottom: 20px;
+}
+.main-dashboard-summary .metric-card > strong {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+@media (max-width: 760px) {
+  .main-dashboard-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 460px) {
+  .main-dashboard-metrics {
+    grid-template-columns: 1fr;
+  }
+}

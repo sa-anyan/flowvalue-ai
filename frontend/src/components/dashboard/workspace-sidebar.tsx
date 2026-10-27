@@ -13,12 +13,12 @@ import {
 
 type WorkspaceSidebarProps = {
   name: string;
-  active: "entry" | "overview";
+  active: "entry" | "main" | "overview";
 };
 
 export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
   const dashboardHref = (hash: string) =>
-    active === "entry" ? `/dashboard${hash}` : hash;
+    active === "overview" ? hash : `/dashboard${hash}`;
 
   return (
       <aside className="sidebar">
@@ -59,6 +59,15 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
         </nav>
         <div className="nav-caption">ANALYSIS</div>
         <nav>
+          <a
+            href="/main-dashboard"
+            className={active === "main" ? "nav-selected" : undefined}
+            aria-current={active === "main" ? "page" : undefined}
+          >
+            <LayoutDashboard size={18} />
+            Main dashboard
+            {active === "main" && <span className="nav-dot" />}
+          </a>
           <a href="/process-flow">
             <Layers3 size={18} />
             Interactive process flow
@@ -68,8 +77,8 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
             className={active === "overview" ? "nav-selected" : undefined}
             aria-current={active === "overview" ? "page" : undefined}
           >
-            <LayoutDashboard size={18} />
-            Overview
+            <Layers3 size={18} />
+            Analysis tools
             {active === "overview" && <span className="nav-dot" />}
           </a>
           <a href={dashboardHref("#equipment")}>
@@ -80,7 +89,7 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
             <SlidersHorizontal size={18} />
             Financial playground
           </a>
-          <a href={dashboardHref("#risk")}>
+          <a href="/main-dashboard#risk">
             <ShieldCheck size={18} />
             Risk & uncertainty
           </a>
