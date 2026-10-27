@@ -19,6 +19,6 @@ Memos use recomputed BOM/DCF/sensitivity data. An explicit economic summary prev
 - Local demo memo generated/downloaded, with $500,000 total annual OPEX (fixed + variable; feedstock and utilities already included). Initial AI double-counting was caught during review and corrected by explicit computed summary/prompt instructions.
 - Local live market research completed with clickable primary-source citations, model and retrieval time. Commentary is an AI draft requiring claim-by-claim review.
 - Changing utility assumptions blocked the stale memo download.
-- Production missing-key state and deployment checks are recorded after rollout. Enabling a cloud key remains a separate owner decision.
+- Deployment `a48174e` is live on Vercel and Render. CI run `40486328085` passed: 127 backend tests, four frontend tests, lint/types/build. In the signed-in production dashboard, missing-key status is explicit, research/memo actions are disabled, and Excel remains available. Cloud activation remains pending the owner decision.
 
 API behavior follows the [official web search guide](https://developers.openai.com/api/docs/guides/tools-web-search). Connection checks do not substitute for checking the accuracy or completeness of generated analysis.
