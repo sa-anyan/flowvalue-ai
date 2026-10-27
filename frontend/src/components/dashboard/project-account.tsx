@@ -269,7 +269,7 @@ export function ProjectAccount({
                 autoComplete="current-password"
               />
             </label>
-            <Button disabled={busy}>Sign in</Button>
+            <Button type="submit" disabled={busy}>Sign in</Button>
             <Button
               type="button"
               disabled={busy || !email || password.length < 8}
