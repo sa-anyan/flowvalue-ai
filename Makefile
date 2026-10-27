@@ -8,4 +8,4 @@ web:
 	cd frontend && npm run dev
 check:
 	cd backend && .venv/bin/python -m ruff check . && .venv/bin/python -m pytest
-	cd frontend && npm run lint && npm run typecheck && npm run build
+	cd frontend && npm test && npm run lint && npm run typecheck && npm run build

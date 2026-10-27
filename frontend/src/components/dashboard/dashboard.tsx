@@ -58,6 +58,7 @@ import {
   workspaceKey,
   readWorkspace,
   writeWorkspace,
+  scenarioScopeNotes,
   type Workspace,
   type NativeImport,
 } from "@/lib/workspace";
@@ -250,6 +251,7 @@ export default function Dashboard() {
       base.financial.utility_opex_usd_per_year * (1 + controls.utility / 100);
     return {
       ...base,
+      engineering_notes: scenarioScopeNotes(base, nativeImport),
       costing: {
         ...base.costing,
         settings: {
@@ -294,7 +296,8 @@ export default function Dashboard() {
           utility,
       },
     };
-  }, [base, controls]);
+  }, [base, controls, nativeImport]);
+  const [calculationRetry, setCalculationRetry] = useState(0);
   const signature = JSON.stringify(payload);
   useEffect(() => {
     if (!payload) return;
@@ -311,6 +314,7 @@ export default function Dashboard() {
           return r.json();
         })
         .then((data: Assessment) => {
+          if (controller.signal.aborted) return;
           setEnvelope({ signature, data });
           setFailure(null);
         })
@@ -323,7 +327,7 @@ export default function Dashboard() {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [payload, signature]);
+  }, [payload, signature, calculationRetry]);
   const workspace = useMemo(
     () =>
       payload
@@ -483,6 +487,7 @@ export default function Dashboard() {
     );
   }
   async function upload(file: File) {
+    if (uploading) return;
     if (!/\.(csv|json|dwxml)$/i.test(file.name)) {
       setUploadMessage(
         "Choose a CSV, JSON, BioSTEAM snapshot or native DWSIM .dwxml file.",
@@ -506,9 +511,6 @@ export default function Dashboard() {
         });
         if (!r.ok) throw Error(await apiError(r));
         const imported = (await r.json()) as NativeImport;
-        setNativeImport(imported);
-        setStreams(imported.streams);
-        setFilename(file.name);
         if (base && imported.equipment.length) {
           const costing = { ...base.costing, equipment: imported.equipment };
           const check = await apiFetch("/api/costing/bom", {
@@ -533,10 +535,16 @@ export default function Dashboard() {
           setUploadMessage(
             "Streams and topology imported; no complete supported sizing found. Complete equipment mapping below. Existing financial assumptions and BOM retained.",
           );
+        setNativeImport(imported);
+        setStreams(imported.streams);
+        setFilename(file.name);
         return;
       }
       if (/\.json$/i.test(file.name)) {
         let content = JSON.parse(await file.text());
+        if (Array.isArray(content)) content = { streams: content };
+        if (!content || typeof content !== "object")
+          throw Error("JSON must contain a stream table or project object.");
         if (content.schema_version === "flowvalue-biosteam-v1") {
           const r = await apiFetch("/api/integrations/biosteam/import", {
             method: "POST",
@@ -634,7 +642,7 @@ export default function Dashboard() {
       );
     } catch (e) {
       setUploadMessage(
-        e instanceof Error ? e.message : "Unable to parse the file.",
+        `${e instanceof SyntaxError ? "Invalid JSON syntax. Check commas, quotes and brackets." : e instanceof Error ? e.message : "Unable to parse the file."} Your previous project has been retained.`,
       );
     } finally {
       setUploading(false);
@@ -838,11 +846,13 @@ export default function Dashboard() {
               </Button>
             </div>
           </section>
-          {base?.engineering_notes?.some((n) => n.startsWith("INCOMPLETE")) && (
-            <div role="alert" className="engineering-warning">
-              {base.engineering_notes.find((n) => n.startsWith("INCOMPLETE"))}
-            </div>
-          )}
+          {payload?.engineering_notes
+            ?.filter((n) => /^(INCOMPLETE|MIXED) EQUIPMENT SCOPE:/.test(n))
+            .map((n) => (
+              <div key={n} role="alert" className="engineering-warning">
+                {n}
+              </div>
+            ))}
           <div className="scenario-bar">
             <div>
               <span className="scenario-badge">
@@ -881,9 +891,15 @@ export default function Dashboard() {
                 <strong>Assessment needs attention</strong>
                 <p>{error}</p>
               </div>
-              {initialError && (
-                <button onClick={() => setRetry((x) => x + 1)}>Retry</button>
-              )}
+              <button
+                onClick={() =>
+                  initialError
+                    ? setRetry((x) => x + 1)
+                    : setCalculationRetry((x) => x + 1)
+                }
+              >
+                Retry calculation
+              </button>
             </div>
           )}
           {notice && (
@@ -1507,6 +1523,15 @@ export default function Dashboard() {
                 </div>
                 <Upload size={18} className="muted-icon" />
               </div>
+              <p>
+                <a href="/examples/sample-streams.csv" download>
+                  Download sample CSV
+                </a>
+                {" · "}
+                <a href="/examples/demo-project.json" download>
+                  Download demo project JSON
+                </a>
+              </p>
               <input
                 ref={fileRef}
                 className="sr-only"
@@ -1529,7 +1554,8 @@ export default function Dashboard() {
                 onDrop={(e) => {
                   e.preventDefault();
                   setDragging(false);
-                  if (e.dataTransfer.files[0]) upload(e.dataTransfer.files[0]);
+                  if (!uploading && e.dataTransfer.files[0])
+                    upload(e.dataTransfer.files[0]);
                 }}
               >
                 <span className="upload-icon">
@@ -1540,7 +1566,9 @@ export default function Dashboard() {
                   )}
                 </span>
                 <strong>
-                  {filename || "Drop a stream table or project here"}
+                  {uploading
+                    ? "Validating import…"
+                    : filename || "Drop a stream table or project here"}
                 </strong>
                 <span>
                   or <b>browse files</b> · CSV, JSON or DWXML · up to 4 MiB
@@ -1720,8 +1748,9 @@ export default function Dashboard() {
               <p>
                 Preliminary screening estimates using Turton module
                 correlations. Reactor costs cover vessel shells. Compressor
-                sizing assumes a single-stage ideal gas. Uploaded stream data
-                does not automatically size equipment.
+                sizing assumes a single-stage ideal gas. Uploaded stream data in
+                CSV/JSON stream tables does not automatically size equipment.
+                Native DWSIM imports can use supported saved sizing inputs.
               </p>
               {warnings.map((w, i) => (
                 <p key={i}>{w}</p>
@@ -1741,7 +1770,6 @@ export default function Dashboard() {
               ready={ready}
               onProject={setBase}
               native={nativeImport}
-              onNative={setNativeImport}
             />
           )}
           <footer className="dashboard-footer">

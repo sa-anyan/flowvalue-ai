@@ -1,0 +1,4 @@
+stream_id,mass_flow_kg_h,temperature_c,pressure_bar_abs,phase,source_unit,destination_unit
+S1,1200,25,1.2,liquid,,P1
+S2,1200,30,5,liquid,P1,E1
+S3,1200,80,4.8,liquid,E1,V1

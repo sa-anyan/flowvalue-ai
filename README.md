@@ -24,7 +24,7 @@ make web
 
 Frontend: http://localhost:3000 · API docs: http://localhost:8000/docs · Health: http://localhost:8000/health
 
-`make check` runs backend lint/tests and frontend lint/type checking/production build.
+`make check` runs backend lint/tests and frontend workspace tests, lint/type checking/production build.
 GitHub Actions runs the same checks on pushes and pull requests.
 
 ## Repository layout
@@ -171,3 +171,5 @@ Deployment targets selected for this project:
 2. **Vercel:** import the GitHub repository with root directory `frontend`, Next.js preset, and `API_INTERNAL_URL=https://<actual-render-service>.onrender.com`. `frontend/vercel.json` allows a 300-second research proxy duration where the plan supports it.
 3. Confirm the frontend origin in Supabase Auth Site URL/redirect configuration before sending confirmation or password-recovery links to users. Provider account terms and any paid plans require the account owner's approval. Free Render instances can sleep, so first requests may be slow.
 4. Verify `/health`, anonymous API rejection, authenticated project save/load and tenant isolation after deployment. Source checks passing do not by themselves prove a live deployment.
+
+Phase 2 core workflow checks and supported import/export behavior are recorded in [the acceptance checklist](docs/phase-2-acceptance.md). The uploader includes downloadable sample CSV and explicitly labelled demo project JSON. Scope warnings are recomputed from the active native mapping and carried into saved projects, Excel and the two-page PDF.

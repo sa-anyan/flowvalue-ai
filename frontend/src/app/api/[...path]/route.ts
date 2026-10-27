@@ -62,7 +62,7 @@ async function proxy(
     return Response.json(
       {
         detail:
-          "Backend unavailable. Start it with make api, or check API_INTERNAL_URL.",
+          "The calculation service is unavailable or starting up. Wait a moment and retry; your current project has been retained.",
       },
       { status: 503 },
     );

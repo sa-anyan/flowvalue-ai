@@ -93,7 +93,7 @@ def build_pdf(
     def p(text, style="FVBody"):
         return Paragraph(escape(text), styles[style])
 
-    def table(rows, widths=None):
+    def table(rows, widths=None, padding=10):
         t = Table(rows, colWidths=widths, hAlign="LEFT")
         t.setStyle(
             TableStyle(
@@ -103,8 +103,8 @@ def build_pdf(
                     ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
                     ("FONTNAME", (0, 1), (-1, -1), "Helvetica"),
                     ("FONTSIZE", (0, 0), (-1, -1), 9),
-                    ("TOPPADDING", (0, 0), (-1, -1), 10),
-                    ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+                    ("TOPPADDING", (0, 0), (-1, -1), padding),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), padding),
                     ("ROWBACKGROUNDS", (0, 1), (-1, -1), [PALE, colors.white]),
                     ("ALIGN", (1, 0), (-1, -1), "RIGHT"),
                     ("LINEBELOW", (0, -1), (-1, -1), 0.5, TEAL),
@@ -165,13 +165,14 @@ def build_pdf(
             money(bom.total_bare_module_cost_usd),
         ]
     )
-    incomplete = next(
-        (n for n in financial.warnings if n.startswith("INCOMPLETE")), None
-    )
-    if incomplete:
-        story.append(p(incomplete[:280], "FVSmall"))
+    scope_warnings = list(dict.fromkeys(
+        n for n in financial.warnings
+        if n.startswith(("INCOMPLETE EQUIPMENT SCOPE:", "MIXED EQUIPMENT SCOPE:"))
+    ))
+    for warning in scope_warnings[:2]:
+        story.append(p(warning[:280], "FVSmall"))
     story += [
-        table(group_rows, [280, 65, 183]),
+        table(group_rows, [280, 65, 183], padding=5),
         p(
             f"Annual OPEX: {money(f.fixed_opex_usd_per_year + f.variable_opex_usd_per_year)}. "
             f"Annual revenue: {money(f.plant_capacity_units_per_year * f.capacity_factor * f.product_selling_price_usd_per_unit)}."

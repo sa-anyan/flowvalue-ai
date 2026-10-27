@@ -120,3 +120,29 @@ def test_large_constant_npv_histogram_is_finite():
     risk = monte_carlo(inputs)
     assert sum(bin_.count for bin_ in risk.histogram) == 1000
     assert risk.p10_npv_usd == risk.p90_npv_usd
+
+
+def test_scope_warnings_are_prominent_in_both_active_scenario_exports():
+    payload = demo_assessment().model_dump(mode="json")
+    payload["financial"]["discount_rate"] = 0.105
+    payload["costing"]["equipment"] += [
+        payload["costing"]["equipment"][1] | {"unit_id": "R1", "kind": "reactor"},
+        {"unit_id": "Q1", "kind": "quoted", "purchased_cost_usd": 100, "installed_cost_usd": 200, "source": "Synthetic quote"},
+    ]
+    mixed = "MIXED EQUIPMENT SCOPE: retained equipment absent from native import."
+    incomplete = "INCOMPLETE EQUIPMENT SCOPE: R-101 excluded from priced CAPEX."
+    payload["engineering_notes"] = ["Operator note " + str(i) for i in range(8)] + [mixed + " Review retained equipment." * 20, incomplete + " Review excluded operations." * 20]
+    calculated = client.post("/api/assessment", json=payload).json()
+    excel = client.post("/api/export/excel", json=payload)
+    pdf = client.post("/api/export/pdf", json=payload)
+    assert excel.status_code == pdf.status_code == 200
+    wb = load_workbook(BytesIO(excel.content))
+    assert wb["Inputs"]["C7"].value == 0.105
+    assert "NPV(" in wb["Summary"]["C6"].value
+    notes = "\n".join(str(c.value) for row in wb["Notes"] for c in row)
+    assert mixed in notes and incomplete in notes
+    report = PdfReader(BytesIO(pdf.content))
+    assert len(report.pages) == 2
+    first = report.pages[0].extract_text()
+    assert mixed in first and incomplete in first
+    assert f"{calculated['financial']['npv_usd']:,.0f}" in first

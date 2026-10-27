@@ -30,17 +30,18 @@ export function EngineeringTools({
   ready,
   onProject,
   native,
-  onNative,
 }: {
   project: AssessmentRequest;
   scenario: AssessmentRequest;
   ready: boolean;
   onProject: (p: AssessmentRequest) => void;
   native: NativeImport | null;
-  onNative: (n: NativeImport | null) => void;
 }) {
   const [message, setMessage] = useState(""),
-    [draft, setDraft] = useState(""),
+    [draft, setDraft] = useState<{
+      native: NativeImport | null;
+      text: string;
+    } | null>(null),
     [busy, setBusy] = useState("");
   const [indices, setIndices] = useState<
     {
@@ -71,6 +72,10 @@ export function EngineeringTools({
     [memo, setMemo] = useState<{ signature: string; text: string } | null>(
       null,
     );
+  const mappingText =
+    draft?.native === native
+      ? draft.text
+      : JSON.stringify(native?.equipment || [], null, 2);
   const signature = JSON.stringify(scenario),
     policy = project.financial.incentive || defaultIncentive;
   useEffect(() => {
@@ -151,7 +156,7 @@ export function EngineeringTools({
   async function applyMapping() {
     setBusy("mapping");
     try {
-      const equipment = JSON.parse(draft) as EquipmentSpec[];
+      const equipment = JSON.parse(mappingText) as EquipmentSpec[];
       if (!Array.isArray(equipment) || !equipment.length)
         throw Error("Supply a nonempty equipment JSON array");
       const r = await apiFetch("/api/costing/bom", {
@@ -207,8 +212,8 @@ export function EngineeringTools({
   return (
     <div className="engineering-tools">
       {native && (
-        <section className="panel extension-panel">
-          <h2>DWSIM import review</h2>
+        <details className="panel extension-panel" open>
+          <summary>DWSIM import review</summary>
           <p>
             {native.source}. {native.streams.length} streams ·{" "}
             {native.units.length} operations · {native.equipment.length} mapped
@@ -226,13 +231,17 @@ export function EngineeringTools({
                   {u.unit_id} · {u.native_type}
                 </strong>
                 <span>
-                  {u.equipment ? "Sizing imported" : "Needs engineering input"}
+                  {project.costing.equipment.some(
+                    (e) => e.unit_id === u.unit_id,
+                  )
+                    ? "Mapped in active BOM"
+                    : "Excluded from active BOM · needs engineering input"}
                 </span>
                 {u.missing_inputs.map((x, i) => (
-                  <p key={i}>{x}</p>
+                  <p key={i}>Missing in original simulation: {x}</p>
                 ))}
                 {u.warnings.map((x, i) => (
-                  <p key={i}>{x}</p>
+                  <p key={i}>Missing in original simulation: {x}</p>
                 ))}
               </div>
             ))}
@@ -242,27 +251,23 @@ export function EngineeringTools({
             feedstock, product price or annual operating budget is inferred. A
             retained demo financial basis remains a demo.
           </p>
-          <details
-            onToggle={(e) => {
-              if (e.currentTarget.open && !draft)
-                setDraft(JSON.stringify(native.equipment, null, 2));
-            }}
-          >
+          <details>
             <summary>Review or complete equipment mapping</summary>
             <textarea
               aria-label="DWSIM equipment mapping JSON"
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
+              value={mappingText}
+              onChange={(e) => setDraft({ native, text: e.target.value })}
               rows={12}
             />
             <Button disabled={!!busy} onClick={applyMapping}>
               Validate & replace BOM
             </Button>
           </details>
-          <Button variant="outline" onClick={() => onNative(null)}>
-            Dismiss import review
-          </Button>
-        </section>
+          <p>
+            Collapse this review with its heading. Native topology and review
+            notes remain part of the project.
+          </p>
+        </details>
       )}
       <section className="panel extension-panel">
         <div className="panel-heading">

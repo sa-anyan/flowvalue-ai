@@ -13,7 +13,12 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import type { FlowNode, FlowEdge } from "./scene";
-import { readWorkspace, writeWorkspace, type Workspace } from "@/lib/workspace";
+import {
+  readWorkspace,
+  writeWorkspace,
+  scenarioScopeNotes,
+  type Workspace,
+} from "@/lib/workspace";
 import { apiFetch } from "@/lib/client-api";
 import {
   apiError,
@@ -35,7 +40,9 @@ function graph(w: Workspace): { nodes: FlowNode[]; edges: FlowEdge[] } {
     units.set(u.unit_id, {
       id: u.unit_id,
       label: u.unit_id,
-      kind: u.equipment?.kind || u.native_type,
+      kind:
+        w.project.costing.equipment.find((e) => e.unit_id === u.unit_id)
+          ?.kind || u.native_type,
       position: { x: u.x || i * 240, y: u.y || 80 },
     }),
   );
@@ -117,6 +124,8 @@ export default function ProcessFlow() {
     );
   }, [topology, setNodes]);
   function select(id: string) {
+    if (busy) return;
+    setResult(null);
     setSelected(id);
     setDraft(
       workspace?.project.costing.equipment.find((u) => u.unit_id === id) ||
@@ -137,6 +146,10 @@ export default function ProcessFlow() {
           ),
         },
       };
+      project.engineering_notes = scenarioScopeNotes(
+        project,
+        workspace.native_import,
+      );
       const r = await apiFetch("/api/assessment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -272,9 +285,14 @@ export default function ProcessFlow() {
                           type="number"
                           step="any"
                           value={Number(v)}
-                          onChange={(e) =>
-                            setDraft({ ...draft, [k]: Number(e.target.value) })
-                          }
+                          disabled={busy}
+                          onChange={(e) => {
+                            setResult(null);
+                            setMessage(
+                              "Unapplied changes. Apply & recalculate to update the project.",
+                            );
+                            setDraft({ ...draft, [k]: Number(e.target.value) });
+                          }}
                         />
                       </label>
                     ))}
@@ -283,9 +301,14 @@ export default function ProcessFlow() {
                       Material
                       <select
                         value={draft.material || "carbon_steel"}
-                        onChange={(e) =>
-                          setDraft({ ...draft, material: e.target.value })
-                        }
+                        disabled={busy}
+                        onChange={(e) => {
+                          setResult(null);
+                          setMessage(
+                            "Unapplied changes. Apply & recalculate to update the project.",
+                          );
+                          setDraft({ ...draft, material: e.target.value });
+                        }}
                       >
                         <option value="carbon_steel">Carbon steel</option>
                         <option value="stainless_steel">Stainless steel</option>
@@ -309,7 +332,7 @@ export default function ProcessFlow() {
               ))}
               {imported?.missing_inputs.map((w, i) => (
                 <p className="engineering-warning" key={i}>
-                  {w}
+                  Missing in original simulation: {w}
                 </p>
               ))}
               {streams.map((s) => (

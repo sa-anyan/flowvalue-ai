@@ -46,3 +46,12 @@ def test_csv_upload():
 def test_upload_limit():
     response = client.post("/api/streams/parse/csv", files={"file": ("big.csv", b"x" * (5 * 1024 * 1024 + 1))})
     assert response.status_code == 413
+
+
+def test_stream_endpoints_normalize_across_csv_and_json():
+    headers = HEADER.rstrip("\n") + ",source_unit,destination_unit\n"
+    csv = parse_csv((headers + "S1,120,25,1.2,Liquid,  , E1 \n").encode())
+    data = parse_json({"streams": [ROW | {"source_unit": None, "destination_unit": "E1"}]})
+    assert csv == data
+    assert csv.streams[0].source_unit is None
+    assert csv.streams[0].destination_unit == "E1"

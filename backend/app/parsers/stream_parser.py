@@ -30,8 +30,15 @@ class Stream(BaseModel):
     temperature_c: float = Field(ge=-273.15)
     pressure_bar_abs: float = Field(gt=0)
     phase: Phase
-    source_unit: str | None = None
-    destination_unit: str | None = None
+    source_unit: str | None = Field(default=None, max_length=100)
+    destination_unit: str | None = Field(default=None, max_length=100)
+
+    @field_validator("source_unit", "destination_unit", mode="before")
+    @classmethod
+    def clean_endpoint(cls, value):
+        if isinstance(value, str):
+            return value.strip() or None
+        return value
 
     @field_validator("stream_id")
     @classmethod
