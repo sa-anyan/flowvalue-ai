@@ -21,7 +21,7 @@ Verified locally on 27 October 2026. All examples are synthetic; this is workflo
 
 Regression coverage: backend parser equivalence and active-scenario report tests; frontend scope recomputation, retained-equipment warnings and malformed browser-draft tests. CI runs both suites.
 
-Operational limitations: CSV/JSON stream tables do not infer equipment sizes; DWSIM needs supported saved sizing inputs. Financial assumptions retained during native/stream-only imports require operator review. BioSTEAM uses trusted result snapshots. Cloud AI remains unconfigured by owner choice. Licensed CEPCI and engineering benchmarking are later phases.
+Operational limitations: CSV/JSON stream tables do not infer equipment sizes; DWSIM needs supported saved sizing inputs. Financial assumptions retained during native/stream-only imports require operator review. BioSTEAM uses trusted result snapshots. Cloud AI was unconfigured at Phase 2 acceptance; it was subsequently activated in Phase 3 with owner approval. Licensed CEPCI and engineering benchmarking are later phases.
 
 ## Hosted acceptance
 

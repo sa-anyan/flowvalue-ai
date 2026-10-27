@@ -6,7 +6,7 @@ The dashboard has a secret-free AI connection panel. `GET /api/copilot/status` r
 
 Set `OPENAI_API_KEY` only in the backend hosting provider's environment, never frontend variables, project data, source control or browser storage. `OPENAI_MODEL` defaults to `gpt-5.4-mini`. `AI_ENABLED=false` disables all generation/diagnostics even if a key is present. After a hosting restart, use **Refresh AI status**, then **Check AI connection**. A real research/memo request is still needed to confirm generation/billing/tool access.
 
-The owner previously requested deploying without the key. Cloud activation remains pending explicit authorization; the local backend has its separately configured development key. Adding a key enables AI for signed-in application users and incurs provider usage charges. Application-level budgets/quotas are part of production hardening.
+The owner explicitly authorized copying the existing local development key into Render's secret environment on 27 October 2026. Activation deployment `dep-dbg7inp42hec73dr5rdg` succeeded. AI is enabled for signed-in application users and incurs provider usage charges. Application-level budgets/quotas are part of production hardening.
 
 Research sends the computed cost profile, question and optional market context to OpenAI Responses with live web search filtered to primary-source domains. Original files, raw unknown project fields and application authentication tokens are not forwarded. Slider suggestions remain deterministic and only apply on user click. Results have linked citations, evidence status, model and retrieval time; factual claims still need human source review. Interrupted or unsourced output is not presented as an established briefing.
 
@@ -19,6 +19,14 @@ Memos use recomputed BOM/DCF/sensitivity data. An explicit economic summary prev
 - Local demo memo generated/downloaded, with $500,000 total annual OPEX (fixed + variable; feedstock and utilities already included). Initial AI double-counting was caught during review and corrected by explicit computed summary/prompt instructions.
 - Local live market research completed with clickable primary-source citations, model and retrieval time. Commentary is an AI draft requiring claim-by-claim review.
 - Changing utility assumptions blocked the stale memo download.
-- Deployment `a48174e` is live on Vercel and Render. CI run `40486328085` passed: 127 backend tests, four frontend tests, lint/types/build. In the signed-in production dashboard, missing-key status is explicit, research/memo actions are disabled, and Excel remains available. Cloud activation remains pending the owner decision.
+- Deployment `a48174e` is live on Vercel and Render. CI run `40486328085` passed: 127 backend tests, four frontend tests, lint/types/build. In the signed-in production dashboard, missing-key status is explicit, research/memo actions are disabled, and Excel remains available. After owner approval, the key was configured server-side and hosted activation checks passed (see below).
 
 API behavior follows the [official web search guide](https://developers.openai.com/api/docs/guides/tools-web-search). Connection checks do not substitute for checking the accuracy or completeness of generated analysis.
+
+## Hosted activation acceptance — 27 October 2026
+
+- Render secret configuration saved and deployed without displaying the key or committing it to Git.
+- Dashboard reports configured model `gpt-5.4-mini`; provider authentication/model access check succeeded.
+- Hosted synthetic-demo memo generated and downloaded with model/timestamp provenance. It reported CAPEX $2.89M, annual OPEX $0.50M, annual revenue $1.80M, NPV $6.11M, IRR 36.5%, and LCOP $0.84/unit, consistent with the active demo. Feedstock/utilities were explicitly included within variable OPEX.
+- Hosted research completed with model/retrieval metadata and five inline source links; the source list included EIA, Federal Reserve, IMF and World Bank pages. Commentary remains an AI draft requiring source review.
+- No user project assumptions or existing saved revisions were changed during the activation test. Phase 3 activation is complete.
