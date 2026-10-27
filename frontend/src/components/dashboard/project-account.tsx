@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { authClient, apiFetch } from "@/lib/client-api";
 import { apiError } from "@/lib/assessment";
 import type { Workspace } from "@/lib/workspace";
@@ -16,7 +16,7 @@ export function ProjectAccount({
   const [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
     [user, setUser] = useState(""),
-    [configured, setConfigured] = useState(false),
+    [configured, setConfigured] = useState<boolean | null>(null),
     [message, setMessage] = useState(""),
     [busy, setBusy] = useState(false);
   const [versions, setVersions] = useState<
@@ -28,6 +28,7 @@ export function ProjectAccount({
       created_at: string;
     }[]
   >([]);
+  const ownerRef = useRef("");
   const [current, setCurrent] = useState<{
     project_id: string;
     revision: number;
@@ -50,12 +51,26 @@ export function ProjectAccount({
             sessionStorage.getItem("flowvalue-workspace-owner") || "";
           const clear =
             _e === "SIGNED_OUT" || (!!previousOwner && previousOwner !== owner);
-          if (clear) sessionStorage.removeItem("flowvalue-workspace-v1");
+          ownerRef.current = owner;
+          if (clear) {
+            sessionStorage.removeItem("flowvalue-workspace-v1");
+            sessionStorage.removeItem("flowvalue-project-reference");
+          }
           sessionStorage.setItem("flowvalue-workspace-owner", owner);
           setUser(s?.user.email || "");
           if (clear) {
             setVersions([]);
             setCurrent(null);
+          }
+          if (!clear && owner) {
+            try {
+              const saved = JSON.parse(
+                sessionStorage.getItem("flowvalue-project-reference") || "null",
+              );
+              if (saved?.owner === owner) setCurrent(saved.current);
+            } catch {
+              /* ignore damaged browser metadata */
+            }
           }
           onAuth(clear);
         });
@@ -67,6 +82,29 @@ export function ProjectAccount({
       clean();
     };
   }, [onAuth]);
+  useEffect(() => {
+    if (!user) return;
+    let alive = true;
+    apiFetch("/api/projects")
+      .then(async (r) => {
+        if (!r.ok) throw Error(await apiError(r));
+        const rows = await r.json();
+        if (alive) setVersions(rows);
+      })
+      .catch((e) => {
+        if (alive) setMessage(e.message);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [user]);
+  function remember(value: { project_id: string; revision: number }) {
+    setCurrent(value);
+    sessionStorage.setItem(
+      "flowvalue-project-reference",
+      JSON.stringify({ owner: ownerRef.current, current: value }),
+    );
+  }
   async function sign(mode: "login" | "signup" | "logout") {
     setBusy(true);
     setMessage("");
@@ -74,17 +112,23 @@ export function ProjectAccount({
       const c = await authClient();
       if (!c) throw Error("Supabase is not configured");
       if (mode === "logout") {
-        await c.auth.signOut();
+        const { error } = await c.auth.signOut();
+        if (error) throw error;
         setUser("");
         setCurrent(null);
         setVersions([]);
-        onAuth();
         return;
       }
       const { error } =
         mode === "login"
           ? await c.auth.signInWithPassword({ email, password })
-          : await c.auth.signUp({ email, password });
+          : await c.auth.signUp({
+              email,
+              password,
+              options: {
+                emailRedirectTo: `${window.location.origin}/dashboard`,
+              },
+            });
       if (error) throw error;
       setPassword("");
       setMessage(
@@ -92,7 +136,6 @@ export function ProjectAccount({
           ? "Account created. Check your email for confirmation if required."
           : "Signed in.",
       );
-      onAuth();
     } catch (e) {
       setMessage(e instanceof Error ? e.message : "Account request failed");
     } finally {
@@ -100,12 +143,15 @@ export function ProjectAccount({
     }
   }
   async function list() {
+    const owner = ownerRef.current;
     const r = await apiFetch("/api/projects");
     if (!r.ok) throw Error(await apiError(r));
-    setVersions(await r.json());
+    const rows = await r.json();
+    if (owner === ownerRef.current) setVersions(rows);
   }
   async function save(fork = false) {
     if (!workspace) return;
+    const owner = ownerRef.current;
     setBusy(true);
     try {
       const r = await apiFetch("/api/projects", {
@@ -120,7 +166,8 @@ export function ProjectAccount({
       });
       if (!r.ok) throw Error(await apiError(r));
       const v = await r.json();
-      setCurrent({ project_id: v.project_id, revision: v.revision });
+      if (owner !== ownerRef.current) return;
+      remember({ project_id: v.project_id, revision: v.revision });
       setMessage(`Saved revision ${v.revision}.`);
       await list();
     } catch (e) {
@@ -130,13 +177,15 @@ export function ProjectAccount({
     }
   }
   async function load(id: string) {
+    const owner = ownerRef.current;
     setBusy(true);
     try {
       const r = await apiFetch(`/api/projects/${id}`);
       if (!r.ok) throw Error(await apiError(r));
       const v = await r.json();
+      if (owner !== ownerRef.current) return;
       onLoad(v.payload);
-      setCurrent({ project_id: v.project_id, revision: v.revision });
+      remember({ project_id: v.project_id, revision: v.revision });
       setMessage(`Loaded ${v.name}, revision ${v.revision}.`);
     } catch (e) {
       setMessage(e instanceof Error ? e.message : "Load failed");
@@ -150,7 +199,9 @@ export function ProjectAccount({
         <summary>
           Accounts & saved projects {user ? `· ${user}` : "· sign in to sync"}
         </summary>
-        {!configured ? (
+        {configured === null ? (
+          <p>Connecting to account services…</p>
+        ) : !configured ? (
           <p>
             Cloud storage is not configured. The current scenario remains
             available in this browser tab.
@@ -161,13 +212,7 @@ export function ProjectAccount({
               <Button disabled={busy || !workspace} onClick={() => save()}>
                 Save revision
               </Button>
-              <Button
-                disabled={busy || !workspace}
-                onClick={() => {
-                  setCurrent(null);
-                  save(true);
-                }}
-              >
+              <Button disabled={busy || !workspace} onClick={() => save(true)}>
                 Save as new project
               </Button>
               <Button
@@ -180,7 +225,13 @@ export function ProjectAccount({
                 Sign out
               </Button>
             </div>
+            <p>
+              {current
+                ? `Editing saved project · revision ${current.revision}. Save revision appends to its history.`
+                : "Unsaved project. Save revision creates its first saved version."}
+            </p>
             <div className="project-history">
+              {!versions.length && <p>No saved versions yet.</p>}
               {versions.map((v) => (
                 <button key={v.id} disabled={busy} onClick={() => load(v.id)}>
                   {v.name} · v{v.revision} ·{" "}

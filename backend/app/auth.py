@@ -34,6 +34,8 @@ async def authenticated_user(request: Request):
                 c.supabase_url.rstrip("/") + "/auth/v1/user",
                 headers={"apikey": c.supabase_publishable_key, "Authorization": token},
             )
+        if response.status_code >= 500 or response.status_code == 429:
+            raise HTTPException(503, "Authentication provider unavailable; retry later")
         if response.status_code != 200:
             raise HTTPException(401, "Session expired or invalid; sign in again")
         user = response.json()
@@ -59,6 +61,8 @@ async def project_rest(request: Request, method: str, path: str, *, body=None):
                 json=body,
             )
         if response.status_code >= 400:
+            if response.status_code == 401:
+                raise HTTPException(401, "Session expired or invalid; sign in again")
             if response.status_code == 409 or "Revision conflict" in response.text:
                 raise HTTPException(409, "Revision conflict: refresh project history or save as a new project")
             raise HTTPException(
