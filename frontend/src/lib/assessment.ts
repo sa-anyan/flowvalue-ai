@@ -1,3 +1,4 @@
+import type { Study } from "./study";
 import type { AdvisorContext } from "@/components/dashboard/universal-advisor";
 export type Kind =
   "quoted" | "heat_exchanger" | "vessel" | "reactor" | "pump" | "compressor";
@@ -64,6 +65,7 @@ export type Financial = {
   depreciation_years?: number | null;
 };
 export type AssessmentRequest = {
+  study?: Study | null;
   engineering_notes?: string[];
   is_demo: boolean;
   advisor_context?: AdvisorContext;

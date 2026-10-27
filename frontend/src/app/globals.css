@@ -2094,3 +2094,5 @@ select {
 .auth-screen h1{font-size:clamp(36px,6vw,60px);line-height:1.08;letter-spacing:-2px;font-weight:650;margin:16px 0 24px}
 .auth-screen>p{max-width:560px;line-height:1.8;color:var(--muted-foreground);font-size:15px;margin-bottom:30px}
 .auth-screen>small{font-size:11px;color:var(--muted-foreground)}
+
+.study-totals{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.study-cost-item,.study-evidence{padding:14px;border:1px solid var(--border);border-radius:8px;margin:12px 0}.study-workspace fieldset{padding:12px;border:1px solid var(--border);border-radius:8px}.study-workspace legend{font-size:12px}.study-workspace li{font-size:12px;line-height:1.7}.study-workspace h3{font-size:14px;font-weight:600;margin-top:16px}

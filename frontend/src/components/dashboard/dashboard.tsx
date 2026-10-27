@@ -53,6 +53,7 @@ import {
 } from "@/lib/assessment";
 import { AIConnection, useAIStatus } from "./ai-connection";
 import { ProjectAccount } from "./project-account";
+import { StudyWorkspace } from "./study-workspace";
 import { EngineeringTools } from "./engineering-tools";
 import {
   importScopeNotes,
@@ -582,6 +583,7 @@ export default function Dashboard() {
             importedStreams = (await streamResponse.json()).streams;
           }
           setBase({
+            study: canonical.study ?? null,
             engineering_notes: content.engineering_notes || [],
             financial,
             costing: {
@@ -761,6 +763,10 @@ export default function Dashboard() {
           <a href="#streams">
             <Upload size={18} />
             Simulation data
+          </a>
+          <a href="#study">
+            <FlaskConical size={18} />
+            Analyst workspace
           </a>
         </nav>
         <div className="sidebar-note">
@@ -1689,7 +1695,8 @@ export default function Dashboard() {
                             settings: {
                               ...base.costing.settings,
                               cepci_current: v,
-                              cepci_basis: "Manual planning assumption; source selection cleared by index edit",
+                              cepci_basis:
+                                "Manual planning assumption; source selection cleared by index edit",
                             },
                           },
                         })
@@ -1768,6 +1775,13 @@ export default function Dashboard() {
               </p>
             </div>
           </details>
+          {base && (
+            <StudyWorkspace
+              project={base}
+              streams={streams}
+              onProject={setBase}
+            />
+          )}
           {base && payload && (
             <EngineeringTools
               aiAvailable={!!ai.status?.can_generate}

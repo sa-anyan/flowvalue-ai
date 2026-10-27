@@ -54,6 +54,7 @@ from app.parsers.stream_parser import StreamTable, parse_csv
 from app.policy.screening import PolicyEvidence, screen_policy
 from app.reports.excel_builder import build_excel
 from app.reports.pdf_builder import build_pdf
+from app.study.models import OpexApplication, Study, review_study, study_notes
 from app.validation.references import reference_report
 
 
@@ -143,6 +144,7 @@ def financial_monte_carlo(request: MonteCarloRequest) -> MonteCarloResult:
 
 
 class AssessmentRequest(Model):
+    study: Study | None = None
     engineering_notes: list[Annotated[str, Field(max_length=1500)]] = Field(
         default_factory=list, max_length=100
     )
@@ -154,6 +156,7 @@ class AssessmentRequest(Model):
 
 
 class AssessmentResult(Model):
+    study: Study | None = None
     bom: EquipmentBOM
     financial: FinancialResult
     uncertainty: MonteCarloResult | None = None
@@ -170,15 +173,69 @@ def assessment(request: AssessmentRequest) -> AssessmentResult:
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     bom.assumptions.extend(request.engineering_notes)
+    if request.study:
+        bom.assumptions.extend(study_notes(request.study))
     financial = calculate_dcf(inputs)
     financial.warnings.extend(request.engineering_notes)
+    if request.study:
+        financial.warnings.extend(study_notes(request.study))
     return AssessmentResult(
+        study=request.study,
         bom=bom,
         financial=financial,
         uncertainty=monte_carlo(inputs, request.simulation)
         if request.simulation is not None
         else None,
     )
+
+
+@app.post("/api/study/review")
+def study_review(request: Study):
+    return review_study(request)
+
+
+class ApplyStudyOpex(Model):
+    project: AssessmentRequest
+    reviewer: str = Field(min_length=1, max_length=150, pattern=r"\S")
+    confirm_replace: bool = False
+
+
+@app.post("/api/study/apply-opex", response_model=AssessmentRequest)
+def apply_study_opex(request: ApplyStudyOpex):
+    from datetime import date
+
+    project = request.project.model_copy(deep=True)
+    if not request.confirm_replace or project.study is None:
+        raise HTTPException(422, "Confirm replacement and provide a study register")
+    review = review_study(project.study)
+    if not review["can_apply_opex"]:
+        raise HTTPException(422, "; ".join(review["opex_application_blockers"])[:3000])
+    totals = review["totals_usd"]
+    opex = {
+        "fixed_opex_usd_per_year": totals["fixed_opex"],
+        "variable_opex_usd_per_year": totals["feedstock"]
+        + totals["utilities"]
+        + totals["other_variable"],
+        "feedstock_opex_usd_per_year": totals["feedstock"],
+        "utility_opex_usd_per_year": totals["utilities"],
+    }
+    try:
+        project.financial = FinancialAssumptions.model_validate(
+            project.financial.model_dump() | opex
+        )
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    project.study.application = OpexApplication(
+        ledger_digest=review["digest"],
+        reviewer=request.reviewer.strip(),
+        applied_on=date.today(),
+        totals=opex,
+    )
+    # Existing detailed allocations must not contradict the replacement totals.
+    project.advisor_context.raw_materials = []
+    project.advisor_context.utilities = []
+    assessment(project.model_copy(update={"simulation": None}))
+    return project
 
 
 @app.post("/api/release/check")
@@ -253,6 +310,15 @@ def release_check(request: AssessmentRequest):
             "detail": "Run sign-in → save new project → reload and reopen latest revision in the hosted browser. This API does not impersonate a user or verify ownership.",
         },
     ]
+    if request.study:
+        study_check = review_study(request.study)
+        checks.append(
+            {
+                "label": "Study register",
+                "status": "review",
+                "detail": f"{len(study_check['questions'])} design questions; {len(study_check['opex_application_blockers'])} OPEX blockers; application {'current' if study_check['application_current'] else 'not applied or stale'}. CAPEX register remains planning-only.",
+            }
+        )
     return {
         "checked_at": datetime.now(UTC).isoformat(),
         "checks": checks,

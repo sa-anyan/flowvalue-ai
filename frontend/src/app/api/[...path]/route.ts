@@ -12,6 +12,8 @@ const paths = new Set([
   "api/indices/cepci",
   "api/policy/screen",
   "api/release/check",
+  "api/study/review",
+  "api/study/apply-opex",
   "api/integrations/catalog",
   "api/engineering/validation",
   "api/integrations/openpytea/equipment",

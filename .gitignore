@@ -22,3 +22,6 @@ supabase/.temp/
 .vercel/
 
 backend/.venv-biosteam/
+
+# User-supplied private study references
+/reference-materials/private/

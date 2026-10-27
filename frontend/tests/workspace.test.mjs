@@ -78,3 +78,22 @@ test("critical scope warnings cannot be displaced by long operator notes", () =>
   assert.equal(notes.length, 100);
   assert.ok(notes.some((n) => n.startsWith("INCOMPLETE EQUIPMENT SCOPE:")));
 });
+
+test("study context and cost ledger survive browser drafts; damaged study fails safely", () => {
+  const study = {
+    schema_version: "flowvalue-study-v1",
+    design_basis: { description: "Independent synthetic design" },
+    cost_items: [{ item_id: "LAB", status: "missing", quantity: null }],
+    evidence: [],
+  };
+  let stored = JSON.stringify({
+    project: { costing: { equipment: [...equipment] }, financial: {}, study },
+    streams: [], native_import: null,
+  });
+  Object.defineProperty(globalThis, "sessionStorage", {
+    value: { getItem: () => stored }, configurable: true,
+  });
+  assert.deepEqual(readWorkspace()?.project.study, study);
+  stored = stored.replace('"cost_items":[', '"wrong_items":[');
+  assert.equal(readWorkspace(), null);
+});

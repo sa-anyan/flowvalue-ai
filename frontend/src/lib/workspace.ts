@@ -32,6 +32,14 @@ export function readWorkspace(): Workspace | null {
     )
       return null;
     if (
+      value.project.study &&
+      (value.project.study.schema_version !== "flowvalue-study-v1" ||
+        !value.project.study.design_basis ||
+        !Array.isArray(value.project.study.cost_items) ||
+        !Array.isArray(value.project.study.evidence))
+    )
+      return null;
+    if (
       value.native_import &&
       (!Array.isArray(value.native_import.units) ||
         !Array.isArray(value.native_import.streams) ||
