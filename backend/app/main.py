@@ -51,6 +51,7 @@ from app.integrations.libraries import (
 )
 from app.parsers.dwsim_parser import DWSIMImport, parse_dwxml
 from app.parsers.stream_parser import StreamTable, parse_csv
+from app.policy.screening import PolicyEvidence, screen_policy
 from app.reports.excel_builder import build_excel
 from app.reports.pdf_builder import build_pdf
 from app.validation.references import reference_report
@@ -180,6 +181,85 @@ def assessment(request: AssessmentRequest) -> AssessmentResult:
     )
 
 
+@app.post("/api/release/check")
+def release_check(request: AssessmentRequest):
+    # Single deterministic DCF. No Monte Carlo, provider calls or cloud writes.
+    result = assessment(request.model_copy(update={"simulation": None}))
+    references = reference_report()
+    excel = build_excel(result.bom, result.financial)
+    risk = monte_carlo(
+        result.financial.inputs,
+        MonteCarloSettings(iterations=100, variation_fraction=0),
+    )
+    pdf = build_pdf(result.bom, result.financial, risk, demo=request.is_demo)
+    evidence = request.financial.incentive.evidence
+    screened = screen_policy(evidence) if evidence else None
+    checks = [
+        {
+            "label": "Engineering references",
+            "status": "pass" if references["passed"] else "fail",
+            "detail": "Frozen implementation checks; not independent plant validation.",
+        },
+        {
+            "label": "Scenario calculation",
+            "status": "pass",
+            "detail": "BOM and DCF accepted for current scenario.",
+        },
+        {
+            "label": "Excel and PDF generation",
+            "status": "pass"
+            if excel.startswith(b"PK") and pdf.startswith(b"%PDF")
+            else "fail",
+            "detail": "Both report engines generated binaries; CI checks live Excel formulas and PDF pages.",
+        },
+        {
+            "label": "Equipment scope",
+            "status": "review"
+            if any(
+                "INCOMPLETE EQUIPMENT" in n or "MIXED EQUIPMENT" in n
+                for n in request.engineering_notes
+            )
+            else "review"
+            if request.is_demo
+            else "pass",
+            "detail": "Demo or imported scope needs engineering review; absence of a warning is not validation of plant completeness.",
+        },
+        {
+            "label": "CEPCI / estimate basis",
+            "status": "review",
+            "detail": f"Target {request.costing.settings.cepci_current:g}; {request.costing.settings.cepci_basis}. No licensed live feed connected.",
+        },
+        {
+            "label": "Production incentive",
+            "status": "pass" if not request.financial.incentive.enabled else "review",
+            "detail": "Disabled"
+            if not request.financial.incentive.enabled
+            else (
+                screened["status"]
+                if screened
+                else "Manual user-confirmed scenario; no policy screening"
+            ),
+        },
+        {
+            "label": "AI configuration",
+            "status": "pass"
+            if ai_status(ResearchSettings())["can_generate"]
+            else "review",
+            "detail": "Configuration only; model access, billing and generated output not tested. No provider request made.",
+        },
+        {
+            "label": "Account save/reload",
+            "status": "manual",
+            "detail": "Run sign-in → save new project → reload and reopen latest revision in the hosted browser. This API does not impersonate a user or verify ownership.",
+        },
+    ]
+    return {
+        "checked_at": datetime.now(UTC).isoformat(),
+        "checks": checks,
+        "notice": "Readiness evidence is scoped to this request. Review items do not prevent exploratory use. Production tax eligibility, engineering completeness, licensed data rights and account persistence are not certified by this check.",
+    }
+
+
 @app.get("/api/demo", response_model=AssessmentRequest)
 def demo_assessment() -> AssessmentRequest:
     return AssessmentRequest.model_validate(
@@ -302,6 +382,11 @@ def assessment_tornado(request: AssessmentRequest):
 @app.get("/api/indices/cepci")
 def cepci_catalog():
     return index_catalog()
+
+
+@app.post("/api/policy/screen")
+def policy_screen(request: PolicyEvidence):
+    return screen_policy(request)
 
 
 @app.get("/api/engineering/validation")

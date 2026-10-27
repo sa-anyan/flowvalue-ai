@@ -10,9 +10,11 @@ from scipy.special import logsumexp
 from scipy.stats import uniform
 
 from app.engine.costing import Model
+from app.policy.screening import PolicyEvidence, policy_notes, screen_policy
 
 
 class ProductionIncentive(Model):
+    evidence: PolicyEvidence | None = None
     enabled: bool = False
     name: str = Field(
         default="User-defined production credit", min_length=1, max_length=150
@@ -31,6 +33,19 @@ class ProductionIncentive(Model):
             raise ValueError(
                 "Enabled incentives require confirmed eligibility and a documented basis; no eligibility is inferred"
             )
+        if self.enabled and self.evidence is not None:
+            report = screen_policy(self.evidence)
+            if not report["can_enable"]:
+                raise ValueError(
+                    "Policy screen requires current reviewed evidence before enabling the credit"
+                )
+            if (
+                self.evidence.profile == "us_45v"
+                and self.start_year + self.duration_years > 11
+            ):
+                raise ValueError(
+                    "45V scenario must fit within the first 10 operating years from service"
+                )
         return self
 
 
@@ -225,7 +240,10 @@ def calculate_dcf(inputs: FinancialInputs) -> FinancialResult:
         payback_years=payback(flows),
         discounted_payback_years=payback(discounted_flows),
         lcop_usd_per_unit=lcop,
-        assumptions=[
+        assumptions=(
+            policy_notes(inputs.incentive.evidence) if inputs.incentive.evidence else []
+        )
+        + [
             "USD, constant-dollar unlevered project; rates as decimals",
             "Year-zero CAPEX, end-of-year cash flows, constant annual production and OPEX",
             "Annual OPEX inputs reflect the selected capacity factor; not scaled again",

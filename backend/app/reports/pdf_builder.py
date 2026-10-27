@@ -254,12 +254,12 @@ def build_pdf(
         p("Estimate basis", "FVSection"),
         p(
             f"CEPCI target/reference: {bom.settings.cepci_current:g}/{bom.settings.cepci_base:g}. Capital stress multiplier: {bom.settings.capital_cost_multiplier:g}x. "
-            "This is a configurable assumption, not a verified current index. Turton module correlations are used within stated size ranges unless extrapolation is explicitly enabled."
+            f"Source basis (user supplied): {bom.settings.cepci_basis[:160]}. Full source record in workbook. Turton ranges apply unless extrapolation enabled."
         ),
         p(
             "Straight-line depreciation; taxes floored at zero with no loss carryforward. LCOP is before tax and credits. "
             + (
-                f"Incentive scenario: {f.incentive.name[:100]}, ${f.incentive.rate_usd_per_unit:g}/unit, {f.incentive.duration_years} years from Y{f.incentive.start_year}, {f.incentive.treatment}. Eligibility: user-confirmed; see workbook basis."
+                f"Incentive scenario: {f.incentive.name[:100]}, ${f.incentive.rate_usd_per_unit:g}/unit, {f.incentive.duration_years} years from Y{f.incentive.start_year}, {f.incentive.treatment}. Eligibility: user-confirmed scenario; see workbook evidence."
                 if f.incentive.enabled
                 else "Production incentives disabled."
             )

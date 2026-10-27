@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { ReleaseReadiness } from "./release-readiness";
+import { PolicyReview } from "./policy-review";
 import { NativeUnitEditor } from "./native-unit-editor";
 import { EngineeringValidation } from "./engineering-validation";
 import { Button } from "@/components/ui/button";
@@ -47,6 +49,7 @@ export function EngineeringTools({
       text: string;
     } | null>(null),
     [busy, setBusy] = useState("");
+  const [indicesError, setIndicesError] = useState("");
   const [indices, setIndices] = useState<
     {
       period: string;
@@ -55,6 +58,11 @@ export function EngineeringTools({
       source_url: string;
       status: string;
       retrieved_on: string;
+      license_reference: string;
+      distribution_rights: string;
+      rights_expires_on: string | null;
+      reviewed_by: string;
+      note: string;
     }[]
   >([]);
   const [catalog, setCatalog] = useState<
@@ -87,9 +95,16 @@ export function EngineeringTools({
     policy = project.financial.incentive || defaultIncentive;
   useEffect(() => {
     apiFetch("/api/indices/cepci")
-      .then((r) => r.json())
+      .then(async (r) => {
+        if (!r.ok) throw Error(await apiError(r));
+        return r.json();
+      })
       .then((r) => setIndices(r.records || []))
-      .catch(() => {});
+      .catch(() =>
+        setIndicesError(
+          "Source catalog unavailable. Your selected index is retained; reload to retry.",
+        ),
+      );
     apiFetch("/api/integrations/catalog")
       .then((r) => r.json())
       .then((r) => setCatalog(r.correlations || []))
@@ -121,7 +136,16 @@ export function EngineeringTools({
   function policyChange(change: Partial<Incentive>) {
     onProject({
       ...project,
-      financial: { ...project.financial, incentive: { ...policy, ...change } },
+      financial: {
+        ...project.financial,
+        incentive: {
+          ...policy,
+          ...(!("enabled" in change) && !("eligibility_confirmed" in change)
+            ? { enabled: false, eligibility_confirmed: false }
+            : {}),
+          ...change,
+        },
+      },
     });
   }
   async function addLibrary() {
@@ -230,6 +254,7 @@ export function EngineeringTools({
   return (
     <div className="engineering-tools">
       <EngineeringValidation />
+      <ReleaseReadiness project={scenario} />
       {native && (
         <details className="panel extension-panel" open>
           <summary>DWSIM import review</summary>
@@ -396,18 +421,42 @@ export function EngineeringTools({
           </p>
         </details>
         <details>
-          <summary>CEPCI source catalog</summary>
+          <summary>CEPCI source catalog & licensing holder</summary>
+          {indicesError && <p role="alert">{indicesError}</p>}
+          <p>
+            <strong>Licensed feed: not connected.</strong> No purchase is
+            required to use manual assumptions. Activation requires a provider
+            agreement, SaaS redistribution rights, dated observations, a named
+            reviewer and rights expiry. Personal subscription access alone does
+            not establish redistribution rights.
+          </p>
+          <p>
+            Operators import reviewed observations using{" "}
+            <code>python scripts/import_cepci.py observation.json</code>.
+            Internal-only and expired licensed records are withheld from the
+            shared catalog. No provider credentials are stored in this
+            interface.
+          </p>
           <p>
             Licensed observations are added by an operator with source, date and
             reviewer. No live subscription feed is connected. Your currently
             selected index: {project.costing.settings.cepci_current}.
+          </p>
+          <p>
+            <a href="/examples/cepci-observation.template.json" download>
+              Download operator observation template
+            </a>
           </p>
           {indices.map((x, i) => (
             <div className="index-record" key={i}>
               <a href={x.source_url} target="_blank" rel="noreferrer">
                 {x.period} · {x.value} · {x.status} · {x.source_title}
               </a>
-              <small>Retrieved {x.retrieved_on}</small>
+              <small>
+                Retrieved {x.retrieved_on} · reviewer {x.reviewed_by} · rights{" "}
+                {x.distribution_rights} · expiry {x.rights_expires_on || "n/a"}{" "}
+                · {x.license_reference || "planning assumption"}. {x.note}
+              </small>
               <Button
                 variant="outline"
                 onClick={() =>
@@ -418,6 +467,7 @@ export function EngineeringTools({
                       settings: {
                         ...project.costing.settings,
                         cepci_current: x.value,
+                        cepci_basis: `${x.period}; ${x.source_title}; ${x.source_url}; retrieved ${x.retrieved_on}; reviewer ${x.reviewed_by}; ${x.status}; rights ${x.distribution_rights}; ${x.license_reference || "assumption"}; expiry ${x.rights_expires_on || "n/a"}`,
                       },
                     },
                   })
@@ -437,6 +487,7 @@ export function EngineeringTools({
           rules and monetization. Credit units must match the model’s product
           units (45V uses kg hydrogen).
         </p>
+        <PolicyReview policy={policy} onChange={policyChange} />
         <div className="extension-actions">
           <label>
             Policy label
@@ -537,16 +588,18 @@ export function EngineeringTools({
           />
           I have checked the eligibility and monetization assumptions.
         </label>
-        <label className="extension-checkbox">
-          <input
-            aria-label="Enable production credit"
-            type="checkbox"
-            disabled={!policy.eligibility_confirmed || !policy.basis.trim()}
-            checked={policy.enabled}
-            onChange={(e) => policyChange({ enabled: e.target.checked })}
-          />
-          Include this credit in cash flows and exports
-        </label>
+        {!policy.evidence && (
+          <label className="extension-checkbox">
+            <input
+              aria-label="Enable production credit"
+              type="checkbox"
+              disabled={!policy.eligibility_confirmed || !policy.basis.trim()}
+              checked={policy.enabled}
+              onChange={(e) => policyChange({ enabled: e.target.checked })}
+            />
+            Include this credit in cash flows and exports
+          </label>
+        )}
         <a
           href="https://www.irs.gov/credits-deductions/clean-hydrogen-production-credit"
           target="_blank"

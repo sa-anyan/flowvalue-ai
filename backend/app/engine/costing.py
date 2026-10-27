@@ -17,6 +17,10 @@ class Model(BaseModel):
 
 
 class CostSettings(Model):
+    cepci_basis: str = Field(
+        default="Operator planning assumption; not a current licensed observation",
+        max_length=1500,
+    )
     capital_cost_multiplier: float = Field(default=1, ge=0.5, le=1.5)
     cepci_current: Positive = 800
     cepci_base: Positive = 397
@@ -363,7 +367,7 @@ def build_bom(request: CostingRequest) -> EquipmentBOM:
         assumptions=[
             "Per-item costs are per unit; totals include quantity",
             f"Capital stress multiplier {request.settings.capital_cost_multiplier:g} applied to purchased and bare module costs; this is a scenario, not a probability",
-            "CEPCI 800/397 is a configurable planning basis, not a verified current index",
+            f"CEPCI target/reference {request.settings.cepci_current:g}/{request.settings.cepci_base:g}. Source basis (user supplied): {request.settings.cepci_basis}",
             "Bare module totals exclude offsites, working capital, contingency and owner costs",
             "Sources and validity: docs/calculation_basis.md",
         ],

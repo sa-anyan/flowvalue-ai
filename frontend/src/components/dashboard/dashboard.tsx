@@ -1689,6 +1689,7 @@ export default function Dashboard() {
                             settings: {
                               ...base.costing.settings,
                               cepci_current: v,
+                              cepci_basis: "Manual planning assumption; source selection cleared by index edit",
                             },
                           },
                         })

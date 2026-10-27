@@ -1,7 +1,7 @@
 """Usage: python scripts/import_cepci.py licensed-observation.json
 
-Review source rights and observation before committing the catalog update.
-No application endpoint can overwrite indices.
+Append a reviewed observation. Internal-only observations stay out of the API.
+Do not commit licensed source data without repository distribution rights.
 """
 
 import json
@@ -10,12 +10,24 @@ from pathlib import Path
 
 from app.engine.indices import IndexRecord
 
-record = IndexRecord.model_validate_json(Path(sys.argv[1]).read_text())
-path = Path(__file__).resolve().parents[1] / "app/data/cepci.json"
-records = json.loads(path.read_text())
-# Append-only revisions preserve earlier publications/corrections.
-records.append(record.model_dump(mode="json"))
-path.write_text(json.dumps(records, indent=2) + "\n")
-print(
-    f"Appended CEPCI observation {record.period}; review and commit the catalog revision."
-)
+
+def append_observation(source: Path, catalog: Path):
+    record = IndexRecord.model_validate_json(source.read_text())
+    records = json.loads(catalog.read_text())
+    payload = record.model_dump(mode="json")
+    if payload in records:
+        raise ValueError("Identical observation already exists; import cancelled")
+    records.append(payload)
+    temporary = catalog.with_suffix(".json.tmp")
+    temporary.write_text(json.dumps(records, indent=2) + "\n")
+    temporary.replace(catalog)
+    return record
+
+
+if __name__ == "__main__":
+    record = append_observation(
+        Path(sys.argv[1]), Path(__file__).resolve().parents[1] / "app/data/cepci.json"
+    )
+    print(
+        f"Appended observation {record.period}. Review distribution rights before committing/deploying."
+    )

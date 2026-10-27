@@ -8,7 +8,26 @@ export type EquipmentSpec = {
   quantity?: number;
   [key: string]: number | string | boolean | undefined;
 };
+export type PolicyEvidence = {
+  profile: "custom" | "us_45v";
+  jurisdiction: "unknown" | "US" | "other";
+  product: "unknown" | "hydrogen_kg" | "other";
+  construction_start: string | null;
+  placed_in_service: string | null;
+  emissions_kg_co2e_per_kg_h2: number | null;
+  independent_verification: boolean | null;
+  owner_trade_sale_use: boolean | null;
+  no_conflicting_credit: boolean | null;
+  electricity_and_emissions_rules_reviewed: boolean | null;
+  wage_apprenticeship_reviewed: boolean | null;
+  monetization_reviewed: boolean | null;
+  reviewer: string;
+  reviewed_on: string | null;
+  source_urls: string[];
+  evidence_reference: string;
+};
 export type Incentive = {
+  evidence?: PolicyEvidence | null;
   enabled: boolean;
   name: string;
   rate_usd_per_unit: number;
@@ -52,6 +71,7 @@ export type AssessmentRequest = {
     equipment: EquipmentSpec[];
     settings: {
       capital_cost_multiplier?: number;
+      cepci_basis?: string;
       cepci_current: number;
       cepci_base: number;
       allow_extrapolation: boolean;
