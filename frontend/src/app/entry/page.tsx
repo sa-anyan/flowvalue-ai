@@ -1,17 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { ChevronRight } from "lucide-react";
 import { WorkspaceSidebar } from "@/components/dashboard/workspace-sidebar";
 import { readWorkspace } from "@/lib/workspace";
 
-export default function EntryPage() {
-  const [name, setName] = useState("Untitled process");
+function subscribeToWorkspace() {
+  // This blank page only reads the current workspace when it is opened.
+  return () => {};
+}
 
-  useEffect(() => {
-    const savedName = readWorkspace()?.project.advisor_context?.name;
-    if (savedName) setName(savedName);
-  }, []);
+function getWorkspaceName() {
+  return readWorkspace()?.project.advisor_context?.name ?? "Untitled process";
+}
+
+export default function EntryPage() {
+  const name = useSyncExternalStore(
+    subscribeToWorkspace,
+    getWorkspaceName,
+    () => "Untitled process",
+  );
 
   return (
     <div className="app-shell">
