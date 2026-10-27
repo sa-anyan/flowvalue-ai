@@ -205,7 +205,13 @@ def test_review_resolution_and_filter_escaping():
     ]
     assert [e["id"] for e in open_challenges(events)] == ["b"]
     encoded = filter_value('R&action=eq.resolve,"X')
-    assert "&" not in encoded and encoded.startswith("%22")
+    from urllib.parse import parse_qs
+
+    assert "&" not in encoded
+    assert parse_qs("unit_id=eq." + encoded) == {
+        "unit_id": ['eq.R&action=eq.resolve,"X']
+    }
+    assert filter_value("E1") == "E1"
 
 
 def test_unit_research_is_bounded_cited_and_never_changes_project():

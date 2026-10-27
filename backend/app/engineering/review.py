@@ -23,6 +23,11 @@ def engineering_notes(project):
 
 
 def filter_value(value: str) -> str:
+    """Encode a top-level PostgREST eq value, whose quotes are literal data.
+
+    Quoted-value escaping belongs to in/logical expressions, not eq filters.
+    Percent-encoding protects query delimiters without changing the unit ID.
+    """
     from urllib.parse import quote
 
-    return quote('"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"', safe="")
+    return quote(value, safe="")

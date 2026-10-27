@@ -42,7 +42,7 @@ def storage(monkeypatch):
             result = state["events"]
             for field in ("id", "unit_id", "action"):
                 if field in q:
-                    value = q[field][0].removeprefix("eq.").strip('"')
+                    value = q[field][0].removeprefix("eq.")
                     result = [e for e in result if e[field] == value]
             return result
         if table == "engineering_review_access" and method == "GET":
