@@ -22,7 +22,6 @@ import {
   FileSpreadsheet,
   FlaskConical,
   Layers3,
-  LayoutDashboard,
   LoaderCircle,
   Moon,
   Plus,
@@ -53,6 +52,7 @@ import {
 } from "@/lib/assessment";
 import { AIConnection, useAIStatus } from "./ai-connection";
 import { ProjectAccount } from "./project-account";
+import { WorkspaceSidebar } from "./workspace-sidebar";
 import { EngineeringAnalyst } from "./engineering-analyst";
 import { StudyWorkspace } from "./study-workspace";
 import { EngineeringTools } from "./engineering-tools";
@@ -718,78 +718,7 @@ export default function Dashboard() {
     );
   return (
     <div className="app-shell">
-      <aside className="sidebar">
-        <a className="brand" href="/dashboard">
-          <span className="brand-mark">
-            <Waves size={23} />
-          </span>
-          <span>
-            flowvalue<span className="brand-ai"> AI</span>
-          </span>
-        </a>
-        <div className="workspace-label">WORKSPACE</div>
-        <div className="workspace-switch">
-          <span className="workspace-icon">
-            <FlaskConical size={17} />
-          </span>
-          <div>
-            <strong>{base?.advisor_context?.name ?? "Untitled process"}</strong>
-            <small>Process economics</small>
-          </div>
-          <ChevronDown size={14} />
-        </div>
-        <div className="nav-caption">ANALYSIS</div>
-        <nav>
-          <a href="/process-flow">
-            <Layers3 size={18} />
-            Interactive process flow
-          </a>
-          <a href="#overview" className="nav-selected">
-            <LayoutDashboard size={18} />
-            Overview
-            <span className="nav-dot" />
-          </a>
-          <a href="#equipment">
-            <Layers3 size={18} />
-            Equipment & costing
-          </a>
-          <a href="#playground">
-            <SlidersHorizontal size={18} />
-            Financial playground
-          </a>
-          <a href="#risk">
-            <ShieldCheck size={18} />
-            Risk & uncertainty
-          </a>
-          <a href="#streams">
-            <Upload size={18} />
-            Simulation data
-          </a>
-          <a href="#engineering-analyst">
-            <FlaskConical size={18} />
-            Engineering analyst
-          </a>
-          <a href="#study">
-            <FlaskConical size={18} />
-            Analyst workspace
-          </a>
-        </nav>
-        <div className="sidebar-note">
-          <Activity size={18} />
-          <strong>From process to possibility.</strong>
-          <p>Explore the economics behind your next engineering decision.</p>
-          <span>
-            <i /> ENGINEERING WORKSPACE
-          </span>
-        </div>
-        <div className="sidebar-bottom">
-          <span className="avatar">FV</span>
-          <div>
-            <strong>Engineering workspace</strong>
-            <small>FlowValue AI · v0.1</small>
-          </div>
-        </div>
-      </aside>
+      <WorkspaceSidebar name={base?.advisor_context?.name ?? "Untitled process"} active="overview" />
       <div className="main-shell">
         <header className="topbar">
           <div className="breadcrumb">

@@ -226,6 +226,7 @@ input:focus {
   flex-shrink: 0;
   background: #17271e;
   color: #a8b8ac;
+  overflow-y: auto;
   padding: 29px 17px 0;
   position: fixed;
   inset: 0 auto 0 0;
