@@ -89,3 +89,21 @@ These files are examples and parser fixtures: the parsers are **rule-based, not 
 ## Contextual help on Entry
 
 Long explanatory copy in the Entry mass/energy balance intake is presented via small question-mark disclosures rather than permanent paragraphs. Pointer hover reveals the explanation; activating the disclosure by click, tap or keyboard toggles it. Source-specific requirements, sample notes, preview limitations, parser-design disclaimers, AI data-sharing details, evidence storage notes and the meaning of validation status remain available without crowding the entry form. Upload constraints, unsupported status, active processing state, errors, missing data and engineering validation results continue to display prominently. This is a presentation-only change; no parser, validation or provider behaviour is altered.
+
+### XLSM description parser (28 October 2026)
+
+The founder-supplied `flowvalue_smart_meb_parser.py` is preserved byte-for-byte as
+`backend/app/parsers/inputs/xlsm_parser.py`. Production calls its `parse_sheet`
+and `classify` functions through `xlsm_adapter.py`, using the bounded existing
+openpyxl reader instead of the script's unavailable `artifact_tool` loader or
+its disk-writing CLI. `.xlsm` uploads use this adapter regardless of simulator
+selection. Macros and external links are never executed/refreshed.
+
+This route identifies numeric stream labels and equipment tags in adjacent or
+inline stream descriptions. It does not extract numerical balances, infer
+untagged equipment, establish connections, or size equipment. Classification
+remains inferred; ambiguous types and missing equipment require manual review.
+Source description cells are retained in the canonical report. Other Excel
+formats retain their existing paths. Tests cover tagged equipment, source
+cells, ignored macro payloads/formulas, malformed uploads and isolated-worker
+integration. No claim of complete engineering workbook extraction is made.
