@@ -3,7 +3,7 @@
 Usage: python flowvalue_smart_meb_parser.py INPUT.xlsm [--output-dir DIR]
        python flowvalue_smart_meb_parser.py INPUT.xls  [--output-dir DIR]
 
-.xlsm/.xlsx: artifact_tool. Legacy .xls: xlrd (pip install xlrd).
+.xlsm/.xlsx: openpyxl read-only. Legacy .xls: xlrd (pip install xlrd).
 No AI. No inferred equipment tags. Ambiguity is reported, never silently resolved.
 """
 from __future__ import annotations
@@ -39,10 +39,13 @@ def matrix_sheets(path):
         for sh in wb.sheets():
             yield sh.name, [[sh.cell_value(r,c) for c in range(sh.ncols)] for r in range(sh.nrows)]
     elif path.suffix.lower() in ('.xlsm','.xlsx'):
-        from artifact_tool import Blob, SpreadsheetFile
-        wb = SpreadsheetFile.import_xlsx(Blob.load(str(path)))
-        for sh in wb.worksheets.items:
-            yield sh.name, sh.get_used_range().values
+        from openpyxl import load_workbook
+        wb = load_workbook(str(path), read_only=True, data_only=True, keep_links=False)
+        try:
+            for sh in wb.worksheets:
+                yield sh.title, [list(row) for row in sh.iter_rows(values_only=True)]
+        finally:
+            wb.close()
     else:
         raise ValueError('Supported file formats: .xls, .xlsx and .xlsm')
 
