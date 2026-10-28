@@ -2210,3 +2210,6 @@ select {
   .workspace-mobile-nav nav a { padding:10px; border-radius:6px; }
   .workspace-mobile-nav nav a[aria-current=page] { background:var(--secondary); font-weight:600; }
 }
+.workspace-content > .assumptions-panel { padding:22px; }
+.workspace-content > .assumptions-panel > h2 { font-size:16px; font-weight:600; margin-bottom:8px; }
+.workspace-content > .assumptions-panel > p { font-size:12px; color:var(--muted-foreground); margin-bottom:18px; }
