@@ -9,7 +9,7 @@ from .xlsm_parser import parse_sheet, classify
 
 def parse_xlsm(content: bytes, filename: str):
     filename = safe_filename(filename)
-    sheets, warnings = read_book(content, filename, allow_xlsm=True)
+    sheets, warnings = read_book(content, filename)
     report = BalanceReport(filename=filename, sha256=sha256(content).hexdigest(),
                            parser_version="xlsm-descriptions-1.0", sheets=[])
     grouped = {}

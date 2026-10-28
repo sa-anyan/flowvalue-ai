@@ -58,14 +58,14 @@ def safe_filename(name):
     )
 
 
-def read_book(content: bytes, name: str, *, allow_xlsm=False):
+def read_book(content: bytes, name: str):
     if not content or len(content) > MAX_FILE:
         raise ValueError("Workbook must be non-empty and at most 4 MiB.")
     ext = PurePath(name.lower()).suffix
     warnings = []
-    if ext == ".xlsx" or (allow_xlsm and ext == ".xlsm"):
+    if ext in (".xlsx", ".xlsm"):
         if not content.startswith(b"PK"):
-            raise ValueError("The .xlsx extension does not match an OOXML workbook.")
+            raise ValueError("The extension does not match an OOXML workbook.")
         try:
             with ZipFile(BytesIO(content)) as z:
                 entries = z.infolist()
@@ -87,8 +87,8 @@ def read_book(content: bytes, name: str, *, allow_xlsm=False):
                     or "xl/workbook.xml" not in z.namelist()
                 ):
                     raise ValueError("Not an Excel OOXML workbook.")
-                if not allow_xlsm and any("vbaproject" in i.filename.lower() for i in entries):
-                    raise ValueError("Macro-bearing workbooks are not supported.")
+                if any("vbaproject" in i.filename.lower() for i in entries):
+                    warnings.append("VBA macros were not executed or imported; only stored spreadsheet values were read.")
                 if len({i.filename for i in entries}) != len(entries):
                     raise ValueError("Duplicate archive members are not supported.")
                 actual_cells = 0
@@ -277,5 +277,5 @@ def read_book(content: bytes, name: str, *, allow_xlsm=False):
                 "Malformed, encrypted or unsupported BIFF workbook."
             ) from e
     raise ValueError(
-        "Choose an .xlsx or .xls workbook. Password-protected files, .xlsm, .xlsb and renamed formats are not supported."
+        "Choose an .xlsx, .xls or .xlsm workbook. Password-protected files, .xlsb and renamed formats are not supported."
     )

@@ -30,6 +30,10 @@ def main():
             result = parse_excel(content, sys.argv[2])
         else:
             raise ValueError("Unsupported Excel import source.")
+        from app.parsers.inputs.equipment_tag_extraction import augment_equipment
+
+        if not sys.argv[2].lower().endswith(".xlsm"):
+            result = augment_equipment(result, content, sys.argv[2])
         print(json.dumps({"report": result.model_dump(mode="json")}, allow_nan=False))
     except Exception as exc:  # noqa: BLE001 - untrusted workbook process boundary
         # No stack traces, local filenames or workbook content in API errors.
