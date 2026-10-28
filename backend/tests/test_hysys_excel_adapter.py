@@ -2,10 +2,8 @@
 
 from io import BytesIO
 
-from fastapi.testclient import TestClient
 from openpyxl import Workbook
 
-from app.main import app
 from app.parsers.balance import parse_excel
 from app.parsers.inputs.aspen_hysys_excel import parse_hysys_excel
 
@@ -108,17 +106,7 @@ def test_unresolved_units_and_unsupported_hysys_format_remain_explicit():
     assert any(i.code == "hysys_layout_unrecognised" for i in requested_hysys.issues)
 
 
-def test_selected_hysys_form_route_returns_standard_balance_report(monkeypatch):
-    # Run the same upload path used by Entry. This must never execute Excel formulas.
-    from app import main as main_module
-
-    async def auth_stub(*args, **kwargs):
-        return None
-
-    monkeypatch.setattr(main_module, "require_auth", auth_stub, raising=False)
-    # Endpoint auth remains protected in deployment; auth is provided via
-    # the app's existing dependency/middleware if configured.
-    # Test only canonical parser contract directly to avoid auth bypass.
+def test_selected_hysys_returns_standard_balance_schema():
     report = parse_hysys_excel(sample(streams()), "selected-hysys.xlsx")
     assert report.schema_version == "flowvalue-balance-v1"
     assert report.sheets[0]["tables"] == 1
