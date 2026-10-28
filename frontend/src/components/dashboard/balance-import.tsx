@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
+import Link from "next/link";
 import {
   importMethods,
   getImportMethod,
@@ -461,6 +462,7 @@ export function BalanceImport({
       )}
       <div className="equipment-inspection">
           <h3>Equipment list</h3>
+          {report && <Link href="/data/equipment">Inspect equipment data →</Link>}
           {report && (<>
           {report.entities.some((entity) => entity.kind === "equipment") ? (
             <div className="table-scroll">

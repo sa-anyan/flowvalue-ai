@@ -1,5 +1,7 @@
 export const workspaceRoutes = {
   "/entry": "entry",
+  "/data": "data",
+  "/data/equipment": "data",
   "/main-dashboard": "main",
   "/dashboard": "analysis",
   "/capex": "capex",
@@ -18,6 +20,7 @@ export function workspaceView(pathname: string): WorkspaceView {
 }
 export const workspaceTitles: Record<WorkspaceView, string> = {
   entry: "Project entry",
+  data: "Equipment data",
   main: "Main dashboard",
   analysis: "Analyst workspace",
   capex: "CAPEX",

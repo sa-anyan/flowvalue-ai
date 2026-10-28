@@ -9,6 +9,7 @@ import {
 } from "@/lib/workspace-navigation";
 import { CashFlowChart, RiskChart } from "./charts";
 import { CapexEquipmentBasis } from "./capex-guide";
+import { EquipmentData } from "./equipment-data";
 import { BalanceImport } from "./balance-import";
 import type { BalanceAttachment } from "@/lib/balance";
 import { LegacyProjectWorkspace } from "./legacy-project-workspace";
@@ -838,7 +839,9 @@ export default function Dashboard() {
             onLoad={loadWorkspace}
             onAuth={authChanged}
           />
-          {base?.legacy_reference ? (
+          {mode === "data" ? (
+            <EquipmentData report={balanceImport?.report ?? null} />
+          ) : base?.legacy_reference ? (
             <>
               {isEntry && (
                 <BalanceImport

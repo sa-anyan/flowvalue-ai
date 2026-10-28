@@ -18,6 +18,7 @@ type WorkspaceSidebarProps = {
   name: string;
   activeCapexTab?: string;
   active:
+    | "data"
     | "entry"
     | "process"
     | "main"
@@ -67,6 +68,14 @@ export function WorkspaceSidebar({
             Entry
             {active === "entry" && <span className="nav-dot" />}
           </Link>
+          <Link href="/data" className={active === "data" ? "nav-selected" : undefined}>
+            <Layers3 size={18} /> Data <ChevronDown size={14} />
+          </Link>
+          {active === "data" && (
+            <div className="capex-subnav" aria-label="Data pages">
+              <Link href="/data/equipment" className="capex-child-active" aria-current="page">Equipment</Link>
+            </div>
+          )}
         </nav>
         <div className="nav-caption">PROCESS VISUALISATION</div>
         <nav aria-label="Process visualisation">
