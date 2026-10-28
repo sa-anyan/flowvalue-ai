@@ -13,7 +13,7 @@ def parse_xlsm(content: bytes, filename: str, *, loaded=None):
     filename = safe_filename(filename)
     sheets, warnings = loaded if loaded is not None else read_book(content, filename)
     report = BalanceReport(filename=filename, sha256=sha256(content).hexdigest(),
-                           parser_version="xlsm-streams-1.2", sheets=[])
+                           parser_version="xlsm-streams-1.3", sheets=[])
     grouped = {}
     material = []
     property_cache = {}
@@ -21,7 +21,6 @@ def parse_xlsm(content: bytes, filename: str, *, loaded=None):
         matrix = [[sheet.cell(r, c).value for c in range(1, sheet.cols + 1)]
                   for r in range(1, sheet.rows + 1)]
         streams, issues = parse_sheet(sheet.name, matrix)
-        streams = [stream for stream in streams if stream["method"] != "vertical-table"]
         index = property_index(sheet)
         anchors = {}
         for stream in streams:
@@ -44,8 +43,10 @@ def parse_xlsm(content: bytes, filename: str, *, loaded=None):
                                    label=f"Stream {stream['stream_id']}",
                                    original_value=stream['description'],
                                    normalized_value=stream['description'], status="inferred")
-            # Extract once per stream, then reuse for every equipment mention.
-            properties = stream_properties(sheet, stream, filename, key, index=index)
+            # Stream records are authoritative; equipment is only an optional reference.
+            # Vertical layouts retain the stream identity but require a separate property adapter.
+            properties = (stream_properties(sheet, stream, filename, key, index=index)
+                          if stream["method"] == "horizontal-table" else [])
             property_cache[(sheet.name, stream['source_cell'])] = properties
             material.append(Entity(key=key, kind="material", identifier=stream['stream_id'],
                                    table="description-streams", id_evidence=description,
@@ -75,5 +76,6 @@ def parse_xlsm(content: bytes, filename: str, *, loaded=None):
     report.entities.extend(material)
     for warning in warnings:
         report.issues.append(Issue(code="workbook_warning", message=warning))
+    report.limitations.append("Vertical stream records are preserved, but this adapter only extracts numerical properties from horizontal stream blocks.")
     report.limitations.append("Stream numeric observations are associated by same-column and row-label evidence, not validated equipment design values. Missing units remain unresolved. No sizing or connectivity validation. Macros are ignored.")
     return report
