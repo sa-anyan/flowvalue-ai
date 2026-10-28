@@ -112,9 +112,7 @@ export function BalanceImport({
       file.size > 4 * 1024 * 1024
     ) {
       setError(
-        method.mode === "excel"
-          ? `Choose an .xlsx or .xls workbook/export for ${method.label}, up to 4 MiB. Native simulation files are not accepted by this Excel parser.`
-          : method.help,
+        `Choose an .xlsx or .xls workbook/export for ${method.label}, up to 4 MiB. Native simulation files are not accepted by this Excel parser.`,
       );
       return;
     }
@@ -337,11 +335,7 @@ export function BalanceImport({
                 : (method.mode === "excel" ? report?.filename : null) ||
                   (method.mode === "excel"
                     ? "Select file or drop an Excel balance here"
-                    : method.mode === "simulation"
-                      ? simulationFileName || `Select a ${method.label} file`
-                      : method.id === "manual"
-                        ? "Use the process-description box"
-                        : "File extraction not supported yet")}
+                    : simulationFileName || `Select a ${method.label} file`)}
             </strong>
             <span>
               {method.mode === "excel"
