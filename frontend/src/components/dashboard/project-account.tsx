@@ -1,14 +1,16 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { authClient, apiFetch } from "@/lib/client-api";
 import { apiError } from "@/lib/assessment";
-import type { Workspace } from "@/lib/workspace";
+import { writeWorkspace, type Workspace } from "@/lib/workspace";
 import { Button } from "@/components/ui/button";
 export function ProjectAccount({
   workspace,
   onLoad,
   onAuth,
+  allowStartup,
 }: {
+  allowStartup: boolean;
   workspace: Workspace | null;
   onLoad: (w: Workspace) => void;
   onAuth: (clear?: boolean) => void;
@@ -29,6 +31,8 @@ export function ProjectAccount({
     }[]
   >([]);
   const ownerRef = useRef("");
+  const startupAttempt = useRef("");
+  const [startupVersion, setStartupVersion] = useState("");
   const [current, setCurrent] = useState<{
     project_id: string;
     revision: number;
@@ -48,7 +52,16 @@ export function ProjectAccount({
         });
         const { data } = c.auth.onAuthStateChange((_e, s) => {
           const owner = s?.user.id || "";
-          if (_e === "TOKEN_REFRESHED") return;
+          setStartupVersion(
+            typeof s?.user.user_metadata?.flowvalue_startup_version === "string"
+              ? s.user.user_metadata.flowvalue_startup_version
+              : "",
+          );
+          if (
+            _e === "TOKEN_REFRESHED" ||
+            (_e === "USER_UPDATED" && owner === ownerRef.current)
+          )
+            return;
           const previousOwner =
             sessionStorage.getItem("flowvalue-workspace-owner") || "";
           const clear =
@@ -61,6 +74,7 @@ export function ProjectAccount({
           sessionStorage.setItem("flowvalue-workspace-owner", owner);
           setUser(s?.user.email || "");
           if (clear) {
+            startupAttempt.current = "";
             setVersions([]);
             setCurrent(null);
           }
@@ -100,18 +114,21 @@ export function ProjectAccount({
       alive = false;
     };
   }, [user]);
-  function remember(value: {
-    project_id: string;
-    revision: number;
-    version_id?: string;
-    read_only?: boolean;
-  }) {
-    setCurrent(value);
-    sessionStorage.setItem(
-      "flowvalue-project-reference",
-      JSON.stringify({ owner: ownerRef.current, current: value }),
-    );
-  }
+  const remember = useCallback(
+    (value: {
+      project_id: string;
+      revision: number;
+      version_id?: string;
+      read_only?: boolean;
+    }) => {
+      setCurrent(value);
+      sessionStorage.setItem(
+        "flowvalue-project-reference",
+        JSON.stringify({ owner: ownerRef.current, current: value }),
+      );
+    },
+    [],
+  );
   async function sign(mode: "login" | "signup" | "logout") {
     setBusy(true);
     setMessage("");
@@ -188,24 +205,66 @@ export function ProjectAccount({
       setBusy(false);
     }
   }
-  async function load(id: string) {
+  const load = useCallback(
+    async (id: string) => {
+      const owner = ownerRef.current;
+      setBusy(true);
+      try {
+        const r = await apiFetch(`/api/projects/${id}`);
+        if (!r.ok) throw Error(await apiError(r));
+        const v = await r.json();
+        if (owner !== ownerRef.current) return;
+        writeWorkspace(v.payload);
+        onLoad(v.payload);
+        remember({
+          project_id: v.project_id,
+          revision: v.revision,
+          version_id: v.id,
+          read_only: v.user_id !== owner,
+        });
+        setMessage(`Loaded ${v.name}, revision ${v.revision}.`);
+      } catch (e) {
+        setMessage(e instanceof Error ? e.message : "Load failed");
+      } finally {
+        setBusy(false);
+      }
+    },
+    [onLoad, remember],
+  );
+  useEffect(() => {
+    if (
+      !user ||
+      !workspace ||
+      !allowStartup ||
+      !startupVersion ||
+      current ||
+      startupAttempt.current === ownerRef.current
+    )
+      return;
+    startupAttempt.current = ownerRef.current;
+    void load(startupVersion);
+  }, [user, workspace, allowStartup, startupVersion, current, load]);
+  async function setStartup(id: string | null) {
     const owner = ownerRef.current;
     setBusy(true);
     try {
-      const r = await apiFetch(`/api/projects/${id}`);
-      if (!r.ok) throw Error(await apiError(r));
-      const v = await r.json();
-      if (owner !== ownerRef.current) return;
-      onLoad(v.payload);
-      remember({
-        project_id: v.project_id,
-        revision: v.revision,
-        version_id: v.id,
-        read_only: v.user_id !== owner,
+      const client = await authClient();
+      if (!client) throw Error("Account services unavailable");
+      const { error } = await client.auth.updateUser({
+        data: { flowvalue_startup_version: id },
       });
-      setMessage(`Loaded ${v.name}, revision ${v.revision}.`);
+      if (error) throw error;
+      if (owner !== ownerRef.current) return;
+      setStartupVersion(id || "");
+      setMessage(
+        id
+          ? "Startup project saved. New tabs will open this saved revision; existing browser drafts are preserved."
+          : "Startup project cleared.",
+      );
     } catch (e) {
-      setMessage(e instanceof Error ? e.message : "Load failed");
+      setMessage(
+        e instanceof Error ? e.message : "Could not update startup project",
+      );
     } finally {
       setBusy(false);
     }
@@ -248,6 +307,24 @@ export function ProjectAccount({
               >
                 Refresh history
               </Button>
+              <Button
+                disabled={
+                  busy ||
+                  !current?.version_id ||
+                  !!current?.read_only ||
+                  startupVersion === current?.version_id
+                }
+                onClick={() => setStartup(current!.version_id!)}
+              >
+                {startupVersion && startupVersion === current?.version_id
+                  ? "Startup project selected"
+                  : "Use as startup project"}
+              </Button>
+              {startupVersion && (
+                <Button disabled={busy} onClick={() => setStartup(null)}>
+                  Clear startup project
+                </Button>
+              )}
               <a
                 href={
                   current?.version_id

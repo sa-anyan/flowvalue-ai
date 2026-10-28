@@ -11,3 +11,7 @@ Scenario 3 contains differing investment figures between source Summary and Cape
 Edited placeholders retain their original values and can be restored. Dependent charts/headline metrics stay labelled as the original snapshot rather than falsely recalculated from unsupported formulas. Reconciliation with validated engineering/economics remains future work.
 
 Reference mode does not invoke assessment, Monte Carlo, AI research or engineering inference. Assessment and normal financial exports reject reference snapshots so inactive schema scaffolding cannot become financial outputs. Source JSON export remains available. The original workbook stays unchanged.
+
+### Account startup project
+
+In **Accounts & saved projects**, load a private saved revision and choose **Use as startup project**. FlowValue stores only that revision ID in the signed-in user's Supabase `flowvalue_startup_version` preference. New tabs load it through the existing authenticated project endpoint; the preference grants no access and does not bypass project ownership/RLS. Existing valid browser drafts take precedence. A failed startup load leaves the current workspace available and displays the error. **Clear startup project** restores the normal new-tab behavior. Startup selection points to a specific revision; saving a later revision does not silently move the preference.

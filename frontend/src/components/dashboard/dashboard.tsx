@@ -219,8 +219,10 @@ export default function Dashboard() {
   const [kind, setKind] = useState<Kind>("heat_exchanger");
   const [nativeImport, setNativeImport] = useState<NativeImport | null>(null);
   const [streams, setStreams] = useState<Stream[]>([]);
+  const [startupAllowed, setStartupAllowed] = useState(() => !readWorkspace());
   const authChanged = useCallback((clear = false) => {
     if (clear) {
+      setStartupAllowed(true);
       setBase(null);
       setEnvelope(null);
       setStreams([]);
@@ -778,6 +780,7 @@ export default function Dashboard() {
           private history of your assessments.
         </p>
         <ProjectAccount
+          allowStartup={startupAllowed}
           workspace={null}
           onLoad={loadWorkspace}
           onAuth={authChanged}
@@ -833,6 +836,7 @@ export default function Dashboard() {
           id={isEntry ? "entry" : isMain ? "main-dashboard" : "overview"}
         >
           <ProjectAccount
+            allowStartup={startupAllowed}
             workspace={workspace}
             onLoad={loadWorkspace}
             onAuth={authChanged}
@@ -1461,9 +1465,7 @@ export default function Dashboard() {
                       ] as const
                     ).includes(
                       capexTab as
-                        | "direct-costs"
-                        | "indirect-costs"
-                        | "working-capital",
+                        "direct-costs" | "indirect-costs" | "working-capital",
                     ) && (
                       <CapexCostRegister
                         key={capexTab}
