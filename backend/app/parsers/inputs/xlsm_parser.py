@@ -119,11 +119,67 @@ def parse_sheet(sheet, matrix):
             if k not in seen: canonical.append(x);seen.add(k)
     return canonical, issues
 
-def classify(descriptions):
-    matched={equipment for expression,equipment in TYPES if any(re.search(expression,d,re.I) for d in descriptions)}
-    if len(matched)==1:return matched.pop(),'description rule'
-    if len(matched)>1:return 'Review required: conflicting types','conflict'
-    return 'Unclassified: review required','tag only'
+def classify(descriptions, tag=None):
+    """Classify only phrases directly preceding the matching equipment tag.
+
+    A stream may name several units; unrelated upstream/downstream units must
+    not vote on the identity of the unit being classified.
+    """
+    observations = set()
+    if not tag:
+        return 'Unclassified: review required', 'equipment tag required'
+    for description in descriptions:
+        for hit in TAG.finditer(description):
+            observed_tag = f'{hit.group(1).upper()}-{hit.group(2)}'
+            if observed_tag != tag.upper():
+                continue
+            # The type must end immediately before this tag, apart from spaces.
+            before = description[:hit.start()]
+            candidates = []
+            for expression, equipment in TYPES:
+                for match in re.finditer(expression + r'\\s*
+def run(path, outdir):
+    streams=[];issues=[]
+    for name,matrix in matrix_sheets(path):
+        s,i=parse_sheet(name,matrix);streams.extend(s);issues.extend(i)
+    equipment=defaultdict(lambda:{'descriptions':[],'streams':set(),'sheets':set()})
+    for s in streams:
+        for tag in s['equipment_tags']:
+            e=equipment[tag];e['descriptions'].append(s['description']);e['streams'].add(s['stream_id']);e['sheets'].add(s['sheet'])
+    register=[]
+    for tag,e in sorted(equipment.items()):
+        kind,basis=classify(e['descriptions'], tag)
+        register.append(dict(tag=tag,type=kind,stream_ids=', '.join(sorted(e['streams'],key=lambda a:int(a))),sheets=', '.join(sorted(e['sheets'])),classification_basis=basis))
+    outdir.mkdir(parents=True,exist_ok=True)
+    def output(name,rows,cols):
+        with (outdir/name).open('w',encoding='utf-8-sig',newline='') as f:
+            w=csv.DictWriter(f,fieldnames=cols,extrasaction='ignore');w.writeheader()
+            for row in rows:
+                row=row.copy()
+                if isinstance(row.get('equipment_tags'),list):row['equipment_tags']=', '.join(row['equipment_tags'])
+                w.writerow(row)
+    output('flowvalue_streams.csv',streams,['sheet','stream_id','description','source_cell','method','equipment_tags'])
+    output('flowvalue_equipment.csv',register,['tag','type','stream_ids','sheets','classification_basis'])
+    output('flowvalue_review.csv',issues,['sheet','cell','issue'])
+    summary=dict(source=str(path),streams=len(streams),unique_equipment=len(register),issues=len(issues),warning='Identifies tagged equipment from descriptions only; does not infer untagged items or size equipment.')
+    (outdir/'flowvalue_summary.json').write_text(json.dumps(summary,indent=2),encoding='utf-8')
+    return summary
+
+if __name__=='__main__':
+    ap=argparse.ArgumentParser();ap.add_argument('workbook',type=Path);ap.add_argument('--output-dir',type=Path)
+    args=ap.parse_args()
+    print(json.dumps(run(args.workbook,args.output_dir or args.workbook.parent),indent=2))
+, before, re.I):
+                    candidates.append((match.end() - match.start(), equipment))
+            if candidates:
+                candidates.sort(reverse=True)
+                # Prefer the longest specific phrase, e.g. 'bioreactor' over 'reactor'.
+                observations.add(candidates[0][1])
+    if len(observations) == 1:
+        return observations.pop(), 'tag-adjacent description rule'
+    if len(observations) > 1:
+        return 'Review required: conflicting types', 'conflicting tag-adjacent descriptions'
+    return 'Unclassified: review required', 'no type immediately preceding tag'
 
 def run(path, outdir):
     streams=[];issues=[]
