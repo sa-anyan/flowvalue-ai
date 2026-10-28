@@ -5,6 +5,7 @@ import {
   FlaskConical,
   Coins,
   ReceiptText,
+  TrendingUp,
   Layers3,
   LayoutDashboard,
   ShieldCheck,
@@ -15,7 +16,7 @@ import {
 
 type WorkspaceSidebarProps = {
   name: string;
-  active: "entry" | "process" | "main" | "capex" | "opex" | "overview";
+  active: "entry" | "process" | "main" | "capex" | "opex" | "revenue" | "overview";
 };
 
 export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
@@ -99,6 +100,15 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
             <ReceiptText size={18} />
             Opex
             {active === "opex" && <span className="nav-dot" />}
+          </a>
+          <a
+            href="/revenue"
+            className={active === "revenue" ? "nav-selected" : undefined}
+            aria-current={active === "revenue" ? "page" : undefined}
+          >
+            <TrendingUp size={18} />
+            Revenue
+            {active === "revenue" && <span className="nav-dot" />}
           </a>
           <a
             href={dashboardHref("#overview")}
