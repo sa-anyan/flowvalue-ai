@@ -6,14 +6,16 @@ from app.parsers.balance.models import BalanceReport, Entity, Evidence, Issue
 from app.parsers.balance.workbook import address, read_book, safe_filename
 
 from .xlsm_parser import classify, parse_sheet
+from .xlsm_properties import stream_properties
 
 
 def parse_xlsm(content: bytes, filename: str):
     filename = safe_filename(filename)
     sheets, warnings = read_book(content, filename)
     report = BalanceReport(filename=filename, sha256=sha256(content).hexdigest(),
-                           parser_version="xlsm-descriptions-1.0", sheets=[])
+                           parser_version="xlsm-properties-1.1", sheets=[])
     grouped = {}
+    sheet_lookup = {sheet.name: sheet for sheet in sheets}
     for sheet in sheets:
         matrix = [[sheet.cell(r, c).value for c in range(1, sheet.cols + 1)]
                   for r in range(1, sheet.rows + 1)]
@@ -39,10 +41,16 @@ def parse_xlsm(content: bytes, filename: str):
         first = values[0]
         classification = first.model_copy(update={"id": f"{tag}:type", "property": "type", "label": "Equipment type (interpreted)",
                                                      "normalized_value": kind, "note": basis})
-        # Type is an interpretation, never a supplied equipment design.
+        # Preserve each stream's observations, but count the tag as one unit.
+        properties = []
+        for sheet_name, _, stream in observations:
+            for ev in stream_properties(sheet_lookup[sheet_name], stream, filename, tag):
+                if len(properties) + len(values) + 1 >= 256:
+                    break
+                properties.append(ev)
         report.entities.append(Entity(key=tag, kind="equipment", identifier=tag, table="description-tags",
-                                      id_evidence=first, values=[*values, classification]))
+                                      id_evidence=first, values=[*values, classification, *properties]))
     for warning in warnings:
         report.issues.append(Issue(code="workbook_warning", message=warning))
-    report.limitations.append("Tagged equipment from stream descriptions only. No numerical mass/energy balance extraction, equipment sizing or connectivity validation. Macros are ignored.")
+    report.limitations.append("Stream numeric observations are associated by same-column and row-label evidence, not validated equipment design values. Missing units remain unresolved. No sizing or connectivity validation. Macros are ignored.")
     return report
