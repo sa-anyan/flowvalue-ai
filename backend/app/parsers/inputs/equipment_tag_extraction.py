@@ -43,7 +43,7 @@ def augment_equipment(report, content, filename):
             report.issues.append(Issue(code="equipment_tag_limit",message="Additional equipment tags omitted due to extraction limits."))
             break
         name, row, col, raw, cell = sightings[0]
-        labels = {value for description in [s[3].lower() for s in sightings] for key, value in KEYWORDS.items() if key in description}
+        labels = {value for description in [s[3].lower() for s in sightings] for key, value in KEYWORDS.items() if key in description and not (key == "reactor" and "bioreactor" in description)}
         classification = next(iter(labels)) if len(labels) == 1 else None
         eid = f"tag-{index + 1}"
         evidence = Evidence(
