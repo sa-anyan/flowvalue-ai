@@ -569,15 +569,15 @@ export default function Dashboard() {
               engineering_notes: importScopeNotes(imported, imported.equipment),
             });
             setUploadMessage(
-              `Imported ${imported.streams.length} streams and ${imported.equipment.length} equipment estimates. Financial assumptions retained. Review excluded units and design basis below.`,
+              `Imported ${imported.streams.length} streams and ${imported.equipment.length} equipment estimates. Financial assumptions retained. Review excluded units and design basis before relying on these estimates.`,
             );
           } else
             setUploadMessage(
-              `Streams and topology imported. BOM not replaced: ${await apiError(check)}. Review mapping below.`,
+              `Streams and topology imported. BOM not replaced: ${await apiError(check)}. Equipment mapping remains unresolved.`,
             );
         } else
           setUploadMessage(
-            "Streams and topology imported; no complete supported sizing found. Complete equipment mapping below. Existing financial assumptions and BOM retained.",
+            "Streams and topology imported; no complete supported sizing found. Missing equipment specifications remain unresolved. Existing financial assumptions and BOM retained.",
           );
         setNativeImport(imported);
         setStreams(imported.streams);
@@ -706,7 +706,7 @@ export default function Dashboard() {
       setStreams(table.streams);
       setFilename(file.name);
       setUploadMessage(
-        `${table.streams.length} streams validated. Configure equipment sizing below; costs are not inferred from stream data.`,
+        `${table.streams.length} stream records passed field validation. Mass/energy balance closure has not been assessed; equipment costs are not inferred from stream data.`,
       );
     } catch (e) {
       setUploadMessage(

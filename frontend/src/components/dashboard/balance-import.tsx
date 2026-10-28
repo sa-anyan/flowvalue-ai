@@ -263,7 +263,7 @@ export function BalanceImport({
                 : ".xlsx,.xls"
             }
             className="sr-only"
-            aria-label="Upload Excel mass and energy balance"
+            aria-label={`Upload ${method.mode === "simulation" ? method.label : "Excel"} mass and energy balance`}
             onChange={(e) => {
               if (e.target.files?.[0]) void upload(e.target.files[0]);
             }}
@@ -423,12 +423,14 @@ export function BalanceImport({
           )}
         </div>
       </div>
-      <p role="status">
-        {status ||
-          (report
-            ? `Parsed ${report.filename}: ${report.tables.length} tables across ${report.sheets.length} worksheets; ${report.issues.length} issues for review. Coverage is partial.`
-            : "No engineering workbook uploaded.")}
-      </p>
+      {method.mode !== "simulation" && (
+        <p role="status">
+          {status ||
+            (report
+              ? `Parsed ${report.filename}: ${report.tables.length} tables across ${report.sheets.length} worksheets; ${report.issues.length} issues for review. Coverage is partial.`
+              : "No engineering workbook uploaded.")}
+        </p>
+      )}
       {error && (
         <p className="error-banner" role="alert">
           {error}
