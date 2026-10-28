@@ -120,24 +120,28 @@ def parse_sheet(sheet, matrix):
     return canonical, issues
 
 def classify(descriptions, tag=None):
-    """Classify only phrases directly preceding the matching equipment tag.
-
-    A stream may name several units; unrelated upstream/downstream units must
-    not vote on the identity of the unit being classified.
-    """
-    observations = set()
+    """Classify wording immediately before the specified equipment tag."""
     if not tag:
-        return 'Unclassified: review required', 'equipment tag required'
+        return "Unclassified: review required", "equipment tag required"
+    observations = set()
     for description in descriptions:
         for hit in TAG.finditer(description):
-            observed_tag = f'{hit.group(1).upper()}-{hit.group(2)}'
-            if observed_tag != tag.upper():
+            if f"{hit.group(1).upper()}-{hit.group(2)}" != tag.upper():
                 continue
-            # The type must end immediately before this tag, apart from spaces.
             before = description[:hit.start()]
             candidates = []
             for expression, equipment in TYPES:
-                for match in re.finditer(expression + r'\\s*
+                for match in re.finditer(expression + r"\s*\Z", before, re.I):
+                    candidates.append((match.end() - match.start(), equipment))
+            if candidates:
+                candidates.sort(reverse=True)
+                observations.add(candidates[0][1])
+    if len(observations) == 1:
+        return observations.pop(), "tag-adjacent description rule"
+    if len(observations) > 1:
+        return "Review required: conflicting types", "conflicting tag-adjacent descriptions"
+    return "Unclassified: review required", "no type immediately preceding tag"
+
 def run(path, outdir):
     streams=[];issues=[]
     for name,matrix in matrix_sheets(path):
