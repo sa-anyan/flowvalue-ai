@@ -26,3 +26,15 @@ Do not replace engineering analysis with AI-generated arithmetic or unsupported 
 ## Canonical Entry-file parser scaffolds (17 methods; deliberately empty)
 
 Before implementing or changing ingestion, read [the input parser directory index](backend/app/parsers/inputs/README.md) and the UI source `frontend/src/lib/import-methods.ts`. Exactly one **headed but otherwise empty** Python module now exists for each dropdown selection at `backend/app/parsers/inputs/`. These are **future adapter stubs**, not working parsers, registered routes or a promise of support. Implement them **one at a time with the founder**, keeping source provenance and the canonical stream/balance models intact. Preserve the current working Excel, CSV, JSON, DWSIM and trusted BioSTEAM paths until independent tests and a reviewed migration justify replacement. Do not execute uploaded simulator scripts or claim PDF/Word/image/OCR capabilities from the existence of a stub.
+
+## Source and dependency licence hygiene
+
+Before incorporating any third-party code, check its actual licence for the
+resolved version, compatibility with our proprietary source, and required
+notices. Read [`LICENSE`](LICENSE) and
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). Do not assume a public
+GitHub repository is open source, and do not copy code lacking a licence
+without permission from its rights holder. Keep original FlowValue code
+distinct from separately licensed dependencies and preserve upstream notices.
+Changing the licence of original FlowValue code requires the owner's
+explicit approval.
