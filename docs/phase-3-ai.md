@@ -30,3 +30,11 @@ API behavior follows the [official web search guide](https://developers.openai.c
 - Hosted synthetic-demo memo generated and downloaded with model/timestamp provenance. It reported CAPEX $2.89M, annual OPEX $0.50M, annual revenue $1.80M, NPV $6.11M, IRR 36.5%, and LCOP $0.84/unit, consistent with the active demo. Feedstock/utilities were explicitly included within variable OPEX.
 - Hosted research completed with model/retrieval metadata and five inline source links; the source list included EIA, Federal Reserve, IMF and World Bank pages. Commentary remains an AI draft requiring source review.
 - No user project assumptions or existing saved revisions were changed during the activation test. Phase 3 activation is complete.
+
+## Planned R39 AI opportunity research
+
+This is **future scope**, not Phase 3's delivered research/memo functionality. Follow the [canonical founder scenario](analyst-workflow-specification.md#natural-language-commercial-opportunity-exploration-founder-example-selling-waste) and [A–E roadmap](product-build-roadmap.md#cross-phase-roadmap--conversational-commercial-opportunities-r39).
+
+Interpret “We earn food revenue; could we sell our waste?” as a reviewable **proposed revenue line**, not just chat commentary. A price supplied by the user is a user assumption. With no price, ask explicit consent **before** optional market/buyer research; refusal makes no web or paid research calls. Research responses must provide comparable, attributable prices with sources, retrieval date, region, grade, quantity, unit/currency and delivery basis, showing missing or contradictory evidence. Assess buyer/contract likelihood from demand and commercial evidence but **never invent numeric probabilities** without a defensible calibrated method. Buyer discovery is not a contract or authorisation to contact the buyer.
+
+Structured output feeds a reviewed scenario in the deterministic financial engine, never model-generated financial totals. Store user wording, assumptions, consent, source/retrieval details, proposal/version and status. Test price-present, absent/declined/approved, unsupported market data, invalid units, unsupported probability, stale research and engine hand-off with mocked AI responses. Do not declare this feature delivered simply because the AI can describe a sale.
