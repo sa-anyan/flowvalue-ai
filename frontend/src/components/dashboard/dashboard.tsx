@@ -1381,7 +1381,7 @@ export default function Dashboard() {
                 {mode === "capex" && capexTab === "summary" && (
                   <CapexSummary
                     project={base}
-                    data={data}
+                    data={data ?? null}
                     streams={streams}
                     updating={!ready}
                     error={error}
@@ -1401,7 +1401,7 @@ export default function Dashboard() {
                     {capexTab === "validation" && (
                       <CapexValidation
                         project={base}
-                        data={data}
+                        data={data ?? null}
                         streams={streams}
                         error={error}
                         onProject={setBase}
