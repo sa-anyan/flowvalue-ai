@@ -6,7 +6,7 @@ from app.parsers.balance.models import BalanceReport, Entity, Evidence, Issue
 from app.parsers.balance.workbook import address, read_book, safe_filename
 
 from .xlsm_parser import classify, parse_sheet
-from .xlsm_properties import stream_properties
+from .xlsm_properties import property_index, stream_properties
 
 
 def parse_xlsm(content: bytes, filename: str):
@@ -21,6 +21,7 @@ def parse_xlsm(content: bytes, filename: str):
         matrix = [[sheet.cell(r, c).value for c in range(1, sheet.cols + 1)]
                   for r in range(1, sheet.rows + 1)]
         streams, issues = parse_sheet(sheet.name, matrix)
+        index = property_index(sheet)
         report.sheets.append({"name": sheet.name, "rows": sheet.rows, "columns": sheet.cols,
                                   "hidden": sheet.hidden, "tables": 0,
                                   "nonempty_cells": len(sheet.cells), "extracted_cells": len(streams)})
@@ -36,7 +37,7 @@ def parse_xlsm(content: bytes, filename: str):
                                    original_value=stream['description'],
                                    normalized_value=stream['description'], status="inferred")
             # Extract once per stream, then reuse for every equipment mention.
-            properties = stream_properties(sheet, stream, filename, key)
+            properties = stream_properties(sheet, stream, filename, key, index=index)
             property_cache[(sheet.name, stream['source_cell'])] = properties
             material.append(Entity(key=key, kind="material", identifier=stream['stream_id'],
                                    table="description-streams", id_evidence=description,

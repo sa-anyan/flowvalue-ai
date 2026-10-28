@@ -4,6 +4,7 @@ Uses the already-loaded, safety-checked workbook; no extra read or AI call.
 Only columns with an explicit stream description anchor are considered.
 """
 import re
+from bisect import bisect_left
 
 from app.parsers.balance.models import Evidence
 from app.parsers.balance.parser import property_info
@@ -13,22 +14,34 @@ from app.parsers.balance.workbook import address
 MAX_PROPERTIES_PER_UNIT = 200
 MAX_PROPERTY_ROWS = 150
 
-def stream_properties(sheet, stream, filename, tag):
+def property_index(sheet):
+    labels = {}
+    boundaries = set()
+    for (row, column), cell in sheet.cells.items():
+        if isinstance(cell.value, str) and cell.value.strip():
+            labels.setdefault(row, []).append((column, cell.value.strip()))
+            if column <= 12 and "stream number" in cell.value.lower():
+                boundaries.add(row)
+    return {row: sorted(items) for row, items in labels.items()}, boundaries
+
+
+def stream_properties(sheet, stream, filename, tag, index=None):
     match = re.fullmatch(r"R(\d+)C(\d+)", stream["source_cell"])
     if not match:
         return []
     anchor_row, column = map(int, match.groups())
     results = []
+    indexed_labels, boundaries = index if index is not None else property_index(sheet)
     unit_row = anchor_row + 1
     for row in range(unit_row + 1, min(sheet.rows, anchor_row + MAX_PROPERTY_ROWS) + 1):
-        if any("stream number" in sheet.text(row, c).lower() for c in range(1, min(column, 12) + 1)):
+        if row in boundaries:
             break
         # Find nearest physical property label to the left, across the whole block.
-        labels = [(c, sheet.text(row, c)) for c in range(1, column)
-                  if isinstance(sheet.cell(row, c).value, str) and sheet.text(row, c)]
-        if not labels:
+        labels = indexed_labels.get(row, [])
+        position = bisect_left(labels, (column, "")) - 1
+        if position < 0:
             continue
-        label_col, label = labels[-1]
+        label_col, label = labels[position]
         prop, dimension, component = property_info(label)
         if label.strip().lower() == "total":
             prop, dimension, component = "component_flow", "volume_flow", None

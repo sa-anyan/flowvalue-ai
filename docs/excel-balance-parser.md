@@ -107,3 +107,20 @@ Source description cells are retained in the canonical report. Other Excel
 formats retain their existing paths. Tests cover tagged equipment, source
 cells, ignored macro payloads/formulas, malformed uploads and isolated-worker
 integration. No claim of complete engineering workbook extraction is made.
+
+### XLSM stream inventory update
+
+XLSM parsing now retains each detected stream as a material record even when
+its description has no equipment tag. Repeated descriptions in distinct source
+cells are preserved rather than deduplicated away. No equipment is invented
+for untagged streams; the properties UI groups these as Unassigned, with sheet
+identity retained. Per-stream properties are cached for reuse across equipment
+mentions; row-label indexes are built once per sheet. No extra workbook reads,
+AI calls or formula execution were added. Existing limits still apply. This
+extends supported description tables, not arbitrary spreadsheet recognition.
+
+Team 8 acceptance: 14 stream records on Mass and Energy Balance (including
+13/14), plus 18 separately sourced records on Energy calculation. These sheets
+must not be interpreted as one validated process. Local whole-workbook parsing
+remained about 1–1.5 seconds; timing varies, and no strict no-slowdown guarantee
+is made for the larger output. Component-total reconciliation remains separate.
