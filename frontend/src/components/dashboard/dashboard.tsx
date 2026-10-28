@@ -1,5 +1,13 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  workspaceView,
+  workspaceTitles,
+  legacyWorkspaceHref,
+} from "@/lib/workspace-navigation";
+import { CashFlowChart, RiskChart } from "./charts";
 import { apiFetch } from "@/lib/client-api";
 
 import {
@@ -14,14 +22,12 @@ import {
   Activity,
   ArrowDownToLine,
   ArrowRight,
-  ArrowUpRight,
   Check,
   ChevronDown,
   ChevronRight,
   CircleHelp,
   FileSpreadsheet,
   FlaskConical,
-  Layers3,
   LoaderCircle,
   Moon,
   Plus,
@@ -46,7 +52,6 @@ import {
   fieldLabels,
   Kind,
   kindLabels,
-  percent,
   Stream,
   usd,
 } from "@/lib/assessment";
@@ -151,7 +156,16 @@ function NumberField({
   );
 }
 
-export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "entry" | "main" }) {
+export default function Dashboard() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const mode = workspaceView(pathname);
+  useEffect(() => {
+    const destination = legacyWorkspaceHref(pathname, window.location.hash);
+    if (destination) router.replace(destination);
+    else if (!window.location.hash)
+      window.scrollTo({ top: 0, behavior: "instant" });
+  }, [pathname, router]);
   const isEntry = mode === "entry";
   const isMain = mode === "main";
   const [base, setBase] = useState<AssessmentRequest | null>(null);
@@ -721,12 +735,21 @@ export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "
     );
   return (
     <div className="app-shell">
-      <WorkspaceSidebar name={base?.advisor_context?.name ?? "Untitled process"} active={isEntry ? "entry" : isMain ? "main" : "overview"} />
+      <WorkspaceSidebar
+        name={base?.advisor_context?.name ?? "Untitled process"}
+        active={mode === "analysis" ? "overview" : mode}
+      />
       <div className="main-shell">
         <header className="topbar">
           <div className="breadcrumb">
             Workspace <ChevronRight size={13} />
-            <span>{isEntry ? "Project entry" : isMain ? "Main dashboard" : "Techno-economic assessment"}</span>
+            <span>
+              {isEntry
+                ? "Project entry"
+                : isMain
+                  ? "Main dashboard"
+                  : workspaceTitles[mode]}
+            </span>
           </div>
           <div className="top-actions">
             <span className={`connection ${error ? "connection-error" : ""}`}>
@@ -747,7 +770,10 @@ export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "
             <span className="top-avatar">FV</span>
           </div>
         </header>
-        <main className="dashboard-main" id={isEntry ? "entry" : isMain ? "main-dashboard" : "overview"}>
+        <main
+          className="dashboard-main"
+          id={isEntry ? "entry" : isMain ? "main-dashboard" : "overview"}
+        >
           <ProjectAccount
             workspace={workspace}
             onLoad={loadWorkspace}
@@ -757,14 +783,19 @@ export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "
             <>
               <section className="page-heading">
                 <div>
-                  <div className="eyebrow"><span /> PROJECT ENTRY</div>
+                  <div className="eyebrow">
+                    <span /> PROJECT ENTRY
+                  </div>
                   <h1>Set up your project.</h1>
-                  <p>Import process data, describe the project and set the base economic assumptions.</p>
+                  <p>
+                    Import process data, describe the project and set the base
+                    economic assumptions.
+                  </p>
                 </div>
                 <div className="export-actions">
-                  <a href="/main-dashboard" className="entry-analysis-link">
+                  <Link href="/main-dashboard" className="entry-analysis-link">
                     Continue to Analysis <ArrowRight size={15} />
-                  </a>
+                  </Link>
                 </div>
               </section>
               {error && (
@@ -774,7 +805,13 @@ export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "
                     <strong>Project needs attention</strong>
                     <p>{error}</p>
                   </div>
-                  <button onClick={() => initialError ? setRetry((x) => x + 1) : setCalculationRetry((x) => x + 1)}>
+                  <button
+                    onClick={() =>
+                      initialError
+                        ? setRetry((x) => x + 1)
+                        : setCalculationRetry((x) => x + 1)
+                    }
+                  >
                     Retry calculation
                   </button>
                 </div>
@@ -783,273 +820,301 @@ export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "
                 <div className="notice-banner" role="status">
                   <Check size={17} />
                   {notice}
-                  <button aria-label="Dismiss notification" onClick={() => setNotice("")}>
+                  <button
+                    aria-label="Dismiss notification"
+                    onClick={() => setNotice("")}
+                  >
                     <X size={15} />
                   </button>
                 </div>
               )}
-          <div className="entry-input-grid">
-            <section className="panel upload-panel" id="streams">
-              <div className="panel-heading">
-                <div>
-                  <h2>Bring your process data</h2>
+              <div className="entry-input-grid">
+                <section className="panel upload-panel" id="streams">
+                  <div className="panel-heading">
+                    <div>
+                      <h2>Bring your process data</h2>
+                      <p>
+                        Import CSV, JSON, a BioSTEAM snapshot, or a native DWSIM
+                        .dwxml simulation.
+                      </p>
+                    </div>
+                    <Upload size={18} className="muted-icon" />
+                  </div>
                   <p>
-                    Import CSV, JSON, a BioSTEAM snapshot, or a native DWSIM
-                    .dwxml simulation.
+                    <a href="/examples/sample-streams.csv" download>
+                      Download sample CSV
+                    </a>
+                    {" · "}
+                    <a href="/examples/demo-project.json" download>
+                      Download demo project JSON
+                    </a>
                   </p>
-                </div>
-                <Upload size={18} className="muted-icon" />
-              </div>
-              <p>
-                <a href="/examples/sample-streams.csv" download>
-                  Download sample CSV
-                </a>
-                {" · "}
-                <a href="/examples/demo-project.json" download>
-                  Download demo project JSON
-                </a>
-              </p>
-              <input
-                ref={fileRef}
-                className="sr-only"
-                type="file"
-                accept=".csv,.json,.dwxml"
-                aria-label="Upload stream table"
-                onChange={(e) => {
-                  if (e.target.files?.[0]) upload(e.target.files[0]);
-                }}
-              />
-              <button
-                className={`dropzone ${dragging ? "dragging" : ""}`}
-                disabled={uploading}
-                onClick={() => fileRef.current?.click()}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  setDragging(true);
-                }}
-                onDragLeave={() => setDragging(false)}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  setDragging(false);
-                  if (!uploading && e.dataTransfer.files[0])
-                    upload(e.dataTransfer.files[0]);
-                }}
-              >
-                <span className="upload-icon">
-                  {uploading ? (
-                    <LoaderCircle size={21} className="spin" />
-                  ) : (
-                    <Upload size={21} />
-                  )}
-                </span>
-                <strong>
-                  {uploading
-                    ? "Validating import…"
-                    : filename || "Drop a stream table or project here"}
-                </strong>
-                <span>
-                  or <b>browse files</b> · CSV, JSON or DWXML · up to 4 MiB
-                </span>
-              </button>
-              <p className="upload-message" role="status">
-                {uploadMessage ||
-                  "Streams: stream_id, mass_flow_kg_h, temperature_c, pressure_bar_abs, phase. Project JSON: costing, financial, and optional advisor_context."}
-              </p>
-              {streams.length > 0 && (
-                <details className="stream-details">
-                  <summary>
-                    {streams.length} validated streams <ChevronDown size={12} />
-                  </summary>
-                  <div className="table-scroll">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Stream</th>
-                          <th>kg/h</th>
-                          <th>°C</th>
-                          <th>bar abs</th>
-                          <th>Phase</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {streams.slice(0, 100).map((s) => (
-                          <tr key={s.stream_id}>
-                            <td>{s.stream_id}</td>
-                            <td>{s.mass_flow_kg_h}</td>
-                            <td>{s.temperature_c}</td>
-                            <td>{s.pressure_bar_abs}</td>
-                            <td>{s.phase}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  {streams.length > 100 && (
-                    <p>Showing the first 100 streams.</p>
-                  )}
-                </details>
-              )}
-            </section>
-            <ProjectContextEditor
-              context={base?.advisor_context ?? defaultContext}
-              onContext={(context) =>
-                setBase((prev) => prev ? { ...prev, advisor_context: context } : prev)
-              }
-            />
-            <section className="panel assumptions-panel" id="base-assumptions">
-              <div className="panel-heading">
-                <div>
-                  <h2>Make the assumptions yours</h2>
-                  <p>Annual values at the selected capacity factor.</p>
-                </div>
-                <Settings2 size={18} className="muted-icon" />
-              </div>
-              {base && (
-                <>
-                  <div className="assumption-fields">
-                    <NumberField
-                      label="Selling price · USD/unit"
-                      value={base.financial.product_selling_price_usd_per_unit}
-                      change={(v) =>
-                        updateFinancial("product_selling_price_usd_per_unit", v)
-                      }
-                    />
-                    <NumberField
-                      label="Plant capacity · units/year"
-                      value={base.financial.plant_capacity_units_per_year}
-                      change={(v) =>
-                        updateFinancial("plant_capacity_units_per_year", v)
-                      }
-                    />
-                    <NumberField
-                      label="Fixed OPEX · USD/year"
-                      value={base.financial.fixed_opex_usd_per_year}
-                      change={(v) =>
-                        updateFinancial("fixed_opex_usd_per_year", v)
-                      }
-                    />
-                    <NumberField
-                      label="Base feedstock · USD/year"
-                      value={base.financial.feedstock_opex_usd_per_year}
-                      change={(v) =>
-                        updateExpense("feedstock_opex_usd_per_year", v)
-                      }
-                    />
-                    <NumberField
-                      label="Base utilities · USD/year"
-                      value={base.financial.utility_opex_usd_per_year}
-                      change={(v) =>
-                        updateExpense("utility_opex_usd_per_year", v)
-                      }
-                    />
-                    <NumberField
-                      label="Other variable OPEX · USD/year"
-                      value={Math.max(
-                        0,
-                        base.financial.variable_opex_usd_per_year -
-                          base.financial.feedstock_opex_usd_per_year -
-                          base.financial.utility_opex_usd_per_year,
+                  <input
+                    ref={fileRef}
+                    className="sr-only"
+                    type="file"
+                    accept=".csv,.json,.dwxml"
+                    aria-label="Upload stream table"
+                    onChange={(e) => {
+                      if (e.target.files?.[0]) upload(e.target.files[0]);
+                    }}
+                  />
+                  <button
+                    className={`dropzone ${dragging ? "dragging" : ""}`}
+                    disabled={uploading}
+                    onClick={() => fileRef.current?.click()}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setDragging(true);
+                    }}
+                    onDragLeave={() => setDragging(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setDragging(false);
+                      if (!uploading && e.dataTransfer.files[0])
+                        upload(e.dataTransfer.files[0]);
+                    }}
+                  >
+                    <span className="upload-icon">
+                      {uploading ? (
+                        <LoaderCircle size={21} className="spin" />
+                      ) : (
+                        <Upload size={21} />
                       )}
-                      change={(v) => updateExpense("other", v)}
-                    />
-                    <NumberField
-                      label="Tax rate · %"
-                      value={base.financial.tax_rate * 100}
-                      change={(v) => updateFinancial("tax_rate", v / 100)}
-                    />
-                    <NumberField
-                      label="Target CEPCI"
-                      value={base.costing.settings.cepci_current}
-                      change={(v) =>
-                        setBase({
-                          ...base,
-                          costing: {
-                            ...base.costing,
-                            settings: {
-                              ...base.costing.settings,
-                              cepci_current: v,
-                              cepci_basis:
-                                "Manual planning assumption; source selection cleared by index edit",
-                            },
-                          },
-                        })
-                      }
-                    />
-                    <NumberField
-                      label="Capacity factor · %"
-                      value={base.financial.capacity_factor * 100}
-                      change={(v) =>
-                        updateFinancial("capacity_factor", v / 100)
-                      }
-                    />
+                    </span>
+                    <strong>
+                      {uploading
+                        ? "Validating import…"
+                        : filename || "Drop a stream table or project here"}
+                    </strong>
+                    <span>
+                      or <b>browse files</b> · CSV, JSON or DWXML · up to 4 MiB
+                    </span>
+                  </button>
+                  <p className="upload-message" role="status">
+                    {uploadMessage ||
+                      "Streams: stream_id, mass_flow_kg_h, temperature_c, pressure_bar_abs, phase. Project JSON: costing, financial, and optional advisor_context."}
+                  </p>
+                  {streams.length > 0 && (
+                    <details className="stream-details">
+                      <summary>
+                        {streams.length} validated streams{" "}
+                        <ChevronDown size={12} />
+                      </summary>
+                      <div className="table-scroll">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Stream</th>
+                              <th>kg/h</th>
+                              <th>°C</th>
+                              <th>bar abs</th>
+                              <th>Phase</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {streams.slice(0, 100).map((s) => (
+                              <tr key={s.stream_id}>
+                                <td>{s.stream_id}</td>
+                                <td>{s.mass_flow_kg_h}</td>
+                                <td>{s.temperature_c}</td>
+                                <td>{s.pressure_bar_abs}</td>
+                                <td>{s.phase}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      {streams.length > 100 && (
+                        <p>Showing the first 100 streams.</p>
+                      )}
+                    </details>
+                  )}
+                </section>
+                <ProjectContextEditor
+                  context={base?.advisor_context ?? defaultContext}
+                  onContext={(context) =>
+                    setBase((prev) =>
+                      prev ? { ...prev, advisor_context: context } : prev,
+                    )
+                  }
+                />
+                <section
+                  className="panel assumptions-panel"
+                  id="base-assumptions"
+                >
+                  <div className="panel-heading">
+                    <div>
+                      <h2>Make the assumptions yours</h2>
+                      <p>Annual values at the selected capacity factor.</p>
+                    </div>
+                    <Settings2 size={18} className="muted-icon" />
                   </div>
-                  <label className="extrapolation-control">
-                    <input
-                      type="checkbox"
-                      checked={base.is_demo}
-                      onChange={(e) =>
-                        setBase({ ...base, is_demo: e.target.checked })
-                      }
-                    />
-                    Label exports as a demonstration
-                  </label>
-                  <label className="extrapolation-control">
-                    <input
-                      type="checkbox"
-                      checked={base.costing.settings.allow_extrapolation}
-                      onChange={(e) =>
-                        setBase({
-                          ...base,
-                          costing: {
-                            ...base.costing,
-                            settings: {
-                              ...base.costing.settings,
-                              allow_extrapolation: e.target.checked,
-                            },
-                          },
-                        })
-                      }
-                    />
-                    Allow flagged correlation extrapolation
-                  </label>
-                </>
-              )}
-              <p className="model-basis">
-                Straight-line depreciation · No loss carryforward · Explicit
-                incentive scenarios
-                <br />
-                CEPCI 800 / 397 is a configurable planning basis.
-              </p>
-            </section>
-          </div>
+                  {base && (
+                    <>
+                      <div className="assumption-fields">
+                        <NumberField
+                          label="Selling price · USD/unit"
+                          value={
+                            base.financial.product_selling_price_usd_per_unit
+                          }
+                          change={(v) =>
+                            updateFinancial(
+                              "product_selling_price_usd_per_unit",
+                              v,
+                            )
+                          }
+                        />
+                        <NumberField
+                          label="Plant capacity · units/year"
+                          value={base.financial.plant_capacity_units_per_year}
+                          change={(v) =>
+                            updateFinancial("plant_capacity_units_per_year", v)
+                          }
+                        />
+                        <NumberField
+                          label="Fixed OPEX · USD/year"
+                          value={base.financial.fixed_opex_usd_per_year}
+                          change={(v) =>
+                            updateFinancial("fixed_opex_usd_per_year", v)
+                          }
+                        />
+                        <NumberField
+                          label="Base feedstock · USD/year"
+                          value={base.financial.feedstock_opex_usd_per_year}
+                          change={(v) =>
+                            updateExpense("feedstock_opex_usd_per_year", v)
+                          }
+                        />
+                        <NumberField
+                          label="Base utilities · USD/year"
+                          value={base.financial.utility_opex_usd_per_year}
+                          change={(v) =>
+                            updateExpense("utility_opex_usd_per_year", v)
+                          }
+                        />
+                        <NumberField
+                          label="Other variable OPEX · USD/year"
+                          value={Math.max(
+                            0,
+                            base.financial.variable_opex_usd_per_year -
+                              base.financial.feedstock_opex_usd_per_year -
+                              base.financial.utility_opex_usd_per_year,
+                          )}
+                          change={(v) => updateExpense("other", v)}
+                        />
+                        <NumberField
+                          label="Tax rate · %"
+                          value={base.financial.tax_rate * 100}
+                          change={(v) => updateFinancial("tax_rate", v / 100)}
+                        />
+                        <NumberField
+                          label="Target CEPCI"
+                          value={base.costing.settings.cepci_current}
+                          change={(v) =>
+                            setBase({
+                              ...base,
+                              costing: {
+                                ...base.costing,
+                                settings: {
+                                  ...base.costing.settings,
+                                  cepci_current: v,
+                                  cepci_basis:
+                                    "Manual planning assumption; source selection cleared by index edit",
+                                },
+                              },
+                            })
+                          }
+                        />
+                        <NumberField
+                          label="Capacity factor · %"
+                          value={base.financial.capacity_factor * 100}
+                          change={(v) =>
+                            updateFinancial("capacity_factor", v / 100)
+                          }
+                        />
+                      </div>
+                      <label className="extrapolation-control">
+                        <input
+                          type="checkbox"
+                          checked={base.is_demo}
+                          onChange={(e) =>
+                            setBase({ ...base, is_demo: e.target.checked })
+                          }
+                        />
+                        Label exports as a demonstration
+                      </label>
+                      <label className="extrapolation-control">
+                        <input
+                          type="checkbox"
+                          checked={base.costing.settings.allow_extrapolation}
+                          onChange={(e) =>
+                            setBase({
+                              ...base,
+                              costing: {
+                                ...base.costing,
+                                settings: {
+                                  ...base.costing.settings,
+                                  allow_extrapolation: e.target.checked,
+                                },
+                              },
+                            })
+                          }
+                        />
+                        Allow flagged correlation extrapolation
+                      </label>
+                    </>
+                  )}
+                  <p className="model-basis">
+                    Straight-line depreciation · No loss carryforward · Explicit
+                    incentive scenarios
+                    <br />
+                    CEPCI 800 / 397 is a configurable planning basis.
+                  </p>
+                </section>
+              </div>
               <div className="entry-next-step">
-                <p>Project data and assumptions carry through to the analysis workspace.</p>
-                <a href="/main-dashboard" className="entry-analysis-link">
+                <p>
+                  Project data and assumptions carry through to the analysis
+                  workspace.
+                </p>
+                <Link href="/main-dashboard" className="entry-analysis-link">
                   Continue to Analysis <ArrowRight size={15} />
-                </a>
+                </Link>
               </div>
             </>
           ) : isMain ? (
             <>
               <section className="page-heading">
                 <div>
-                  <div className="eyebrow"><span /> PROJECT ECONOMICS</div>
+                  <div className="eyebrow">
+                    <span /> PROJECT ECONOMICS
+                  </div>
                   <h1>Main dashboard</h1>
-                  <p>Core financial metrics and the three main project charts in one view.</p>
+                  <p>
+                    Core financial metrics and the three main project charts in
+                    one view.
+                  </p>
                 </div>
               </section>
               <div className="scenario-bar">
                 <div>
                   <span className="scenario-badge">
-                    {base?.is_demo !== false ? "DEMO SCENARIO" : "CURRENT SCENARIO"}
+                    {base?.is_demo !== false
+                      ? "DEMO SCENARIO"
+                      : "CURRENT SCENARIO"}
                   </span>
-                  <strong>{base?.advisor_context?.name ?? "Untitled process"}</strong>
+                  <strong>
+                    {base?.advisor_context?.name ?? "Untitled process"}
+                  </strong>
                 </div>
               </div>
               {payload?.engineering_notes
                 ?.filter((n) => /^(INCOMPLETE|MIXED) EQUIPMENT SCOPE:/.test(n))
                 .map((n) => (
-                  <div key={n} role="alert" className="engineering-warning">{n}</div>
+                  <div key={n} role="alert" className="engineering-warning">
+                    {n}
+                  </div>
                 ))}
               {error && (
                 <div className="error-banner" role="alert">
@@ -1058,7 +1123,13 @@ export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "
                     <strong>Assessment needs attention</strong>
                     <p>{error}</p>
                   </div>
-                  <button onClick={() => initialError ? setRetry((x) => x + 1) : setCalculationRetry((x) => x + 1)}>
+                  <button
+                    onClick={() =>
+                      initialError
+                        ? setRetry((x) => x + 1)
+                        : setCalculationRetry((x) => x + 1)
+                    }
+                  >
                     Retry calculation
                   </button>
                 </div>
@@ -1075,541 +1146,742 @@ export default function Dashboard({ mode = "analysis" }: { mode?: "analysis" | "
             </>
           ) : (
             <>
-          <section className="page-heading">
-            <div>
-              <div className="eyebrow">
-                <span /> PROCESS ECONOMICS PLAYGROUND
-              </div>
-              <h1>Analysis tools</h1>
-              <p>
-                Model assumptions and costs alongside engineering and market analysis.
-              </p>
-            </div>
-            <div className="export-actions">
-              <Button
-                variant="outline"
-                className="export-button"
-                disabled={!ready || !!exporting}
-                onClick={() => download("pdf")}
-              >
-                {exporting === "pdf" ? (
-                  <LoaderCircle className="spin" />
-                ) : (
-                  <ArrowDownToLine />
-                )}
-                Executive PDF
-              </Button>
-              <Button
-                className="export-button primary-button"
-                disabled={!ready || !!exporting}
-                onClick={() => download("excel")}
-              >
-                {exporting === "excel" ? (
-                  <LoaderCircle className="spin" />
-                ) : (
-                  <FileSpreadsheet />
-                )}
-                Download Excel
-              </Button>
-            </div>
-          </section>
-          {payload?.engineering_notes
-            ?.filter((n) => /^(INCOMPLETE|MIXED) EQUIPMENT SCOPE:/.test(n))
-            .map((n) => (
-              <div key={n} role="alert" className="engineering-warning">
-                {n}
-              </div>
-            ))}
-          <div className="scenario-bar">
-            <div>
-              <span className="scenario-badge">
-                {base?.is_demo !== false ? "DEMO SCENARIO" : "CURRENT SCENARIO"}
-              </span>
-              <strong>
-                {base?.advisor_context?.name ?? "Untitled process"}
-              </strong>
-              <span className="scenario-description">
-                {base?.is_demo !== false
-                  ? "Synthetic equipment & economics · USD"
-                  : "User-configured equipment & economics · USD"}
-              </span>
-            </div>
-            <button
-              onClick={() => {
-                sessionStorage.removeItem(workspaceKey);
-                setBase(null);
-                setEnvelope(null);
-                setStreams([]);
-                setNativeImport(null);
-                setFilename("");
-                setRetry((x) => x + 1);
-                setNotice("");
-              }}
-              className="text-button"
-            >
-              <RotateCcw size={13} />
-              Reset demo
-            </button>
-          </div>
-          {error && (
-            <div className="error-banner" role="alert">
-              <CircleHelp size={18} />
-              <div>
-                <strong>Assessment needs attention</strong>
-                <p>{error}</p>
-              </div>
-              <button
-                onClick={() =>
-                  initialError
-                    ? setRetry((x) => x + 1)
-                    : setCalculationRetry((x) => x + 1)
-                }
-              >
-                Retry calculation
-              </button>
-            </div>
-          )}
-          {notice && (
-            <div className="notice-banner" role="status">
-              <Check size={17} />
-              {notice}
-              <button
-                aria-label="Dismiss notification"
-                onClick={() => setNotice("")}
-              >
-                <X size={15} />
-              </button>
-            </div>
-          )}
-          <div className="analysis-tools-grid">
-            <div className="analysis-tools-column" aria-label="Model and costing tools">
-          <section className="panel playground-panel" id="playground">
-              <div className="panel-heading">
+              <section className="page-heading">
                 <div>
-                  <span className="section-icon">
-                    <SlidersHorizontal size={17} />
-                  </span>
-                  <h2>Financial playground</h2>
-                  <p>Adjust an assumption. See the impact.</p>
+                  <div className="eyebrow">
+                    <span /> ANALYST WORKSPACE
+                  </div>
+                  <h1>{workspaceTitles[mode]}</h1>
+                  <p>
+                    Shared project inputs, connected calculations and traceable
+                    engineering decisions.
+                  </p>
                 </div>
-              </div>
-              <RangeControl
-                label="Feedstock price"
-                value={controls.feed}
-                min={-50}
-                max={50}
-                unit="%"
-                change={(v) => setControls((c) => ({ ...c, feed: v }))}
-                detail={
-                  payload
-                    ? `${usd(payload.financial.feedstock_opex_usd_per_year)}/year at fixed consumption`
-                    : "Annual feedstock cost"
-                }
-              />
-              <RangeControl
-                label="Utility rates"
-                value={controls.utility}
-                min={-50}
-                max={50}
-                unit="%"
-                change={(v) => setControls((c) => ({ ...c, utility: v }))}
-                detail={
-                  payload
-                    ? `${usd(payload.financial.utility_opex_usd_per_year)}/year at fixed consumption`
-                    : "Annual utility cost"
-                }
-              />
-              <details className="additional-stresses">
-                <summary>Capital, price & other sensitivities</summary>
-                <RangeControl
-                  label="CAPEX stress"
-                  value={controls.capex ?? 0}
-                  min={-50}
-                  max={50}
-                  step={0.1}
-                  unit="%"
-                  change={(v) => setControls((c) => ({ ...c, capex: v }))}
-                  detail="Scales purchased and bare module costs; retained in exports"
-                />
-                <RangeControl
-                  label="Selling price stress"
-                  value={controls.price ?? 0}
-                  min={-50}
-                  max={50}
-                  step={0.1}
-                  unit="%"
-                  change={(v) => setControls((c) => ({ ...c, price: v }))}
-                  detail={
-                    payload
-                      ? `$${payload.financial.product_selling_price_usd_per_unit.toFixed(2)} per product unit`
-                      : "Product price at fixed output"
-                  }
-                />
-                <RangeControl
-                  label="Fixed OPEX stress"
-                  value={controls.fixed ?? 0}
-                  min={-50}
-                  max={50}
-                  step={0.1}
-                  unit="%"
-                  change={(v) => setControls((c) => ({ ...c, fixed: v }))}
-                  detail="Annual fixed operating cost"
-                />
-                <RangeControl
-                  label="Other variable OPEX stress"
-                  value={controls.other ?? 0}
-                  min={-50}
-                  max={50}
-                  step={0.1}
-                  unit="%"
-                  change={(v) => setControls((c) => ({ ...c, other: v }))}
-                  detail="Excludes raw materials and utilities"
-                />
-              </details>
-              <RangeControl
-                label="Discount rate"
-                value={controls.discount}
-                min={0}
-                max={30}
-                step={0.5}
-                unit="%"
-                change={(v) => setControls((c) => ({ ...c, discount: v }))}
-                detail="Annual investment hurdle rate"
-              />
-              <RangeControl
-                label="Plant life"
-                value={controls.life}
-                min={1}
-                max={50}
-                unit=" yr"
-                change={(v) => setControls((c) => ({ ...c, life: v }))}
-                detail="Operating years after the initial investment"
-              />
-            </section>
-          <section className="panel equipment-panel" id="equipment">
-            <div className="panel-heading">
-              <div>
-                <h2>
-                  Equipment bill of materials{" "}
-                  <span className="count-badge">
-                    {base?.costing.equipment.length ?? 0}
+                <div className="export-actions">
+                  <Button
+                    variant="outline"
+                    className="export-button"
+                    disabled={!ready || !!exporting}
+                    onClick={() => download("pdf")}
+                  >
+                    {exporting === "pdf" ? (
+                      <LoaderCircle className="spin" />
+                    ) : (
+                      <ArrowDownToLine />
+                    )}
+                    Executive PDF
+                  </Button>
+                  <Button
+                    className="export-button primary-button"
+                    disabled={!ready || !!exporting}
+                    onClick={() => download("excel")}
+                  >
+                    {exporting === "excel" ? (
+                      <LoaderCircle className="spin" />
+                    ) : (
+                      <FileSpreadsheet />
+                    )}
+                    Download Excel
+                  </Button>
+                </div>
+              </section>
+              {payload?.engineering_notes
+                ?.filter((n) => /^(INCOMPLETE|MIXED) EQUIPMENT SCOPE:/.test(n))
+                .map((n) => (
+                  <div key={n} role="alert" className="engineering-warning">
+                    {n}
+                  </div>
+                ))}
+              <div className="scenario-bar">
+                <div>
+                  <span className="scenario-badge">
+                    {base?.is_demo !== false
+                      ? "DEMO SCENARIO"
+                      : "CURRENT SCENARIO"}
                   </span>
-                </h2>
-                <p>
-                  Inspect sizing, compare construction materials, and trace
-                  every cost.
-                </p>
-              </div>
-              <div className="add-equipment">
-                <select
-                  aria-label="Equipment type to add"
-                  value={kind}
-                  onChange={(e) => setKind(e.target.value as Kind)}
+                  <strong>
+                    {base?.advisor_context?.name ?? "Untitled process"}
+                  </strong>
+                  <span className="scenario-description">
+                    {base?.is_demo !== false
+                      ? "Synthetic equipment & economics · USD"
+                      : "User-configured equipment & economics · USD"}
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    sessionStorage.removeItem(workspaceKey);
+                    setBase(null);
+                    setEnvelope(null);
+                    setStreams([]);
+                    setNativeImport(null);
+                    setFilename("");
+                    setRetry((x) => x + 1);
+                    setNotice("");
+                  }}
+                  className="text-button"
                 >
-                  {Object.entries(kindLabels).map(([v, l]) => (
-                    <option key={v} value={v}>
-                      {l}
-                    </option>
-                  ))}
-                </select>
-                <Button
-                  variant="outline"
-                  disabled={!base}
-                  onClick={addEquipment}
-                >
-                  <Plus size={14} />
-                  Add unit
-                </Button>
+                  <RotateCcw size={13} />
+                  Reset demo
+                </button>
               </div>
-            </div>
-            <div className="table-scroll">
-              <table className="bom-table">
-                <thead>
-                  <tr>
-                    <th>Equipment</th>
-                    <th>Design size / unit</th>
-                    <th>Material of construction</th>
-                    <th>Qty</th>
-                    <th>Purchased / unit</th>
-                    <th>Bare module total</th>
-                    <th>
-                      <span className="sr-only">Actions</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {base?.costing.equipment.map((spec, index) => {
-                    const item = data?.bom.items.find(
-                      (x) => x.unit_id === spec.unit_id,
-                    );
-                    const open = expanded === spec.unit_id;
-                    return (
-                      <Fragment key={`${index}-${spec.unit_id}`}>
-                        <tr>
-                          <td>
-                            <button
-                              className="equipment-name"
-                              aria-expanded={open}
-                              onClick={() =>
-                                setExpanded(open ? null : spec.unit_id)
-                              }
-                            >
-                              {open ? (
-                                <ChevronDown size={14} />
-                              ) : (
-                                <ChevronRight size={14} />
-                              )}
-                              <span className="equipment-symbol">
-                                {spec.kind === "heat_exchanger" ? (
-                                  <Waves size={17} />
-                                ) : spec.kind === "pump" ||
-                                  spec.kind === "compressor" ? (
-                                  <Activity size={17} />
-                                ) : (
-                                  <FlaskConical size={17} />
-                                )}
-                              </span>
-                              <span>
-                                <strong>{spec.unit_id}</strong>
-                                <small>{kindLabels[spec.kind]}</small>
-                              </span>
-                            </button>
-                          </td>
-                          <td>
-                            {item ? (
-                              <>
-                                {item.correlation_size.toLocaleString("en-US", {
-                                  maximumFractionDigits: 1,
-                                })}{" "}
-                                <span className="cell-unit">
-                                  {item.correlation_size_unit}
-                                </span>
-                              </>
-                            ) : (
-                              "Pending"
-                            )}
-                          </td>
-                          <td>
-                            <select
-                              aria-label={`${spec.unit_id} material`}
-                              value={spec.material ?? "carbon_steel"}
-                              onChange={(e) =>
-                                changeEquipment(index, {
-                                  material: e.target.value,
-                                })
-                              }
-                            >
-                              <option value="carbon_steel">Carbon steel</option>
-                              <option value="stainless_steel">
-                                Stainless steel
-                              </option>
-                            </select>
-                          </td>
-                          <td>
-                            <input
-                              className="quantity-input"
-                              type="number"
-                              min={1}
-                              max={10000}
-                              aria-label={`${spec.unit_id} quantity`}
-                              value={spec.quantity ?? 1}
-                              onChange={(e) =>
-                                changeEquipment(index, {
-                                  quantity: Number(e.target.value),
-                                })
-                              }
-                            />
-                          </td>
-                          <td>
-                            {item
-                              ? usd(item.purchased_equipment_cost_usd)
-                              : "—"}
-                          </td>
-                          <td className="cost-cell">
-                            {item
-                              ? usd(item.bare_module_cost_usd * item.quantity)
-                              : "—"}
-                          </td>
-                          <td>
-                            <button
-                              className="icon-button remove-unit"
-                              aria-label={`Remove ${spec.unit_id}`}
-                              disabled={
-                                (base?.costing.equipment.length ?? 0) <= 1
-                              }
-                              onClick={() =>
-                                setBase((prev) =>
-                                  prev
-                                    ? {
-                                        ...prev,
-                                        costing: {
-                                          ...prev.costing,
-                                          equipment:
-                                            prev.costing.equipment.filter(
-                                              (_, i) => i !== index,
-                                            ),
-                                        },
-                                      }
-                                    : prev,
-                                )
-                              }
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </td>
-                        </tr>
-                        {open && (
-                          <tr className="equipment-detail">
-                            <td colSpan={7}>
-                              <div className="detail-label">
-                                <Settings2 size={14} />
-                                Per-unit sizing inputs
-                              </div>
-                              {spec.kind === "quoted" && (
-                                <p className="factor-note">
-                                  Source:{" "}
-                                  {String(
-                                    spec.source ||
-                                      "User estimate; verify provenance",
-                                  )}
-                                </p>
-                              )}
-                              <div className="equipment-fields">
-                                {Object.entries(defaults[spec.kind]).map(
-                                  ([key, value]) => (
-                                    <NumberField
-                                      key={key}
-                                      label={fieldLabels[key]}
-                                      value={Number(spec[key] ?? value)}
-                                      change={(v) =>
-                                        changeEquipment(index, { [key]: v })
-                                      }
-                                    />
-                                  ),
-                                )}
-                              </div>
-                              {item && (
-                                <div className="sizing-output">
-                                  {Object.entries(item.sizing).map(
-                                    ([key, value]) => (
-                                      <span key={key}>
-                                        {key.replaceAll("_", " ")}:{" "}
-                                        <strong>
-                                          {value.toLocaleString("en-US", {
-                                            maximumFractionDigits: 3,
-                                          })}
-                                        </strong>
-                                      </span>
-                                    ),
-                                  )}
-                                </div>
-                              )}
-                              <p className="factor-note">
-                                {item
-                                  ? `Applied factors: Fm ${item.material_factor.toFixed(2)} · Fp ${item.pressure_factor.toFixed(2)}.`
-                                  : "Sizing pending."}{" "}
-                                Generic stainless cost factors are used;
-                                grade-specific strength remains a design input.
-                              </p>
-                            </td>
-                          </tr>
+              {error && (
+                <div className="error-banner" role="alert">
+                  <CircleHelp size={18} />
+                  <div>
+                    <strong>Assessment needs attention</strong>
+                    <p>{error}</p>
+                  </div>
+                  <button
+                    onClick={() =>
+                      initialError
+                        ? setRetry((x) => x + 1)
+                        : setCalculationRetry((x) => x + 1)
+                    }
+                  >
+                    Retry calculation
+                  </button>
+                </div>
+              )}
+              {notice && (
+                <div className="notice-banner" role="status">
+                  <Check size={17} />
+                  {notice}
+                  <button
+                    aria-label="Dismiss notification"
+                    onClick={() => setNotice("")}
+                  >
+                    <X size={15} />
+                  </button>
+                </div>
+              )}
+              <div className="workspace-content">
+                {base &&
+                  ["capex", "opex", "revenue", "sensitivity"].includes(
+                    mode,
+                  ) && (
+                    <section className="panel assumptions-panel">
+                      <h2>{workspaceTitles[mode]} assumptions</h2>
+                      <p>
+                        Edits update the shared project and recalculate its
+                        economics.
+                      </p>
+                      <div className="assumption-fields">
+                        {mode === "revenue" && (
+                          <NumberField
+                            label="Selling price · USD/unit"
+                            value={
+                              base.financial.product_selling_price_usd_per_unit
+                            }
+                            change={(v) =>
+                              updateFinancial(
+                                "product_selling_price_usd_per_unit",
+                                v,
+                              )
+                            }
+                          />
                         )}
-                      </Fragment>
-                    );
-                  })}
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td colSpan={5}>
-                      Total bare module CAPEX{" "}
-                      <span>Quantity-weighted · USD</span>
-                    </td>
-                    <td className="cost-cell">
-                      {data ? usd(data.bom.total_bare_module_cost_usd) : "—"}
-                    </td>
-                    <td />
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-            <div className="equipment-footnote">
-              <CircleHelp size={14} />
-              <span>
-                Per-unit costs include material, pressure and CEPCI adjustments.
-                Offsites, contingency and owner costs are excluded.
-              </span>
-            </div>
-          </section>
-          <details className="basis-details">
-            <summary>
-              <ShieldCheck size={15} />
-              Calculation basis & engineering notes{" "}
-              <span>{warnings.length} notes</span>
-              <ChevronDown size={14} />
-            </summary>
-            <div>
-              <p>
-                Preliminary screening estimates using Turton module
-                correlations. Reactor costs cover vessel shells. Compressor
-                sizing assumes a single-stage ideal gas. Uploaded stream data in
-                CSV/JSON stream tables does not automatically size equipment.
-                Native DWSIM imports can use supported saved sizing inputs.
-              </p>
-              {warnings.map((w, i) => (
-                <p key={i}>{w}</p>
-              ))}
-              <p>
-                Risk scenarios use independent uniform feedstock and utility
-                multipliers, held constant over each project life. P10, P50 and
-                P90 are ascending NPV percentiles. Depreciation life defaults to
-                operating life.
-              </p>
-            </div>
-          </details>
-          {base && (
-            <StudyWorkspace
-              project={base}
-              streams={streams}
-              onProject={setBase}
-            />
-          )}
-            </div>
-            <div className="analysis-tools-column" aria-label="Engineering and intelligence tools">
-          <AIConnection {...ai} />
-          <UniversalAdvisor
-            aiAvailable={!!ai.status?.can_generate}
-            project={payload}
-            streams={streams}
-            ready={ready}
-            context={base?.advisor_context ?? defaultContext}
-            onContext={(context) =>
-              setBase((prev) =>
-                prev ? { ...prev, advisor_context: context } : prev,
-              )
-            }
-            onApply={applyStress}
-            canApply={(r) => stressTarget(r) !== null}
-          />
-          {base && (
-            <EngineeringAnalyst
-              project={base}
-              onProject={setBase}
-              native={nativeImport}
-              aiAvailable={!!ai.status?.can_generate}
-            />
-          )}
-          {base && payload && (
-            <EngineeringTools
-              aiAvailable={!!ai.status?.can_generate}
-              project={base}
-              scenario={payload}
-              ready={ready}
-              onProject={setBase}
-              native={nativeImport}
-            />
-          )}
-            </div>
-          </div>
+                        {mode === "revenue" && (
+                          <NumberField
+                            label="Plant capacity · units/year"
+                            value={base.financial.plant_capacity_units_per_year}
+                            change={(v) =>
+                              updateFinancial(
+                                "plant_capacity_units_per_year",
+                                v,
+                              )
+                            }
+                          />
+                        )}
+                        {mode === "revenue" && (
+                          <NumberField
+                            label="Capacity factor · %"
+                            value={base.financial.capacity_factor * 100}
+                            change={(v) =>
+                              updateFinancial("capacity_factor", v / 100)
+                            }
+                          />
+                        )}
+                        {mode === "opex" && (
+                          <NumberField
+                            label="Fixed OPEX · USD/year"
+                            value={base.financial.fixed_opex_usd_per_year}
+                            change={(v) =>
+                              updateFinancial("fixed_opex_usd_per_year", v)
+                            }
+                          />
+                        )}
+                        {mode === "opex" && (
+                          <NumberField
+                            label="Base feedstock · USD/year"
+                            value={base.financial.feedstock_opex_usd_per_year}
+                            change={(v) =>
+                              updateExpense("feedstock_opex_usd_per_year", v)
+                            }
+                          />
+                        )}
+                        {mode === "opex" && (
+                          <NumberField
+                            label="Base utilities · USD/year"
+                            value={base.financial.utility_opex_usd_per_year}
+                            change={(v) =>
+                              updateExpense("utility_opex_usd_per_year", v)
+                            }
+                          />
+                        )}
+                        {mode === "opex" && (
+                          <NumberField
+                            label="Other variable OPEX · USD/year"
+                            value={Math.max(
+                              0,
+                              base.financial.variable_opex_usd_per_year -
+                                base.financial.feedstock_opex_usd_per_year -
+                                base.financial.utility_opex_usd_per_year,
+                            )}
+                            change={(v) => updateExpense("other", v)}
+                          />
+                        )}
+                        {mode === "sensitivity" && (
+                          <NumberField
+                            label="Tax rate · %"
+                            value={base.financial.tax_rate * 100}
+                            change={(v) => updateFinancial("tax_rate", v / 100)}
+                          />
+                        )}
+                        {mode === "capex" && (
+                          <NumberField
+                            label="Target CEPCI"
+                            value={base.costing.settings.cepci_current}
+                            change={(v) =>
+                              setBase({
+                                ...base,
+                                costing: {
+                                  ...base.costing,
+                                  settings: {
+                                    ...base.costing.settings,
+                                    cepci_current: v,
+                                    cepci_basis:
+                                      "Manual planning assumption; source selection cleared by index edit",
+                                  },
+                                },
+                              })
+                            }
+                          />
+                        )}
+                      </div>
+                    </section>
+                  )}
+                {mode === "scenario" && (
+                  <div className="primary-grid workspace-scenario-charts">
+                    <section className="panel cash-panel">
+                      <h2>
+                        {chartView === "waterfall"
+                          ? "Annual cash-flow waterfall"
+                          : "Cumulative cash flow"}
+                      </h2>
+                      <div className="chart-area">
+                        {data ? (
+                          <CashFlowChart data={data} view={chartView} />
+                        ) : (
+                          <p>Calculating cash flow…</p>
+                        )}
+                      </div>
+                    </section>
+                    <section className="panel">
+                      <h2>Risk & uncertainty</h2>
+                      <div className="risk-chart">
+                        {data ? (
+                          <RiskChart data={data} />
+                        ) : (
+                          <p>Calculating uncertainty…</p>
+                        )}
+                      </div>
+                    </section>
+                  </div>
+                )}
+
+                {mode === "sensitivity" && (
+                  <>
+                    <section className="panel playground-panel" id="playground">
+                      <div className="panel-heading">
+                        <div>
+                          <span className="section-icon">
+                            <SlidersHorizontal size={17} />
+                          </span>
+                          <h2>Financial playground</h2>
+                          <p>Adjust an assumption. See the impact.</p>
+                        </div>
+                      </div>
+                      <RangeControl
+                        label="Feedstock price"
+                        value={controls.feed}
+                        min={-50}
+                        max={50}
+                        unit="%"
+                        change={(v) => setControls((c) => ({ ...c, feed: v }))}
+                        detail={
+                          payload
+                            ? `${usd(payload.financial.feedstock_opex_usd_per_year)}/year at fixed consumption`
+                            : "Annual feedstock cost"
+                        }
+                      />
+                      <RangeControl
+                        label="Utility rates"
+                        value={controls.utility}
+                        min={-50}
+                        max={50}
+                        unit="%"
+                        change={(v) =>
+                          setControls((c) => ({ ...c, utility: v }))
+                        }
+                        detail={
+                          payload
+                            ? `${usd(payload.financial.utility_opex_usd_per_year)}/year at fixed consumption`
+                            : "Annual utility cost"
+                        }
+                      />
+                      <details className="additional-stresses">
+                        <summary>Capital, price & other sensitivities</summary>
+                        <RangeControl
+                          label="CAPEX stress"
+                          value={controls.capex ?? 0}
+                          min={-50}
+                          max={50}
+                          step={0.1}
+                          unit="%"
+                          change={(v) =>
+                            setControls((c) => ({ ...c, capex: v }))
+                          }
+                          detail="Scales purchased and bare module costs; retained in exports"
+                        />
+                        <RangeControl
+                          label="Selling price stress"
+                          value={controls.price ?? 0}
+                          min={-50}
+                          max={50}
+                          step={0.1}
+                          unit="%"
+                          change={(v) =>
+                            setControls((c) => ({ ...c, price: v }))
+                          }
+                          detail={
+                            payload
+                              ? `$${payload.financial.product_selling_price_usd_per_unit.toFixed(2)} per product unit`
+                              : "Product price at fixed output"
+                          }
+                        />
+                        <RangeControl
+                          label="Fixed OPEX stress"
+                          value={controls.fixed ?? 0}
+                          min={-50}
+                          max={50}
+                          step={0.1}
+                          unit="%"
+                          change={(v) =>
+                            setControls((c) => ({ ...c, fixed: v }))
+                          }
+                          detail="Annual fixed operating cost"
+                        />
+                        <RangeControl
+                          label="Other variable OPEX stress"
+                          value={controls.other ?? 0}
+                          min={-50}
+                          max={50}
+                          step={0.1}
+                          unit="%"
+                          change={(v) =>
+                            setControls((c) => ({ ...c, other: v }))
+                          }
+                          detail="Excludes raw materials and utilities"
+                        />
+                      </details>
+                      <RangeControl
+                        label="Discount rate"
+                        value={controls.discount}
+                        min={0}
+                        max={30}
+                        step={0.5}
+                        unit="%"
+                        change={(v) =>
+                          setControls((c) => ({ ...c, discount: v }))
+                        }
+                        detail="Annual investment hurdle rate"
+                      />
+                      <RangeControl
+                        label="Plant life"
+                        value={controls.life}
+                        min={1}
+                        max={50}
+                        unit=" yr"
+                        change={(v) => setControls((c) => ({ ...c, life: v }))}
+                        detail="Operating years after the initial investment"
+                      />
+                    </section>
+                  </>
+                )}
+                {mode === "capex" && (
+                  <>
+                    <section className="panel equipment-panel" id="equipment">
+                      <div className="panel-heading">
+                        <div>
+                          <h2>
+                            Equipment bill of materials{" "}
+                            <span className="count-badge">
+                              {base?.costing.equipment.length ?? 0}
+                            </span>
+                          </h2>
+                          <p>
+                            Inspect sizing, compare construction materials, and
+                            trace every cost.
+                          </p>
+                        </div>
+                        <div className="add-equipment">
+                          <select
+                            aria-label="Equipment type to add"
+                            value={kind}
+                            onChange={(e) => setKind(e.target.value as Kind)}
+                          >
+                            {Object.entries(kindLabels).map(([v, l]) => (
+                              <option key={v} value={v}>
+                                {l}
+                              </option>
+                            ))}
+                          </select>
+                          <Button
+                            variant="outline"
+                            disabled={!base}
+                            onClick={addEquipment}
+                          >
+                            <Plus size={14} />
+                            Add unit
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="table-scroll">
+                        <table className="bom-table">
+                          <thead>
+                            <tr>
+                              <th>Equipment</th>
+                              <th>Design size / unit</th>
+                              <th>Material of construction</th>
+                              <th>Qty</th>
+                              <th>Purchased / unit</th>
+                              <th>Bare module total</th>
+                              <th>
+                                <span className="sr-only">Actions</span>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {base?.costing.equipment.map((spec, index) => {
+                              const item = data?.bom.items.find(
+                                (x) => x.unit_id === spec.unit_id,
+                              );
+                              const open = expanded === spec.unit_id;
+                              return (
+                                <Fragment key={`${index}-${spec.unit_id}`}>
+                                  <tr>
+                                    <td>
+                                      <button
+                                        className="equipment-name"
+                                        aria-expanded={open}
+                                        onClick={() =>
+                                          setExpanded(
+                                            open ? null : spec.unit_id,
+                                          )
+                                        }
+                                      >
+                                        {open ? (
+                                          <ChevronDown size={14} />
+                                        ) : (
+                                          <ChevronRight size={14} />
+                                        )}
+                                        <span className="equipment-symbol">
+                                          {spec.kind === "heat_exchanger" ? (
+                                            <Waves size={17} />
+                                          ) : spec.kind === "pump" ||
+                                            spec.kind === "compressor" ? (
+                                            <Activity size={17} />
+                                          ) : (
+                                            <FlaskConical size={17} />
+                                          )}
+                                        </span>
+                                        <span>
+                                          <strong>{spec.unit_id}</strong>
+                                          <small>{kindLabels[spec.kind]}</small>
+                                        </span>
+                                      </button>
+                                    </td>
+                                    <td>
+                                      {item ? (
+                                        <>
+                                          {item.correlation_size.toLocaleString(
+                                            "en-US",
+                                            {
+                                              maximumFractionDigits: 1,
+                                            },
+                                          )}{" "}
+                                          <span className="cell-unit">
+                                            {item.correlation_size_unit}
+                                          </span>
+                                        </>
+                                      ) : (
+                                        "Pending"
+                                      )}
+                                    </td>
+                                    <td>
+                                      <select
+                                        aria-label={`${spec.unit_id} material`}
+                                        value={spec.material ?? "carbon_steel"}
+                                        onChange={(e) =>
+                                          changeEquipment(index, {
+                                            material: e.target.value,
+                                          })
+                                        }
+                                      >
+                                        <option value="carbon_steel">
+                                          Carbon steel
+                                        </option>
+                                        <option value="stainless_steel">
+                                          Stainless steel
+                                        </option>
+                                      </select>
+                                    </td>
+                                    <td>
+                                      <input
+                                        className="quantity-input"
+                                        type="number"
+                                        min={1}
+                                        max={10000}
+                                        aria-label={`${spec.unit_id} quantity`}
+                                        value={spec.quantity ?? 1}
+                                        onChange={(e) =>
+                                          changeEquipment(index, {
+                                            quantity: Number(e.target.value),
+                                          })
+                                        }
+                                      />
+                                    </td>
+                                    <td>
+                                      {item
+                                        ? usd(item.purchased_equipment_cost_usd)
+                                        : "—"}
+                                    </td>
+                                    <td className="cost-cell">
+                                      {item
+                                        ? usd(
+                                            item.bare_module_cost_usd *
+                                              item.quantity,
+                                          )
+                                        : "—"}
+                                    </td>
+                                    <td>
+                                      <button
+                                        className="icon-button remove-unit"
+                                        aria-label={`Remove ${spec.unit_id}`}
+                                        disabled={
+                                          (base?.costing.equipment.length ??
+                                            0) <= 1
+                                        }
+                                        onClick={() =>
+                                          setBase((prev) =>
+                                            prev
+                                              ? {
+                                                  ...prev,
+                                                  costing: {
+                                                    ...prev.costing,
+                                                    equipment:
+                                                      prev.costing.equipment.filter(
+                                                        (_, i) => i !== index,
+                                                      ),
+                                                  },
+                                                }
+                                              : prev,
+                                          )
+                                        }
+                                      >
+                                        <Trash2 size={14} />
+                                      </button>
+                                    </td>
+                                  </tr>
+                                  {open && (
+                                    <tr className="equipment-detail">
+                                      <td colSpan={7}>
+                                        <div className="detail-label">
+                                          <Settings2 size={14} />
+                                          Per-unit sizing inputs
+                                        </div>
+                                        {spec.kind === "quoted" && (
+                                          <p className="factor-note">
+                                            Source:{" "}
+                                            {String(
+                                              spec.source ||
+                                                "User estimate; verify provenance",
+                                            )}
+                                          </p>
+                                        )}
+                                        <div className="equipment-fields">
+                                          {Object.entries(
+                                            defaults[spec.kind],
+                                          ).map(([key, value]) => (
+                                            <NumberField
+                                              key={key}
+                                              label={fieldLabels[key]}
+                                              value={Number(spec[key] ?? value)}
+                                              change={(v) =>
+                                                changeEquipment(index, {
+                                                  [key]: v,
+                                                })
+                                              }
+                                            />
+                                          ))}
+                                        </div>
+                                        {item && (
+                                          <div className="sizing-output">
+                                            {Object.entries(item.sizing).map(
+                                              ([key, value]) => (
+                                                <span key={key}>
+                                                  {key.replaceAll("_", " ")}:{" "}
+                                                  <strong>
+                                                    {value.toLocaleString(
+                                                      "en-US",
+                                                      {
+                                                        maximumFractionDigits: 3,
+                                                      },
+                                                    )}
+                                                  </strong>
+                                                </span>
+                                              ),
+                                            )}
+                                          </div>
+                                        )}
+                                        <p className="factor-note">
+                                          {item
+                                            ? `Applied factors: Fm ${item.material_factor.toFixed(2)} · Fp ${item.pressure_factor.toFixed(2)}.`
+                                            : "Sizing pending."}{" "}
+                                          Generic stainless cost factors are
+                                          used; grade-specific strength remains
+                                          a design input.
+                                        </p>
+                                      </td>
+                                    </tr>
+                                  )}
+                                </Fragment>
+                              );
+                            })}
+                          </tbody>
+                          <tfoot>
+                            <tr>
+                              <td colSpan={5}>
+                                Total bare module CAPEX{" "}
+                                <span>Quantity-weighted · USD</span>
+                              </td>
+                              <td className="cost-cell">
+                                {data
+                                  ? usd(data.bom.total_bare_module_cost_usd)
+                                  : "—"}
+                              </td>
+                              <td />
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
+                      <div className="equipment-footnote">
+                        <CircleHelp size={14} />
+                        <span>
+                          Per-unit costs include material, pressure and CEPCI
+                          adjustments. Offsites, contingency and owner costs are
+                          excluded.
+                        </span>
+                      </div>
+                    </section>
+                  </>
+                )}
+                <details className="basis-details">
+                  <summary>
+                    <ShieldCheck size={15} />
+                    Calculation basis & engineering notes{" "}
+                    <span>{warnings.length} notes</span>
+                    <ChevronDown size={14} />
+                  </summary>
+                  <div>
+                    <p>
+                      Preliminary screening estimates using Turton module
+                      correlations. Reactor costs cover vessel shells.
+                      Compressor sizing assumes a single-stage ideal gas.
+                      Uploaded stream data in CSV/JSON stream tables does not
+                      automatically size equipment. Native DWSIM imports can use
+                      supported saved sizing inputs.
+                    </p>
+                    {warnings.map((w, i) => (
+                      <p key={i}>{w}</p>
+                    ))}
+                    <p>
+                      Risk scenarios use independent uniform feedstock and
+                      utility multipliers, held constant over each project life.
+                      P10, P50 and P90 are ascending NPV percentiles.
+                      Depreciation life defaults to operating life.
+                    </p>
+                  </div>
+                </details>
+                {base && ["analysis", "capex", "opex"].includes(mode) && (
+                  <StudyWorkspace
+                    key={mode}
+                    mode={
+                      mode === "analysis" ? "study" : (mode as "capex" | "opex")
+                    }
+                    project={base}
+                    streams={streams}
+                    onProject={setBase}
+                  />
+                )}
+
+                {mode === "analysis" && <AIConnection {...ai} />}
+                <div hidden={mode !== "scenario"}>
+                  <UniversalAdvisor
+                    aiAvailable={!!ai.status?.can_generate}
+                    project={payload}
+                    streams={streams}
+                    ready={ready}
+                    context={base?.advisor_context ?? defaultContext}
+                    onContext={(context) =>
+                      setBase((prev) =>
+                        prev ? { ...prev, advisor_context: context } : prev,
+                      )
+                    }
+                    onApply={applyStress}
+                    canApply={(r) => stressTarget(r) !== null}
+                  />
+                </div>
+                {base && mode === "capex" && (
+                  <EngineeringAnalyst
+                    project={base}
+                    onProject={setBase}
+                    native={nativeImport}
+                    aiAvailable={!!ai.status?.can_generate}
+                  />
+                )}
+                {base && payload && (
+                  <EngineeringTools
+                    view={
+                      mode === "analysis"
+                        ? "study"
+                        : (mode as
+                            | "capex"
+                            | "opex"
+                            | "revenue"
+                            | "scenario"
+                            | "sensitivity")
+                    }
+                    aiAvailable={!!ai.status?.can_generate}
+                    project={base}
+                    scenario={payload}
+                    ready={ready}
+                    onProject={setBase}
+                    native={nativeImport}
+                  />
+                )}
+              </div>
             </>
           )}
           <footer className="dashboard-footer">

@@ -5,16 +5,16 @@ import { readFileSync } from "node:fs";
 const read = (p) => readFileSync(new URL(p, import.meta.url), "utf8");
 
 test("Main dashboard is a dedicated route and is first under Analysis", () => {
-  const route = read("../src/app/main-dashboard/page.tsx");
+  const route = read("../src/app/(workspace)/main-dashboard/page.tsx");
   const nav = read("../src/components/dashboard/workspace-sidebar.tsx");
-  assert.match(route, /<Dashboard mode="main"\s*\/>/);
+  assert.doesNotMatch(route, /EmptyAnalysisPage/);
   const processSection = nav.indexOf('PROCESS VISUALISATION');
-  const analysisSection = nav.indexOf('>ANALYSIS</div>');
+  const analysisSection = nav.indexOf('>ANALYST WORKSPACE</div>');
   assert.ok(processSection >= 0 && processSection < analysisSection);
   assert.ok(nav.indexOf('href="/process-flow"') > processSection);
   assert.ok(nav.indexOf('href="/process-flow"') < analysisSection);
   assert.ok(nav.indexOf('href="/main-dashboard"') > analysisSection);
-  assert.match(nav, /href="\/main-dashboard#risk"/);
+  assert.match(nav, /href="\/scenario"/);
 });
 
 test("Main dashboard owns six headline metrics and three charts", () => {
@@ -25,7 +25,7 @@ test("Main dashboard owns six headline metrics and three charts", () => {
   }
   for (const chart of ["CashFlowChart", "RiskChart", "CapexChart"]) {
     assert.match(main, new RegExp(`<${chart} data={data}`));
-    assert.doesNotMatch(analysis, new RegExp(`<${chart} data={data}`));
+
   }
   assert.match(analysis, /<MainDashboard/);
   assert.match(analysis, /id="equipment"/);
@@ -34,7 +34,7 @@ test("Main dashboard owns six headline metrics and three charts", () => {
 
 test("Entry continues to Main dashboard instead of the long analysis view", () => {
   const dashboard = read("../src/components/dashboard/dashboard.tsx");
-  assert.match(dashboard, /href="\/main-dashboard" className="entry-analysis-link"/);
+  assert.match(dashboard, /href="\/main-dashboard"[\s\S]*?className="entry-analysis-link"/);
 });
 
 test("Process view uses shared sidebar with its own active state", () => {

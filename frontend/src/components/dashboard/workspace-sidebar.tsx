@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   Activity,
   ChevronDown,
@@ -9,7 +10,6 @@ import {
   TrendingUp,
   Layers3,
   LayoutDashboard,
-  ShieldCheck,
   SlidersHorizontal,
   Upload,
   Waves,
@@ -17,23 +17,30 @@ import {
 
 type WorkspaceSidebarProps = {
   name: string;
-  active: "entry" | "process" | "main" | "capex" | "opex" | "revenue" | "scenario" | "sensitivity" | "overview";
+  active:
+    | "entry"
+    | "process"
+    | "main"
+    | "capex"
+    | "opex"
+    | "revenue"
+    | "scenario"
+    | "sensitivity"
+    | "overview";
 };
 
 export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
-  const dashboardHref = (hash: string) =>
-    active === "overview" ? hash : `/dashboard${hash}`;
-
   return (
+    <>
       <aside className="sidebar">
-        <a className="brand" href="/dashboard">
+        <Link className="brand" href="/dashboard">
           <span className="brand-mark">
             <Waves size={23} />
           </span>
           <span>
             flowvalue<span className="brand-ai"> AI</span>
           </span>
-        </a>
+        </Link>
         <div className="workspace-label">WORKSPACE</div>
         <div className="workspace-switch">
           <span className="workspace-icon">
@@ -47,7 +54,7 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
         </div>
         <div className="nav-caption">ENTRY</div>
         <nav aria-label="Entry">
-          <a
+          <Link
             href="/entry"
             className={active === "entry" ? "nav-selected" : undefined}
             aria-current={active === "entry" ? "page" : undefined}
@@ -55,15 +62,15 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
             <FileInput size={18} />
             Entry
             {active === "entry" && <span className="nav-dot" />}
-          </a>
-          <a href="/entry#streams">
+          </Link>
+          <Link href="/entry#streams">
             <Upload size={18} />
             Simulation data
-          </a>
+          </Link>
         </nav>
         <div className="nav-caption">PROCESS VISUALISATION</div>
         <nav aria-label="Process visualisation">
-          <a
+          <Link
             href="/process-flow"
             className={active === "process" ? "nav-selected" : undefined}
             aria-current={active === "process" ? "page" : undefined}
@@ -71,11 +78,11 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
             <Layers3 size={18} />
             Interactive process flow
             {active === "process" && <span className="nav-dot" />}
-          </a>
+          </Link>
         </nav>
-        <div className="nav-caption">ANALYSIS</div>
-        <nav>
-          <a
+        <div className="nav-caption">ANALYST WORKSPACE</div>
+        <nav aria-label="Analyst workspace">
+          <Link
             href="/main-dashboard"
             className={active === "main" ? "nav-selected" : undefined}
             aria-current={active === "main" ? "page" : undefined}
@@ -83,8 +90,8 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
             <LayoutDashboard size={18} />
             Main dashboard
             {active === "main" && <span className="nav-dot" />}
-          </a>
-          <a
+          </Link>
+          <Link
             href="/capex"
             className={active === "capex" ? "nav-selected" : undefined}
             aria-current={active === "capex" ? "page" : undefined}
@@ -92,8 +99,8 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
             <Coins size={18} />
             Capex
             {active === "capex" && <span className="nav-dot" />}
-          </a>
-          <a
+          </Link>
+          <Link
             href="/opex"
             className={active === "opex" ? "nav-selected" : undefined}
             aria-current={active === "opex" ? "page" : undefined}
@@ -101,8 +108,8 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
             <ReceiptText size={18} />
             Opex
             {active === "opex" && <span className="nav-dot" />}
-          </a>
-          <a
+          </Link>
+          <Link
             href="/revenue"
             className={active === "revenue" ? "nav-selected" : undefined}
             aria-current={active === "revenue" ? "page" : undefined}
@@ -110,40 +117,20 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
             <TrendingUp size={18} />
             Revenue
             {active === "revenue" && <span className="nav-dot" />}
-          </a>
-          <a
-            href={dashboardHref("#overview")}
+          </Link>
+          <Link
+            href="/dashboard"
             className={active === "overview" ? "nav-selected" : undefined}
             aria-current={active === "overview" ? "page" : undefined}
           >
-            <Layers3 size={18} />
-            Analysis tools
+            <FlaskConical size={18} />
+            Design basis & evidence
             {active === "overview" && <span className="nav-dot" />}
-          </a>
-          <a href={dashboardHref("#equipment")}>
-            <Layers3 size={18} />
-            Equipment & costing
-          </a>
-          <a href={dashboardHref("#playground")}>
-            <SlidersHorizontal size={18} />
-            Financial playground
-          </a>
-          <a href="/main-dashboard#risk">
-            <ShieldCheck size={18} />
-            Risk & uncertainty
-          </a>
-          <a href={dashboardHref("#engineering-analyst")}>
-            <FlaskConical size={18} />
-            Engineering analyst
-          </a>
-          <a href={dashboardHref("#study")}>
-            <FlaskConical size={18} />
-            Analyst workspace
-          </a>
+          </Link>
         </nav>
         <div className="nav-caption">PLAYGROUND</div>
         <nav aria-label="Playground">
-          <a
+          <Link
             href="/scenario"
             className={active === "scenario" ? "nav-selected" : undefined}
             aria-current={active === "scenario" ? "page" : undefined}
@@ -151,8 +138,8 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
             <GitBranch size={18} />
             Scenario
             {active === "scenario" && <span className="nav-dot" />}
-          </a>
-          <a
+          </Link>
+          <Link
             href="/sensitivity"
             className={active === "sensitivity" ? "nav-selected" : undefined}
             aria-current={active === "sensitivity" ? "page" : undefined}
@@ -160,7 +147,7 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
             <SlidersHorizontal size={18} />
             Sensitivity
             {active === "sensitivity" && <span className="nav-dot" />}
-          </a>
+          </Link>
         </nav>
         <div className="sidebar-note">
           <Activity size={18} />
@@ -178,5 +165,37 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
           </div>
         </div>
       </aside>
+      <details className="workspace-mobile-nav" key={active}>
+        <summary>
+          Workspace navigation ·{" "}
+          {active === "overview"
+            ? "Design basis & evidence"
+            : active === "main"
+              ? "Main dashboard"
+              : active}
+        </summary>
+        <nav aria-label="Mobile workspace">
+          {[
+            ["entry", "/entry", "Entry"],
+            ["main", "/main-dashboard", "Main dashboard"],
+            ["capex", "/capex", "CAPEX"],
+            ["opex", "/opex", "OPEX"],
+            ["revenue", "/revenue", "Revenue"],
+            ["overview", "/dashboard", "Design basis & evidence"],
+            ["scenario", "/scenario", "Scenario"],
+            ["sensitivity", "/sensitivity", "Sensitivity"],
+            ["process", "/process-flow", "Process flow"],
+          ].map(([key, href, label]) => (
+            <Link
+              key={key}
+              href={href}
+              aria-current={active === key ? "page" : undefined}
+            >
+              {label}
+            </Link>
+          ))}
+        </nav>
+      </details>
+    </>
   );
 }

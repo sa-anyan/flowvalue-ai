@@ -29,6 +29,7 @@ type Tornado = {
   }[];
 };
 export function EngineeringTools({
+  view,
   project,
   scenario,
   ready,
@@ -36,6 +37,7 @@ export function EngineeringTools({
   native,
   aiAvailable,
 }: {
+  view: "study" | "capex" | "revenue" | "opex" | "scenario" | "sensitivity";
   aiAvailable: boolean;
   project: AssessmentRequest;
   scenario: AssessmentRequest;
@@ -112,7 +114,7 @@ export function EngineeringTools({
   }, []);
   useEffect(() => {
     const controller = new AbortController();
-    if (!ready) return;
+    if (!ready || view !== "sensitivity") return;
     const t = setTimeout(() => {
       apiFetch("/api/assessment/tornado", {
         method: "POST",
@@ -132,7 +134,7 @@ export function EngineeringTools({
       clearTimeout(t);
       controller.abort();
     };
-  }, [ready, signature]);
+  }, [ready, signature, view]);
   function policyChange(change: Partial<Incentive>) {
     onProject({
       ...project,
@@ -253,9 +255,9 @@ export function EngineeringTools({
   }
   return (
     <div className="engineering-tools">
-      <EngineeringValidation />
-      <ReleaseReadiness project={scenario} />
-      {native && (
+      {view === "study" && <EngineeringValidation />}
+      {view === "study" && <ReleaseReadiness project={scenario} />}
+      {view === "capex" && native && (
         <details className="panel extension-panel" open>
           <summary>DWSIM import review</summary>
           <p>
@@ -329,391 +331,401 @@ export function EngineeringTools({
           </p>
         </details>
       )}
-      <section className="panel extension-panel">
-        <div className="panel-heading">
-          <div>
-            <h2>Engineering integrations</h2>
-            <p>OpenPyTEA correlations and trusted BioSTEAM snapshots</p>
+      {view === "capex" && (
+        <section className="panel extension-panel">
+          <div className="panel-heading">
+            <div>
+              <h2>Engineering integrations</h2>
+              <p>OpenPyTEA correlations and trusted BioSTEAM snapshots</p>
+            </div>
+            <a className="flow-link" href="/process-flow">
+              Open interactive process flow ↗
+            </a>
           </div>
-          <a className="flow-link" href="/process-flow">
-            Open interactive process flow ↗
-          </a>
-        </div>
-        <details>
-          <summary>Supported BioSTEAM runner & example</summary>
+          <details>
+            <summary>Supported BioSTEAM runner & example</summary>
+            <p>
+              Run the trusted water-heating template locally, then upload its
+              validated JSON snapshot here. The cloud app imports results; it
+              does not run uploaded Python. The template includes pump/heater
+              costs, connected streams, annual production and OPEX. Prices and
+              fixed OPEX are illustrative.
+            </p>
+            <p>
+              <a href="/examples/water-heating-biosteam.json" download>
+                Download simulated BioSTEAM demo
+              </a>
+              {" · "}
+              <a href="/examples/water-heating-biosteam.checks.json" download>
+                Download its mass/energy checks
+              </a>
+            </p>
+            <p>
+              From the project checkout: <code>make install-biosteam</code>,
+              then <code>make validate-biosteam</code>. Import{" "}
+              <code>backend/examples/water-heating-biosteam.json</code>. The
+              isolated runner has a five-minute limit and accepts bounded
+              numeric inputs only.
+            </p>
+            <p>
+              Single-product mass basis (kg/year, USD/kg). Coproduct revenue and
+              net utility credits require separate reconciliation. Imported
+              installed equipment cost is not full BioSTEAM fixed capital
+              investment.
+            </p>
+          </details>
+          <details>
+            <summary>Add an OpenPyTEA equipment estimate</summary>
+            <p>
+              Uses the installed OpenPyTEA library (2024 index basis). Its
+              direct installed cost can differ from Turton bare-module scope.
+              Carbon-steel basis; verify applicability and ranges.
+            </p>
+            <div className="extension-actions">
+              <label>
+                Unit ID
+                <input
+                  value={unitName}
+                  onChange={(e) => setUnitName(e.target.value)}
+                />
+              </label>
+              <label>
+                Correlation
+                <select
+                  value={correlation}
+                  onChange={(e) => setCorrelation(Number(e.target.value))}
+                >
+                  {catalog.map((c, i) => (
+                    <option key={i} value={i}>
+                      {c.category} / {c.type}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Characteristic size · {catalog[correlation]?.units}
+                <input
+                  type="number"
+                  value={parameter}
+                  onChange={(e) => setParameter(Number(e.target.value))}
+                />
+              </label>
+              <Button
+                disabled={!!busy || !ready || !catalog.length}
+                onClick={addLibrary}
+              >
+                Add library estimate
+              </Button>
+            </div>
+            <p>
+              Database range: {catalog[correlation]?.s_lower}–
+              {catalog[correlation]?.s_upper} {catalog[correlation]?.units}.
+              Library extrapolation warnings are retained.
+            </p>
+          </details>
+          <details>
+            <summary>CEPCI source catalog & licensing holder</summary>
+            {indicesError && <p role="alert">{indicesError}</p>}
+            <p>
+              <strong>Licensed feed: not connected.</strong> No purchase is
+              required to use manual assumptions. Activation requires a provider
+              agreement, SaaS redistribution rights, dated observations, a named
+              reviewer and rights expiry. Personal subscription access alone
+              does not establish redistribution rights.
+            </p>
+            <p>
+              Operators import reviewed observations using{" "}
+              <code>python scripts/import_cepci.py observation.json</code>.
+              Internal-only and expired licensed records are withheld from the
+              shared catalog. No provider credentials are stored in this
+              interface.
+            </p>
+            <p>
+              Licensed observations are added by an operator with source, date
+              and reviewer. No live subscription feed is connected. Your
+              currently selected index: {project.costing.settings.cepci_current}
+              .
+            </p>
+            <p>
+              <a href="/examples/cepci-observation.template.json" download>
+                Download operator observation template
+              </a>
+            </p>
+            {indices.map((x, i) => (
+              <div className="index-record" key={i}>
+                <a href={x.source_url} target="_blank" rel="noreferrer">
+                  {x.period} · {x.value} · {x.status} · {x.source_title}
+                </a>
+                <small>
+                  Retrieved {x.retrieved_on} · reviewer {x.reviewed_by} · rights{" "}
+                  {x.distribution_rights} · expiry{" "}
+                  {x.rights_expires_on || "n/a"} ·{" "}
+                  {x.license_reference || "planning assumption"}. {x.note}
+                </small>
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    onProject({
+                      ...project,
+                      costing: {
+                        ...project.costing,
+                        settings: {
+                          ...project.costing.settings,
+                          cepci_current: x.value,
+                          cepci_basis: `${x.period}; ${x.source_title}; ${x.source_url}; retrieved ${x.retrieved_on}; reviewer ${x.reviewed_by}; ${x.status}; rights ${x.distribution_rights}; ${x.license_reference || "assumption"}; expiry ${x.rights_expires_on || "n/a"}`,
+                        },
+                      },
+                    })
+                  }
+                >
+                  Use {x.value}
+                </Button>
+              </div>
+            ))}
+          </details>
+        </section>
+      )}
+      {view === "revenue" && (
+        <section className="panel extension-panel">
+          <h2>Production credits & subsidies</h2>
           <p>
-            Run the trusted water-heating template locally, then upload its
-            validated JSON snapshot here. The cloud app imports results; it does
-            not run uploaded Python. The template includes pump/heater costs,
-            connected streams, annual production and OPEX. Prices and fixed OPEX
-            are illustrative.
+            User-defined cash-flow scenario. A 45V label does not establish
+            eligibility. Confirm jurisdiction, emissions tier, start dates, wage
+            rules and monetization. Credit units must match the model’s product
+            units (45V uses kg hydrogen).
           </p>
-          <p>
-            <a href="/examples/water-heating-biosteam.json" download>
-              Download simulated BioSTEAM demo
-            </a>
-            {" · "}
-            <a href="/examples/water-heating-biosteam.checks.json" download>
-              Download its mass/energy checks
-            </a>
-          </p>
-          <p>
-            From the project checkout: <code>make install-biosteam</code>, then{" "}
-            <code>make validate-biosteam</code>. Import{" "}
-            <code>backend/examples/water-heating-biosteam.json</code>. The
-            isolated runner has a five-minute limit and accepts bounded numeric
-            inputs only.
-          </p>
-          <p>
-            Single-product mass basis (kg/year, USD/kg). Coproduct revenue and
-            net utility credits require separate reconciliation. Imported
-            installed equipment cost is not full BioSTEAM fixed capital
-            investment.
-          </p>
-        </details>
-        <details>
-          <summary>Add an OpenPyTEA equipment estimate</summary>
-          <p>
-            Uses the installed OpenPyTEA library (2024 index basis). Its direct
-            installed cost can differ from Turton bare-module scope.
-            Carbon-steel basis; verify applicability and ranges.
-          </p>
+          <PolicyReview policy={policy} onChange={policyChange} />
           <div className="extension-actions">
             <label>
-              Unit ID
+              Policy label
               <input
-                value={unitName}
-                onChange={(e) => setUnitName(e.target.value)}
+                aria-label="Incentive label"
+                value={policy.name}
+                onChange={(e) => policyChange({ name: e.target.value })}
               />
             </label>
             <label>
-              Correlation
-              <select
-                value={correlation}
-                onChange={(e) => setCorrelation(Number(e.target.value))}
-              >
-                {catalog.map((c, i) => (
-                  <option key={i} value={i}>
-                    {c.category} / {c.type}
-                  </option>
-                ))}
-              </select>
+              USD / product unit
+              <input
+                aria-label="Production credit rate"
+                type="number"
+                min={0}
+                value={policy.rate_usd_per_unit}
+                onChange={(e) =>
+                  policyChange({ rate_usd_per_unit: Number(e.target.value) })
+                }
+              />
             </label>
             <label>
-              Characteristic size · {catalog[correlation]?.units}
+              Eligible fraction
+              <input
+                aria-label="Eligible production fraction"
+                type="number"
+                min={0}
+                max={1}
+                step={0.01}
+                value={policy.eligible_fraction}
+                onChange={(e) =>
+                  policyChange({ eligible_fraction: Number(e.target.value) })
+                }
+              />
+            </label>
+            <label>
+              First operating year
               <input
                 type="number"
-                value={parameter}
-                onChange={(e) => setParameter(Number(e.target.value))}
+                min={1}
+                max={100}
+                value={policy.start_year}
+                onChange={(e) =>
+                  policyChange({ start_year: Number(e.target.value) })
+                }
               />
             </label>
-            <Button
-              disabled={!!busy || !ready || !catalog.length}
-              onClick={addLibrary}
-            >
-              Add library estimate
-            </Button>
-          </div>
-          <p>
-            Database range: {catalog[correlation]?.s_lower}–
-            {catalog[correlation]?.s_upper} {catalog[correlation]?.units}.
-            Library extrapolation warnings are retained.
-          </p>
-        </details>
-        <details>
-          <summary>CEPCI source catalog & licensing holder</summary>
-          {indicesError && <p role="alert">{indicesError}</p>}
-          <p>
-            <strong>Licensed feed: not connected.</strong> No purchase is
-            required to use manual assumptions. Activation requires a provider
-            agreement, SaaS redistribution rights, dated observations, a named
-            reviewer and rights expiry. Personal subscription access alone does
-            not establish redistribution rights.
-          </p>
-          <p>
-            Operators import reviewed observations using{" "}
-            <code>python scripts/import_cepci.py observation.json</code>.
-            Internal-only and expired licensed records are withheld from the
-            shared catalog. No provider credentials are stored in this
-            interface.
-          </p>
-          <p>
-            Licensed observations are added by an operator with source, date and
-            reviewer. No live subscription feed is connected. Your currently
-            selected index: {project.costing.settings.cepci_current}.
-          </p>
-          <p>
-            <a href="/examples/cepci-observation.template.json" download>
-              Download operator observation template
-            </a>
-          </p>
-          {indices.map((x, i) => (
-            <div className="index-record" key={i}>
-              <a href={x.source_url} target="_blank" rel="noreferrer">
-                {x.period} · {x.value} · {x.status} · {x.source_title}
-              </a>
-              <small>
-                Retrieved {x.retrieved_on} · reviewer {x.reviewed_by} · rights{" "}
-                {x.distribution_rights} · expiry {x.rights_expires_on || "n/a"}{" "}
-                · {x.license_reference || "planning assumption"}. {x.note}
-              </small>
-              <Button
-                variant="outline"
-                onClick={() =>
-                  onProject({
-                    ...project,
-                    costing: {
-                      ...project.costing,
-                      settings: {
-                        ...project.costing.settings,
-                        cepci_current: x.value,
-                        cepci_basis: `${x.period}; ${x.source_title}; ${x.source_url}; retrieved ${x.retrieved_on}; reviewer ${x.reviewed_by}; ${x.status}; rights ${x.distribution_rights}; ${x.license_reference || "assumption"}; expiry ${x.rights_expires_on || "n/a"}`,
-                      },
-                    },
+            <label>
+              Duration (years)
+              <input
+                aria-label="Credit duration"
+                type="number"
+                min={1}
+                max={100}
+                value={policy.duration_years}
+                onChange={(e) =>
+                  policyChange({ duration_years: Number(e.target.value) })
+                }
+              />
+            </label>
+            <label>
+              Monetization
+              <select
+                value={policy.treatment}
+                onChange={(e) =>
+                  policyChange({
+                    treatment: e.target.value as Incentive["treatment"],
                   })
                 }
               >
-                Use {x.value}
-              </Button>
-            </div>
-          ))}
-        </details>
-      </section>
-      <section className="panel extension-panel">
-        <h2>Production credits & subsidies</h2>
-        <p>
-          User-defined cash-flow scenario. A 45V label does not establish
-          eligibility. Confirm jurisdiction, emissions tier, start dates, wage
-          rules and monetization. Credit units must match the model’s product
-          units (45V uses kg hydrogen).
-        </p>
-        <PolicyReview policy={policy} onChange={policyChange} />
-        <div className="extension-actions">
-          <label>
-            Policy label
-            <input
-              aria-label="Incentive label"
-              value={policy.name}
-              onChange={(e) => policyChange({ name: e.target.value })}
+                <option value="cash_payment">
+                  Cash payment outside taxable income (assumed)
+                </option>
+                <option value="tax_offset">
+                  Tax offset, capped at annual tax (no carryforward)
+                </option>
+              </select>
+            </label>
+          </div>
+          <label className="extension-full-label">
+            Eligibility and treatment basis
+            <textarea
+              aria-label="Incentive eligibility basis"
+              value={policy.basis}
+              onChange={(e) => policyChange({ basis: e.target.value })}
             />
           </label>
-          <label>
-            USD / product unit
-            <input
-              aria-label="Production credit rate"
-              type="number"
-              min={0}
-              value={policy.rate_usd_per_unit}
-              onChange={(e) =>
-                policyChange({ rate_usd_per_unit: Number(e.target.value) })
-              }
-            />
-          </label>
-          <label>
-            Eligible fraction
-            <input
-              aria-label="Eligible production fraction"
-              type="number"
-              min={0}
-              max={1}
-              step={0.01}
-              value={policy.eligible_fraction}
-              onChange={(e) =>
-                policyChange({ eligible_fraction: Number(e.target.value) })
-              }
-            />
-          </label>
-          <label>
-            First operating year
-            <input
-              type="number"
-              min={1}
-              max={100}
-              value={policy.start_year}
-              onChange={(e) =>
-                policyChange({ start_year: Number(e.target.value) })
-              }
-            />
-          </label>
-          <label>
-            Duration (years)
-            <input
-              aria-label="Credit duration"
-              type="number"
-              min={1}
-              max={100}
-              value={policy.duration_years}
-              onChange={(e) =>
-                policyChange({ duration_years: Number(e.target.value) })
-              }
-            />
-          </label>
-          <label>
-            Monetization
-            <select
-              value={policy.treatment}
-              onChange={(e) =>
-                policyChange({
-                  treatment: e.target.value as Incentive["treatment"],
-                })
-              }
-            >
-              <option value="cash_payment">
-                Cash payment outside taxable income (assumed)
-              </option>
-              <option value="tax_offset">
-                Tax offset, capped at annual tax (no carryforward)
-              </option>
-            </select>
-          </label>
-        </div>
-        <label className="extension-full-label">
-          Eligibility and treatment basis
-          <textarea
-            aria-label="Incentive eligibility basis"
-            value={policy.basis}
-            onChange={(e) => policyChange({ basis: e.target.value })}
-          />
-        </label>
-        <label className="extension-checkbox">
-          <input
-            type="checkbox"
-            checked={policy.eligibility_confirmed}
-            onChange={(e) =>
-              policyChange({
-                eligibility_confirmed: e.target.checked,
-                enabled: e.target.checked ? policy.enabled : false,
-              })
-            }
-          />
-          I have checked the eligibility and monetization assumptions.
-        </label>
-        {!policy.evidence && (
           <label className="extension-checkbox">
             <input
-              aria-label="Enable production credit"
               type="checkbox"
-              disabled={!policy.eligibility_confirmed || !policy.basis.trim()}
-              checked={policy.enabled}
-              onChange={(e) => policyChange({ enabled: e.target.checked })}
+              checked={policy.eligibility_confirmed}
+              onChange={(e) =>
+                policyChange({
+                  eligibility_confirmed: e.target.checked,
+                  enabled: e.target.checked ? policy.enabled : false,
+                })
+              }
             />
-            Include this credit in cash flows and exports
+            I have checked the eligibility and monetization assumptions.
           </label>
-        )}
-        <a
-          href="https://www.irs.gov/credits-deductions/clean-hydrogen-production-credit"
-          target="_blank"
-          rel="noreferrer"
-        >
-          IRS 45V source ↗
-        </a>
-        <p>
-          LCOP remains pre-tax and before credits; NPV, IRR and uncertainty
-          include the selected credit.
-        </p>
-      </section>
-      <section className="panel extension-panel">
-        <h2>Tornado sensitivity · ±20%</h2>
-        <p>
-          One parameter changes at a time. Bars show NPV change from{" "}
-          {sensitivity
-            ? usd(sensitivity.data.baseline_npv_usd)
-            : "the current baseline"}
-          . Category quantities remain fixed.
-        </p>
-        {sensitivity && (
-          <>
-            <p>
-              {sensitivity.signature === signature && ready
-                ? "Current scenario"
-                : "Updating · previous scenario shown"}
-            </p>
-            {sensitivity.data.rows.map((row) => {
-              const max = Math.max(
-                ...sensitivity.data.rows.map((r) =>
-                  Math.max(
-                    Math.abs(r.low_delta_usd),
-                    Math.abs(r.high_delta_usd),
-                  ),
-                ),
-                1,
-              );
-              return (
-                <div className="tornado-row" key={row.label}>
-                  <strong>{row.label}</strong>
-                  <div className="tornado-track">
-                    <span
-                      className="tornado-negative"
-                      style={{
-                        left: `${50 + (row.low_delta_usd / max) * 50}%`,
-                        width: `${(Math.abs(Math.min(0, row.low_delta_usd)) / max) * 50}%`,
-                      }}
-                    />
-                    <span
-                      className="tornado-positive"
-                      style={{
-                        left: "50%",
-                        width: `${(Math.max(0, row.high_delta_usd) / max) * 50}%`,
-                      }}
-                    />
-                  </div>
-                  <small>
-                    −20%: {usd(row.low_input_npv_usd, true)} · +20%:{" "}
-                    {usd(row.high_input_npv_usd, true)}
-                  </small>
-                </div>
-              );
-            })}
-          </>
-        )}
-      </section>
-      <section className="panel extension-panel">
-        <div className="panel-heading">
-          <div>
-            <h2>Executive investment memo</h2>
-            <p>
-              AI draft grounded in this scenario’s computed economics and
-              sensitivities.
-            </p>
-          </div>
-          <Button
-            disabled={!!busy || !ready || !aiAvailable}
-            onClick={generateMemo}
+          {!policy.evidence && (
+            <label className="extension-checkbox">
+              <input
+                aria-label="Enable production credit"
+                type="checkbox"
+                disabled={!policy.eligibility_confirmed || !policy.basis.trim()}
+                checked={policy.enabled}
+                onChange={(e) => policyChange({ enabled: e.target.checked })}
+              />
+              Include this credit in cash flows and exports
+            </label>
+          )}
+          <a
+            href="https://www.irs.gov/credits-deductions/clean-hydrogen-production-credit"
+            target="_blank"
+            rel="noreferrer"
           >
-            {busy === "memo" ? "Drafting…" : "Draft executive memo"}
-          </Button>
-        </div>
-        {!aiAvailable && (
+            IRS 45V source ↗
+          </a>
           <p>
-            Memo generation is unavailable until the AI connection is
-            configured. Financial exports remain available.
+            LCOP remains pre-tax and before credits; NPV, IRR and uncertainty
+            include the selected credit.
           </p>
-        )}
-        {memo && (
-          <>
-            <small>
-              Generated {new Date(memo.generated_at).toLocaleString()} ·{" "}
-              {memo.model} · Computed scenario only; no live research.
-            </small>
-            <p>
-              {memo.signature === signature
-                ? "Draft · review before distribution"
-                : "Stale draft · scenario changed; regenerate before use"}
-            </p>
-            <div className="memo-content">
-              <ReactMarkdown skipHtml>{memo.text}</ReactMarkdown>
+        </section>
+      )}
+      {view === "sensitivity" && (
+        <section className="panel extension-panel">
+          <h2>Tornado sensitivity · ±20%</h2>
+          <p>
+            One parameter changes at a time. Bars show NPV change from{" "}
+            {sensitivity
+              ? usd(sensitivity.data.baseline_npv_usd)
+              : "the current baseline"}
+            . Category quantities remain fixed.
+          </p>
+          {sensitivity && (
+            <>
+              <p>
+                {sensitivity.signature === signature && ready
+                  ? "Current scenario"
+                  : "Updating · previous scenario shown"}
+              </p>
+              {sensitivity.data.rows.map((row) => {
+                const max = Math.max(
+                  ...sensitivity.data.rows.map((r) =>
+                    Math.max(
+                      Math.abs(r.low_delta_usd),
+                      Math.abs(r.high_delta_usd),
+                    ),
+                  ),
+                  1,
+                );
+                return (
+                  <div className="tornado-row" key={row.label}>
+                    <strong>{row.label}</strong>
+                    <div className="tornado-track">
+                      <span
+                        className="tornado-negative"
+                        style={{
+                          left: `${50 + (row.low_delta_usd / max) * 50}%`,
+                          width: `${(Math.abs(Math.min(0, row.low_delta_usd)) / max) * 50}%`,
+                        }}
+                      />
+                      <span
+                        className="tornado-positive"
+                        style={{
+                          left: "50%",
+                          width: `${(Math.max(0, row.high_delta_usd) / max) * 50}%`,
+                        }}
+                      />
+                    </div>
+                    <small>
+                      −20%: {usd(row.low_input_npv_usd, true)} · +20%:{" "}
+                      {usd(row.high_input_npv_usd, true)}
+                    </small>
+                  </div>
+                );
+              })}
+            </>
+          )}
+        </section>
+      )}
+      {view === "scenario" && (
+        <section className="panel extension-panel">
+          <div className="panel-heading">
+            <div>
+              <h2>Executive investment memo</h2>
+              <p>
+                AI draft grounded in this scenario’s computed economics and
+                sensitivities.
+              </p>
             </div>
             <Button
-              variant="outline"
-              disabled={memo.signature !== signature}
-              onClick={downloadMemo}
+              disabled={!!busy || !ready || !aiAvailable}
+              onClick={generateMemo}
             >
-              Download memo (.md)
+              {busy === "memo" ? "Drafting…" : "Draft executive memo"}
             </Button>
-          </>
-        )}
-      </section>
-      {message && (
+          </div>
+          {!aiAvailable && (
+            <p>
+              Memo generation is unavailable until the AI connection is
+              configured. Financial exports remain available.
+            </p>
+          )}
+          {memo && (
+            <>
+              <small>
+                Generated {new Date(memo.generated_at).toLocaleString()} ·{" "}
+                {memo.model} · Computed scenario only; no live research.
+              </small>
+              <p>
+                {memo.signature === signature
+                  ? "Draft · review before distribution"
+                  : "Stale draft · scenario changed; regenerate before use"}
+              </p>
+              <div className="memo-content">
+                <ReactMarkdown skipHtml>{memo.text}</ReactMarkdown>
+              </div>
+              <Button
+                variant="outline"
+                disabled={memo.signature !== signature}
+                onClick={downloadMemo}
+              >
+                Download memo (.md)
+              </Button>
+            </>
+          )}
+        </section>
+      )}
+      {message && view !== "opex" && (
         <p role="status" className="engineering-message">
           {message}
         </p>

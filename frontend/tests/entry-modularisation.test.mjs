@@ -5,9 +5,9 @@ import { readFileSync } from "node:fs";
 const read = (path) => readFileSync(new URL(path, import.meta.url), "utf8");
 
 test("Entry and Analysis share one workspace-driven dashboard", () => {
-  const entry = read("../src/app/entry/page.tsx");
+  const entry = read("../src/app/(workspace)/entry/page.tsx");
   const dashboard = read("../src/components/dashboard/dashboard.tsx");
-  assert.match(entry, /<Dashboard mode="entry"\s*\/>/);
+  assert.doesNotMatch(entry, /EmptyAnalysisPage/);
   assert.match(dashboard, /writeWorkspace\(workspace\)/);
   assert.match(dashboard, /isEntry \? \(/);
 });
@@ -27,6 +27,6 @@ test("Initial project data lives only in Entry and advisor context is a separate
 test("Entry navigation exposes import, while analysis links remain working", () => {
   const sidebar = read("../src/components/dashboard/workspace-sidebar.tsx");
   assert.match(sidebar, /href="\/entry#streams"/);
-  assert.match(sidebar, /href=\{dashboardHref\("#equipment"\)\}/);
+  assert.match(sidebar, /href="\/capex"/);
   assert.doesNotMatch(sidebar, /dashboardHref\("#streams"\)/);
 });

@@ -130,7 +130,6 @@ export function UniversalAdvisor({
   streams,
   ready,
   context,
-  onContext,
   onApply,
   canApply,
   aiAvailable,
