@@ -5,7 +5,7 @@ Only columns with an explicit stream description anchor are considered.
 """
 import re
 
-from app.parsers.balance.models import Evidence, Issue
+from app.parsers.balance.models import Evidence
 from app.parsers.balance.parser import property_info
 from app.parsers.balance.units import convert, find_unit, number
 from app.parsers.balance.workbook import address
