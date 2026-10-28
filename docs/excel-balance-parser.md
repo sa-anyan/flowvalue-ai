@@ -68,3 +68,19 @@ The dedicated adapter independently recognises a property/units/stream-column ma
 **Third-party research/reference:** [Mo-Somji/HYSYS-ME-Balance-Formatting](https://github.com/Mo-Somji/HYSYS-ME-Balance-Formatting) and its [raw HYSYS reference export](https://github.com/Mo-Somji/HYSYS-ME-Balance-Formatting/blob/main/Data/Raw_Data_Input.xlsx) and [formatted result](https://github.com/Mo-Somji/HYSYS-ME-Balance-Formatting/blob/main/Outputs/Results.xlsx). The repository did not display a licence when inspected. **No source code, workbooks or sample data from that repository were copied into FlowValue.** The FlowValue adapter is independently written and has its own synthetic regression fixtures. Permission or an explicit licence should be obtained before reusing their code or redistributing their workbooks.
 
 Current acceptance limits: HYSYS exports vary; this adapter handles only the recognised tabular layout, does not evaluate Excel expressions or infer absent component mass balances, and does not validate simulator convergence. Real reference data has not yet been independently benchmarked in an authorised test environment, so compatibility with that exact source workbook is **not confirmed**.
+
+
+## Entry source confirmation and sample files
+
+The Entry importer now uses a **select → sample preview/download (optional) → Lock in → upload** flow. Choosing a different source unlocks the selection so an incompatible file is not accidentally sent to the previous parser. The locked choice is remembered in this browser tab; sample download is optional. The in-app preview shows representative fields and the download offers the full file.
+
+Sample links follow existing, actual test/reference files:
+- **Generic Excel:** copy of FlowValue's synthetic tested simple.xlsx fixture, available at /examples/excel-balance-sample.xlsx.
+- **CSV/JSON:** synthetic canonical stream-table examples.
+- **Native DWSIM:** synthetic .dwxml parser fixture at /examples/dwsim-native-sample.dwxml.
+- **BioSTEAM:** water-heating demonstration JSON.
+- **Aspen Plus, Aspen HYSYS, DWSIM Excel, UniSim, CHEMCAD, PRO/II, gPROMS, SuperPro and other Excel origins:** clearly labelled **generic Excel example**, **not** a vendor-specific template or compatibility guarantee. The HYSYS adapter has independently authored synthetic tests but no published HYSYS-specific workbook yet.
+
+The PDF/Word, scanned-image/PFD and manual-description selections have no numerical file sample because file extraction is unavailable. Locking one of them shows the limitation; manual context can still be supplied in the process-description box.
+
+These files are examples and parser fixtures: the parsers are **rule-based, not machine-learning models trained on these files**. Sample availability does not prove industrial validation, balance closure or full vendor support. No unlicensed third-party workbook is redistributed.
