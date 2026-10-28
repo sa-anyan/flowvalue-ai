@@ -207,7 +207,9 @@ export function BalanceImport({
                           : item.mode === "simulation"
                             ? " · simulation importer"
                             : item.mode === "unavailable"
-                              ? " · not supported yet"
+                              ? item.id === "manual"
+                                ? " · supplementary context"
+                                : " · not supported yet"
                               : ""}
                       </option>
                     ))}
@@ -260,7 +262,9 @@ export function BalanceImport({
                     ? "Select file or drop an Excel balance here"
                     : method.mode === "simulation"
                       ? "Use the simulation importer above"
-                      : "File extraction not supported yet")}
+                      : method.id === "manual"
+                        ? "Use the process-description box"
+                        : "File extraction not supported yet")}
             </strong>
             <span>
               {method.mode === "excel"
