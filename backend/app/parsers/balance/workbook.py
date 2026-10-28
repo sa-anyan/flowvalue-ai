@@ -174,9 +174,10 @@ def read_book(content: bytes, name: str):
                     fs = formulas[ws.title]
                     cells = {}
                     merges = {}
-                    for row in ws:
-                        for c in row:
-                            f = fs[c.coordinate]
+                    value_rows = ws.iter_rows()
+                    formula_rows = fs.iter_rows()
+                    for row, formula_row in zip(value_rows, formula_rows, strict=True):
+                        for c, f in zip(row, formula_row, strict=True):
                             formula = str(f.value) if f.data_type == "f" else None
                             if formula and len(formula) > 2000:
                                 raise ValueError("Formula exceeds 2,000 characters.")
