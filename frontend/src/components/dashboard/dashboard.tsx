@@ -73,6 +73,10 @@ import {
 } from "@/lib/workspace";
 import { MainDashboard } from "./main-dashboard";
 import {
+  capexPages, capexTabFromPath, CapexSummary, CapexCostRegister,
+  CapexSources, CapexValidation,
+} from "./capex-workspace";
+import {
   UniversalAdvisor,
   defaultContext,
   type Suggestion,
@@ -160,6 +164,7 @@ export default function Dashboard() {
   const pathname = usePathname();
   const router = useRouter();
   const mode = workspaceView(pathname);
+  const capexTab = capexTabFromPath(pathname);
   useEffect(() => {
     const destination = legacyWorkspaceHref(pathname, window.location.hash);
     if (destination) router.replace(destination);
@@ -738,6 +743,7 @@ export default function Dashboard() {
       <WorkspaceSidebar
         name={base?.advisor_context?.name ?? "Untitled process"}
         active={mode === "analysis" ? "overview" : mode}
+        activeCapexTab={mode === "capex" ? capexTab : undefined}
       />
       <div className="main-shell">
         <header className="topbar">
@@ -1151,7 +1157,9 @@ export default function Dashboard() {
                   <div className="eyebrow">
                     <span /> ANALYST WORKSPACE
                   </div>
-                  <h1>{workspaceTitles[mode]}</h1>
+                  <h1>{mode === "capex"
+                    ? "CAPEX / " + (capexPages.find((page) => page.tab === capexTab)?.label ?? "Summary")
+                    : workspaceTitles[mode]}</h1>
                   <p>
                     Shared project inputs, connected calculations and traceable
                     engineering decisions.
@@ -1257,9 +1265,8 @@ export default function Dashboard() {
               )}
               <div className="workspace-content">
                 {base &&
-                  ["capex", "opex", "revenue", "sensitivity"].includes(
-                    mode,
-                  ) && (
+                  ["capex", "opex", "revenue", "sensitivity"].includes(mode) &&
+                  (mode !== "capex" || capexTab === "assumptions") && (
                     <section className="panel assumptions-panel">
                       <h2>{workspaceTitles[mode]} assumptions</h2>
                       <p>
@@ -1371,6 +1378,37 @@ export default function Dashboard() {
                       </div>
                     </section>
                   )}
+                {mode === "capex" && capexTab === "summary" && (
+                  <CapexSummary
+                    project={base}
+                    data={data}
+                    streams={streams}
+                    updating={!ready}
+                    error={error}
+                  />
+                )}
+                {mode === "capex" && base && (
+                  <>
+                    {(["direct-costs", "indirect-costs", "working-capital"] as const).includes(capexTab as "direct-costs" | "indirect-costs" | "working-capital") && (
+                      <CapexCostRegister
+                        key={capexTab}
+                        project={base}
+                        onProject={setBase}
+                        group={capexTab as "direct-costs" | "indirect-costs" | "working-capital"}
+                      />
+                    )}
+                    {capexTab === "assumptions" && <CapexSources project={base} />}
+                    {capexTab === "validation" && (
+                      <CapexValidation
+                        project={base}
+                        data={data}
+                        streams={streams}
+                        error={error}
+                        onProject={setBase}
+                      />
+                    )}
+                  </>
+                )}
                 {mode === "scenario" && (
                   <div className="primary-grid workspace-scenario-charts">
                     <section className="panel cash-panel">
@@ -1519,7 +1557,7 @@ export default function Dashboard() {
                     </section>
                   </>
                 )}
-                {mode === "capex" && (
+                {mode === "capex" && capexTab === "equipment" && (
                   <>
                     <section className="panel equipment-panel" id="equipment">
                       <div className="panel-heading">
@@ -1797,7 +1835,7 @@ export default function Dashboard() {
                     </section>
                   </>
                 )}
-                <details className="basis-details">
+                {(mode !== "capex" || capexTab === "equipment" || capexTab === "validation") && <details className="basis-details">
                   <summary>
                     <ShieldCheck size={15} />
                     Calculation basis & engineering notes{" "}
@@ -1823,8 +1861,8 @@ export default function Dashboard() {
                       Depreciation life defaults to operating life.
                     </p>
                   </div>
-                </details>
-                {base && ["analysis", "capex", "opex"].includes(mode) && (
+                </details>}
+                {base && ["analysis", "opex"].includes(mode) && (
                   <StudyWorkspace
                     key={mode}
                     mode={
@@ -1853,7 +1891,7 @@ export default function Dashboard() {
                     canApply={(r) => stressTarget(r) !== null}
                   />
                 </div>
-                {base && mode === "capex" && (
+                {base && mode === "capex" && capexTab === "equipment" && (
                   <EngineeringAnalyst
                     project={base}
                     onProject={setBase}
@@ -1861,7 +1899,7 @@ export default function Dashboard() {
                     aiAvailable={!!ai.status?.can_generate}
                   />
                 )}
-                {base && payload && (
+                {base && payload && (mode !== "capex" || capexTab === "equipment") && (
                   <EngineeringTools
                     view={
                       mode === "analysis"
