@@ -1,10 +1,10 @@
 export const importMethods = [
   {
     id: "excel",
-    label: "Excel workbook",
+    label: "Excel workbook (.xlsx, .xls, .xlsm)",
     group: "Spreadsheets & tables",
     mode: "excel",
-    help: "Upload a mass and energy balance workbook (.xlsx or .xls). Supported tables are detected without requiring one fixed template.",
+    help: "Upload a mass and energy balance workbook (.xlsx or .xls). You can also select .xlsm files; parsing for that format is not available yet.",
   },
   {
     id: "csv",

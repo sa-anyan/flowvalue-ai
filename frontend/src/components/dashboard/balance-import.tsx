@@ -47,7 +47,6 @@ export function BalanceImport({
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
   const [draft, setDraft] = useState("");
-  const [shown, setShown] = useState(50);
   const description = value?.description.text ?? draft;
   async function upload(file: File) {
     if (busy || simulationBusy) return;
@@ -70,6 +69,11 @@ export function BalanceImport({
         return;
       }
       await onSimulationUpload(file);
+      if (input.current) input.current.value = "";
+      return;
+    }
+    if (method.mode === "excel" && /\.xlsm$/i.test(file.name)) {
+      setError(".xlsm file selected. Parsing for this format is not available yet.");
       if (input.current) input.current.value = "";
       return;
     }
@@ -99,9 +103,8 @@ export function BalanceImport({
         report,
         description: { ...emptyDescription, text: description },
       });
-      setShown(50);
       setStatus(
-        `Parsing finished with ${report.issues.length} issues for review. ${report.tables.length} tables detected across ${report.sheets.length} worksheets. Coverage is partial.`,
+        `Workbook uploaded: ${report.filename}.`,
       );
     } catch (e) {
       setError(e instanceof Error ? e.message : "Workbook parsing failed");
@@ -148,17 +151,6 @@ export function BalanceImport({
       setBusy("");
     }
   }
-  function download() {
-    if (!value) return;
-    const url = URL.createObjectURL(
-      new Blob([JSON.stringify(value, null, 2)], { type: "application/json" }),
-    );
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${value.report.filename}.parsed.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-  }
   const report = value?.report;
   const sources = new Map<string, BalanceEvidence>();
   for (const e of report?.entities ?? [])
@@ -196,7 +188,6 @@ export function BalanceImport({
             transparent gaps.
           </p>
         </div>
-        {report && <Button onClick={download}>Download parsed evidence</Button>}
       </div>
       <div className="balance-entry-grid">
         <div>
@@ -260,7 +251,7 @@ export function BalanceImport({
                   : method.id === "dwsim-native"
                     ? ".dwxml"
                     : ".json"
-                : ".xlsx,.xls"
+                : ".xlsx,.xls,.xlsm"
             }
             className="sr-only"
             aria-label={`Upload ${method.mode === "simulation" ? method.label : "Excel"} mass and energy balance`}
@@ -300,7 +291,7 @@ export function BalanceImport({
             </strong>
             <span>
               {method.mode === "excel"
-                ? ".xlsx or .xls · up to 4 MiB"
+                ? ".xlsx, .xls or .xlsm · up to 4 MiB · .xlsm parsing coming later"
                 : method.mode === "simulation"
                   ? `${method.id === "csv" ? ".csv" : method.id === "dwsim-native" ? ".dwxml" : ".json"} · up to 4 MiB`
                   : "Choose another import method or follow the guidance above"}
@@ -349,17 +340,7 @@ export function BalanceImport({
               )}
             </details>
           )}
-          {method.mode === "simulation" && report && (
-            <p>
-              Excel evidence below belongs to {report.filename};
-              native/stream-table imports are separate.
-            </p>
-          )}
-          <p className="upload-message">
-            Excel imports stay separate from economic assumptions and equipment
-            costing. Parsed evidence is retained in this browser tab and can be
-            downloaded.
-          </p>
+
         </div>
         <div className="balance-dialogue">
           <label htmlFor="process-description">
@@ -423,196 +404,49 @@ export function BalanceImport({
           )}
         </div>
       </div>
-      {method.mode !== "simulation" && (
-        <p role="status">
-          {status ||
-            (report
-              ? `Parsed ${report.filename}: ${report.tables.length} tables across ${report.sheets.length} worksheets; ${report.issues.length} issues for review. Coverage is partial.`
-              : "No engineering workbook uploaded.")}
-        </p>
+      {method.mode !== "simulation" && busy === "parse" && (
+        <p role="status">{status}</p>
       )}
       {error && (
         <p className="error-banner" role="alert">
           {error}
         </p>
       )}
-      {report && (
-        <>
-          <div className="balance-counts">
-            {["material", "energy", "equipment"].map((kind) => (
-              <span key={kind}>
-                <strong>
-                  {report.entities.filter((e) => e.kind === kind).length}
-                </strong>{" "}
-                {kind === "material"
-                  ? "material stream records"
-                  : kind === "energy"
-                    ? "energy stream records"
-                    : "equipment records"}
-              </span>
-            ))}
-          </div>
-          <p>{report.coverage}</p>
-          <details>
-            <summary>Worksheets &amp; detected tables</summary>
+      <div className="equipment-inspection">
+          <h3>Equipment list</h3>
+          {report && (<>
+          {report.entities.some((entity) => entity.kind === "equipment") ? (
             <div className="table-scroll">
               <table>
                 <thead>
                   <tr>
-                    <th>Worksheet</th>
-                    <th>Extent</th>
-                    <th>Tables</th>
-                    <th>Extracted / nonempty cells</th>
+                    <th>Equipment tag</th>
+                    <th>Details</th>
+                    <th>Source</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {report.sheets.map((s) => (
-                    <tr key={s.name}>
+                  {report.entities.filter((entity) => entity.kind === "equipment").map((entity) => (
+                    <tr key={entity.key}>
+                      <td>{entity.identifier}{entity.case ? ` · ${entity.case}` : ""}</td>
                       <td>
-                        {s.name}
-                        {s.hidden ? " (hidden)" : ""}
+                        {entity.values.map((item) => (
+                          <div key={item.id}>
+                            {item.label}: {String(item.original_value ?? "—")} {item.original_unit}
+                          </div>
+                        ))}
                       </td>
-                      <td>
-                        {s.rows} × {s.columns}
-                      </td>
-                      <td>{s.tables}</td>
-                      <td>
-                        {s.extracted_cells} / {s.nonempty_cells}
-                      </td>
+                      <td>{entity.id_evidence.sheet}!{entity.id_evidence.cell}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            {report.tables.map((t) => (
-              <p key={t.id}>
-                {t.sheet}!{t.range} · {t.kind} ·{" "}
-                {t.orientation.replaceAll("_", " ")} · {t.status}
-              </p>
-            ))}
-          </details>
-          <details open>
-            <summary>
-              Engineering validation ·{" "}
-              {report.checks.filter((c) => c.status === "verified").length}{" "}
-              checks verified in declared scope
-            </summary>
-            <p>
-              Verified denotes source-supported observations or the named
-              arithmetic check. It does not certify the plant or complete
-              workbook.
-            </p>
-            <ul className="balance-issues">
-              {report.checks.slice(0, 100).map((c, i) => (
-                <li key={i}>
-                  <span className={`balance-status ${c.status}`}>
-                    {c.status}
-                  </span>{" "}
-                  <strong>
-                    {c.name} · {c.scope}
-                  </strong>
-                  <p>
-                    {c.message}
-                    {c.residual !== null
-                      ? ` Residual: ${c.residual.toPrecision(6)} ${c.unit}.`
-                      : ""}
-                  </p>
-                  <small>{source(c.evidence_ids)}</small>
-                </li>
-              ))}
-            </ul>
-          </details>
-          <details>
-            <summary>
-              Issues &amp; missing information · {report.issues.length}
-            </summary>
-            <ul className="balance-issues">{issues(report.issues)}</ul>
-            {report.issues.length > 100 && (
-              <p>First 100 shown. Download parsed evidence for every issue.</p>
-            )}
-          </details>
-          <details>
-            <summary>
-              Extracted streams, equipment &amp; cell evidence ·{" "}
-              {report.entities.length} records
-            </summary>
-            {report.entities.slice(0, shown).map((e) => (
-              <details key={e.key} className="balance-record">
-                <summary>
-                  {e.identifier} {e.case ? `· ${e.case}` : ""} · {e.kind} ·{" "}
-                  {e.status}
-                </summary>
-                <p>
-                  Identifier source: {e.id_evidence.sheet}!{e.id_evidence.cell}.{" "}
-                  {e.id_evidence.note}
-                </p>
-                <div className="table-scroll">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Property</th>
-                        <th>Original</th>
-                        <th>Normalized</th>
-                        <th>Source</th>
-                        <th>Status / interpretation</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {e.values.map((v) => (
-                        <tr key={v.id}>
-                          <td>
-                            {v.label}
-                            {v.component ? ` · ${v.component}` : ""}
-                          </td>
-                          <td>
-                            {String(v.original_value ?? "Missing")}{" "}
-                            {v.original_unit}
-                          </td>
-                          <td>
-                            {String(v.normalized_value ?? "Unresolved")}{" "}
-                            {v.normalized_unit}
-                          </td>
-                          <td>
-                            {v.sheet}!{v.cell}
-                            <small>Header: {v.header_cells.join(", ")}</small>
-                            {v.formula && <code>{v.formula}</code>}
-                          </td>
-                          <td>
-                            <span className={`balance-status ${v.status}`}>
-                              {v.status}
-                            </span>
-                            <small>{v.note}</small>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </details>
-            ))}
-            {shown < report.entities.length && (
-              <Button onClick={() => setShown(shown + 50)}>
-                Show 50 more records
-              </Button>
-            )}
-          </details>
-          <details>
-            <summary>Limits &amp; source fingerprint</summary>
-            {report.limitations.map((l) => (
-              <p key={l}>{l}</p>
-            ))}
-            <p className="balance-fingerprint">
-              SHA-256 {report.sha256} · Parser {report.parser_version}
-            </p>
-            {report.declarations.map((v) => (
-              <p key={v.id}>
-                {v.label}: {String(v.original_value)} · {v.sheet}!{v.cell} ·{" "}
-                {v.status}
-              </p>
-            ))}
-          </details>
-        </>
-      )}
+          ) : (
+            <p>No equipment identified in this workbook.</p>
+          )}
+          </>)}
+        </div>
     </section>
   );
 }
