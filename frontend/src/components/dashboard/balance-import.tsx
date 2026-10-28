@@ -256,7 +256,7 @@ export function BalanceImport({
       <p role="status">
         {status ||
           (report
-            ? `Loaded parsed attachment: ${report.filename}.`
+            ? `Parsed ${report.filename}: ${report.tables.length} tables across ${report.sheets.length} worksheets; ${report.issues.length} issues for review. Coverage is partial.`
             : "No engineering workbook uploaded.")}
       </p>
       {error && (

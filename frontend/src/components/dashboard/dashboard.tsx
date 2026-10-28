@@ -863,6 +863,7 @@ export default function Dashboard() {
             <>
               {isEntry && (
                 <BalanceImport
+                  key={balanceImport?.report.sha256 ?? "no-balance"}
                   value={balanceImport}
                   onChange={setBalanceImport}
                 />
@@ -894,6 +895,7 @@ export default function Dashboard() {
                 </div>
               </section>
               <BalanceImport
+                key={balanceImport?.report.sha256 ?? "no-balance"}
                 value={balanceImport}
                 onChange={setBalanceImport}
               />
