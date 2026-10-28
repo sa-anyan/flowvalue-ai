@@ -17,6 +17,7 @@ import {
 
 type WorkspaceSidebarProps = {
   name: string;
+  activeCapexTab?: string;
   active:
     | "entry"
     | "process"
@@ -29,7 +30,7 @@ type WorkspaceSidebarProps = {
     | "overview";
 };
 
-export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
+export function WorkspaceSidebar({ name, active, activeCapexTab }: WorkspaceSidebarProps) {
   return (
     <>
       <aside className="sidebar">
@@ -98,8 +99,28 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
           >
             <Coins size={18} />
             Capex
-            {active === "capex" && <span className="nav-dot" />}
+            <ChevronDown size={14} className={active === "capex" ? "capex-parent-chevron capex-parent-open" : "capex-parent-chevron"} />
           </Link>
+          {active === "capex" && (
+            <div className="capex-subnav" aria-label="CAPEX pages">
+              {[
+                ["summary", "Summary"],
+                ["equipment", "Equipment"],
+                ["direct-costs", "Direct Costs"],
+                ["indirect-costs", "Indirect Costs"],
+                ["working-capital", "Working Capital"],
+                ["assumptions", "Assumptions & Sources"],
+                ["validation", "Validation / Checks"],
+              ].map(([tab, label]) => (
+                <Link
+                  key={tab}
+                  href={"/capex/" + tab}
+                  className={activeCapexTab === tab ? "capex-child-active" : undefined}
+                  aria-current={activeCapexTab === tab ? "page" : undefined}
+                >{label}</Link>
+              ))}
+            </div>
+          )}
           <Link
             href="/opex"
             className={active === "opex" ? "nav-selected" : undefined}
@@ -179,6 +200,15 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
             ["entry", "/entry", "Entry"],
             ["main", "/main-dashboard", "Main dashboard"],
             ["capex", "/capex", "CAPEX"],
+            ...(active === "capex" ? [
+              ["capex-summary", "/capex/summary", "  Summary"],
+              ["capex-equipment", "/capex/equipment", "  Equipment"],
+              ["capex-direct", "/capex/direct-costs", "  Direct Costs"],
+              ["capex-indirect", "/capex/indirect-costs", "  Indirect Costs"],
+              ["capex-working", "/capex/working-capital", "  Working Capital"],
+              ["capex-assumptions", "/capex/assumptions", "  Assumptions & Sources"],
+              ["capex-validation", "/capex/validation", "  Validation / Checks"],
+            ] : []),
             ["opex", "/opex", "OPEX"],
             ["revenue", "/revenue", "Revenue"],
             ["overview", "/dashboard", "Design basis & evidence"],
