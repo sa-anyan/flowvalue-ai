@@ -20,6 +20,7 @@ type WorkspaceSidebarProps = {
   activeCapexTab?: string;
   active:
     | "entry"
+    | "import"
     | "process"
     | "main"
     | "capex"
@@ -30,7 +31,11 @@ type WorkspaceSidebarProps = {
     | "overview";
 };
 
-export function WorkspaceSidebar({ name, active, activeCapexTab }: WorkspaceSidebarProps) {
+export function WorkspaceSidebar({
+  name,
+  active,
+  activeCapexTab,
+}: WorkspaceSidebarProps) {
   return (
     <>
       <aside className="sidebar">
@@ -64,7 +69,11 @@ export function WorkspaceSidebar({ name, active, activeCapexTab }: WorkspaceSide
             Entry
             {active === "entry" && <span className="nav-dot" />}
           </Link>
-          <Link href="/entry#streams">
+          <Link
+            href="/simulation-data"
+            className={active === "import" ? "nav-selected" : undefined}
+            aria-current={active === "import" ? "page" : undefined}
+          >
             <Upload size={18} />
             Simulation data
           </Link>
@@ -99,7 +108,14 @@ export function WorkspaceSidebar({ name, active, activeCapexTab }: WorkspaceSide
           >
             <Coins size={18} />
             Capex
-            <ChevronDown size={14} className={active === "capex" ? "capex-parent-chevron capex-parent-open" : "capex-parent-chevron"} />
+            <ChevronDown
+              size={14}
+              className={
+                active === "capex"
+                  ? "capex-parent-chevron capex-parent-open"
+                  : "capex-parent-chevron"
+              }
+            />
           </Link>
           {active === "capex" && (
             <div className="capex-subnav" aria-label="CAPEX pages">
@@ -115,9 +131,13 @@ export function WorkspaceSidebar({ name, active, activeCapexTab }: WorkspaceSide
                 <Link
                   key={tab}
                   href={"/capex/" + tab}
-                  className={activeCapexTab === tab ? "capex-child-active" : undefined}
+                  className={
+                    activeCapexTab === tab ? "capex-child-active" : undefined
+                  }
                   aria-current={activeCapexTab === tab ? "page" : undefined}
-                >{label}</Link>
+                >
+                  {label}
+                </Link>
               ))}
             </div>
           )}
@@ -200,15 +220,33 @@ export function WorkspaceSidebar({ name, active, activeCapexTab }: WorkspaceSide
             ["entry", "/entry", "Entry"],
             ["main", "/main-dashboard", "Main dashboard"],
             ["capex", "/capex", "CAPEX"],
-            ...(active === "capex" ? [
-              ["capex-summary", "/capex/summary", "  Summary"],
-              ["capex-equipment", "/capex/equipment", "  Equipment"],
-              ["capex-direct", "/capex/direct-costs", "  Direct Costs"],
-              ["capex-indirect", "/capex/indirect-costs", "  Indirect Costs"],
-              ["capex-working", "/capex/working-capital", "  Working Capital"],
-              ["capex-assumptions", "/capex/assumptions", "  Assumptions & Sources"],
-              ["capex-validation", "/capex/validation", "  Validation / Checks"],
-            ] : []),
+            ...(active === "capex"
+              ? [
+                  ["capex-summary", "/capex/summary", "  Summary"],
+                  ["capex-equipment", "/capex/equipment", "  Equipment"],
+                  ["capex-direct", "/capex/direct-costs", "  Direct Costs"],
+                  [
+                    "capex-indirect",
+                    "/capex/indirect-costs",
+                    "  Indirect Costs",
+                  ],
+                  [
+                    "capex-working",
+                    "/capex/working-capital",
+                    "  Working Capital",
+                  ],
+                  [
+                    "capex-assumptions",
+                    "/capex/assumptions",
+                    "  Assumptions & Sources",
+                  ],
+                  [
+                    "capex-validation",
+                    "/capex/validation",
+                    "  Validation / Checks",
+                  ],
+                ]
+              : []),
             ["opex", "/opex", "OPEX"],
             ["revenue", "/revenue", "Revenue"],
             ["overview", "/dashboard", "Design basis & evidence"],

@@ -12,10 +12,14 @@ test("Entry and Analysis share one workspace-driven dashboard", () => {
   assert.match(dashboard, /isEntry \? \(/);
 });
 
-test("Initial project data lives only in Entry and advisor context is a separate editor", () => {
+test("Older import controls remain in Simulation data and Entry keeps Excel intake", () => {
   const dashboard = read("../src/components/dashboard/dashboard.tsx");
-  const context = read("../src/components/dashboard/project-context-editor.tsx");
+  const context = read(
+    "../src/components/dashboard/project-context-editor.tsx",
+  );
   const advisor = read("../src/components/dashboard/universal-advisor.tsx");
+  assert.match(dashboard, /isSimulationData &&/);
+  assert.match(dashboard, /<BalanceImport/);
   assert.match(dashboard, /<ProjectContextEditor/);
   assert.match(dashboard, /Bring your process data/);
   assert.match(dashboard, /Make the assumptions yours/);
@@ -26,7 +30,7 @@ test("Initial project data lives only in Entry and advisor context is a separate
 
 test("Entry navigation exposes import, while analysis links remain working", () => {
   const sidebar = read("../src/components/dashboard/workspace-sidebar.tsx");
-  assert.match(sidebar, /href="\/entry#streams"/);
+  assert.match(sidebar, /href="\/simulation-data"/);
   assert.match(sidebar, /href="\/capex"/);
   assert.doesNotMatch(sidebar, /dashboardHref\("#streams"\)/);
 });
