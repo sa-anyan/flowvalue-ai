@@ -148,12 +148,17 @@ def read_book(content: bytes, name: str):
                             raise ValueError(
                                 "Workbook style definitions exceed safe limits."
                             )
+            # XLSM can contain expensive embedded objects and styles. Stream its
+            # worksheet cells rather than materialising the complete workbook twice.
+            readonly = ext == ".xlsm"
             values = openpyxl.load_workbook(
-                BytesIO(content), data_only=True, read_only=False, keep_links=False
+                BytesIO(content), data_only=True, read_only=readonly, keep_links=False
             )
             formulas = openpyxl.load_workbook(
-                BytesIO(content), data_only=False, read_only=False, keep_links=False
+                BytesIO(content), data_only=False, read_only=readonly, keep_links=False
             )
+            if readonly:
+                warnings.append("XLSM read-only mode does not expand merged headers; review merged-cell layouts.")
             sheets = []
             total = 0
             try:
@@ -189,10 +194,11 @@ def read_book(content: bytes, name: str):
                                 bool(formula),
                                 c.number_format,
                             )
-                    for merged in fs.merged_cells.ranges:
-                        for r in range(merged.min_row, merged.max_row + 1):
-                            for c in range(merged.min_col, merged.max_col + 1):
-                                merges[r, c] = (merged.min_row, merged.min_col)
+                    if not readonly:
+                        for merged in fs.merged_cells.ranges:
+                            for r in range(merged.min_row, merged.max_row + 1):
+                                for c in range(merged.min_col, merged.max_col + 1):
+                                    merges[r, c] = (merged.min_row, merged.min_col)
                     sheets.append(
                         Sheet(
                             ws.title,
