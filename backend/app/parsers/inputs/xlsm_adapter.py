@@ -35,7 +35,7 @@ def parse_xlsm(content: bytes, filename: str):
                                    cell=cell, property="description", label=f"Stream {stream['stream_id']}",
                                    original_value=stream['description'], normalized_value=stream['description'],
                                    status="inferred", note="Equipment tag extracted from stream description; connectivity not established."))
-        kind, basis = classify([s['description'] for _, _, s in observations])
+        kind, basis = classify([s['description'] for _, _, s in observations], tag)
         first = values[0]
         classification = first.model_copy(update={"id": f"{tag}:type", "property": "type", "label": "Equipment type (interpreted)",
                                                      "normalized_value": kind, "note": basis})
