@@ -41,8 +41,14 @@ def stream_properties(sheet, stream, filename, tag, index=None):
         position = bisect_left(labels, (column, "")) - 1
         if position < 0:
             continue
-        label_col, label = labels[position]
-        prop, dimension, component = property_info(label)
+        while position >= 0:
+            label_col, label = labels[position]
+            prop, dimension, component = property_info(label)
+            if prop or re.fullmatch(r"[A-Za-z][A-Za-z0-9 ]{0,35}", label):
+                break
+            position -= 1
+        if position < 0:
+            continue
         if label.strip().lower() == "total":
             prop, dimension, component = "component_flow", "volume_flow", None
         elif prop == "composition" or (prop is None and re.fullmatch(r"[A-Za-z][A-Za-z0-9 ]{0,35}", label)):
@@ -52,7 +58,8 @@ def stream_properties(sheet, stream, filename, tag, index=None):
         # Explicit unit headers mark each stream's volumetric and mass subcolumns.
         columns = [column]
         if prop == "component_flow":
-            columns = [column, column + 5]
+            columns = [cc for cc in range(column, stream.get("end_column", column) + 1)
+                       if find_unit(sheet.text(unit_row, cc))] or [column]
         for cc in columns:
             if cc > sheet.cols:
                 continue

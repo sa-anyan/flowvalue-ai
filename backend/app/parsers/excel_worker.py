@@ -14,26 +14,16 @@ def main():
             resource.setrlimit(
                 resource.RLIMIT_AS, (512 * 1024 * 1024, 512 * 1024 * 1024)
             )
-        from app.parsers.balance import parse_excel
-
         source = sys.argv[3] if len(sys.argv) > 3 else "excel"
         content = Path(sys.argv[1]).read_bytes()
-        if sys.argv[2].lower().endswith(".xlsm"):
-            from app.parsers.inputs.xlsm_adapter import parse_xlsm
-
-            result = parse_xlsm(content, sys.argv[2])
-        elif source == "aspen-hysys":
+        if source == "aspen-hysys" and not sys.argv[2].lower().endswith(".xlsm"):
             from app.parsers.inputs.aspen_hysys_excel import parse_hysys_excel
-
             result = parse_hysys_excel(content, sys.argv[2])
-        elif source == "excel":
-            result = parse_excel(content, sys.argv[2])
+        elif source in ("excel", "aspen-hysys"):
+            from app.parsers.workbook_pipeline import parse_workbook
+            result = parse_workbook(content, sys.argv[2])
         else:
             raise ValueError("Unsupported Excel import source.")
-        from app.parsers.inputs.equipment_tag_extraction import augment_equipment
-
-        if not sys.argv[2].lower().endswith(".xlsm"):
-            result = augment_equipment(result, content, sys.argv[2])
         print(json.dumps({"report": result.model_dump(mode="json")}, allow_nan=False))
     except Exception as exc:  # noqa: BLE001 - untrusted workbook process boundary
         # No stack traces, local filenames or workbook content in API errors.

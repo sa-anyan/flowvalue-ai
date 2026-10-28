@@ -190,9 +190,9 @@ def property_info(label):
 
 
 class Parser:
-    def __init__(self, content, name):
+    def __init__(self, content, name, *, loaded=None):
         self.filename = safe_filename(name)
-        self.sheets, self.warnings = read_book(content, name)
+        self.sheets, self.warnings = loaded if loaded is not None else read_book(content, name)
         self.report = BalanceReport(
             filename=self.filename, sha256=sha256(content).hexdigest(), sheets=[]
         )

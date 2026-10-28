@@ -9,9 +9,9 @@ from .xlsm_parser import classify, parse_sheet
 from .xlsm_properties import property_index, stream_properties
 
 
-def parse_xlsm(content: bytes, filename: str):
+def parse_xlsm(content: bytes, filename: str, *, loaded=None):
     filename = safe_filename(filename)
-    sheets, warnings = read_book(content, filename)
+    sheets, warnings = loaded if loaded is not None else read_book(content, filename)
     report = BalanceReport(filename=filename, sha256=sha256(content).hexdigest(),
                            parser_version="xlsm-streams-1.2", sheets=[])
     grouped = {}
@@ -21,7 +21,15 @@ def parse_xlsm(content: bytes, filename: str):
         matrix = [[sheet.cell(r, c).value for c in range(1, sheet.cols + 1)]
                   for r in range(1, sheet.rows + 1)]
         streams, issues = parse_sheet(sheet.name, matrix)
+        streams = [stream for stream in streams if stream["method"] != "vertical-table"]
         index = property_index(sheet)
+        anchors = {}
+        for stream in streams:
+            row, col = map(int, re.fullmatch(r"R(\d+)C(\d+)", stream["source_cell"]).groups())
+            anchors.setdefault(row, []).append(col)
+        for stream in streams:
+            row, col = map(int, re.fullmatch(r"R(\d+)C(\d+)", stream["source_cell"]).groups())
+            stream["end_column"] = min((other - 1 for other in anchors[row] if other > col), default=sheet.cols)
         report.sheets.append({"name": sheet.name, "rows": sheet.rows, "columns": sheet.cols,
                                   "hidden": sheet.hidden, "tables": 0,
                                   "nonempty_cells": len(sheet.cells), "extracted_cells": len(streams)})

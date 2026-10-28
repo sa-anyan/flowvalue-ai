@@ -124,3 +124,33 @@ Team 8 acceptance: 14 stream records on Mass and Energy Balance (including
 must not be interpreted as one validated process. Local whole-workbook parsing
 remained about 1–1.5 seconds; timing varies, and no strict no-slowdown guarantee
 is made for the larger output. Component-total reconciliation remains separate.
+
+### Workbook pipeline v2
+
+The web worker now uses `workbook_pipeline.parse_workbook` for generic Excel
+(including XLSM). It reads the workbook once, detects description stream
+blocks, applies canonical row/column/long-form recognition on other sheets,
+retains stream/component evidence, interprets explicitly tagged directional
+clauses, and builds a worksheet-scoped equipment register. Explicit HYSYS
+exports retain their dedicated adapter. Uploaded scripts/macros never run.
+
+Subcolumn spacing is discovered from unit headers within each stream block;
+no fixed five-column mass-flow offset is required. Missing volume entries do
+not hide component mass entries. Component-total mismatches and workbook
+error cells are surfaced as review issues, not silently corrected. Comparison
+of stored component sums is not plant mass-balance verification.
+
+Limitations: description-block and generic adapters are not yet combined
+within a single worksheet. Numeric IDs are supported by the description-block
+adapter; canonical adapters support other explicit IDs. Unsupported layouts,
+unnamed streams, untagged equipment, ambiguous wording, absent units and
+unavailable formula caches remain unresolved. No universal compatibility
+claim is made. Sheets are not automatically assumed to describe one process.
+Generic validation checks remain scoped to their source sheets and precede
+register interpretation; missing-endpoint warnings require operator review.
+
+Team 8 regression: 14 main-sheet streams plus 18 on Energy calculation,
+7 tagged equipment items, and both 100 kg/h component-total discrepancies.
+Whole-workbook local timing is approximately 2 seconds with broader extraction
+and checks, not a guarantee for arbitrary workbooks. Test inputs and parsed
+real-workbook evidence are retained under the private ignored outputs folders.
