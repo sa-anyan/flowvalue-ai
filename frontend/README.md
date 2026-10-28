@@ -1,3 +1,11 @@
+# FlowValue frontend
+
+Before changing Revenue, Scenario, AI research, financial calculations or process visualisation, read [root AGENTS.md](../AGENTS.md), the [canonical full product specification](../docs/analyst-workflow-specification.md) and the [A–I roadmap](../docs/product-build-roadmap.md).
+
+**R39 (planned):** A natural-language waste-sale idea becomes a reviewed proposed revenue item, with user-supplied price or opted-in sourced research, evidence-based contract likelihood, and connected deterministic financial/visual scenario results. See the [detailed acceptance case](../docs/analyst-workflow-specification.md#natural-language-commercial-opportunity-exploration-founder-example-selling-waste). Do not treat current AI commentary as an implementation.
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
