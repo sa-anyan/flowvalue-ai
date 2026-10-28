@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { workspaceView, legacyWorkspaceHref } from "../src/lib/workspace-navigation.ts";
 
 test("existing public workspace URLs select their own content", () => {
