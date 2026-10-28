@@ -11,6 +11,7 @@ export const workspaceRoutes = {
 export type WorkspaceView =
   (typeof workspaceRoutes)[keyof typeof workspaceRoutes];
 export function workspaceView(pathname: string): WorkspaceView {
+  if (pathname.startsWith("/capex/")) return "capex";
   return (
     workspaceRoutes[pathname as keyof typeof workspaceRoutes] || "analysis"
   );
@@ -33,8 +34,8 @@ export function legacyWorkspaceHref(
 ): string | null {
   if (pathname !== "/dashboard") return null;
   const destinations: Record<string, string> = {
-    "#equipment": "/capex",
-    "#engineering-analyst": "/capex",
+    "#equipment": "/capex/equipment",
+    "#engineering-analyst": "/capex/equipment",
     "#playground": "/sensitivity",
     "#risk": "/scenario",
     "#streams": "/entry",
