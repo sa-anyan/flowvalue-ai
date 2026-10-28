@@ -2213,3 +2213,88 @@ select {
 .workspace-content > .assumptions-panel { padding:22px; }
 .workspace-content > .assumptions-panel > h2 { font-size:16px; font-weight:600; margin-bottom:8px; }
 .workspace-content > .assumptions-panel > p { font-size:12px; color:var(--muted-foreground); margin-bottom:18px; }
+
+
+/* CAPEX parent/child workspace and linked industrial-capital summary. */
+.sidebar .capex-parent-chevron { margin-left:auto; color:var(--muted-foreground); transition:transform .18s ease; }
+.sidebar .capex-parent-open { transform:rotate(180deg); }
+.sidebar .capex-subnav { display:flex; flex-direction:column; gap:2px; margin:2px 0 9px 21px; padding-left:11px; border-left:1px solid var(--border); }
+.sidebar nav .capex-subnav a { padding:8px 9px; font-size:11px; border-radius:6px; line-height:1.35; color:var(--muted-foreground); }
+.sidebar nav .capex-subnav a:hover { background:var(--secondary); color:var(--foreground); }
+.sidebar nav .capex-subnav a.capex-child-active { background:var(--secondary); color:var(--foreground); font-weight:700; box-shadow:inset 3px 0 #277C69; }
+.capex-hub { display:flex; flex-direction:column; gap:20px; min-width:0; }
+.capex-intro { display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; align-items:start; }
+.capex-intro h2 { font-size:21px; font-weight:700; letter-spacing:-.45px; margin:4px 0 6px; }
+.capex-intro p, .capex-source-page > p, .capex-checks-page > p { max-width:720px; color:var(--muted-foreground); font-size:12px; line-height:1.7; }
+.capex-kicker { color:#277C69; font-size:10px; font-weight:700; letter-spacing:.12em; }
+.capex-text-link { display:inline-flex; align-items:center; gap:5px; color:#277C69; text-decoration:none; font-size:11px; font-weight:650; }
+.capex-text-link:hover { text-decoration:underline; }
+.capex-kpis { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.capex-kpi { min-width:0; border:1px solid var(--border); border-radius:11px; background:var(--card); padding:19px 16px; display:flex; flex-direction:column; gap:10px; }
+.capex-kpi-primary { background:var(--secondary); }
+.capex-kpi span { font-size:11px; color:var(--muted-foreground); }
+.capex-kpi strong { font-size:clamp(17px,2vw,25px); line-height:1.15; letter-spacing:-.5px; overflow-wrap:anywhere; }
+.capex-kpi .capex-pending { font-size:19px; }
+.capex-kpi small { font-size:10px; color:var(--muted-foreground); line-height:1.5; }
+.capex-chart-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
+.capex-chart-grid .panel { min-width:0; margin-bottom:0; }
+.capex-chart-panel { padding:22px; }
+.capex-chart-panel h3, .capex-breakdown h3, .capex-planning-panel h3, .capex-project-panel h3 { font-weight:675; font-size:15px; }
+.capex-donut, .capex-bar { width:100%; min-width:0; padding-top:8px; }
+.capex-chart-panel .recharts-legend-wrapper { max-width:100%; }
+.capex-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; min-height:110px; padding:22px; border:1px dashed var(--border); border-radius:9px; color:var(--muted-foreground); font-size:12px; line-height:1.6; }
+.capex-notice { padding:12px 15px; border-radius:8px; border:1px solid var(--border); background:var(--secondary); font-size:12px; }
+.capex-breakdown, .capex-planning-panel, .capex-project-panel { min-width:0; padding:22px; margin-bottom:0; }
+.capex-breakdown-table { width:100%; min-width:640px; border-collapse:collapse; font-size:11px; }
+.capex-breakdown-table th, .capex-breakdown-table td { padding:12px 13px; text-align:left; border-bottom:1px solid var(--border); line-height:1.5; }
+.capex-breakdown-table thead th { color:var(--muted-foreground); font-weight:600; font-size:10px; }
+.capex-breakdown-table tr td:nth-child(3) { font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; font-weight:600; }
+.capex-breakdown-table tr th:nth-child(3) { text-align:right; }
+.capex-breakdown-table tr td:last-child { font-size:10px; color:var(--muted-foreground); }
+.capex-breakdown-table .capex-group-row { background:var(--secondary); }
+.capex-group-row th { font-size:11px; font-weight:700; }
+.capex-muted-cell { color:var(--muted-foreground); font-style:italic; }
+.capex-caption { display:flex; align-items:flex-start; gap:8px; font-size:11px; color:var(--muted-foreground); line-height:1.65; margin-top:14px; }
+.capex-caption svg { flex-shrink:0; margin-top:1px; }
+.capex-register-bars { display:grid; gap:8px; margin-top:12px; }
+.capex-register-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:7px; text-decoration:none; font-size:11px; padding:6px 0; color:var(--foreground); }
+.capex-register-row strong { font-variant-numeric:tabular-nums; }
+.capex-register-track { grid-column:1/-1; height:8px; background:var(--secondary); border-radius:10px; overflow:hidden; }
+.capex-register-track i { display:block; height:100%; background:#277C69; border-radius:10px; }
+.capex-context-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:14px 0; }
+.capex-context-grid > div { display:flex; flex-direction:column; gap:8px; min-width:0; background:var(--secondary); padding:15px; border-radius:9px; }
+.capex-context-grid span { font-size:10px; color:var(--muted-foreground); }
+.capex-context-grid strong { font-size:15px; font-weight:700; overflow-wrap:anywhere; }
+.capex-context-grid small { font-size:10px; color:var(--muted-foreground); overflow-wrap:anywhere; }
+.capex-context-note { font-size:11px; color:var(--muted-foreground); overflow-wrap:anywhere; }
+.capex-register-page, .capex-source-page, .capex-checks-page { min-width:0; padding:24px; margin-bottom:0; }
+.capex-register-page h2, .capex-source-page h2, .capex-checks-page h2 { font-size:18px; font-weight:700; margin-bottom:7px; }
+.capex-register-page .panel-heading p { max-width:650px; }
+.capex-action-button { display:inline-flex; gap:6px; align-items:center; background:#277C69; color:white; padding:10px 13px; border-radius:7px; font-size:11px; font-weight:700; white-space:nowrap; }
+.capex-action-button:hover { background:#1d6353; }
+.capex-detail-totals { display:flex; flex-wrap:wrap; align-items:baseline; gap:12px; padding:17px 18px; margin:20px 0; border-radius:10px; background:var(--secondary); }
+.capex-detail-totals span { color:var(--muted-foreground); font-size:11px; }
+.capex-detail-totals strong { font-size:20px; }
+.capex-detail-totals small { font-size:10px; color:var(--muted-foreground); }
+.capex-edit-row { border:1px solid var(--border); border-radius:10px; padding:16px; margin:13px 0; }
+.capex-row-top { display:flex; justify-content:space-between; align-items:center; font-size:11px; margin-bottom:14px; }
+.capex-row-top button { font-size:10px; color:var(--muted-foreground); text-decoration:underline; }
+.capex-edit-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.capex-edit-grid label { display:flex; flex-direction:column; gap:6px; font-size:10px; color:var(--muted-foreground); min-width:0; }
+.capex-edit-grid input,.capex-edit-grid select,.capex-classification select { width:100%; min-width:0; background:var(--card); border:1px solid var(--border); color:var(--foreground); border-radius:6px; padding:9px 10px; font-size:12px; }
+.capex-edit-grid .capex-wide-field { grid-column:1/-1; }
+.capex-row-total { text-align:right; font-size:11px; color:var(--muted-foreground); padding-top:14px; }
+.capex-row-total strong { font-size:15px; color:var(--foreground); margin-left:8px; }
+.capex-source-page h3,.capex-checks-page h3 { font-size:14px; font-weight:700; margin:20px 0 10px; }
+.capex-check-banner { display:flex; gap:10px; padding:15px; border-radius:9px; background:#fff1d7; color:#684f21; font-size:12px; line-height:1.6; }
+.capex-check-banner svg { flex-shrink:0; }
+.capex-check-list { margin:17px 0; }
+.capex-check-list > div { display:flex; gap:11px; align-items:flex-start; padding:10px; border-bottom:1px solid var(--border); font-size:12px; line-height:1.5; }
+.capex-check-list svg { flex-shrink:0; color:#997142; }
+.capex-classification { display:flex; align-items:center; justify-content:space-between; gap:16px; border-bottom:1px solid var(--border); padding:12px 0; font-size:12px; }
+.capex-classification span { flex:1; min-width:0; overflow-wrap:anywhere; }
+.capex-classification small { color:var(--muted-foreground); }
+.capex-classification select { max-width:230px; }
+@media(max-width:1350px){.capex-kpis {grid-template-columns:repeat(2,minmax(0,1fr))}.capex-context-grid {grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:980px){.capex-chart-grid {grid-template-columns:minmax(0,1fr)}.capex-edit-grid {grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.capex-kpis,.capex-context-grid,.capex-edit-grid {grid-template-columns:minmax(0,1fr)}.capex-intro {flex-direction:column}.capex-breakdown,.capex-chart-panel,.capex-planning-panel,.capex-project-panel,.capex-register-page,.capex-source-page,.capex-checks-page {padding:16px}.capex-classification {align-items:stretch;flex-direction:column}.capex-classification select {max-width:100%}}
