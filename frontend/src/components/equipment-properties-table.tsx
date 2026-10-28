@@ -6,6 +6,7 @@ type Evidence = {
   cell: string;
   property: string;
   label: string;
+  component?: string | null;
   original_value?: string | number | boolean | null;
   original_unit?: string | null;
   normalized_value?: string | number | boolean | null;
@@ -22,6 +23,7 @@ type PropertyRow = {
   tag: string;
   stream: string;
   property: string;
+  component: string;
   value: string;
   unit: string;
   source: string;
@@ -52,7 +54,8 @@ export function EquipmentPropertiesTable({ report }: { report: Report | null }) 
       rows.push({
         tag,
         stream,
-        property: value.property.replaceAll("_", " ") + ("component" in value && value.component ? ` · ${value.component}` : ""),
+        property: value.property.replaceAll("_", " "),
+        component: value.component?.trim() || (value.property.startsWith("component_") ? value.label.split("|").slice(1).join("|").trim() || "Unresolved" : "—"),
         value: stringify(value.original_value),
         unit: value.original_unit ?? "—",
         source: value.sheet + "!" + value.cell,
@@ -72,7 +75,7 @@ export function EquipmentPropertiesTable({ report }: { report: Report | null }) 
         <table className="w-full border-collapse text-left text-sm">
           <thead>
             <tr>
-              {["Equipment tag", "Stream number", "Property", "Value", "Unit", "Source cell", "Status"].map((heading) =>
+              {["Equipment tag", "Stream number", "Component", "Property", "Value", "Unit", "Source cell", "Status"].map((heading) =>
                 <th key={heading} scope="col" className="border p-2">{heading}</th>
               )}
             </tr>
@@ -80,7 +83,7 @@ export function EquipmentPropertiesTable({ report }: { report: Report | null }) 
           <tbody>
             {ordered.map(([tag, observations]) => {
               const data = observations.length ? observations : [{
-                tag, stream: "—", property: "No parsed numerical properties",
+                tag, stream: "—", component: "—", property: "No parsed numerical properties",
                 value: "—", unit: "—", source: "—", status: "unresolved",
               }];
               const sorted = [...data].sort((a,b) => a.stream.localeCompare(b.stream, undefined, { numeric: true }));
@@ -92,6 +95,7 @@ export function EquipmentPropertiesTable({ report }: { report: Report | null }) 
                     </th>
                   )}
                   <td className="border p-2">{entry.stream}</td>
+                  <td className="border p-2">{entry.component}</td>
                   <td className="border p-2">{entry.property}</td>
                   <td className="border p-2 tabular-nums">{entry.value}</td>
                   <td className="border p-2">{entry.unit}</td>
