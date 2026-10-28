@@ -51,6 +51,19 @@ commercial package.
 ### Backend runtime — `backend/pyproject.toml`
 
 - `fastapi`
+- `uvicorn[standard]`
+- `pydantic-settings`
+- `python-multipart`
+- `pandas`
+- `numpy`
+- `scipy`
+- `openpyxl`
+- `xlrd==2.0.2`
+- `defusedxml`
+- `reportlab>=5.1.0`
+- `openai>=3.37.0`
+- `openpytea==3.2.1`
+- `httpx==0.28.1`
 
 ### Backend development — `backend/pyproject.toml`
 
