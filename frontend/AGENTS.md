@@ -7,3 +7,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## FlowValue product development rules
+
+Read repository root `AGENTS.md`, `docs/analyst-workflow-specification.md` and `docs/product-build-roadmap.md` before coding Revenue, Scenario, AI research or process-visualisation features. Follow **R39** across phases A–E: natural-language waste-sale scenario, provided price or optional opted-in sourced price/buyer research, realistic contract-likelihood evidence and deterministic model-driven charts. This is **planned**, not delivered; do not replace the full workflow with chatbot-only output. Preserve all Next.js rules above.
