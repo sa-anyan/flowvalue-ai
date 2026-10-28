@@ -1,6 +1,5 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
-import Link from "next/link";
 import {
   importMethods,
   getImportMethod,
@@ -11,7 +10,7 @@ import {
 import { Upload, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/client-api";
-import { apiError } from "@/lib/assessment";
+import { apiError, type Stream } from "@/lib/assessment";
 import {
   descriptionIsCurrent,
   emptyDescription,
@@ -23,7 +22,17 @@ import {
 export function BalanceImport({
   value,
   onChange,
+  onSimulationUpload,
+  simulationStatus,
+  simulationFileName,
+  simulationBusy,
+  simulationStreams,
 }: {
+  onSimulationUpload?: (file: File) => Promise<void>;
+  simulationStatus?: string;
+  simulationFileName?: string;
+  simulationBusy?: boolean;
+  simulationStreams?: Stream[];
   value: BalanceAttachment | null;
   onChange: (value: BalanceAttachment) => void;
 }) {
@@ -41,8 +50,29 @@ export function BalanceImport({
   const [shown, setShown] = useState(50);
   const description = value?.description.text ?? draft;
   async function upload(file: File) {
-    if (busy) return;
+    if (busy || simulationBusy) return;
     setError("");
+    if (method.mode === "simulation") {
+      const accepted =
+        method.id === "csv"
+          ? /\.csv$/i
+          : method.id === "dwsim-native"
+            ? /\.dwxml$/i
+            : /\.json$/i;
+      if (!accepted.test(file.name) || file.size > 4 * 1024 * 1024) {
+        setError(
+          "Choose a file matching the selected import type, up to 4 MiB.",
+        );
+        return;
+      }
+      if (!onSimulationUpload) {
+        setError("This importer is unavailable in the current view.");
+        return;
+      }
+      await onSimulationUpload(file);
+      if (input.current) input.current.value = "";
+      return;
+    }
     if (
       !acceptsBalanceWorkbook(methodId, file.name) ||
       file.size > 4 * 1024 * 1024
@@ -178,7 +208,7 @@ export function BalanceImport({
             <select
               id="balance-import-method"
               value={methodId}
-              disabled={!!busy}
+              disabled={!!busy || !!simulationBusy}
               onChange={(e) => {
                 const selected = getImportMethod(e.target.value);
                 setMethodId(selected.id);
@@ -220,18 +250,18 @@ export function BalanceImport({
           <p className="upload-message" id="balance-import-guidance">
             {method.help}
           </p>
-          {method.mode === "simulation" && (
-            <Link
-              href="/simulation-data#streams"
-              className="entry-analysis-link"
-            >
-              Open {method.label} importer
-            </Link>
-          )}
           <input
             ref={input}
             type="file"
-            accept=".xlsx,.xls"
+            accept={
+              method.mode === "simulation"
+                ? method.id === "csv"
+                  ? ".csv"
+                  : method.id === "dwsim-native"
+                    ? ".dwxml"
+                    : ".json"
+                : ".xlsx,.xls"
+            }
             className="sr-only"
             aria-label="Upload Excel mass and energy balance"
             onChange={(e) => {
@@ -240,7 +270,9 @@ export function BalanceImport({
           />
           <button
             className="dropzone"
-            disabled={!!busy || method.mode !== "excel"}
+            disabled={
+              !!busy || !!simulationBusy || method.mode === "unavailable"
+            }
             aria-describedby="balance-import-guidance"
             onClick={() => input.current?.click()}
             onDragOver={(e) => e.preventDefault()}
@@ -249,19 +281,19 @@ export function BalanceImport({
               if (e.dataTransfer.files[0]) void upload(e.dataTransfer.files[0]);
             }}
           >
-            {busy === "parse" ? (
+            {busy === "parse" || simulationBusy ? (
               <LoaderCircle className="spin" size={22} />
             ) : (
               <Upload size={22} />
             )}
             <strong>
-              {busy === "parse"
+              {busy === "parse" || simulationBusy
                 ? "Parsing workbook…"
-                : report?.filename ||
+                : (method.mode === "excel" ? report?.filename : null) ||
                   (method.mode === "excel"
                     ? "Select file or drop an Excel balance here"
                     : method.mode === "simulation"
-                      ? "Use the simulation importer above"
+                      ? simulationFileName || `Select a ${method.label} file`
                       : method.id === "manual"
                         ? "Use the process-description box"
                         : "File extraction not supported yet")}
@@ -269,9 +301,60 @@ export function BalanceImport({
             <span>
               {method.mode === "excel"
                 ? ".xlsx or .xls · up to 4 MiB"
-                : "Choose another import method or follow the guidance above"}
+                : method.mode === "simulation"
+                  ? `${method.id === "csv" ? ".csv" : method.id === "dwsim-native" ? ".dwxml" : ".json"} · up to 4 MiB`
+                  : "Choose another import method or follow the guidance above"}
             </span>
           </button>
+          {method.mode === "simulation" && simulationStatus && (
+            <p className="upload-message" role="status">
+              {simulationStatus}
+            </p>
+          )}
+          {method.mode === "simulation" && !!simulationStreams?.length && (
+            <details>
+              <summary>
+                {simulationStreams.length} imported stream records
+              </summary>
+              <p>
+                Field validation only; this importer does not establish mass or
+                energy balance closure.
+              </p>
+              <div className="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Stream</th>
+                      <th>kg/h</th>
+                      <th>°C</th>
+                      <th>bar abs</th>
+                      <th>Phase</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {simulationStreams.slice(0, 100).map((stream) => (
+                      <tr key={stream.stream_id}>
+                        <td>{stream.stream_id}</td>
+                        <td>{stream.mass_flow_kg_h}</td>
+                        <td>{stream.temperature_c}</td>
+                        <td>{stream.pressure_bar_abs}</td>
+                        <td>{stream.phase}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {simulationStreams.length > 100 && (
+                <p>Showing the first 100 records.</p>
+              )}
+            </details>
+          )}
+          {method.mode === "simulation" && report && (
+            <p>
+              Excel evidence below belongs to {report.filename};
+              native/stream-table imports are separate.
+            </p>
+          )}
           <p className="upload-message">
             Excel imports stay separate from economic assumptions and equipment
             costing. Parsed evidence is retained in this browser tab and can be

@@ -12,25 +12,20 @@ test("Entry and Analysis share one workspace-driven dashboard", () => {
   assert.match(dashboard, /isEntry \? \(/);
 });
 
-test("Older import controls remain in Simulation data and Entry keeps Excel intake", () => {
+test("Entry owns the unified file selector without the removed secondary controls", () => {
   const dashboard = read("../src/components/dashboard/dashboard.tsx");
-  const context = read(
-    "../src/components/dashboard/project-context-editor.tsx",
-  );
-  const advisor = read("../src/components/dashboard/universal-advisor.tsx");
-  assert.match(dashboard, /isSimulationData &&/);
+  assert.match(dashboard, /onSimulationUpload=\{upload\}/);
   assert.match(dashboard, /<BalanceImport/);
-  assert.match(dashboard, /<ProjectContextEditor/);
-  assert.match(dashboard, /Bring your process data/);
-  assert.match(dashboard, /Make the assumptions yours/);
-  assert.match(context, /Process description/);
-  assert.match(context, /Project region/);
-  assert.doesNotMatch(advisor, /aria-label="Process description"/);
+  assert.doesNotMatch(
+    dashboard,
+    /Bring your process data|Make the assumptions yours|<ProjectContextEditor/,
+  );
 });
 
 test("Entry navigation exposes import, while analysis links remain working", () => {
   const sidebar = read("../src/components/dashboard/workspace-sidebar.tsx");
-  assert.match(sidebar, /href="\/simulation-data"/);
+  assert.doesNotMatch(sidebar, /href="\/simulation-data"/);
+  assert.match(sidebar, /href="\/entry"/);
   assert.match(sidebar, /href="\/capex"/);
   assert.doesNotMatch(sidebar, /dashboardHref\("#streams"\)/);
 });

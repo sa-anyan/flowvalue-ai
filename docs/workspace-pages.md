@@ -34,3 +34,7 @@ Entry now focuses on Excel mass/energy-balance intake and its process-descriptio
 ## Empty-first analytical rebuild — 28 October 2026
 
 The application no longer seeds active data from `/api/demo` or automatically loads a saved startup project. A new browser-storage generation leaves older active drafts archived and starts empty. Saved cloud versions and original Excel files are retained for explicit review, not loaded as the live model. Empty analyst pages display no metrics/charts rather than zeros or demonstration estimates. The process view is empty without a manually loaded project. Fresh Excel balance imports remain independently stored in the browser tab and downloadable before a new economic project exists; cloud project saving still requires an existing assessment project. Earlier startup-project behavior described in historical acceptance documents is superseded by this empty-first mode.
+
+## Simulation data page retired — 28 October 2026
+
+The separate Simulation data page and navigation item are removed. Its old URL redirects to Entry. Entry's source selector now invokes the existing CSV/JSON/BioSTEAM/native-DWSIM upload handler directly, with matching file filters and a stream preview; Excel-based sources continue using the traceable Excel parser. The removed context/financial-assumption panels have not been reintroduced on Entry. Native/stream-table field validation remains distinct from Excel evidence and balance closure.

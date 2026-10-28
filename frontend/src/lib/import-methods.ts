@@ -11,14 +11,14 @@ export const importMethods = [
     label: "CSV stream table",
     group: "Spreadsheets & tables",
     mode: "simulation",
-    help: "Use the existing stream-table importer. CSV currently requires the canonical stream_id, mass_flow_kg_h, temperature_c, pressure_bar_abs and phase columns.",
+    help: "Upload the CSV stream table here. CSV currently requires the canonical stream_id, mass_flow_kg_h, temperature_c, pressure_bar_abs and phase columns.",
   },
   {
     id: "json",
     label: "JSON stream table",
     group: "Spreadsheets & tables",
     mode: "simulation",
-    help: "Use the existing JSON importer for canonical stream tables or supported FlowValue project files.",
+    help: "Upload JSON here for canonical stream tables or supported FlowValue project files.",
   },
   {
     id: "aspen-plus",
@@ -46,7 +46,7 @@ export const importMethods = [
     label: "DWSIM · native .dwxml",
     group: "Process simulators",
     mode: "simulation",
-    help: "Use the existing native DWSIM importer for .dwxml files. Mapping gaps remain explicit; this is separate from Excel balance validation.",
+    help: "Upload native DWSIM .dwxml files. Mapping gaps remain explicit; this is separate from Excel balance validation.",
   },
   {
     id: "unisim",
@@ -88,7 +88,7 @@ export const importMethods = [
     label: "BioSTEAM snapshot",
     group: "Process simulators",
     mode: "simulation",
-    help: "Use the existing importer for trusted flowvalue-biosteam-v1 JSON snapshots. Uploaded Python code is never executed.",
+    help: "Upload trusted flowvalue-biosteam-v1 JSON snapshots. Uploaded Python code is never executed.",
   },
   {
     id: "other-excel",

@@ -11,7 +11,6 @@ import {
   Layers3,
   LayoutDashboard,
   SlidersHorizontal,
-  Upload,
   Waves,
 } from "lucide-react";
 
@@ -20,7 +19,6 @@ type WorkspaceSidebarProps = {
   activeCapexTab?: string;
   active:
     | "entry"
-    | "import"
     | "process"
     | "main"
     | "capex"
@@ -68,14 +66,6 @@ export function WorkspaceSidebar({
             <FileInput size={18} />
             Entry
             {active === "entry" && <span className="nav-dot" />}
-          </Link>
-          <Link
-            href="/simulation-data"
-            className={active === "import" ? "nav-selected" : undefined}
-            aria-current={active === "import" ? "page" : undefined}
-          >
-            <Upload size={18} />
-            Simulation data
           </Link>
         </nav>
         <div className="nav-caption">PROCESS VISUALISATION</div>

@@ -1,6 +1,5 @@
 export const workspaceRoutes = {
   "/entry": "entry",
-  "/simulation-data": "import",
   "/main-dashboard": "main",
   "/dashboard": "analysis",
   "/capex": "capex",
@@ -19,7 +18,6 @@ export function workspaceView(pathname: string): WorkspaceView {
 }
 export const workspaceTitles: Record<WorkspaceView, string> = {
   entry: "Project entry",
-  import: "Simulation data",
   main: "Main dashboard",
   analysis: "Analyst workspace",
   capex: "CAPEX",
@@ -35,14 +33,14 @@ export function legacyWorkspaceHref(
   hash: string,
 ): string | null {
   if (pathname === "/entry" && hash === "#streams")
-    return "/simulation-data#streams";
+    return "/entry#engineering-balance";
   if (pathname !== "/dashboard") return null;
   const destinations: Record<string, string> = {
     "#equipment": "/capex/equipment",
     "#engineering-analyst": "/capex/equipment",
     "#playground": "/sensitivity",
     "#risk": "/scenario",
-    "#streams": "/simulation-data",
+    "#streams": "/entry",
   };
   return destinations[hash] ? destinations[hash] + hash : null;
 }
