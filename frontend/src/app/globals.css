@@ -2389,3 +2389,6 @@ select {
 .balance-status.unresolved { color:#a94c3a; }
 .balance-fingerprint { overflow-wrap:anywhere; font-size:12px; }
 @media (max-width:850px) { .balance-entry-grid {grid-template-columns:1fr;} .balance-import {padding:18px;} }
+.balance-import-method { display:flex; flex-direction:column; gap:8px; margin-bottom:10px; }
+.balance-import-method select { width:100%; background:var(--background); color:inherit; border:1px solid var(--border); border-radius:8px; padding:11px; font:inherit; }
+.balance-import-method + .upload-message { min-height:42px; }

@@ -1,5 +1,13 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
+import Link from "next/link";
+import {
+  importMethods,
+  getImportMethod,
+  acceptsBalanceWorkbook,
+  readImportMethod,
+  type ImportMethodId,
+} from "@/lib/import-methods";
 import { Upload, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/client-api";
@@ -24,6 +32,8 @@ export function BalanceImport({
   useEffect(() => {
     current.current = value;
   }, [value]);
+  const [methodId, setMethodId] = useState<ImportMethodId>(readImportMethod);
+  const method = getImportMethod(methodId);
   const [busy, setBusy] = useState("");
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
@@ -33,8 +43,15 @@ export function BalanceImport({
   async function upload(file: File) {
     if (busy) return;
     setError("");
-    if (!/\.(xlsx|xls)$/i.test(file.name) || file.size > 4 * 1024 * 1024) {
-      setError("Choose an .xlsx or .xls workbook, up to 4 MiB.");
+    if (
+      !acceptsBalanceWorkbook(methodId, file.name) ||
+      file.size > 4 * 1024 * 1024
+    ) {
+      setError(
+        method.mode === "excel"
+          ? `Choose an .xlsx or .xls workbook/export for ${method.label}, up to 4 MiB. Native simulation files are not accepted by this Excel parser.`
+          : method.help,
+      );
       return;
     }
     setBusy("parse");
@@ -153,6 +170,62 @@ export function BalanceImport({
       </div>
       <div className="balance-entry-grid">
         <div>
+          <label
+            className="balance-import-method"
+            htmlFor="balance-import-method"
+          >
+            <strong>Select file type / import source</strong>
+            <select
+              id="balance-import-method"
+              value={methodId}
+              disabled={!!busy}
+              onChange={(e) => {
+                const selected = getImportMethod(e.target.value);
+                setMethodId(selected.id);
+                setError("");
+                try {
+                  sessionStorage.setItem(
+                    "flowvalue-import-method",
+                    selected.id,
+                  );
+                } catch {}
+              }}
+            >
+              {[
+                "Spreadsheets & tables",
+                "Process simulators",
+                "Other inputs",
+              ].map((group) => (
+                <optgroup key={group} label={group}>
+                  {importMethods
+                    .filter((item) => item.group === group)
+                    .map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.label}
+                        {item.mode === "excel" && item.id !== "excel"
+                          ? " · Excel export"
+                          : item.mode === "simulation"
+                            ? " · simulation importer"
+                            : item.mode === "unavailable"
+                              ? " · not supported yet"
+                              : ""}
+                      </option>
+                    ))}
+                </optgroup>
+              ))}
+            </select>
+          </label>
+          <p className="upload-message" id="balance-import-guidance">
+            {method.help}
+          </p>
+          {method.mode === "simulation" && (
+            <Link
+              href="/simulation-data#streams"
+              className="entry-analysis-link"
+            >
+              Open {method.label} importer
+            </Link>
+          )}
           <input
             ref={input}
             type="file"
@@ -165,7 +238,8 @@ export function BalanceImport({
           />
           <button
             className="dropzone"
-            disabled={!!busy}
+            disabled={!!busy || method.mode !== "excel"}
+            aria-describedby="balance-import-guidance"
             onClick={() => input.current?.click()}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
@@ -181,9 +255,18 @@ export function BalanceImport({
             <strong>
               {busy === "parse"
                 ? "Parsing workbook…"
-                : report?.filename || "Upload an Excel mass & energy balance"}
+                : report?.filename ||
+                  (method.mode === "excel"
+                    ? "Select file or drop an Excel balance here"
+                    : method.mode === "simulation"
+                      ? "Use the simulation importer above"
+                      : "File extraction not supported yet")}
             </strong>
-            <span>.xlsx or .xls · up to 4 MiB</span>
+            <span>
+              {method.mode === "excel"
+                ? ".xlsx or .xls · up to 4 MiB"
+                : "Choose another import method or follow the guidance above"}
+            </span>
           </button>
           <p className="upload-message">
             Excel imports stay separate from economic assumptions and equipment
