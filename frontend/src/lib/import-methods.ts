@@ -4,7 +4,7 @@ export const importMethods = [
     label: "Excel workbook (.xlsx, .xls, .xlsm)",
     group: "Spreadsheets & tables",
     mode: "excel",
-    help: "Upload a mass and energy balance workbook (.xlsx or .xls). You can also select .xlsm files; parsing for that format is not available yet.",
+    help: "Upload a mass and energy balance workbook (.xlsx, .xls or .xlsm). Macros are never executed.",
   },
   {
     id: "csv",
