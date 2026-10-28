@@ -4,10 +4,11 @@ Augments the existing balance report; never sizes equipment or assumes connectiv
 Runs inside the already resource-limited Excel worker.
 """
 import re
+
 from app.parsers.balance.models import Entity, Evidence, Issue
 from app.parsers.balance.workbook import address, read_book
 
-TAG = re.compile(r"(?<![A-Za-z0-9])([A-Z]{1,4})\s*[-–]\s*(\d{2,5})(?!\d)", re.I)
+TAG = re.compile(r"(?<![A-Za-z0-9])([A-Z]{1,4})\s*[-–]\s*(\d{2,5})(?!\d)", re.IGNORECASE)
 KEYWORDS = {
     "storage tank": "Storage tank",
     "buffer tank": "Buffer tank",

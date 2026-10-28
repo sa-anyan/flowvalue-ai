@@ -1,10 +1,11 @@
 """Safe web adapter for the unchanged founder-supplied XLSM extraction script."""
-from hashlib import sha256
 import re
+from hashlib import sha256
 
 from app.parsers.balance.models import BalanceReport, Entity, Evidence, Issue
 from app.parsers.balance.workbook import address, read_book, safe_filename
-from .xlsm_parser import parse_sheet, classify
+
+from .xlsm_parser import classify, parse_sheet
 
 
 def parse_xlsm(content: bytes, filename: str):
@@ -17,9 +18,9 @@ def parse_xlsm(content: bytes, filename: str):
         matrix = [[sheet.cell(r, c).value for c in range(1, sheet.cols + 1)]
                   for r in range(1, sheet.rows + 1)]
         streams, issues = parse_sheet(sheet.name, matrix)
-        report.sheets.append(dict(name=sheet.name, rows=sheet.rows, columns=sheet.cols,
-                                  hidden=sheet.hidden, tables=0,
-                                  nonempty_cells=len(sheet.cells), extracted_cells=len(streams)))
+        report.sheets.append({"name": sheet.name, "rows": sheet.rows, "columns": sheet.cols,
+                                  "hidden": sheet.hidden, "tables": 0,
+                                  "nonempty_cells": len(sheet.cells), "extracted_cells": len(streams)})
         for issue in issues:
             report.issues.append(Issue(code="xlsm_description_conflict", message=f"{sheet.name}!{issue['cell']}: {issue['issue']}"))
         for stream in streams:
@@ -36,8 +37,8 @@ def parse_xlsm(content: bytes, filename: str):
                                    status="inferred", note="Equipment tag extracted from stream description; connectivity not established."))
         kind, basis = classify([s['description'] for _, _, s in observations])
         first = values[0]
-        classification = first.model_copy(update=dict(id=f"{tag}:type", property="type", label="Equipment type (interpreted)",
-                                                     normalized_value=kind, note=basis))
+        classification = first.model_copy(update={"id": f"{tag}:type", "property": "type", "label": "Equipment type (interpreted)",
+                                                     "normalized_value": kind, "note": basis})
         # Type is an interpretation, never a supplied equipment design.
         report.entities.append(Entity(key=tag, kind="equipment", identifier=tag, table="description-tags",
                                       id_evidence=first, values=[*values, classification]))
