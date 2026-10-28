@@ -31,7 +31,7 @@ def stream_properties(sheet, stream, filename, tag):
         label_col, label = labels[-1]
         prop, dimension, component = property_info(label)
         if label.strip().lower() == "total":
-            prop, dimension, component = "volume_flow", "volume_flow", None
+            prop, dimension, component = "component_flow", "volume_flow", None
         elif prop == "composition" or (prop is None and re.fullmatch(r"[A-Za-z][A-Za-z0-9 ]{0,35}", label)):
             prop, dimension, component = "component_flow", "volume_flow", label.strip()
         elif not prop or not dimension:
@@ -51,9 +51,9 @@ def stream_properties(sheet, stream, filename, tag):
             actual_prop, actual_dim = prop, dimension
             if prop == "component_flow":
                 if unit and "kg/" in unit.lower():
-                    actual_prop, actual_dim = "component_mass_flow", "mass_flow"
+                    actual_prop, actual_dim = ("mass_flow" if component is None else "component_mass_flow"), "mass_flow"
                 elif unit and ("m³/" in unit.lower() or "m3/" in unit.lower()):
-                    actual_prop, actual_dim = "component_volume_flow", "volume_flow"
+                    actual_prop, actual_dim = ("volume_flow" if component is None else "component_volume_flow"), "volume_flow"
                 else:
                     actual_prop, actual_dim = "component_flow_unresolved", "volume_flow"
             normalized, normalized_unit, error = convert(target.value, actual_dim, unit)
