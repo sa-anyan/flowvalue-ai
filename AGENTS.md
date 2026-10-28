@@ -22,3 +22,7 @@ Founder example: **“We get revenue from food. Could we sell our wastes?”**
 ## General safeguards
 
 Do not replace engineering analysis with AI-generated arithmetic or unsupported confidence scores. Do not silently modify an approved baseline, create physical connections from an economic idea, or contact buyers/suppliers without separate authorisation. Reconcile financial outputs and exports from the same saved scenario; test source lineage, user permissions, invalid units, incomplete data, versioning, and end-to-end UI behaviour before declaring any feature complete.
+
+## Canonical Entry-file parser scaffolds (17 methods; deliberately empty)
+
+Before implementing or changing ingestion, read [the input parser directory index](backend/app/parsers/inputs/README.md) and the UI source `frontend/src/lib/import-methods.ts`. Exactly one **headed but otherwise empty** Python module now exists for each dropdown selection at `backend/app/parsers/inputs/`. These are **future adapter stubs**, not working parsers, registered routes or a promise of support. Implement them **one at a time with the founder**, keeping source provenance and the canonical stream/balance models intact. Preserve the current working Excel, CSV, JSON, DWSIM and trusted BioSTEAM paths until independent tests and a reviewed migration justify replacement. Do not execute uploaded simulator scripts or claim PDF/Word/image/OCR capabilities from the existence of a stub.
