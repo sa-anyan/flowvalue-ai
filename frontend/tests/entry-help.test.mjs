@@ -22,13 +22,13 @@ test("Entry descriptive guidance is hidden behind help icons without hiding stat
   assert.match(entry, /<EntryHelp label=\{\`Import requirements for/);
   assert.match(entry, /\{method\.help\}/);
   assert.match(entry, /<EntryHelp label="AI review and data sharing">/);
-  assert.match(entry, /<EntryHelp label="How imported evidence is handled">/);
-  assert.match(entry, /<EntryHelp label="Meaning of verified">/);
   assert.match(entry, /<EntryHelp label="Meaning of simulation validation">/);
   assert.doesNotMatch(entry, /className="upload-message" id="balance-import-guidance"/);
   assert.match(entry, /role="status"/);
   assert.match(entry, /className="error-banner" role="alert"/);
-  assert.match(entry, /Issues &amp; missing information/);
+  assert.doesNotMatch(entry, /Issues &amp; missing information|Engineering validation|Limits &amp; source fingerprint/);
+  assert.match(entry, /<h3>Equipment list<\/h3>/);
+  assert.match(entry, /entity.kind === "equipment"/);
   assert.match(samples, /<EntryHelp label=\{\`About the/);
   assert.match(samples, /\{sample\.notes\}/);
   assert.match(samples, /<EntryHelp label="How FlowValue uses sample files">/);
