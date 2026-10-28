@@ -3,6 +3,8 @@ import {
   ChevronDown,
   FileInput,
   FlaskConical,
+  Coins,
+  ReceiptText,
   Layers3,
   LayoutDashboard,
   ShieldCheck,
@@ -13,7 +15,7 @@ import {
 
 type WorkspaceSidebarProps = {
   name: string;
-  active: "entry" | "process" | "main" | "overview";
+  active: "entry" | "process" | "main" | "capex" | "opex" | "overview";
 };
 
 export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
@@ -79,6 +81,24 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
             <LayoutDashboard size={18} />
             Main dashboard
             {active === "main" && <span className="nav-dot" />}
+          </a>
+          <a
+            href="/capex"
+            className={active === "capex" ? "nav-selected" : undefined}
+            aria-current={active === "capex" ? "page" : undefined}
+          >
+            <Coins size={18} />
+            Capex
+            {active === "capex" && <span className="nav-dot" />}
+          </a>
+          <a
+            href="/opex"
+            className={active === "opex" ? "nav-selected" : undefined}
+            aria-current={active === "opex" ? "page" : undefined}
+          >
+            <ReceiptText size={18} />
+            Opex
+            {active === "opex" && <span className="nav-dot" />}
           </a>
           <a
             href={dashboardHref("#overview")}
