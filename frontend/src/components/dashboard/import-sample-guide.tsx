@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Download, Eye, FileCheck2, LockKeyhole, RotateCcw } from "lucide-react";
 import type { ImportMethodId } from "@/lib/import-methods";
 import { getImportSample } from "@/lib/import-samples";
+import { EntryHelp } from "./entry-help";
 
 export function ImportSampleGuide({
   methodId,
@@ -24,7 +25,12 @@ export function ImportSampleGuide({
         <>
           <div className="import-setup-heading">
             <div>
-              <strong>Sample format</strong>
+              <div className="entry-inline-help">
+                <strong>Sample format</strong>
+                <EntryHelp label={`About the ${sample.name} example`}>
+                  {sample.notes}
+                </EntryHelp>
+              </div>
               <span>{sample.name}</span>
             </div>
             <span className="import-sample-kind">
@@ -50,18 +56,30 @@ export function ImportSampleGuide({
                     <tr key={i}>{row.map((cell, j) => <td key={j}>{cell}</td>)}</tr>)}</tbody>
                 </table>
               </div>
-              <p>Structure preview only; download the file for all rows and worksheets.</p>
+              <div className="entry-help-caption">
+                <span>Preview guidance</span>
+                <EntryHelp label="How the preview differs from the downloaded file">
+                  Structure preview only; download the file for all rows and worksheets.
+                </EntryHelp>
+              </div>
             </div>
           )}
-          <p className="import-sample-note">{sample.notes}</p>
+
         </>
       ) : (
         <div className="import-sample-missing">
           <strong>No parser-specific sample is available yet</strong>
-          <p>This source is not supported for file extraction. We have not created a validated template for it, so there is no sample to download.</p>
+          <EntryHelp label="Why there is no sample">
+            This source is not supported for file extraction. We have not created a validated template for it, so there is no sample to download.
+          </EntryHelp>
         </div>
       )}
-      <p className="import-sample-disclaimer">Samples illustrate expected structure; FlowValue uses rule-based parsing and validation, not a model trained on these files.</p>
+      <div className="entry-help-caption">
+        <span>About samples</span>
+        <EntryHelp label="How FlowValue uses sample files">
+          Samples illustrate expected structure; FlowValue uses rule-based parsing and validation, not a model trained on these files.
+        </EntryHelp>
+      </div>
       <div className="import-lock-row">
         {locked ? (
           <div className="import-locked" role="status">
@@ -73,7 +91,11 @@ export function ImportSampleGuide({
             <LockKeyhole size={15} /> Lock in selected source
           </button>
         )}
-        {!locked && <span>Preview or download the sample first, or continue without it.</span>}
+        {!locked && (
+          <EntryHelp label="Is a sample download required?">
+            Preview or download the sample first, or continue without it.
+          </EntryHelp>
+        )}
       </div>
     </div>
   );

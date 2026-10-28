@@ -2423,3 +2423,20 @@ select {
 .import-locked button { display:inline-flex; align-items:center; gap:4px; background:var(--secondary); border-radius:6px; padding:5px 8px; font-size:10px; color:var(--foreground); margin-left:3px; }
 .import-await-upload { display:flex; align-items:center; padding:20px; border:1px dashed var(--border); background:var(--secondary); border-radius:9px; min-height:75px; font-size:11px; line-height:1.55; color:var(--muted-foreground); }
 @media(max-width:620px){.import-setup {padding:12px}.import-setup-heading{flex-direction:column}.import-lock-row{align-items:flex-start;flex-direction:column}}
+
+
+/* Contextual help: compact ? disclosures for Entry explanatory copy. */
+.entry-inline-help { display:inline-flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.entry-method-title { margin-bottom:7px; }
+.entry-method-title label { cursor:pointer; }
+.entry-help-caption { display:flex; align-items:center; gap:7px; font-size:11px; color:var(--muted-foreground); margin:9px 0; }
+.entry-help { display:inline-flex; position:relative; vertical-align:middle; align-items:center; flex:none; z-index:2; }
+.entry-help:has(.entry-help-content:hover), .entry-help[open], .entry-help:hover { z-index:50; }
+.entry-help > summary { list-style:none; cursor:help; display:inline-flex; align-items:center; justify-content:center; width:21px; height:21px; border:1px solid var(--border); color:var(--muted-foreground); background:var(--secondary); border-radius:50%; }
+.entry-help > summary::-webkit-details-marker { display:none; }
+.entry-help > summary::marker { content:""; }
+.entry-help > summary:hover, .entry-help[open] > summary { color:#277C69; border-color:#277C69; }
+.entry-help > summary:focus-visible { outline:2px solid #277C69; outline-offset:2px; }
+.entry-help .entry-help-content { display:none; position:absolute; top:calc(100% + 7px); left:0; width:min(320px,calc(100vw - 45px)); padding:12px 14px; border:1px solid var(--border); border-radius:9px; background:var(--card); color:var(--foreground); font-size:12px; font-weight:400; line-height:1.55; text-align:left; white-space:normal; box-shadow:0 10px 26px rgba(0,0,0,.17); z-index:55; }
+.entry-help:hover > .entry-help-content, .entry-help[open] > .entry-help-content { display:block; }
+@media (max-width:620px) { .entry-help .entry-help-content { max-width:calc(100vw - 44px); } }

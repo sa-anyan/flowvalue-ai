@@ -84,3 +84,8 @@ Sample links follow existing, actual test/reference files:
 The PDF/Word, scanned-image/PFD and manual-description selections have no numerical file sample because file extraction is unavailable. Locking one of them shows the limitation; manual context can still be supplied in the process-description box.
 
 These files are examples and parser fixtures: the parsers are **rule-based, not machine-learning models trained on these files**. Sample availability does not prove industrial validation, balance closure or full vendor support. No unlicensed third-party workbook is redistributed.
+
+
+## Contextual help on Entry
+
+Long explanatory copy in the Entry mass/energy balance intake is presented via small question-mark disclosures rather than permanent paragraphs. Pointer hover reveals the explanation; activating the disclosure by click, tap or keyboard toggles it. Source-specific requirements, sample notes, preview limitations, parser-design disclaimers, AI data-sharing details, evidence storage notes and the meaning of validation status remain available without crowding the entry form. Upload constraints, unsupported status, active processing state, errors, missing data and engineering validation results continue to display prominently. This is a presentation-only change; no parser, validation or provider behaviour is altered.

@@ -9,6 +9,7 @@ import {
 } from "@/lib/import-methods";
 import { Upload, LoaderCircle } from "lucide-react";
 import { ImportSampleGuide } from "./import-sample-guide";
+import { EntryHelp } from "./entry-help";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/client-api";
 import { apiError, type Stream } from "@/lib/assessment";
@@ -223,21 +224,25 @@ export function BalanceImport({
     >
       <div className="panel-heading">
         <div>
-          <h2>Mass &amp; energy balance</h2>
-          <p>
-            Read engineering workbooks with source cells, explicit units and
-            transparent gaps.
-          </p>
+          <div className="entry-inline-help">
+            <h2>Mass &amp; energy balance</h2>
+            <EntryHelp label="How workbook parsing works">
+              Read engineering workbooks with source cells, explicit units and
+              transparent gaps.
+            </EntryHelp>
+          </div>
         </div>
         {report && <Button onClick={download}>Download parsed evidence</Button>}
       </div>
       <div className="balance-entry-grid">
         <div>
-          <label
-            className="balance-import-method"
-            htmlFor="balance-import-method"
-          >
-            <strong>Select file type / import source</strong>
+          <div className="balance-import-method">
+            <div className="entry-inline-help entry-method-title">
+              <label htmlFor="balance-import-method"><strong>Select file type / import source</strong></label>
+              <EntryHelp label={`Import requirements for ${method.label}`}>
+                {method.help}
+              </EntryHelp>
+            </div>
             <select
               id="balance-import-method"
               value={methodId}
@@ -283,10 +288,7 @@ export function BalanceImport({
                 </optgroup>
               ))}
             </select>
-          </label>
-          <p className="upload-message" id="balance-import-guidance">
-            {method.help}
-          </p>
+          </div>
           <ImportSampleGuide
             key={methodId}
             methodId={methodId}
@@ -316,7 +318,6 @@ export function BalanceImport({
           {isLocked && method.mode !== "unavailable" ? <button
             className="dropzone"
             disabled={!!busy || !!simulationBusy}
-            aria-describedby="balance-import-guidance"
             onClick={() => input.current?.click()}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
@@ -361,10 +362,13 @@ export function BalanceImport({
               <summary>
                 {simulationStreams.length} imported stream records
               </summary>
-              <p>
-                Field validation only; this importer does not establish mass or
-                energy balance closure.
-              </p>
+              <div className="entry-help-caption">
+                <span>About validation</span>
+                <EntryHelp label="Meaning of simulation validation">
+                  Field validation only; this importer does not establish mass or
+                  energy balance closure.
+                </EntryHelp>
+              </div>
               <div className="table-scroll">
                 <table>
                   <thead>
@@ -400,11 +404,14 @@ export function BalanceImport({
               native/stream-table imports are separate.
             </p>
           )}
-          <p className="upload-message">
-            Excel imports stay separate from economic assumptions and equipment
-            costing. Parsed evidence is retained in this browser tab and can be
-            downloaded.
-          </p>
+          <div className="entry-help-caption">
+            <span>About uploaded data</span>
+            <EntryHelp label="How imported evidence is handled">
+              Excel imports stay separate from economic assumptions and equipment
+              costing. Parsed evidence is retained in this browser tab and can be
+              downloaded.
+            </EntryHelp>
+          </div>
         </div>
         <div className="balance-dialogue">
           <label htmlFor="process-description">
@@ -440,11 +447,14 @@ export function BalanceImport({
               Basic tag check
             </Button>
           </div>
-          <small>
-            AI review sends this description and extracted equipment names, tags
-            and endpoints to the configured AI provider. It runs only on click;
-            no web research. Numerical balances remain deterministic.
-          </small>
+          <div className="entry-help-caption">
+            <span>About AI review</span>
+            <EntryHelp label="AI review and data sharing">
+              AI review sends this description and extracted equipment names, tags
+              and endpoints to the configured AI provider. It runs only on click;
+              no web research. Numerical balances remain deterministic.
+            </EntryHelp>
+          </div>
           {value?.description.reviewed_at && !descriptionIsCurrent(value) && (
             <p role="status">
               Description changed. Previous comparison is stale; compare again.
@@ -542,11 +552,14 @@ export function BalanceImport({
               {report.checks.filter((c) => c.status === "verified").length}{" "}
               checks verified in declared scope
             </summary>
-            <p>
-              Verified denotes source-supported observations or the named
-              arithmetic check. It does not certify the plant or complete
-              workbook.
-            </p>
+            <div className="entry-help-caption">
+              <span>What does verified mean?</span>
+              <EntryHelp label="Meaning of verified">
+                Verified denotes source-supported observations or the named
+                arithmetic check. It does not certify the plant or complete
+                workbook.
+              </EntryHelp>
+            </div>
             <ul className="balance-issues">
               {report.checks.slice(0, 100).map((c, i) => (
                 <li key={i}>
