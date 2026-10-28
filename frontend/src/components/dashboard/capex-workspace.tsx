@@ -176,13 +176,13 @@ export function CapexSummary({
               <tr><td>Purchased equipment</td><td>Costed equipment register</td><td>{money(equipmentCost)}</td><td>Engine output</td></tr>
               <tr><td>Installed / bare-module equipment</td><td>Existing module calculation; not additive to purchased equipment</td><td>{money(installedCost)}</td><td>Engine output</td></tr>
               {direct.map((item) => <CapexSummaryRow key={item.item_id} item={item}/>)}
-              {!direct.length && <tr><td colSpan={4} className="capex-muted-cell">Installation, piping, instrumentation, electrical, buildings, services, land and other direct costs must be supplied or reviewed; no percentages are assumed.</td></tr>}
+              <CapexPendingRows items={direct} names={["Installation", "Instrumentation and control", "Piping", "Electrical", "Yard improvements", "Buildings", "Service facilities", "Land"]} />
               <tr className="capex-group-row"><th colSpan={4}>Indirect costs</th></tr>
               {indirect.map((item) => <CapexSummaryRow key={item.item_id} item={item}/>)}
-              {!indirect.length && <tr><td colSpan={4} className="capex-muted-cell">Engineering, supervision, construction expense, contractor fees and contingency have not been established.</td></tr>}
+              <CapexPendingRows items={indirect} names={["Engineering and supervision", "Construction expenses", "Legal fees and taxes", "Contractor fee", "Contingency"]} />
               <tr className="capex-group-row"><th colSpan={4}>Working capital</th></tr>
               {working.map((item) => <CapexSummaryRow key={item.item_id} item={item}/>)}
-              {!working.length && <tr><td colSpan={4} className="capex-muted-cell">Working-capital allowance and timing are not provided.</td></tr>}
+              {!working.length && <tr><td>Working capital allowance</td><td>Inventory, payables, receivables and start-up cash, as applicable</td><td>—</td><td>Not established</td></tr>}
               {unclassified.length > 0 && <>
                 <tr className="capex-group-row"><th colSpan={4}>Awaiting cost classification</th></tr>
                 {unclassified.map((item) => <CapexSummaryRow key={item.item_id} item={item}/>)}
@@ -215,10 +215,34 @@ export function CapexSummary({
           <div><span>Project location</span><strong>{project?.study?.design_basis.location || "Not specified"}</strong><small>Review regional capital allowances</small></div>
         </div>
         {project?.study?.design_basis.source_context && <p className="capex-context-note"><strong>Design sources:</strong> {project.study.design_basis.source_context}</p>}
+        {streams.length > 0 && <>
+          <h3 className="capex-stream-heading">Largest imported process streams</h3>
+          <div className="table-scroll"><table className="capex-breakdown-table">
+            <thead><tr><th>Stream ID</th><th>From</th><th>To</th><th>Mass flow (kg/h)</th></tr></thead>
+            <tbody>{[...streams].sort((a,b) => b.mass_flow_kg_h - a.mass_flow_kg_h).slice(0,5).map((stream) =>
+              <tr key={stream.stream_id}><td>{stream.stream_id}</td><td>{stream.source_unit || "Not mapped"}</td><td>{stream.destination_unit || "Not mapped"}</td><td>{stream.mass_flow_kg_h.toLocaleString("en-GB",{maximumFractionDigits:1})}</td></tr>,
+            )}</tbody>
+          </table></div>
+        </>}
         <p className="capex-caption">Stream quantities inform what equipment might be required; they do not independently establish a supplier price, installed cost or process design.</p>
       </section>
     </div>
   );
+}
+
+function CapexPendingRows({ items, names }: { items: CostItem[]; names: string[] }) {
+  return <>
+    {names.filter((name) => !items.some((item) =>
+      item.description.trim().toLowerCase().includes(name.toLowerCase()),
+    )).map((name) => (
+      <tr key={name}>
+        <td>{name}</td>
+        <td className="capex-muted-cell">Requires project-specific costing basis</td>
+        <td>—</td>
+        <td>Not established</td>
+      </tr>
+    ))}
+  </>;
 }
 
 function CapexSummaryRow({ item }: { item: CostItem }) {
