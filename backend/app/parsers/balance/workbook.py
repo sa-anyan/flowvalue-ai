@@ -88,6 +88,8 @@ def read_book(content: bytes, name: str):
                 ):
                     raise ValueError("Not an Excel OOXML workbook.")
                 if any("vbaproject" in i.filename.lower() for i in entries):
+                    if ext != ".xlsm":
+                        raise ValueError("Macro-bearing workbooks require the .xlsm format.")
                     warnings.append("VBA macros were not executed or imported; only stored spreadsheet values were read.")
                 if len({i.filename for i in entries}) != len(entries):
                     raise ValueError("Duplicate archive members are not supported.")
