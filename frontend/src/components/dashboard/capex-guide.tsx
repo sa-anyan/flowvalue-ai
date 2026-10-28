@@ -20,6 +20,14 @@ export function CapexGuide({
 }) {
   const coverage = capitalCoverage(project);
   const checks = capitalChecks(project);
+  const nextItems = checks
+    .filter(
+      (check, index) =>
+        checks.findIndex(
+          (other) => other.item.item_id === check.item.item_id,
+        ) === index,
+    )
+    .slice(0, 3);
   const absent = coverage.filter((c) => !c.rows.length);
   const cases = project.study?.engineering_cases ?? [];
   const unpriced = cases.filter(
@@ -100,7 +108,7 @@ export function CapexGuide({
             <ArrowUpRight size={14} />
           </Link>
         )}
-        {checks.slice(0, 3).map((check, i) => (
+        {nextItems.map((check, i) => (
           <Link key={check.item.item_id + i} href={check.href}>
             <span>
               <strong>{check.item.description}</strong>
