@@ -10,6 +10,7 @@ import {
 import { CashFlowChart, RiskChart } from "./charts";
 import { CapexEquipmentBasis } from "./capex-guide";
 import { EquipmentData } from "./equipment-data";
+import { EquipmentPropertiesTable } from "@/components/equipment-properties-table";
 import { BalanceImport } from "./balance-import";
 import type { BalanceAttachment } from "@/lib/balance";
 import { LegacyProjectWorkspace } from "./legacy-project-workspace";
@@ -842,7 +843,7 @@ export default function Dashboard() {
           />
           {mode === "data" ? (
             pathname === "/data/equipment-properties" ? (
-              <section className="panel" style={{ padding: 28 }}><h1>Equipment properties</h1></section>
+              <section className="panel" style={{ padding: 28 }}><EquipmentPropertiesTable report={balanceImport?.report ?? null} /></section>
             ) : <EquipmentData report={balanceImport?.report ?? null} />
           ) : base?.legacy_reference ? (
             <>
