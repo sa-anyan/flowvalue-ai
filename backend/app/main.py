@@ -59,6 +59,7 @@ from app.parsers.stream_parser import StreamTable, parse_csv
 from app.policy.screening import PolicyEvidence, screen_policy
 from app.reports.excel_builder import build_excel
 from app.reports.pdf_builder import build_pdf
+from app.study.legacy import LegacyReference
 from app.study.models import OpexApplication, Study, review_study, study_notes
 from app.validation.references import reference_report
 
@@ -150,6 +151,7 @@ def financial_monte_carlo(request: MonteCarloRequest) -> MonteCarloResult:
 
 
 class AssessmentRequest(Model):
+    legacy_reference: LegacyReference | None = None
     study: Study | None = None
     engineering_notes: list[Annotated[str, Field(max_length=1500)]] = Field(
         default_factory=list, max_length=100
@@ -170,6 +172,8 @@ class AssessmentResult(Model):
 
 @app.post("/api/assessment", response_model=AssessmentResult)
 def assessment(request: AssessmentRequest) -> AssessmentResult:
+    if request.legacy_reference is not None:
+        raise HTTPException(409, "Legacy workbook reference: cached figures are not validated engine inputs. Use the reference views and snapshot export.")
     try:
         bom = build_bom(request.costing)
         inputs = FinancialInputs(
@@ -204,6 +208,8 @@ class UnitInvestigation(Model):
 
 @app.post("/api/engineering/investigate")
 def engineering_investigate(body: UnitInvestigation):
+    if body.project.legacy_reference is not None:
+        raise HTTPException(409, "Legacy reference contains no validated engineering inputs")
     try:
         return investigate(body.project, body.unit_id)
     except ValueError as exc:
@@ -700,6 +706,13 @@ async def load_project(
     return rows[0]
 
 
+@app.post("/api/projects/validate-reference", response_model=AssessmentRequest)
+def validate_legacy_reference(project: AssessmentRequest):
+    if project.legacy_reference is None:
+        raise HTTPException(422, "A legacy reference snapshot is required")
+    return project
+
+
 @app.post("/api/projects")
 async def save_project(
     body: SavedProject,
@@ -707,7 +720,8 @@ async def save_project(
     user: Annotated[dict, Depends(authenticated_user)],
 ):
     # Validate before persistence; version insert and revision check are atomic in Postgres.
-    assessment(body.project)
+    if body.project.legacy_reference is None:
+        assessment(body.project)
     if body.streams:
         try:
             body.streams = StreamTable.model_validate(

@@ -32,6 +32,18 @@ export function readWorkspace(): Workspace | null {
     )
       return null;
     if (
+      value.project.legacy_reference &&
+      (value.project.legacy_reference.schema_version !==
+        "flowvalue-legacy-reference-v1" ||
+        !Array.isArray(value.project.legacy_reference.sheets) ||
+        !value.project.legacy_reference.sheets.length ||
+        value.project.legacy_reference.sheets.some(
+          (s: { name?: string; cells?: unknown }) =>
+            !s.name || !s.cells || typeof s.cells !== "object",
+        ))
+    )
+      return null;
+    if (
       value.project.study &&
       (value.project.study.schema_version !== "flowvalue-study-v1" ||
         !value.project.study.design_basis ||

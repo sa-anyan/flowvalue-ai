@@ -41,6 +41,8 @@ async def review_snapshot(
 
     row = await saved_version(request, version_id)
     project = AssessmentRequest.model_validate(row["payload"]["project"])
+    if project.legacy_reference is not None:
+        raise HTTPException(409, "Legacy reference has no validated unit investigations")
     unit_ids = list(
         dict.fromkeys(
             [e.unit_id for e in project.costing.equipment]
@@ -159,10 +161,11 @@ async def add_event(
     from app.main import AssessmentRequest
 
     row = await saved_version(request, version_id)
+    project = AssessmentRequest.model_validate(row["payload"]["project"])
+    if project.legacy_reference is not None:
+        raise HTTPException(409, "Legacy reference has no validated unit investigations")
     try:
-        report = investigate(
-            AssessmentRequest.model_validate(row["payload"]["project"]), body.unit_id
-        )
+        report = investigate(project, body.unit_id)
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
     if body.action == "resolve":

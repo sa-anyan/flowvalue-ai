@@ -1,4 +1,5 @@
 "use client";
+import { LegacyProjectWorkspace } from "@/components/dashboard/legacy-project-workspace";
 import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import {
@@ -202,6 +203,23 @@ export default function ProcessFlow() {
     position: n.position,
     kind: topology.nodes.find((t) => t.id === n.id)?.kind || "unit",
   }));
+  if (workspace?.project.legacy_reference)
+    return (
+      <div className="app-shell">
+        <WorkspaceSidebar
+          name={workspace.project.advisor_context?.name ?? "Legacy project"}
+          active="process"
+        />
+        <div className="main-shell">
+          <main className="dashboard-main">
+            <LegacyProjectWorkspace
+              project={workspace.project}
+              mode="process"
+            />
+          </main>
+        </div>
+      </div>
+    );
   return (
     <div className="app-shell">
       <WorkspaceSidebar
@@ -210,196 +228,203 @@ export default function ProcessFlow() {
       />
       <div className="main-shell">
         <main className="flow-page">
-      <header className="flow-header">
-        <div>
-          <a href="/main-dashboard">← Return to Main dashboard</a>
-          <h1>Process flow workspace</h1>
-          <p>
-            {workspace?.project.advisor_context?.name ||
-              "Load a project in the dashboard first"}
-          </p>
-        </div>
-        <div className="extension-actions">
-          <Button
-            variant={mode === "2d" ? "default" : "outline"}
-            onClick={() => setMode("2d")}
-          >
-            2D flowsheet
-          </Button>
-          <Button
-            variant={mode === "3d" ? "default" : "outline"}
-            onClick={() => setMode("3d")}
-          >
-            3D process view
-          </Button>
-        </div>
-      </header>
-      {!workspace ? (
-        <p>
-          No active scenario in this browser tab.{" "}
-          <a href="/entry">Open Entry</a> and import a simulation.
-        </p>
-      ) : (
-        <>
-          <div className="flow-layout">
+          <header className="flow-header">
             <div>
-              <div className="flow-canvas">
-                {mode === "2d" ? (
-                  <ReactFlow
-                    nodes={nodes}
-                    edges={topology.edges as Edge[]}
-                    onNodesChange={onNodesChange}
-                    onNodeClick={(_e, n) => select(n.id)}
-                    nodesConnectable={false}
-                    edgesReconnectable={false}
-                    fitView
-                    fitViewOptions={{ padding: 0.25 }}
-                  >
-                    <Background gap={22} />
-                    <Controls />
-                    <MiniMap pannable zoomable />
-                  </ReactFlow>
-                ) : (
-                  <Scene
-                    nodes={viewNodes}
-                    edges={topology.edges}
-                    selected={selected}
-                    onSelect={select}
+              <a href="/main-dashboard">← Return to Main dashboard</a>
+              <h1>Process flow workspace</h1>
+              <p>
+                {workspace?.project.advisor_context?.name ||
+                  "Load a project in the dashboard first"}
+              </p>
+            </div>
+            <div className="extension-actions">
+              <Button
+                variant={mode === "2d" ? "default" : "outline"}
+                onClick={() => setMode("2d")}
+              >
+                2D flowsheet
+              </Button>
+              <Button
+                variant={mode === "3d" ? "default" : "outline"}
+                onClick={() => setMode("3d")}
+              >
+                3D process view
+              </Button>
+            </div>
+          </header>
+          {!workspace ? (
+            <p>
+              No active scenario in this browser tab.{" "}
+              <a href="/entry">Open Entry</a> and import a simulation.
+            </p>
+          ) : (
+            <>
+              <div className="flow-layout">
+                <div>
+                  <div className="flow-canvas">
+                    {mode === "2d" ? (
+                      <ReactFlow
+                        nodes={nodes}
+                        edges={topology.edges as Edge[]}
+                        onNodesChange={onNodesChange}
+                        onNodeClick={(_e, n) => select(n.id)}
+                        nodesConnectable={false}
+                        edgesReconnectable={false}
+                        fitView
+                        fitViewOptions={{ padding: 0.25 }}
+                      >
+                        <Background gap={22} />
+                        <Controls />
+                        <MiniMap pannable zoomable />
+                      </ReactFlow>
+                    ) : (
+                      <Scene
+                        nodes={viewNodes}
+                        edges={topology.edges}
+                        selected={selected}
+                        onSelect={select}
+                      />
+                    )}
+                  </div>
+                  <p className="flow-note">
+                    Display layout only; 3D blocks are schematic, not plant
+                    geometry. Drag nodes in 2D, orbit or zoom in 3D. Connections
+                    come from imported stream endpoints; no connections are
+                    inferred from equipment order.{" "}
+                    {workspace.streams.length === 0
+                      ? "This project has no stream connections; equipment is shown as independent blocks."
+                      : ""}
+                  </p>
+                  <div className="flow-node-selector">
+                    {topology.nodes.map((n) => (
+                      <button key={n.id} onClick={() => select(n.id)}>
+                        {n.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <aside className="flow-inspector">
+                  <h2>{selected || "Select an operation"}</h2>
+                  {draft ? (
+                    <>
+                      <p>{kindLabels[draft.kind]}</p>
+                      {Object.entries(draft)
+                        .filter(
+                          ([k, v]) =>
+                            typeof v === "number" &&
+                            ![
+                              "material_factor_override",
+                              "pressure_factor_override",
+                            ].includes(k),
+                        )
+                        .map(([k, v]) => (
+                          <label key={k}>
+                            {fieldLabels[k] || k.replaceAll("_", " ")}
+                            <input
+                              aria-label={`${draft.unit_id} ${k}`}
+                              type="number"
+                              step="any"
+                              value={Number(v)}
+                              disabled={busy}
+                              onChange={(e) => {
+                                setResult(null);
+                                setMessage(
+                                  "Unapplied changes. Apply & recalculate to update the project.",
+                                );
+                                setDraft({
+                                  ...draft,
+                                  [k]: Number(e.target.value),
+                                });
+                              }}
+                            />
+                          </label>
+                        ))}
+                      {draft.kind !== "quoted" && (
+                        <label>
+                          Material
+                          <select
+                            value={draft.material || "carbon_steel"}
+                            disabled={busy}
+                            onChange={(e) => {
+                              setResult(null);
+                              setMessage(
+                                "Unapplied changes. Apply & recalculate to update the project.",
+                              );
+                              setDraft({ ...draft, material: e.target.value });
+                            }}
+                          >
+                            <option value="carbon_steel">Carbon steel</option>
+                            <option value="stainless_steel">
+                              Stainless steel
+                            </option>
+                          </select>
+                        </label>
+                      )}
+                      {draft.kind === "quoted" && <p>{draft.source}</p>}
+                      <Button disabled={busy} onClick={save}>
+                        {busy ? "Calculating…" : "Apply & recalculate"}
+                      </Button>
+                    </>
+                  ) : (
+                    <p>
+                      {selected
+                        ? "No complete priced sizing model for this object. Complete the mapping in the dashboard."
+                        : "Click an operation in the diagram or use the buttons below it to inspect its sizing and cost parameters."}
+                    </p>
+                  )}
+                  {imported?.warnings.map((w, i) => (
+                    <p key={i}>{w}</p>
+                  ))}
+                  {imported?.missing_inputs.map((w, i) => (
+                    <p className="engineering-warning" key={i}>
+                      Missing in original simulation: {w}
+                    </p>
+                  ))}
+                  {streams.map((s) => (
+                    <p key={s.stream_id}>
+                      <strong>{s.stream_id}</strong>
+                      <br />
+                      {s.mass_flow_kg_h.toLocaleString()} kg/h ·{" "}
+                      {s.temperature_c.toFixed(1)} °C ·{" "}
+                      {s.pressure_bar_abs.toFixed(2)} bar abs · {s.phase}
+                    </p>
+                  ))}
+                  {result && (
+                    <p>
+                      Updated scenario CAPEX:{" "}
+                      <strong>
+                        {usd(result.bom.total_bare_module_cost_usd)}
+                      </strong>
+                      <br />
+                      NPV: {usd(result.financial.npv_usd)}
+                    </p>
+                  )}
+                  {message && <p role="status">{message}</p>}
+                </aside>
+              </div>
+              {selected &&
+                !selected.startsWith("feed:") &&
+                !selected.startsWith("product:") && (
+                  <EngineeringAnalyst
+                    project={workspace.project}
+                    native={workspace.native_import}
+                    aiAvailable={!!ai.status?.can_generate}
+                    selectedUnit={selected}
+                    onProject={(project) => {
+                      const w = { ...workspace, project };
+                      setWorkspace(w);
+                      writeWorkspace(w);
+                      setResult(null);
+                      setDraft(
+                        project.costing.equipment.find(
+                          (e) => e.unit_id === selected,
+                        ) || null,
+                      );
+                    }}
                   />
                 )}
-              </div>
-              <p className="flow-note">
-                Display layout only; 3D blocks are schematic, not plant
-                geometry. Drag nodes in 2D, orbit or zoom in 3D. Connections
-                come from imported stream endpoints; no connections are inferred
-                from equipment order.{" "}
-                {workspace.streams.length === 0
-                  ? "This project has no stream connections; equipment is shown as independent blocks."
-                  : ""}
-              </p>
-              <div className="flow-node-selector">
-                {topology.nodes.map((n) => (
-                  <button key={n.id} onClick={() => select(n.id)}>
-                    {n.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <aside className="flow-inspector">
-              <h2>{selected || "Select an operation"}</h2>
-              {draft ? (
-                <>
-                  <p>{kindLabels[draft.kind]}</p>
-                  {Object.entries(draft)
-                    .filter(
-                      ([k, v]) =>
-                        typeof v === "number" &&
-                        ![
-                          "material_factor_override",
-                          "pressure_factor_override",
-                        ].includes(k),
-                    )
-                    .map(([k, v]) => (
-                      <label key={k}>
-                        {fieldLabels[k] || k.replaceAll("_", " ")}
-                        <input
-                          aria-label={`${draft.unit_id} ${k}`}
-                          type="number"
-                          step="any"
-                          value={Number(v)}
-                          disabled={busy}
-                          onChange={(e) => {
-                            setResult(null);
-                            setMessage(
-                              "Unapplied changes. Apply & recalculate to update the project.",
-                            );
-                            setDraft({ ...draft, [k]: Number(e.target.value) });
-                          }}
-                        />
-                      </label>
-                    ))}
-                  {draft.kind !== "quoted" && (
-                    <label>
-                      Material
-                      <select
-                        value={draft.material || "carbon_steel"}
-                        disabled={busy}
-                        onChange={(e) => {
-                          setResult(null);
-                          setMessage(
-                            "Unapplied changes. Apply & recalculate to update the project.",
-                          );
-                          setDraft({ ...draft, material: e.target.value });
-                        }}
-                      >
-                        <option value="carbon_steel">Carbon steel</option>
-                        <option value="stainless_steel">Stainless steel</option>
-                      </select>
-                    </label>
-                  )}
-                  {draft.kind === "quoted" && <p>{draft.source}</p>}
-                  <Button disabled={busy} onClick={save}>
-                    {busy ? "Calculating…" : "Apply & recalculate"}
-                  </Button>
-                </>
-              ) : (
-                <p>
-                  {selected
-                    ? "No complete priced sizing model for this object. Complete the mapping in the dashboard."
-                    : "Click an operation in the diagram or use the buttons below it to inspect its sizing and cost parameters."}
-                </p>
-              )}
-              {imported?.warnings.map((w, i) => (
-                <p key={i}>{w}</p>
-              ))}
-              {imported?.missing_inputs.map((w, i) => (
-                <p className="engineering-warning" key={i}>
-                  Missing in original simulation: {w}
-                </p>
-              ))}
-              {streams.map((s) => (
-                <p key={s.stream_id}>
-                  <strong>{s.stream_id}</strong>
-                  <br />
-                  {s.mass_flow_kg_h.toLocaleString()} kg/h ·{" "}
-                  {s.temperature_c.toFixed(1)} °C ·{" "}
-                  {s.pressure_bar_abs.toFixed(2)} bar abs · {s.phase}
-                </p>
-              ))}
-              {result && (
-                <p>
-                  Updated scenario CAPEX:{" "}
-                  <strong>{usd(result.bom.total_bare_module_cost_usd)}</strong>
-                  <br />
-                  NPV: {usd(result.financial.npv_usd)}
-                </p>
-              )}
-              {message && <p role="status">{message}</p>}
-            </aside>
-          </div>
-          {selected &&
-            !selected.startsWith("feed:") &&
-            !selected.startsWith("product:") && (
-              <EngineeringAnalyst
-                project={workspace.project}
-                native={workspace.native_import}
-                aiAvailable={!!ai.status?.can_generate}
-                selectedUnit={selected}
-                onProject={(project) => {
-                  const w = { ...workspace, project };
-                  setWorkspace(w);
-                  writeWorkspace(w);
-                  setResult(null);
-                  setDraft(
-                    project.costing.equipment.find(
-                      (e) => e.unit_id === selected,
-                    ) || null,
-                  );
-                }}
-              />
-            )}
-        </>
-      )}
+            </>
+          )}
         </main>
       </div>
     </div>

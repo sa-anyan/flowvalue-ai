@@ -1,7 +1,12 @@
 import type { Study } from "./study";
 import type { AdvisorContext } from "@/components/dashboard/universal-advisor";
 export type Kind =
-  "quoted" | "heat_exchanger" | "vessel" | "reactor" | "pump" | "compressor";
+  | "quoted"
+  | "heat_exchanger"
+  | "vessel"
+  | "reactor"
+  | "pump"
+  | "compressor";
 export type EquipmentSpec = {
   unit_id: string;
   kind: Kind;
@@ -64,7 +69,21 @@ export type Financial = {
   operating_years: number;
   depreciation_years?: number | null;
 };
+export type LegacyCell = {
+  value: string | number | boolean | null;
+  cached: boolean;
+  original_value?: string | number | boolean | null;
+  modified?: boolean;
+};
+export type LegacyReference = {
+  schema_version: "flowvalue-legacy-reference-v1";
+  source_name: string;
+  source_sha256: string;
+  currency: "GBP";
+  sheets: { name: string; cells: Record<string, LegacyCell> }[];
+};
 export type AssessmentRequest = {
+  legacy_reference?: LegacyReference | null;
   study?: Study | null;
   engineering_notes?: string[];
   is_demo: boolean;

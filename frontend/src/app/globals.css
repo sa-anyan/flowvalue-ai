@@ -2342,3 +2342,29 @@ select {
 .capital-equipment-counts { display:flex; flex-wrap:wrap; gap:16px; font-size:11px; }
 .capital-equipment-counts strong { display:block; font-size:23px; }
 @media(max-width:760px) { .capital-progress-grid,.capital-register-metrics { grid-template-columns:1fr; } .capital-guide,.capital-equipment-basis { padding:18px; } .capital-cost-detail>summary { align-items:start; } .capital-cost-amount { max-width:45%; } }
+
+.legacy-workspace { display:grid; gap:20px; }
+.legacy-reference-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:20px; padding:22px; }
+.legacy-reference-toolbar>div { flex:1; min-width:230px; }
+.legacy-reference-toolbar label,.legacy-source-browser>label { display:grid; gap:8px; font-size:12px; }
+.legacy-reference-toolbar select,.legacy-source-browser select { padding:10px; border:1px solid var(--border); border-radius:6px; background:var(--card); }
+.legacy-reference-toolbar strong { font-size:13px; }
+.legacy-reference-toolbar p,.legacy-chart-grid p,.legacy-source-table>p { font-size:12px; line-height:1.6; color:var(--muted-foreground); margin-top:8px; }
+.legacy-metric-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
+.legacy-metric-grid article { padding:20px; }
+.legacy-metric-grid span,.legacy-metric-grid small { display:block; font-size:11px; color:var(--muted-foreground); }
+.legacy-metric-grid strong { display:block; margin:12px 0; font-size:23px; font-variant-numeric:tabular-nums; }
+.legacy-chart-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
+.legacy-chart-grid>section { padding:22px; }
+.legacy-chart-grid h2 { font-size:16px; font-weight:650; }
+.legacy-source-table .panel-heading { padding:20px; }
+.legacy-source-table th { white-space:normal; min-width:130px; }
+.legacy-source-table td { font-variant-numeric:tabular-nums; vertical-align:top; }
+.legacy-cell-source { display:block; color:var(--muted-foreground); font-size:9px; margin-top:5px; }
+.legacy-source-table input { width:100%; min-width:130px; padding:7px; border:1px solid var(--border); border-radius:4px; background:var(--card); }
+.legacy-edited { background:color-mix(in srgb, #d9ab67 15%, var(--card)); }
+.legacy-source-browser { padding:20px; min-width:0; }
+.legacy-source-browser>summary { cursor:pointer; font-size:13px; font-weight:600; margin-bottom:16px; }
+.legacy-source-browser>.panel { margin-top:16px; }
+@media(max-width:1100px){.legacy-metric-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:760px){.legacy-chart-grid{grid-template-columns:1fr}.legacy-metric-grid strong{font-size:19px;}}

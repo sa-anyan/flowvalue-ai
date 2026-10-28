@@ -9,6 +9,7 @@ import {
 } from "@/lib/workspace-navigation";
 import { CashFlowChart, RiskChart } from "./charts";
 import { CapexEquipmentBasis } from "./capex-guide";
+import { LegacyProjectWorkspace } from "./legacy-project-workspace";
 import { apiFetch } from "@/lib/client-api";
 
 import {
@@ -285,7 +286,7 @@ export default function Dashboard() {
     return () => controller.abort();
   }, [retry]);
   const payload = useMemo(() => {
-    if (!base) return null;
+    if (!base || base.legacy_reference) return null;
     const feed =
       base.financial.feedstock_opex_usd_per_year * (1 + controls.feed / 100);
     const utility =
@@ -371,10 +372,12 @@ export default function Dashboard() {
   }, [payload, signature, calculationRetry]);
   const workspace = useMemo(
     () =>
-      payload
-        ? { project: payload, streams, native_import: nativeImport }
-        : null,
-    [payload, streams, nativeImport],
+      base?.legacy_reference
+        ? { project: base, streams, native_import: nativeImport }
+        : payload
+          ? { project: payload, streams, native_import: nativeImport }
+          : null,
+    [base, payload, streams, nativeImport],
   );
   useEffect(() => {
     if (workspace) writeWorkspace(workspace);
@@ -595,6 +598,29 @@ export default function Dashboard() {
           if (!r.ok) throw Error(await apiError(r));
           content = await r.json();
         }
+        if (content.legacy_reference) {
+          const validation = await apiFetch(
+            "/api/projects/validate-reference",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(
+                Object.fromEntries(
+                  Object.entries(content).filter(([key]) => key !== "streams"),
+                ),
+              ),
+            },
+          );
+          if (!validation.ok) throw Error(await apiError(validation));
+          setBase(await validation.json());
+          setStreams([]);
+          setNativeImport(null);
+          setFilename(file.name);
+          setUploadMessage(
+            "Legacy workbook reference loaded. Values retain their source cells and currency; no formulas have been executed.",
+          );
+          return;
+        }
         if (content.costing && content.financial) {
           const validation = await apiFetch("/api/assessment", {
             method: "POST",
@@ -786,9 +812,11 @@ export default function Dashboard() {
               <i />
               {error
                 ? "Needs attention"
-                : ready
-                  ? "API connected"
-                  : "Connecting"}
+                : base?.legacy_reference
+                  ? "Reference loaded"
+                  : ready
+                    ? "API connected"
+                    : "Connecting"}
             </span>
             <button
               className="icon-button"
@@ -809,7 +837,14 @@ export default function Dashboard() {
             onLoad={loadWorkspace}
             onAuth={authChanged}
           />
-          {isEntry ? (
+          {base?.legacy_reference ? (
+            <LegacyProjectWorkspace
+              project={base}
+              onProject={setBase}
+              mode={mode}
+              capexTab={capexTab}
+            />
+          ) : isEntry ? (
             <>
               <section className="page-heading">
                 <div>

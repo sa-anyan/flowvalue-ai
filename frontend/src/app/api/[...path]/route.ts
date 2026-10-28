@@ -4,6 +4,7 @@ const paths = new Set([
   "health",
   "api/config",
   "api/projects",
+  "api/projects/validate-reference",
   "api/streams/parse/dwxml",
   "api/assessment/tornado",
   "api/copilot/executive-memo",
