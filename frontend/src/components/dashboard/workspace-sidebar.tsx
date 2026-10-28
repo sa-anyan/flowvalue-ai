@@ -3,6 +3,7 @@ import {
   ChevronDown,
   FileInput,
   FlaskConical,
+  GitBranch,
   Coins,
   ReceiptText,
   TrendingUp,
@@ -16,7 +17,7 @@ import {
 
 type WorkspaceSidebarProps = {
   name: string;
-  active: "entry" | "process" | "main" | "capex" | "opex" | "revenue" | "overview";
+  active: "entry" | "process" | "main" | "capex" | "opex" | "revenue" | "scenario" | "sensitivity" | "overview";
 };
 
 export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
@@ -138,6 +139,27 @@ export function WorkspaceSidebar({ name, active }: WorkspaceSidebarProps) {
           <a href={dashboardHref("#study")}>
             <FlaskConical size={18} />
             Analyst workspace
+          </a>
+        </nav>
+        <div className="nav-caption">PLAYGROUND</div>
+        <nav aria-label="Playground">
+          <a
+            href="/scenario"
+            className={active === "scenario" ? "nav-selected" : undefined}
+            aria-current={active === "scenario" ? "page" : undefined}
+          >
+            <GitBranch size={18} />
+            Scenario
+            {active === "scenario" && <span className="nav-dot" />}
+          </a>
+          <a
+            href="/sensitivity"
+            className={active === "sensitivity" ? "nav-selected" : undefined}
+            aria-current={active === "sensitivity" ? "page" : undefined}
+          >
+            <SlidersHorizontal size={18} />
+            Sensitivity
+            {active === "sensitivity" && <span className="nav-dot" />}
           </a>
         </nav>
         <div className="sidebar-note">

@@ -5,7 +5,7 @@ import { ChevronRight } from "lucide-react";
 import { WorkspaceSidebar } from "./workspace-sidebar";
 import { readWorkspace } from "@/lib/workspace";
 
-type Section = "capex" | "opex" | "revenue";
+type Section = "capex" | "opex" | "revenue" | "scenario" | "sensitivity";
 
 // Route-only placeholder; existing project data and calculations are untouched.
 const subscribe = () => () => {};
@@ -15,7 +15,14 @@ const getServerName = () => "Untitled process";
 
 export function EmptyAnalysisPage({ section }: { section: Section }) {
   const name = useSyncExternalStore(subscribe, getName, getServerName);
-  const title = section === "capex" ? "Capex" : section === "opex" ? "Opex" : "Revenue";
+  const title = {
+    capex: "Capex",
+    opex: "Opex",
+    revenue: "Revenue",
+    scenario: "Scenario",
+    sensitivity: "Sensitivity",
+  }[section];
+  const group = section === "scenario" || section === "sensitivity" ? "PLAYGROUND" : "ANALYSIS";
 
   return (
     <div className="app-shell">
@@ -30,7 +37,7 @@ export function EmptyAnalysisPage({ section }: { section: Section }) {
         <main className="dashboard-main">
           <section className="page-heading">
             <div>
-              <div className="eyebrow"><span /> ANALYSIS</div>
+              <div className="eyebrow"><span /> {group}</div>
               <h1>{title}</h1>
             </div>
           </section>

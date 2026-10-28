@@ -32,3 +32,29 @@ test("All three empty routes use the shared sidebar and preserve analysis module
   assert.match(dashboard, /id="equipment"/);
   assert.match(dashboard, /id="playground"/);
 });
+
+test("Playground is its own section below Analysis, starting with Scenario and Sensitivity", () => {
+  const nav = read("../src/components/dashboard/workspace-sidebar.tsx");
+  const analysis = nav.indexOf('>ANALYSIS</div>');
+  const lastAnalysisLink = nav.indexOf('href={dashboardHref("#study")}');
+  const playground = nav.indexOf('>PLAYGROUND</div>');
+  const scenario = nav.indexOf('href="/scenario"');
+  const sensitivity = nav.indexOf('href="/sensitivity"');
+  const sidebarNote = nav.indexOf('className="sidebar-note"');
+  assert.ok(analysis >= 0 && analysis < lastAnalysisLink);
+  assert.ok(lastAnalysisLink < playground && playground < scenario && scenario < sensitivity && sensitivity < sidebarNote);
+  assert.match(nav, /<nav aria-label="Playground">/);
+  for (const section of ["scenario", "sensitivity"]) {
+    assert.match(nav, new RegExp('active === "' + section + '" \\? "nav-selected"'));
+  }
+});
+
+test("Scenario and Sensitivity have separate empty routes with Playground headings", () => {
+  const scenario = read("../src/app/scenario/page.tsx");
+  const sensitivity = read("../src/app/sensitivity/page.tsx");
+  const placeholder = read("../src/components/dashboard/empty-analysis-page.tsx");
+  assert.match(scenario, /<EmptyAnalysisPage section="scenario"\s*\/>/);
+  assert.match(sensitivity, /<EmptyAnalysisPage section="sensitivity"\s*\/>/);
+  assert.match(placeholder, /section === "scenario" \|\| section === "sensitivity" \? "PLAYGROUND" : "ANALYSIS"/);
+  assert.match(placeholder, /<WorkspaceSidebar name={name} active={section}/);
+});
