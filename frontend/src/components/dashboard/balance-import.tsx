@@ -8,6 +8,8 @@ import {
   type ImportMethodId,
 } from "@/lib/import-methods";
 import { Upload, LoaderCircle } from "lucide-react";
+import { ImportSampleGuide } from "./import-sample-guide";
+import { EntryHelp } from "./entry-help";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/client-api";
 import { apiError, type Stream } from "@/lib/assessment";
@@ -42,7 +44,36 @@ export function BalanceImport({
     current.current = value;
   }, [value]);
   const [methodId, setMethodId] = useState<ImportMethodId>(readImportMethod);
+  const [lockedMethodId, setLockedMethodId] = useState<ImportMethodId | null>(() => {
+    try {
+      const selected = sessionStorage.getItem("flowvalue-import-method");
+      const locked = sessionStorage.getItem("flowvalue-import-locked");
+      return locked && locked === selected && importMethods.some((item) => item.id === locked)
+        ? (locked as ImportMethodId)
+        : null;
+    } catch {
+      return null;
+    }
+  });
   const method = getImportMethod(methodId);
+  const isLocked = lockedMethodId === methodId;
+
+  function lockSource() {
+    setLockedMethodId(methodId);
+    setError("");
+    try {
+      sessionStorage.setItem("flowvalue-import-method", methodId);
+      sessionStorage.setItem("flowvalue-import-locked", methodId);
+    } catch {}
+  }
+
+  function unlockSource() {
+    setLockedMethodId(null);
+    if (input.current) input.current.value = "";
+    try {
+      sessionStorage.removeItem("flowvalue-import-locked");
+    } catch {}
+  }
   const [busy, setBusy] = useState("");
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
@@ -50,6 +81,10 @@ export function BalanceImport({
   const description = value?.description.text ?? draft;
   async function upload(file: File) {
     if (busy || simulationBusy) return;
+    if (!isLocked || method.mode === "unavailable") {
+      setError("Lock in a supported import source before uploading.");
+      return;
+    }
     setError("");
     if (method.mode === "simulation") {
       const accepted =
@@ -82,9 +117,7 @@ export function BalanceImport({
       file.size > 4 * 1024 * 1024
     ) {
       setError(
-        method.mode === "excel"
-          ? `Choose an .xlsx or .xls workbook/export for ${method.label}, up to 4 MiB. Native simulation files are not accepted by this Excel parser.`
-          : method.help,
+        `Choose an .xlsx or .xls workbook/export for ${method.label}, up to 4 MiB. Native simulation files are not accepted by this Excel parser.`,
       );
       return;
     }
@@ -93,6 +126,7 @@ export function BalanceImport({
     try {
       const body = new FormData();
       body.append("file", file);
+      body.append("source", methodId === "aspen-hysys" ? "aspen-hysys" : "excel");
       const response = await apiFetch("/api/streams/parse/excel", {
         method: "POST",
         body,
@@ -182,20 +216,24 @@ export function BalanceImport({
     >
       <div className="panel-heading">
         <div>
-          <h2>Mass &amp; energy balance</h2>
-          <p>
-            Read engineering workbooks with source cells, explicit units and
-            transparent gaps.
-          </p>
+          <div className="entry-inline-help">
+            <h2>Mass &amp; energy balance</h2>
+            <EntryHelp label="How workbook parsing works">
+              Read engineering workbooks with source cells, explicit units and
+              transparent gaps.
+            </EntryHelp>
+          </div>
         </div>
       </div>
       <div className="balance-entry-grid">
         <div>
-          <label
-            className="balance-import-method"
-            htmlFor="balance-import-method"
-          >
-            <strong>Select file type / import source</strong>
+          <div className="balance-import-method">
+            <div className="entry-inline-help entry-method-title">
+              <label htmlFor="balance-import-method"><strong>Select file type / import source</strong></label>
+              <EntryHelp label={`Import requirements for ${method.label}`}>
+                {method.help}
+              </EntryHelp>
+            </div>
             <select
               id="balance-import-method"
               value={methodId}
@@ -203,8 +241,12 @@ export function BalanceImport({
               onChange={(e) => {
                 const selected = getImportMethod(e.target.value);
                 setMethodId(selected.id);
+                setLockedMethodId(null);
                 setError("");
+                setStatus("");
+                if (input.current) input.current.value = "";
                 try {
+                  sessionStorage.removeItem("flowvalue-import-locked");
                   sessionStorage.setItem(
                     "flowvalue-import-method",
                     selected.id,
@@ -237,10 +279,14 @@ export function BalanceImport({
                 </optgroup>
               ))}
             </select>
-          </label>
-          <p className="upload-message" id="balance-import-guidance">
-            {method.help}
-          </p>
+          </div>
+          <ImportSampleGuide
+            key={methodId}
+            methodId={methodId}
+            locked={isLocked}
+            onLock={lockSource}
+            onUnlock={unlockSource}
+          />
           <input
             ref={input}
             type="file"
@@ -254,22 +300,20 @@ export function BalanceImport({
                 : ".xlsx,.xls,.xlsm"
             }
             className="sr-only"
+            disabled={!isLocked || method.mode === "unavailable"}
             aria-label={`Upload ${method.mode === "simulation" ? method.label : "Excel"} mass and energy balance`}
             onChange={(e) => {
               if (e.target.files?.[0]) void upload(e.target.files[0]);
             }}
           />
-          <button
+          {isLocked && method.mode !== "unavailable" ? <button
             className="dropzone"
-            disabled={
-              !!busy || !!simulationBusy || method.mode === "unavailable"
-            }
-            aria-describedby="balance-import-guidance"
+            disabled={!!busy || !!simulationBusy}
             onClick={() => input.current?.click()}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
               e.preventDefault();
-              if (e.dataTransfer.files[0]) void upload(e.dataTransfer.files[0]);
+              if (isLocked && e.dataTransfer.files[0]) void upload(e.dataTransfer.files[0]);
             }}
           >
             {busy === "parse" || simulationBusy ? (
@@ -283,11 +327,7 @@ export function BalanceImport({
                 : (method.mode === "excel" ? report?.filename : null) ||
                   (method.mode === "excel"
                     ? "Select file or drop an Excel balance here"
-                    : method.mode === "simulation"
-                      ? simulationFileName || `Select a ${method.label} file`
-                      : method.id === "manual"
-                        ? "Use the process-description box"
-                        : "File extraction not supported yet")}
+                    : simulationFileName || `Select a ${method.label} file`)}
             </strong>
             <span>
               {method.mode === "excel"
@@ -296,7 +336,13 @@ export function BalanceImport({
                   ? `${method.id === "csv" ? ".csv" : method.id === "dwsim-native" ? ".dwxml" : ".json"} · up to 4 MiB`
                   : "Choose another import method or follow the guidance above"}
             </span>
-          </button>
+          </button> : (
+            <div className="import-await-upload" role="status">
+              {method.mode === "unavailable"
+                ? "This import type is not supported for file extraction yet. You can still provide supplementary process context."
+                : "Select Lock in above to enable file upload."}
+            </div>
+          )}
           {method.mode === "simulation" && simulationStatus && (
             <p className="upload-message" role="status">
               {simulationStatus}
@@ -307,10 +353,13 @@ export function BalanceImport({
               <summary>
                 {simulationStreams.length} imported stream records
               </summary>
-              <p>
-                Field validation only; this importer does not establish mass or
-                energy balance closure.
-              </p>
+              <div className="entry-help-caption">
+                <span>About validation</span>
+                <EntryHelp label="Meaning of simulation validation">
+                  Field validation only; this importer does not establish mass or
+                  energy balance closure.
+                </EntryHelp>
+              </div>
               <div className="table-scroll">
                 <table>
                   <thead>
@@ -376,11 +425,14 @@ export function BalanceImport({
               Basic tag check
             </Button>
           </div>
-          <small>
-            AI review sends this description and extracted equipment names, tags
-            and endpoints to the configured AI provider. It runs only on click;
-            no web research. Numerical balances remain deterministic.
-          </small>
+          <div className="entry-help-caption">
+            <span>About AI review</span>
+            <EntryHelp label="AI review and data sharing">
+              AI review sends this description and extracted equipment names, tags
+              and endpoints to the configured AI provider. It runs only on click;
+              no web research. Numerical balances remain deterministic.
+            </EntryHelp>
+          </div>
           {value?.description.reviewed_at && !descriptionIsCurrent(value) && (
             <p role="status">
               Description changed. Previous comparison is stale; compare again.

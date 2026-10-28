@@ -15,7 +15,9 @@ from .balance.workbook import safe_filename
 slots = asyncio.Semaphore(1)
 
 
-async def parse_upload(content, filename):
+async def parse_upload(content, filename, source="excel"):
+    if source not in ("excel", "aspen-hysys"):
+        raise HTTPException(422, "Unsupported Excel import source.")
     try:
         await asyncio.wait_for(slots.acquire(), timeout=1)
     except TimeoutError:
@@ -30,6 +32,7 @@ async def parse_upload(content, filename):
                 "app.parsers.excel_worker",
                 str(path),
                 safe_filename(filename),
+                source,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.DEVNULL,
                 env={

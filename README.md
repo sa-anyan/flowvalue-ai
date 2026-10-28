@@ -8,6 +8,20 @@ The AI-driven techno-economic assessment copilot for Chemical & CleanTech Engine
 
 **R39 (planned, not built):** Natural-language commercial ideas such as “We earn revenue from food; could we sell our waste?” create reviewable proposed revenue scenarios, not just text. A user-supplied price is recorded as an assumption; otherwise ask for permission before researching dated/cited price alternatives and possible buyers. Contract likelihood is evidence-grounded, with **no invented probability**. The validated economic engine, not generated prose, updates revenue, NPV/IRR, cash-flow graphs and supported process annotations while preserving baseline and audit history. See the [detailed requirement](docs/analyst-workflow-specification.md#natural-language-commercial-opportunity-exploration-founder-example-selling-waste), [cross-phase implementation and acceptance](docs/product-build-roadmap.md#cross-phase-roadmap--conversational-commercial-opportunities-r39) and [release criteria](docs/phase-5-release.md#future-r39-release-gate).
 
+## Licensing and third-party notices
+
+Original FlowValue AI frontend, backend and documentation are **proprietary
+(all rights reserved)**; see [`LICENSE`](LICENSE). Public visibility on GitHub
+does not grant permission to reuse or commercialise the source. Third-party
+packages retain their **respective upstream licences**, independently of our
+source-code rights; see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)
+for the declared-dependency inventory and verification guidance.
+
+This is a protective default, **not** an MIT/Apache/GPL grant and **not**
+a substitute for reviewing dependency obligations or establishing SaaS user
+terms. Code from public repositories without a verified licence must not be
+copied solely because it is visible on GitHub.
+
 ## Development environment
 
 Requires Node.js 24 (`.nvmrc`), npm, Python 3.12, uv, and Make. Install uv with `python3 -m pip install --user uv` (commands use `python3 -m uv`, so no PATH changes are needed).
