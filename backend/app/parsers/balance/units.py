@@ -31,6 +31,9 @@ def unit_key(value):
         .replace("celsius", "c")
         .replace("fahrenheit", "f")
     )
+    # Preserve explicit absolute/gauge qualifiers; these are not wrapper brackets.
+    if u in {"bar(a)", "bar(g)", "pa(a)", "kpa(a)"}:
+        return u
     return u.strip("[]()")
 
 
