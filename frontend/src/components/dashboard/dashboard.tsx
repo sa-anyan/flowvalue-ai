@@ -8,6 +8,7 @@ import {
   legacyWorkspaceHref,
 } from "@/lib/workspace-navigation";
 import { CashFlowChart, RiskChart } from "./charts";
+import { CapexEquipmentBasis } from "./capex-guide";
 import { apiFetch } from "@/lib/client-api";
 
 import {
@@ -17,6 +18,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
 } from "react";
 import {
   Activity,
@@ -73,8 +75,12 @@ import {
 } from "@/lib/workspace";
 import { MainDashboard } from "./main-dashboard";
 import {
-  capexPages, capexTabFromPath, CapexSummary, CapexCostRegister,
-  CapexSources, CapexValidation,
+  capexPages,
+  capexTabFromPath,
+  CapexSummary,
+  CapexCostRegister,
+  CapexSources,
+  CapexValidation,
 } from "./capex-workspace";
 import {
   UniversalAdvisor,
@@ -160,7 +166,16 @@ function NumberField({
   );
 }
 
+const subscribeHydration = () => () => {};
+const clientHydration = () => true;
+const serverHydration = () => false;
+
 export default function Dashboard() {
+  const hydrated = useSyncExternalStore(
+    subscribeHydration,
+    clientHydration,
+    serverHydration,
+  );
   const pathname = usePathname();
   const router = useRouter();
   const mode = workspaceView(pathname);
@@ -711,6 +726,15 @@ export default function Dashboard() {
     ]),
   ];
 
+  // The shared authenticated shell can be cached before a child URL is known.
+  // A stable first render prevents showing a different topic during hydration.
+  if (!hydrated)
+    return (
+      <main className="auth-screen" aria-busy="true">
+        <p>Loading workspace…</p>
+      </main>
+    );
+
   if (!base && initialError.startsWith("Sign in"))
     return (
       <main className="auth-screen">
@@ -1157,9 +1181,13 @@ export default function Dashboard() {
                   <div className="eyebrow">
                     <span /> ANALYST WORKSPACE
                   </div>
-                  <h1>{mode === "capex"
-                    ? "CAPEX / " + (capexPages.find((page) => page.tab === capexTab)?.label ?? "Summary")
-                    : workspaceTitles[mode]}</h1>
+                  <h1>
+                    {mode === "capex"
+                      ? "CAPEX / " +
+                        (capexPages.find((page) => page.tab === capexTab)
+                          ?.label ?? "Summary")
+                      : workspaceTitles[mode]}
+                  </h1>
                   <p>
                     Shared project inputs, connected calculations and traceable
                     engineering decisions.
@@ -1385,19 +1413,38 @@ export default function Dashboard() {
                     streams={streams}
                     updating={!ready}
                     error={error}
+                    onProject={setBase}
                   />
                 )}
                 {mode === "capex" && base && (
                   <>
-                    {(["direct-costs", "indirect-costs", "working-capital"] as const).includes(capexTab as "direct-costs" | "indirect-costs" | "working-capital") && (
+                    {(
+                      [
+                        "direct-costs",
+                        "indirect-costs",
+                        "working-capital",
+                      ] as const
+                    ).includes(
+                      capexTab as
+                        | "direct-costs"
+                        | "indirect-costs"
+                        | "working-capital",
+                    ) && (
                       <CapexCostRegister
                         key={capexTab}
                         project={base}
                         onProject={setBase}
-                        group={capexTab as "direct-costs" | "indirect-costs" | "working-capital"}
+                        group={
+                          capexTab as
+                            | "direct-costs"
+                            | "indirect-costs"
+                            | "working-capital"
+                        }
                       />
                     )}
-                    {capexTab === "assumptions" && <CapexSources project={base} />}
+                    {capexTab === "assumptions" && (
+                      <CapexSources project={base} />
+                    )}
                     {capexTab === "validation" && (
                       <CapexValidation
                         project={base}
@@ -1559,6 +1606,7 @@ export default function Dashboard() {
                 )}
                 {mode === "capex" && capexTab === "equipment" && (
                   <>
+                    {base && <CapexEquipmentBasis project={base} />}
                     <section className="panel equipment-panel" id="equipment">
                       <div className="panel-heading">
                         <div>
@@ -1835,33 +1883,37 @@ export default function Dashboard() {
                     </section>
                   </>
                 )}
-                {(mode !== "capex" || capexTab === "equipment" || capexTab === "validation") && <details className="basis-details">
-                  <summary>
-                    <ShieldCheck size={15} />
-                    Calculation basis & engineering notes{" "}
-                    <span>{warnings.length} notes</span>
-                    <ChevronDown size={14} />
-                  </summary>
-                  <div>
-                    <p>
-                      Preliminary screening estimates using Turton module
-                      correlations. Reactor costs cover vessel shells.
-                      Compressor sizing assumes a single-stage ideal gas.
-                      Uploaded stream data in CSV/JSON stream tables does not
-                      automatically size equipment. Native DWSIM imports can use
-                      supported saved sizing inputs.
-                    </p>
-                    {warnings.map((w, i) => (
-                      <p key={i}>{w}</p>
-                    ))}
-                    <p>
-                      Risk scenarios use independent uniform feedstock and
-                      utility multipliers, held constant over each project life.
-                      P10, P50 and P90 are ascending NPV percentiles.
-                      Depreciation life defaults to operating life.
-                    </p>
-                  </div>
-                </details>}
+                {(mode !== "capex" ||
+                  capexTab === "equipment" ||
+                  capexTab === "validation") && (
+                  <details className="basis-details">
+                    <summary>
+                      <ShieldCheck size={15} />
+                      Calculation basis & engineering notes{" "}
+                      <span>{warnings.length} notes</span>
+                      <ChevronDown size={14} />
+                    </summary>
+                    <div>
+                      <p>
+                        Preliminary screening estimates using Turton module
+                        correlations. Reactor costs cover vessel shells.
+                        Compressor sizing assumes a single-stage ideal gas.
+                        Uploaded stream data in CSV/JSON stream tables does not
+                        automatically size equipment. Native DWSIM imports can
+                        use supported saved sizing inputs.
+                      </p>
+                      {warnings.map((w, i) => (
+                        <p key={i}>{w}</p>
+                      ))}
+                      <p>
+                        Risk scenarios use independent uniform feedstock and
+                        utility multipliers, held constant over each project
+                        life. P10, P50 and P90 are ascending NPV percentiles.
+                        Depreciation life defaults to operating life.
+                      </p>
+                    </div>
+                  </details>
+                )}
                 {base && ["analysis", "opex"].includes(mode) && (
                   <StudyWorkspace
                     key={mode}
@@ -1899,26 +1951,28 @@ export default function Dashboard() {
                     aiAvailable={!!ai.status?.can_generate}
                   />
                 )}
-                {base && payload && (mode !== "capex" || capexTab === "equipment") && (
-                  <EngineeringTools
-                    view={
-                      mode === "analysis"
-                        ? "study"
-                        : (mode as
-                            | "capex"
-                            | "opex"
-                            | "revenue"
-                            | "scenario"
-                            | "sensitivity")
-                    }
-                    aiAvailable={!!ai.status?.can_generate}
-                    project={base}
-                    scenario={payload}
-                    ready={ready}
-                    onProject={setBase}
-                    native={nativeImport}
-                  />
-                )}
+                {base &&
+                  payload &&
+                  (mode !== "capex" || capexTab === "equipment") && (
+                    <EngineeringTools
+                      view={
+                        mode === "analysis"
+                          ? "study"
+                          : (mode as
+                              | "capex"
+                              | "opex"
+                              | "revenue"
+                              | "scenario"
+                              | "sensitivity")
+                      }
+                      aiAvailable={!!ai.status?.can_generate}
+                      project={base}
+                      scenario={payload}
+                      ready={ready}
+                      onProject={setBase}
+                      native={nativeImport}
+                    />
+                  )}
               </div>
             </>
           )}

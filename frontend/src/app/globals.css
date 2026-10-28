@@ -2298,3 +2298,47 @@ select {
 @media(max-width:1350px){.capex-kpis {grid-template-columns:repeat(2,minmax(0,1fr))}.capex-context-grid {grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:980px){.capex-chart-grid {grid-template-columns:minmax(0,1fr)}.capex-edit-grid {grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.capex-kpis,.capex-context-grid,.capex-edit-grid {grid-template-columns:minmax(0,1fr)}.capex-intro {flex-direction:column}.capex-breakdown,.capex-chart-panel,.capex-planning-panel,.capex-project-panel,.capex-register-page,.capex-source-page,.capex-checks-page {padding:16px}.capex-classification {align-items:stretch;flex-direction:column}.capex-classification select {max-width:100%}}
+
+/* Capital-estimate review and scoped cost editing. */
+.capital-guide,.capital-equipment-basis { padding:24px; }
+.capital-guide .panel-heading { padding:0; margin-bottom:20px; }
+.capital-guide h3,.capital-equipment-basis h3 { font-size:17px; font-weight:650; margin:6px 0; }
+.capital-guide p,.capital-equipment-basis p { font-size:12px; line-height:1.65; color:var(--muted-foreground); }
+.capital-progress-grid,.capital-register-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin:20px 0; }
+.capital-progress-grid>div,.capital-register-metrics>div { padding:16px; border:1px solid var(--border); border-radius:8px; }
+.capital-progress-grid span,.capital-register-metrics span { display:block; font-size:11px; color:var(--muted-foreground); }
+.capital-progress-grid strong,.capital-register-metrics strong { display:block; margin:8px 0; font-size:19px; font-weight:650; font-variant-numeric:tabular-nums; }
+.capital-progress-grid small,.capital-register-metrics small { display:block; font-size:11px; color:var(--muted-foreground); line-height:1.5; }
+.capital-next-actions { display:grid; gap:8px; }
+.capital-next-actions>a { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 14px; background:var(--secondary); border-radius:6px; font-size:12px; }
+.capital-next-actions strong { display:block; margin-bottom:4px; }
+.capital-checklist-action { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; padding:18px 0; margin-top:8px; border-top:1px solid var(--border); }
+.capital-checklist-action strong { font-size:13px; }
+.capital-row-help { display:block; max-width:460px; margin-top:6px; color:var(--muted-foreground); line-height:1.5; }
+.capital-register-toolbar { display:flex; flex-wrap:wrap; gap:12px; align-items:end; padding:18px 0; border-top:1px solid var(--border); }
+.capital-register-toolbar label { display:grid; gap:7px; font-size:11px; flex:1; min-width:170px; }
+.capital-register-toolbar input,.capital-register-toolbar select { border:1px solid var(--border); border-radius:6px; padding:10px; background:var(--card); color:var(--foreground); width:100%; }
+.capital-register-count { font-size:11px; color:var(--muted-foreground); margin-bottom:14px; }
+.capital-cost-detail { border:1px solid var(--border); border-radius:8px; margin-bottom:12px; scroll-margin-top:80px; }
+.capital-cost-detail>summary { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 18px; cursor:pointer; }
+.capital-cost-title strong { display:block; font-size:14px; margin-top:5px; }
+.capital-cost-title small,.capital-cost-amount small { display:block; font-size:10px; font-weight:400; color:var(--muted-foreground); margin-top:5px; }
+.capital-cost-amount { text-align:right; font-size:14px; font-weight:600; font-variant-numeric:tabular-nums; }
+.capital-cost-detail .capex-edit-row { border:0; border-top:1px solid var(--border); margin:0; border-radius:0; }
+.capital-guidance { padding:14px; border-radius:6px; background:var(--secondary); margin-bottom:18px; font-size:12px; }
+.capital-guidance strong { font-size:12px; }
+.capital-guidance p { margin:6px 0 0; font-size:12px; line-height:1.65; color:var(--muted-foreground); }
+.capital-evidence { border:1px solid var(--border); border-radius:6px; margin-top:18px; padding:14px; max-height:240px; overflow:auto; }
+.capital-evidence legend { padding:0 6px; font-size:12px; font-weight:600; }
+.capital-evidence label { display:flex; gap:9px; align-items:start; margin:8px 0; font-size:12px; }
+.capital-evidence small { display:block; font-size:10px; color:var(--muted-foreground); margin-top:4px; }
+.capital-evidence p { font-size:12px; }
+.capital-evidence a { text-decoration:underline; }
+.capital-calculation { display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; padding:16px 0; font-size:12px; font-variant-numeric:tabular-nums; }
+.capital-review-points { padding:14px 14px 14px 30px; background:var(--secondary); font-size:12px; line-height:1.8; }
+.capital-row-actions { display:flex; justify-content:space-between; gap:16px; padding-top:18px; }
+.capital-equipment-basis { display:flex; flex-wrap:wrap; justify-content:space-between; gap:20px; align-items:center; }
+.capital-equipment-basis>div:first-child { flex:1; min-width:240px; }
+.capital-equipment-counts { display:flex; flex-wrap:wrap; gap:16px; font-size:11px; }
+.capital-equipment-counts strong { display:block; font-size:23px; }
+@media(max-width:760px) { .capital-progress-grid,.capital-register-metrics { grid-template-columns:1fr; } .capital-guide,.capital-equipment-basis { padding:18px; } .capital-cost-detail>summary { align-items:start; } .capital-cost-amount { max-width:45%; } }

@@ -21,11 +21,11 @@ test("saved analysis section links resolve to the new topic pages without redire
 test("CAPEX parent expands into seven routes, defaulting to Summary", () => {
   const nav = readFileSync(new URL("../src/components/dashboard/workspace-sidebar.tsx", import.meta.url), "utf8");
   const dash = readFileSync(new URL("../src/components/dashboard/dashboard.tsx", import.meta.url), "utf8");
-  const detail = readFileSync(new URL("../src/app/(workspace)/capex/[section]/page.tsx", import.meta.url), "utf8");
+
   const capex = readFileSync(new URL("../src/components/dashboard/capex-workspace.tsx", import.meta.url), "utf8");
   for (const page of ["summary", "equipment", "direct-costs", "indirect-costs", "working-capital", "assumptions", "validation"]) {
     assert.match(nav, new RegExp('"' + page + '"'));
-    assert.match(detail, new RegExp('"' + page + '"'));
+    assert.doesNotThrow(() => readFileSync(new URL(`../src/app/(workspace)/capex/${page}/page.tsx`, import.meta.url), "utf8"));
   }
   assert.match(nav, /active === "capex" &&/);
   assert.match(dash, /<CapexSummary/);
