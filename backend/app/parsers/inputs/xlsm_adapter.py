@@ -13,9 +13,10 @@ def parse_xlsm(content: bytes, filename: str):
     filename = safe_filename(filename)
     sheets, warnings = read_book(content, filename)
     report = BalanceReport(filename=filename, sha256=sha256(content).hexdigest(),
-                           parser_version="xlsm-properties-1.1", sheets=[])
+                           parser_version="xlsm-streams-1.2", sheets=[])
     grouped = {}
-    sheet_lookup = {sheet.name: sheet for sheet in sheets}
+    material = []
+    property_cache = {}
     for sheet in sheets:
         matrix = [[sheet.cell(r, c).value for c in range(1, sheet.cols + 1)]
                   for r in range(1, sheet.rows + 1)]
@@ -28,6 +29,18 @@ def parse_xlsm(content: bytes, filename: str):
         for stream in streams:
             match = re.fullmatch(r"R(\d+)C(\d+)", stream["source_cell"])
             cell = address(int(match[1]), int(match[2]))
+            key = f"stream:{sheet.name}:{cell}:{stream['stream_id']}"
+            description = Evidence(id=f"{key}:description", workbook=filename,
+                                   sheet=sheet.name, cell=cell, property="description",
+                                   label=f"Stream {stream['stream_id']}",
+                                   original_value=stream['description'],
+                                   normalized_value=stream['description'], status="inferred")
+            # Extract once per stream, then reuse for every equipment mention.
+            properties = stream_properties(sheet, stream, filename, key)
+            property_cache[(sheet.name, stream['source_cell'])] = properties
+            material.append(Entity(key=key, kind="material", identifier=stream['stream_id'],
+                                   table="description-streams", id_evidence=description,
+                                   values=[description, *properties]))
             for tag in stream["equipment_tags"]:
                 grouped.setdefault(tag, []).append((sheet.name, cell, stream))
     for tag, observations in sorted(grouped.items()):
@@ -44,12 +57,13 @@ def parse_xlsm(content: bytes, filename: str):
         # Preserve each stream's observations, but count the tag as one unit.
         properties = []
         for sheet_name, _, stream in observations:
-            for ev in stream_properties(sheet_lookup[sheet_name], stream, filename, tag):
+            for ev in property_cache[(sheet_name, stream["source_cell"])]:
                 if len(properties) + len(values) + 1 >= 256:
                     break
                 properties.append(ev)
         report.entities.append(Entity(key=tag, kind="equipment", identifier=tag, table="description-tags",
                                       id_evidence=first, values=[*values, classification, *properties]))
+    report.entities.extend(material)
     for warning in warnings:
         report.issues.append(Issue(code="workbook_warning", message=warning))
     report.limitations.append("Stream numeric observations are associated by same-column and row-label evidence, not validated equipment design values. Missing units remain unresolved. No sizing or connectivity validation. Macros are ignored.")

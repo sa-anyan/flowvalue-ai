@@ -115,7 +115,7 @@ def parse_sheet(sheet, matrix):
         # Distinct descriptions retained; identical entries deduplicated.
         seen=set()
         for x in items:
-            k=x['description'].casefold().strip()
+            k=(x['source_cell'], x['description'].casefold().strip())
             if k not in seen: canonical.append(x);seen.add(k)
     return canonical, issues
 

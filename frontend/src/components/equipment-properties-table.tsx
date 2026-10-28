@@ -35,8 +35,13 @@ export function EquipmentPropertiesTable({ report }: { report: Report | null }) 
   if (!report) return <p>No equipment properties uploaded yet.</p>;
   const groups = new Map<string, PropertyRow[]>();
   for (const entity of report.entities) {
-    if (entity.kind !== "equipment") continue;
-    const tag = entity.identifier.trim().toUpperCase();
+    if (entity.kind === "energy") continue;
+    if (entity.kind === "material") {
+      const description = entity.values.find((value) => value.property === "description");
+      const mentioned = description && report.entities.some((equipment) => equipment.kind === "equipment" && equipment.values.some((value) => value.property === "description" && value.sheet === description.sheet && value.cell === description.cell));
+      if (mentioned) continue;
+    }
+    const tag = entity.kind === "material" ? `Unassigned · Stream ${entity.identifier} · ${entity.values[0]?.sheet ?? "Unknown worksheet"}` : entity.identifier.trim().toUpperCase();
     if (!tag) continue;
     if (!groups.has(tag)) groups.set(tag, []);
     const rows = groups.get(tag)!;
@@ -47,7 +52,7 @@ export function EquipmentPropertiesTable({ report }: { report: Report | null }) 
       rows.push({
         tag,
         stream,
-        property: value.property.replaceAll("_", " "),
+        property: value.property.replaceAll("_", " ") + ("component" in value && value.component ? ` · ${value.component}` : ""),
         value: stringify(value.original_value),
         unit: value.original_unit ?? "—",
         source: value.sheet + "!" + value.cell,
@@ -60,7 +65,7 @@ export function EquipmentPropertiesTable({ report }: { report: Report | null }) 
     <section aria-label="Equipment properties" className="space-y-3">
       <h2 className="text-lg font-semibold">Equipment properties</h2>
       <p className="text-sm opacity-75">
-        {ordered.length} unique equipment items. Measurements are stream observations,
+        {ordered.filter(([tag]) => !tag.startsWith("Unassigned ·")).length} unique equipment items. Untagged streams are listed as unassigned. Measurements are stream observations,
         not automatically selected equipment design conditions.
       </p>
       <div className="overflow-x-auto">
