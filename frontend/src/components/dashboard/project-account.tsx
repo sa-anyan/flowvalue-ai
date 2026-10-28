@@ -271,6 +271,22 @@ export function ProjectAccount({
   }
   return (
     <section className="panel extension-panel">
+      {user && startupVersion && current?.version_id !== startupVersion && (
+        <div className="extension-actions" role="status">
+          <p>
+            This tab is using a separate browser workspace. Your account startup
+            project is{" "}
+            <strong>
+              {versions.find((v) => v.id === startupVersion)?.name ||
+                "saved in your account"}
+            </strong>
+            .
+          </p>
+          <Button disabled={busy} onClick={() => load(startupVersion)}>
+            Open account startup project
+          </Button>
+        </div>
+      )}
       <details open={!workspace || undefined}>
         <summary>
           Accounts & saved projects {user ? `· ${user}` : "· sign in to sync"}
