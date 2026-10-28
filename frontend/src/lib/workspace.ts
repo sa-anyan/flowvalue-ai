@@ -22,7 +22,25 @@ export type Workspace = {
   native_import: NativeImport | null;
   balance_import?: BalanceAttachment | null;
 };
-export const workspaceKey = "flowvalue-workspace-v1";
+// New empty-first workspace generation. Older active drafts remain archived under v1.
+export const workspaceKey = "flowvalue-workspace-v2";
+export const balanceDraftKey = "flowvalue-balance-draft-v2";
+export function readBalanceDraft(): BalanceAttachment | null {
+  try {
+    const value = JSON.parse(sessionStorage.getItem(balanceDraftKey) || "null");
+    return isBalanceAttachment(value) ? value : null;
+  } catch {
+    return null;
+  }
+}
+export function writeBalanceDraft(value: BalanceAttachment | null) {
+  try {
+    if (value) sessionStorage.setItem(balanceDraftKey, JSON.stringify(value));
+    else sessionStorage.removeItem(balanceDraftKey);
+  } catch {
+    /* in-memory parsing remains available */
+  }
+}
 export function readWorkspace(): Workspace | null {
   try {
     const value = JSON.parse(sessionStorage.getItem(workspaceKey) || "null");

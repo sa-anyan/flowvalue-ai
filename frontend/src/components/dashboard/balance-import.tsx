@@ -187,8 +187,8 @@ export function BalanceImport({
           </button>
           <p className="upload-message">
             Excel imports stay separate from economic assumptions and equipment
-            costing. Use Save revision above to retain the parsed attachment
-            with your project.
+            costing. Parsed evidence is retained in this browser tab and can be
+            downloaded.
           </p>
         </div>
         <div className="balance-dialogue">

@@ -30,3 +30,7 @@ Equipment child retains the existing equipment editor, engineering analyst and r
 ## Entry simplification — 28 October 2026
 
 Entry now focuses on Excel mass/energy-balance intake and its process-description dialogue. The older CSV/JSON/DWSIM importer, project context editor and financial assumption controls are available under **Simulation data** at `/simulation-data`. Old `/entry#streams` and `/dashboard#streams` links resolve there. Account controls, saved data and calculation behavior are preserved.
+
+## Empty-first analytical rebuild — 28 October 2026
+
+The application no longer seeds active data from `/api/demo` or automatically loads a saved startup project. A new browser-storage generation leaves older active drafts archived and starts empty. Saved cloud versions and original Excel files are retained for explicit review, not loaded as the live model. Empty analyst pages display no metrics/charts rather than zeros or demonstration estimates. The process view is empty without a manually loaded project. Fresh Excel balance imports remain independently stored in the browser tab and downloadable before a new economic project exists; cloud project saving still requires an existing assessment project. Earlier startup-project behavior described in historical acceptance documents is superseded by this empty-first mode.

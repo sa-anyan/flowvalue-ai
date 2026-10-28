@@ -71,6 +71,8 @@ import {
   importScopeNotes,
   workspaceKey,
   readWorkspace,
+  readBalanceDraft,
+  writeBalanceDraft,
   writeWorkspace,
   scenarioScopeNotes,
   type Workspace,
@@ -225,10 +227,8 @@ export default function Dashboard() {
     null,
   );
   const [streams, setStreams] = useState<Stream[]>([]);
-  const [startupAllowed, setStartupAllowed] = useState(() => !readWorkspace());
   const authChanged = useCallback((clear = false) => {
     if (clear) {
-      setStartupAllowed(true);
       setBase(null);
       setEnvelope(null);
       setStreams([]);
@@ -250,51 +250,36 @@ export default function Dashboard() {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
   useEffect(() => {
-    const controller = new AbortController();
-    apiFetch("/api/demo", { signal: controller.signal })
-      .then(async (r) => {
-        if (!r.ok) throw new Error(await apiError(r));
-        return r.json();
-      })
-      .then((data: AssessmentRequest) => {
-        const local = readWorkspace();
-        if (local) {
-          data = local.native_import
-            ? {
-                ...local.project,
-                engineering_notes: [
-                  ...new Set([
-                    ...(local.project.engineering_notes || []),
-                    ...importScopeNotes(
-                      local.native_import,
-                      local.project.costing.equipment,
-                    ),
-                  ]),
-                ].slice(0, 100),
-              }
-            : local.project;
-          setStreams(local.streams || []);
-          setNativeImport(local.native_import || null);
-          setBalanceImport(local.balance_import || null);
-        }
-        setBase(data);
+    const local = readWorkspace();
+    const balance = local?.balance_import ?? readBalanceDraft();
+    let alive = true;
+    Promise.resolve().then(() => {
+      if (!alive) return;
+      if (local) {
+        setBase(local.project);
+        setStreams(local.streams || []);
+        setNativeImport(local.native_import || null);
         setControls({
           feed: 0,
           utility: 0,
-          discount: data.financial.discount_rate * 100,
-          life: data.financial.operating_years,
+          discount: local.project.financial.discount_rate * 100,
+          life: local.project.financial.operating_years,
           capex: 0,
           price: 0,
           fixed: 0,
           other: 0,
         });
-        setInitialError("");
-      })
-      .catch((e) => {
-        if (e.name !== "AbortError") setInitialError(e.message);
-      });
-    return () => controller.abort();
+      }
+      setBalanceImport(balance);
+      setInitialError("");
+    });
+    return () => {
+      alive = false;
+    };
   }, [retry]);
+  useEffect(() => {
+    writeBalanceDraft(balanceImport);
+  }, [balanceImport]);
   const payload = useMemo(() => {
     if (!base || base.legacy_reference) return null;
     const feed =
@@ -799,7 +784,6 @@ export default function Dashboard() {
           private history of your assessments.
         </p>
         <ProjectAccount
-          allowStartup={startupAllowed}
           workspace={null}
           onLoad={loadWorkspace}
           onAuth={authChanged}
@@ -813,7 +797,7 @@ export default function Dashboard() {
   return (
     <div className="app-shell">
       <WorkspaceSidebar
-        name={base?.advisor_context?.name ?? "Untitled process"}
+        name={base?.advisor_context?.name ?? "Empty workspace"}
         active={mode === "analysis" ? "overview" : mode}
         activeCapexTab={mode === "capex" ? capexTab : undefined}
       />
@@ -834,11 +818,13 @@ export default function Dashboard() {
               <i />
               {error
                 ? "Needs attention"
-                : base?.legacy_reference
-                  ? "Reference loaded"
-                  : ready
-                    ? "API connected"
-                    : "Connecting"}
+                : !base
+                  ? "Empty workspace"
+                  : base?.legacy_reference
+                    ? "Reference loaded"
+                    : ready
+                      ? "API connected"
+                      : "Connecting"}
             </span>
             <button
               className="icon-button"
@@ -855,7 +841,6 @@ export default function Dashboard() {
           id={isEntry ? "entry" : isMain ? "main-dashboard" : "overview"}
         >
           <ProjectAccount
-            allowStartup={startupAllowed}
             workspace={workspace}
             onLoad={loadWorkspace}
             onAuth={authChanged}
@@ -1210,6 +1195,19 @@ export default function Dashboard() {
                 </>
               )}
             </>
+          ) : !base ? (
+            <section className="panel" style={{ padding: 32 }}>
+              <div className="eyebrow">{workspaceTitles[mode]}</div>
+              <h1>No project data yet</h1>
+              <p>
+                Upload a mass and energy balance on Entry to begin. Financial
+                metrics, equipment costs and analytical results will appear only
+                when supported by your project data.
+              </p>
+              <Link href="/entry" className="entry-analysis-link">
+                Open Entry <ArrowRight size={15} />
+              </Link>
+            </section>
           ) : isMain ? (
             <>
               <section className="page-heading">

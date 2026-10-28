@@ -386,7 +386,7 @@ function UnitInvestigation({
       let reviewVersion: string | undefined;
       try {
         reviewVersion = JSON.parse(
-          sessionStorage.getItem("flowvalue-project-reference") || "null",
+          sessionStorage.getItem("flowvalue-project-reference-v2") || "null",
         )?.current?.version_id;
       } catch {}
       const r = await apiFetch("/api/engineering/apply-baseline", {

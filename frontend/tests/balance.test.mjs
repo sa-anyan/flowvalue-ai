@@ -57,3 +57,52 @@ test("engineering attachment is distinct from existing financial and native data
   });
   assert.equal(readWorkspace(), null);
 });
+
+test("empty-first storage does not restore the archived legacy workspace, and new engineering uploads persist independently", async () => {
+  const { workspaceKey, balanceDraftKey, readBalanceDraft, writeBalanceDraft } =
+    await import("../src/lib/workspace.ts");
+  const stored = new Map([
+    [
+      "flowvalue-workspace-v1",
+      JSON.stringify({
+        project: {
+          costing: { equipment: [{ unit_id: "LEGACY" }] },
+          financial: {},
+        },
+        streams: [],
+      }),
+    ],
+  ]);
+  Object.defineProperty(globalThis, "sessionStorage", {
+    value: {
+      getItem: (key) => stored.get(key) ?? null,
+      setItem: (key, value) => stored.set(key, value),
+      removeItem: (key) => stored.delete(key),
+    },
+    configurable: true,
+  });
+  assert.notEqual(workspaceKey, "flowvalue-workspace-v1");
+  assert.equal(readWorkspace(), null);
+  assert.equal(readBalanceDraft(), null);
+  const attachment = {
+    report: {
+      schema_version: "flowvalue-balance-v1",
+      filename: "new.xlsx",
+      entities: [],
+      tables: [],
+      issues: [],
+      checks: [],
+      sheets: [],
+      declarations: [],
+      limitations: [],
+    },
+    description: { ...emptyDescription, text: "New process" },
+  };
+  writeBalanceDraft(attachment);
+  assert.deepEqual(readBalanceDraft(), attachment);
+  assert.ok(stored.has(balanceDraftKey));
+  assert.equal(readWorkspace(), null);
+  writeBalanceDraft(null);
+  assert.equal(readBalanceDraft(), null);
+  assert.ok(stored.has("flowvalue-workspace-v1"));
+});

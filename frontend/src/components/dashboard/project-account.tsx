@@ -2,15 +2,18 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { authClient, apiFetch } from "@/lib/client-api";
 import { apiError } from "@/lib/assessment";
-import { writeWorkspace, type Workspace } from "@/lib/workspace";
+import {
+  writeWorkspace,
+  workspaceKey,
+  balanceDraftKey,
+  type Workspace,
+} from "@/lib/workspace";
 import { Button } from "@/components/ui/button";
 export function ProjectAccount({
   workspace,
   onLoad,
   onAuth,
-  allowStartup,
 }: {
-  allowStartup: boolean;
   workspace: Workspace | null;
   onLoad: (w: Workspace) => void;
   onAuth: (clear?: boolean) => void;
@@ -31,8 +34,6 @@ export function ProjectAccount({
     }[]
   >([]);
   const ownerRef = useRef("");
-  const startupAttempt = useRef("");
-  const [startupVersion, setStartupVersion] = useState("");
   const [current, setCurrent] = useState<{
     project_id: string;
     revision: number;
@@ -52,11 +53,6 @@ export function ProjectAccount({
         });
         const { data } = c.auth.onAuthStateChange((_e, s) => {
           const owner = s?.user.id || "";
-          setStartupVersion(
-            typeof s?.user.user_metadata?.flowvalue_startup_version === "string"
-              ? s.user.user_metadata.flowvalue_startup_version
-              : "",
-          );
           if (
             _e === "TOKEN_REFRESHED" ||
             (_e === "USER_UPDATED" && owner === ownerRef.current)
@@ -68,20 +64,21 @@ export function ProjectAccount({
             _e === "SIGNED_OUT" || (!!previousOwner && previousOwner !== owner);
           ownerRef.current = owner;
           if (clear) {
-            sessionStorage.removeItem("flowvalue-workspace-v1");
-            sessionStorage.removeItem("flowvalue-project-reference");
+            sessionStorage.removeItem(workspaceKey);
+            sessionStorage.removeItem(balanceDraftKey);
+            sessionStorage.removeItem("flowvalue-project-reference-v2");
           }
           sessionStorage.setItem("flowvalue-workspace-owner", owner);
           setUser(s?.user.email || "");
           if (clear) {
-            startupAttempt.current = "";
             setVersions([]);
             setCurrent(null);
           }
           if (!clear && owner) {
             try {
               const saved = JSON.parse(
-                sessionStorage.getItem("flowvalue-project-reference") || "null",
+                sessionStorage.getItem("flowvalue-project-reference-v2") ||
+                  "null",
               );
               if (saved?.owner === owner) setCurrent(saved.current);
             } catch {
@@ -123,7 +120,7 @@ export function ProjectAccount({
     }) => {
       setCurrent(value);
       sessionStorage.setItem(
-        "flowvalue-project-reference",
+        "flowvalue-project-reference-v2",
         JSON.stringify({ owner: ownerRef.current, current: value }),
       );
     },
@@ -231,63 +228,9 @@ export function ProjectAccount({
     },
     [onLoad, remember],
   );
-  useEffect(() => {
-    if (
-      !user ||
-      !workspace ||
-      !allowStartup ||
-      !startupVersion ||
-      current ||
-      startupAttempt.current === ownerRef.current
-    )
-      return;
-    startupAttempt.current = ownerRef.current;
-    void load(startupVersion);
-  }, [user, workspace, allowStartup, startupVersion, current, load]);
-  async function setStartup(id: string | null) {
-    const owner = ownerRef.current;
-    setBusy(true);
-    try {
-      const client = await authClient();
-      if (!client) throw Error("Account services unavailable");
-      const { error } = await client.auth.updateUser({
-        data: { flowvalue_startup_version: id },
-      });
-      if (error) throw error;
-      if (owner !== ownerRef.current) return;
-      setStartupVersion(id || "");
-      setMessage(
-        id
-          ? "Startup project saved. New tabs will open this saved revision; existing browser drafts are preserved."
-          : "Startup project cleared.",
-      );
-    } catch (e) {
-      setMessage(
-        e instanceof Error ? e.message : "Could not update startup project",
-      );
-    } finally {
-      setBusy(false);
-    }
-  }
   return (
     <section className="panel extension-panel">
-      {user && startupVersion && current?.version_id !== startupVersion && (
-        <div className="extension-actions" role="status">
-          <p>
-            This tab is using a separate browser workspace. Your account startup
-            project is{" "}
-            <strong>
-              {versions.find((v) => v.id === startupVersion)?.name ||
-                "saved in your account"}
-            </strong>
-            .
-          </p>
-          <Button disabled={busy} onClick={() => load(startupVersion)}>
-            Open account startup project
-          </Button>
-        </div>
-      )}
-      <details open={!workspace || undefined}>
+      <details>
         <summary>
           Accounts & saved projects {user ? `· ${user}` : "· sign in to sync"}
         </summary>
@@ -323,24 +266,6 @@ export function ProjectAccount({
               >
                 Refresh history
               </Button>
-              <Button
-                disabled={
-                  busy ||
-                  !current?.version_id ||
-                  !!current?.read_only ||
-                  startupVersion === current?.version_id
-                }
-                onClick={() => setStartup(current!.version_id!)}
-              >
-                {startupVersion && startupVersion === current?.version_id
-                  ? "Startup project selected"
-                  : "Use as startup project"}
-              </Button>
-              {startupVersion && (
-                <Button disabled={busy} onClick={() => setStartup(null)}>
-                  Clear startup project
-                </Button>
-              )}
               <a
                 href={
                   current?.version_id
