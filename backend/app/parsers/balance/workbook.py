@@ -58,12 +58,12 @@ def safe_filename(name):
     )
 
 
-def read_book(content: bytes, name: str):
+def read_book(content: bytes, name: str, *, allow_xlsm=False):
     if not content or len(content) > MAX_FILE:
         raise ValueError("Workbook must be non-empty and at most 4 MiB.")
     ext = PurePath(name.lower()).suffix
     warnings = []
-    if ext == ".xlsx":
+    if ext == ".xlsx" or (allow_xlsm and ext == ".xlsm"):
         if not content.startswith(b"PK"):
             raise ValueError("The .xlsx extension does not match an OOXML workbook.")
         try:
@@ -87,7 +87,7 @@ def read_book(content: bytes, name: str):
                     or "xl/workbook.xml" not in z.namelist()
                 ):
                     raise ValueError("Not an Excel OOXML workbook.")
-                if any("vbaproject" in i.filename.lower() for i in entries):
+                if not allow_xlsm and any("vbaproject" in i.filename.lower() for i in entries):
                     raise ValueError("Macro-bearing workbooks are not supported.")
                 if len({i.filename for i in entries}) != len(entries):
                     raise ValueError("Duplicate archive members are not supported.")

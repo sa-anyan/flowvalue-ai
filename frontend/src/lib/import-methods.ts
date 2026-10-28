@@ -4,7 +4,7 @@ export const importMethods = [
     label: "Excel workbook (.xlsx, .xls, .xlsm)",
     group: "Spreadsheets & tables",
     mode: "excel",
-    help: "Upload a mass and energy balance workbook (.xlsx or .xls). You can also select .xlsm files; parsing for that format is not available yet.",
+    help: "Upload a mass and energy balance workbook (.xlsx or .xls). Macro-enabled .xlsm workbooks support tagged equipment extraction from stream descriptions; macros are never executed.",
   },
   {
     id: "csv",
@@ -126,7 +126,7 @@ export function getImportMethod(id: string) {
 export function acceptsBalanceWorkbook(methodId: string, filename: string) {
   return (
     getImportMethod(methodId).mode === "excel" &&
-    /\.(xlsx|xls)$/i.test(filename)
+    /\.(xlsx|xls|xlsm)$/i.test(filename)
   );
 }
 export function readImportMethod(): ImportMethodId {

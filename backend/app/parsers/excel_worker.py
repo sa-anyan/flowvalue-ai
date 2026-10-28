@@ -18,7 +18,11 @@ def main():
 
         source = sys.argv[3] if len(sys.argv) > 3 else "excel"
         content = Path(sys.argv[1]).read_bytes()
-        if source == "aspen-hysys":
+        if sys.argv[2].lower().endswith(".xlsm"):
+            from app.parsers.inputs.xlsm_adapter import parse_xlsm
+
+            result = parse_xlsm(content, sys.argv[2])
+        elif source == "aspen-hysys":
             from app.parsers.inputs.aspen_hysys_excel import parse_hysys_excel
 
             result = parse_hysys_excel(content, sys.argv[2])

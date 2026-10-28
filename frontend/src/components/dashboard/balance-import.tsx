@@ -107,17 +107,12 @@ export function BalanceImport({
       if (input.current) input.current.value = "";
       return;
     }
-    if (method.mode === "excel" && /\.xlsm$/i.test(file.name)) {
-      setError(".xlsm file selected. Parsing for this format is not available yet.");
-      if (input.current) input.current.value = "";
-      return;
-    }
     if (
       !acceptsBalanceWorkbook(methodId, file.name) ||
       file.size > 4 * 1024 * 1024
     ) {
       setError(
-        `Choose an .xlsx or .xls workbook/export for ${method.label}, up to 4 MiB. Native simulation files are not accepted by this Excel parser.`,
+        `Choose an .xlsx, .xls or .xlsm workbook/export for ${method.label}, up to 4 MiB. Native simulation files are not accepted by this Excel parser.`,
       );
       return;
     }
@@ -331,7 +326,7 @@ export function BalanceImport({
             </strong>
             <span>
               {method.mode === "excel"
-                ? ".xlsx, .xls or .xlsm · up to 4 MiB · .xlsm parsing coming later"
+                ? ".xlsx, .xls or .xlsm · up to 4 MiB"
                 : method.mode === "simulation"
                   ? `${method.id === "csv" ? ".csv" : method.id === "dwsim-native" ? ".dwxml" : ".json"} · up to 4 MiB`
                   : "Choose another import method or follow the guidance above"}
@@ -484,7 +479,7 @@ export function BalanceImport({
                       <td>
                         {entity.values.map((item) => (
                           <div key={item.id}>
-                            {item.label}: {String(item.original_value ?? "—")} {item.original_unit}
+                            {item.label}: {String((item.property === "type" ? item.normalized_value : item.original_value) ?? "—")} {item.original_unit}
                           </div>
                         ))}
                       </td>
