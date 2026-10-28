@@ -2368,3 +2368,24 @@ select {
 .legacy-source-browser>.panel { margin-top:16px; }
 @media(max-width:1100px){.legacy-metric-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:760px){.legacy-chart-grid{grid-template-columns:1fr}.legacy-metric-grid strong{font-size:19px;}}
+
+/* Engineering workbook intake: compact controls, expandable source evidence. */
+.balance-import { margin-bottom: 24px; padding: 26px; }
+.balance-entry-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin:20px 0; }
+.balance-dialogue { display:flex; flex-direction:column; gap:10px; }
+.balance-dialogue textarea { width:100%; resize:vertical; min-height:105px; background:var(--background); color:inherit; border:1px solid var(--border); border-radius:10px; padding:12px; font:inherit; }
+.balance-import small { display:block; color:var(--muted-foreground); line-height:1.5; margin-top:5px; }
+.balance-import details { border-top:1px solid var(--border); padding:14px 0; }
+.balance-import summary { cursor:pointer; font-weight:600; }
+.balance-import table { min-width:650px; width:100%; }
+.balance-import td { vertical-align:top; white-space:normal; max-width:340px; overflow-wrap:anywhere; }
+.balance-import code { display:block; max-width:250px; overflow-wrap:anywhere; font-size:11px; }
+.balance-counts { display:flex; gap:24px; flex-wrap:wrap; padding:12px 0; }
+.balance-issues { list-style:none; margin:12px 0; padding:0; }
+.balance-issues li { padding:10px 0; border-bottom:1px solid var(--border); font-size:13px; line-height:1.6; }
+.balance-status { display:inline-block; border-radius:5px; padding:1px 6px; font-size:11px; border:1px solid currentColor; }
+.balance-status.verified { color:#397752; }
+.balance-status.inferred { color:#856515; }
+.balance-status.unresolved { color:#a94c3a; }
+.balance-fingerprint { overflow-wrap:anywhere; font-size:12px; }
+@media (max-width:850px) { .balance-entry-grid {grid-template-columns:1fr;} .balance-import {padding:18px;} }

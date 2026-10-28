@@ -1,3 +1,4 @@
+import type { BalanceAttachment } from "./balance";
 import type { AssessmentRequest, Stream, EquipmentSpec } from "./assessment";
 export type NativeImport = {
   streams: Stream[];
@@ -19,6 +20,7 @@ export type Workspace = {
   project: AssessmentRequest;
   streams: Stream[];
   native_import: NativeImport | null;
+  balance_import?: BalanceAttachment | null;
 };
 export const workspaceKey = "flowvalue-workspace-v1";
 export function readWorkspace(): Workspace | null {
@@ -59,6 +61,8 @@ export function readWorkspace(): Workspace | null {
         !Array.isArray(value.native_import.streams) ||
         !Array.isArray(value.native_import.warnings))
     )
+      return null;
+    if (value.balance_import && !isBalanceAttachment(value.balance_import))
       return null;
     return value;
   } catch {
@@ -118,4 +122,41 @@ export function scenarioScopeNotes(
   ]
     .slice(0, 100)
     .map((n) => n.slice(0, 1500));
+}
+
+export function isBalanceAttachment(
+  value: unknown,
+): value is BalanceAttachment {
+  if (!value || typeof value !== "object") return false;
+  const v = value as Partial<BalanceAttachment>;
+  return (
+    v.report?.schema_version === "flowvalue-balance-v1" &&
+    typeof v.report.filename === "string" &&
+    Array.isArray(v.report.entities) &&
+    Array.isArray(v.report.tables) &&
+    Array.isArray(v.report.issues) &&
+    Array.isArray(v.report.checks) &&
+    Array.isArray(v.report.sheets) &&
+    Array.isArray(v.report.declarations) &&
+    Array.isArray(v.report.limitations) &&
+    v.report.entities.every(
+      (e) =>
+        e &&
+        typeof e.identifier === "string" &&
+        e.id_evidence &&
+        typeof e.id_evidence.id === "string" &&
+        Array.isArray(e.values) &&
+        e.values.every(
+          (x) =>
+            x &&
+            typeof x.id === "string" &&
+            typeof x.sheet === "string" &&
+            typeof x.cell === "string" &&
+            Array.isArray(x.header_cells),
+        ),
+    ) &&
+    typeof v.description?.text === "string" &&
+    Array.isArray(v.description.questions) &&
+    Array.isArray(v.description.findings)
+  );
 }

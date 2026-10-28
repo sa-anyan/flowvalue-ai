@@ -9,6 +9,8 @@ import {
 } from "@/lib/workspace-navigation";
 import { CashFlowChart, RiskChart } from "./charts";
 import { CapexEquipmentBasis } from "./capex-guide";
+import { BalanceImport } from "./balance-import";
+import type { BalanceAttachment } from "@/lib/balance";
 import { LegacyProjectWorkspace } from "./legacy-project-workspace";
 import { apiFetch } from "@/lib/client-api";
 
@@ -218,6 +220,9 @@ export default function Dashboard() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [kind, setKind] = useState<Kind>("heat_exchanger");
   const [nativeImport, setNativeImport] = useState<NativeImport | null>(null);
+  const [balanceImport, setBalanceImport] = useState<BalanceAttachment | null>(
+    null,
+  );
   const [streams, setStreams] = useState<Stream[]>([]);
   const [startupAllowed, setStartupAllowed] = useState(() => !readWorkspace());
   const authChanged = useCallback((clear = false) => {
@@ -227,6 +232,7 @@ export default function Dashboard() {
       setEnvelope(null);
       setStreams([]);
       setNativeImport(null);
+      setBalanceImport(null);
     }
     setRetry((r) => r + 1);
   }, []);
@@ -268,6 +274,7 @@ export default function Dashboard() {
             : local.project;
           setStreams(local.streams || []);
           setNativeImport(local.native_import || null);
+          setBalanceImport(local.balance_import || null);
         }
         setBase(data);
         setControls({
@@ -375,11 +382,21 @@ export default function Dashboard() {
   const workspace = useMemo(
     () =>
       base?.legacy_reference
-        ? { project: base, streams, native_import: nativeImport }
+        ? {
+            project: base,
+            streams,
+            native_import: nativeImport,
+            balance_import: balanceImport,
+          }
         : payload
-          ? { project: payload, streams, native_import: nativeImport }
+          ? {
+              project: payload,
+              streams,
+              native_import: nativeImport,
+              balance_import: balanceImport,
+            }
           : null,
-    [base, payload, streams, nativeImport],
+    [base, payload, streams, nativeImport, balanceImport],
   );
   useEffect(() => {
     if (workspace) writeWorkspace(workspace);
@@ -388,6 +405,7 @@ export default function Dashboard() {
     setBase(w.project);
     setStreams(w.streams || []);
     setNativeImport(w.native_import || null);
+    setBalanceImport(w.balance_import || null);
     setControls({
       feed: 0,
       utility: 0,
@@ -842,12 +860,20 @@ export default function Dashboard() {
             onAuth={authChanged}
           />
           {base?.legacy_reference ? (
-            <LegacyProjectWorkspace
-              project={base}
-              onProject={setBase}
-              mode={mode}
-              capexTab={capexTab}
-            />
+            <>
+              {isEntry && (
+                <BalanceImport
+                  value={balanceImport}
+                  onChange={setBalanceImport}
+                />
+              )}
+              <LegacyProjectWorkspace
+                project={base}
+                onProject={setBase}
+                mode={mode}
+                capexTab={capexTab}
+              />
+            </>
           ) : isEntry ? (
             <>
               <section className="page-heading">
@@ -867,6 +893,10 @@ export default function Dashboard() {
                   </Link>
                 </div>
               </section>
+              <BalanceImport
+                value={balanceImport}
+                onChange={setBalanceImport}
+              />
               {error && (
                 <div className="error-banner" role="alert">
                   <CircleHelp size={18} />

@@ -25,6 +25,11 @@ from app.agent.copilot_research import (
 )
 from app.agent.engineering_research import research_unit
 from app.agent.executive_memo import draft_memo
+from app.agent.process_description import (
+    DescriptionRequest,
+    compare_description,
+    review_description,
+)
 from app.agent.universal_advisor import (
     AdvisorResult,
     ProjectContext,
@@ -54,7 +59,13 @@ from app.integrations.libraries import (
     biosteam_project,
     openpytea_equipment,
 )
+from app.parsers.balance.models import (
+    BalanceAttachment,
+    BalanceReport,
+    DescriptionState,
+)
 from app.parsers.dwsim_parser import DWSIMImport, parse_dwxml
+from app.parsers.excel_service import WorkbookRequestLimit, parse_upload
 from app.parsers.stream_parser import StreamTable, parse_csv
 from app.policy.screening import PolicyEvidence, screen_policy
 from app.reports.excel_builder import build_excel
@@ -72,6 +83,7 @@ class Settings(BaseSettings):
 settings = Settings()
 app = FastAPI(title="FlowValue AI API", version="0.1.0")
 app.include_router(engineering_reviews_router)
+app.add_middleware(WorkbookRequestLimit)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
@@ -106,6 +118,41 @@ def client_config():
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "service": "flowvalue-api"}
+
+
+@app.post("/api/streams/parse/excel", response_model=BalanceReport)
+async def ingest_excel(file: UploadFile):
+    try:
+        content = await file.read(4 * 1024 * 1024 + 1)
+    finally:
+        await file.close()
+    if len(content) > 4 * 1024 * 1024:
+        raise HTTPException(413, "Workbook exceeds 4 MiB limit")
+    return await parse_upload(content, file.filename or "workbook.xlsx")
+
+
+@app.post("/api/process-description/check", response_model=DescriptionState)
+def check_process_description(body: DescriptionRequest):
+    return compare_description(body.report, body.description)
+
+
+@app.post("/api/process-description/review", response_model=DescriptionState)
+async def review_process_description(body: DescriptionRequest):
+    config = ResearchSettings()
+    require_ai(config)
+    try:
+        return await review_description(body.report, body.description, config)
+    except APIStatusError as exc:
+        raise HTTPException(503, provider_message(exc.status_code)) from exc
+    except (APIError, TimeoutError) as exc:
+        raise HTTPException(
+            503, "AI review unavailable. Your workbook and description are retained."
+        ) from exc
+    except ValueError as exc:
+        raise HTTPException(
+            422,
+            "AI mapping could not be grounded safely or exceeded scope limits. No engineering data changed.",
+        ) from exc
 
 
 @app.post("/api/streams/parse/json", response_model=StreamTable)
@@ -173,7 +220,10 @@ class AssessmentResult(Model):
 @app.post("/api/assessment", response_model=AssessmentResult)
 def assessment(request: AssessmentRequest) -> AssessmentResult:
     if request.legacy_reference is not None:
-        raise HTTPException(409, "Legacy workbook reference: cached figures are not validated engine inputs. Use the reference views and snapshot export.")
+        raise HTTPException(
+            409,
+            "Legacy workbook reference: cached figures are not validated engine inputs. Use the reference views and snapshot export.",
+        )
     try:
         bom = build_bom(request.costing)
         inputs = FinancialInputs(
@@ -209,7 +259,9 @@ class UnitInvestigation(Model):
 @app.post("/api/engineering/investigate")
 def engineering_investigate(body: UnitInvestigation):
     if body.project.legacy_reference is not None:
-        raise HTTPException(409, "Legacy reference contains no validated engineering inputs")
+        raise HTTPException(
+            409, "Legacy reference contains no validated engineering inputs"
+        )
     try:
         return investigate(body.project, body.unit_id)
     except ValueError as exc:
@@ -679,6 +731,7 @@ class SavedProject(Model):
     project: AssessmentRequest
     streams: list = Field(default_factory=list, max_length=10000)
     native_import: DWSIMImport | None = None
+    balance_import: BalanceAttachment | None = None
 
 
 @app.get("/api/projects")
@@ -730,6 +783,9 @@ async def save_project(
         except ValidationError as exc:
             raise HTTPException(422, exc.errors(include_context=False)) from exc
     snapshot = {
+        "balance_import": body.balance_import.model_dump(mode="json")
+        if body.balance_import
+        else None,
         "project": body.project.model_dump(mode="json"),
         "streams": body.streams,
         "native_import": body.native_import.model_dump(mode="json")

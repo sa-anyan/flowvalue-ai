@@ -6,6 +6,9 @@ const paths = new Set([
   "api/projects",
   "api/projects/validate-reference",
   "api/streams/parse/dwxml",
+  "api/streams/parse/excel",
+  "api/process-description/check",
+  "api/process-description/review",
   "api/assessment/tornado",
   "api/copilot/executive-memo",
   "api/copilot/status",
@@ -51,6 +54,48 @@ async function proxy(
   )
     return Response.json({ detail: "Unknown API route" }, { status: 404 });
   try {
+    let engineeringBody: Uint8Array | undefined;
+    if (
+      request.method === "POST" &&
+      [
+        "api/streams/parse/excel",
+        "api/process-description/check",
+        "api/process-description/review",
+      ].includes(target)
+    ) {
+      const limit = target.endsWith("/excel")
+        ? 4 * 1024 * 1024 + 65536
+        : 3 * 1024 * 1024;
+      if (Number(request.headers.get("content-length")) > limit)
+        return Response.json(
+          { detail: "Engineering request exceeds upload/body limit." },
+          { status: 413 },
+        );
+      const reader = request.body?.getReader();
+      const chunks: Uint8Array[] = [];
+      let length = 0;
+      if (reader) {
+        while (true) {
+          const chunk = await reader.read();
+          if (chunk.done) break;
+          length += chunk.value.byteLength;
+          if (length > limit) {
+            await reader.cancel();
+            return Response.json(
+              { detail: "Engineering request exceeds upload/body limit." },
+              { status: 413 },
+            );
+          }
+          chunks.push(chunk.value);
+        }
+      }
+      engineeringBody = new Uint8Array(length);
+      let offset = 0;
+      for (const chunk of chunks) {
+        engineeringBody.set(chunk, offset);
+        offset += chunk.byteLength;
+      }
+    }
     const upstream = await fetch(
       `${(process.env.API_INTERNAL_URL ?? "http://127.0.0.1:8000").replace(/\/$/, "")}/${target}`,
       {
@@ -61,7 +106,11 @@ async function proxy(
             .map((name) => [name, request.headers.get(name)!]),
         ),
         body:
-          request.method === "GET" ? undefined : await request.arrayBuffer(),
+          request.method === "GET"
+            ? undefined
+            : engineeringBody
+              ? new Blob([engineeringBody as BlobPart])
+              : await request.arrayBuffer(),
         cache: "no-store",
         signal: AbortSignal.timeout(240000),
       },
