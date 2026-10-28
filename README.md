@@ -2,6 +2,12 @@
 
 The AI-driven techno-economic assessment copilot for Chemical & CleanTech Engineering.
 
+## Product specification and development guidance
+
+**Sources of truth:** [founder's full product specification](docs/analyst-workflow-specification.md) and [A–I delivery roadmap](docs/product-build-roadmap.md). Development agents should first read [root repository instructions](AGENTS.md), then the task-specific technical and acceptance documents.
+
+**R39 (planned, not built):** Natural-language commercial ideas such as “We earn revenue from food; could we sell our waste?” create reviewable proposed revenue scenarios, not just text. A user-supplied price is recorded as an assumption; otherwise ask for permission before researching dated/cited price alternatives and possible buyers. Contract likelihood is evidence-grounded, with **no invented probability**. The validated economic engine, not generated prose, updates revenue, NPV/IRR, cash-flow graphs and supported process annotations while preserving baseline and audit history. See the [detailed requirement](docs/analyst-workflow-specification.md#natural-language-commercial-opportunity-exploration-founder-example-selling-waste), [cross-phase implementation and acceptance](docs/product-build-roadmap.md#cross-phase-roadmap--conversational-commercial-opportunities-r39) and [release criteria](docs/phase-5-release.md#future-r39-release-gate).
+
 ## Development environment
 
 Requires Node.js 24 (`.nvmrc`), npm, Python 3.12, uv, and Make. Install uv with `python3 -m pip install --user uv` (commands use `python3 -m uv`, so no PATH changes are needed).
