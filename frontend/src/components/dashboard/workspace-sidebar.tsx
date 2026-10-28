@@ -17,6 +17,7 @@ import {
 type WorkspaceSidebarProps = {
   name: string;
   activeCapexTab?: string;
+  activeDataTab?: string;
   active:
     | "data"
     | "entry"
@@ -34,6 +35,7 @@ export function WorkspaceSidebar({
   name,
   active,
   activeCapexTab,
+  activeDataTab,
 }: WorkspaceSidebarProps) {
   return (
     <>
@@ -73,7 +75,9 @@ export function WorkspaceSidebar({
           </Link>
           {active === "data" && (
             <div className="capex-subnav" aria-label="Data pages">
-              <Link href="/data/equipment" className="capex-child-active" aria-current="page">Equipment</Link>
+              {[["equipment", "Equipment"], ["equipment-properties", "Equipment properties"]].map(([tab, label]) => (
+                <Link key={tab} href={`/data/${tab}`} className={activeDataTab === tab ? "capex-child-active" : undefined} aria-current={activeDataTab === tab ? "page" : undefined}>{label}</Link>
+              ))}
             </div>
           )}
         </nav>

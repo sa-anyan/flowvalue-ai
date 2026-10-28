@@ -793,6 +793,7 @@ export default function Dashboard() {
       <WorkspaceSidebar
         name={base?.advisor_context?.name ?? "Empty workspace"}
         active={mode === "analysis" ? "overview" : mode}
+        activeDataTab={pathname === "/data/equipment-properties" ? "equipment-properties" : "equipment"}
         activeCapexTab={mode === "capex" ? capexTab : undefined}
       />
       <div className="main-shell">
@@ -804,7 +805,7 @@ export default function Dashboard() {
                 ? "Project entry"
                 : isMain
                   ? "Main dashboard"
-                  : workspaceTitles[mode]}
+                  : pathname === "/data/equipment-properties" ? "Equipment properties" : workspaceTitles[mode]}
             </span>
           </div>
           <div className="top-actions">
@@ -840,7 +841,9 @@ export default function Dashboard() {
             onAuth={authChanged}
           />
           {mode === "data" ? (
-            <EquipmentData report={balanceImport?.report ?? null} />
+            pathname === "/data/equipment-properties" ? (
+              <section className="panel" style={{ padding: 28 }}><h1>Equipment properties</h1></section>
+            ) : <EquipmentData report={balanceImport?.report ?? null} />
           ) : base?.legacy_reference ? (
             <>
               {isEntry && (

@@ -2,6 +2,7 @@ export const workspaceRoutes = {
   "/entry": "entry",
   "/data": "data",
   "/data/equipment": "data",
+  "/data/equipment-properties": "data",
   "/main-dashboard": "main",
   "/dashboard": "analysis",
   "/capex": "capex",
