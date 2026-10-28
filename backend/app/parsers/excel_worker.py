@@ -16,7 +16,16 @@ def main():
             )
         from app.parsers.balance import parse_excel
 
-        result = parse_excel(Path(sys.argv[1]).read_bytes(), sys.argv[2])
+        source = sys.argv[3] if len(sys.argv) > 3 else "excel"
+        content = Path(sys.argv[1]).read_bytes()
+        if source == "aspen-hysys":
+            from app.parsers.inputs.aspen_hysys_excel import parse_hysys_excel
+
+            result = parse_hysys_excel(content, sys.argv[2])
+        elif source == "excel":
+            result = parse_excel(content, sys.argv[2])
+        else:
+            raise ValueError("Unsupported Excel import source.")
         print(json.dumps({"report": result.model_dump(mode="json")}, allow_nan=False))
     except Exception as exc:  # noqa: BLE001 - untrusted workbook process boundary
         # No stack traces, local filenames or workbook content in API errors.

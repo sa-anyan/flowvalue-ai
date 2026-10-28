@@ -108,6 +108,14 @@ class HYSYSExcelParser(Parser):
             component = None
 
             if prop is None:
+                # Component rows inside an explicit HYSYS flow section
+                # inherit that section's declared basis, not an assumed basis.
+                if section and unit_key(unit) in (
+                    _MASS_UNITS if section == "mass_flow" else _MOLE_UNITS
+                ):
+                    prop, dimension, component = section, section, label
+                    observations.append((row, label, prop, dimension, unit, component))
+                    continue
                 matched_prop, matched_dim, matched_component = property_info(label)
                 if matched_prop and matched_dim:
                     prop, dimension, component = (

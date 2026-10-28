@@ -89,6 +89,7 @@ export function BalanceImport({
     try {
       const body = new FormData();
       body.append("file", file);
+      body.append("source", methodId === "aspen-hysys" ? "aspen-hysys" : "excel");
       const response = await apiFetch("/api/streams/parse/excel", {
         method: "POST",
         body,

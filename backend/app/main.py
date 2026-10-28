@@ -5,7 +5,7 @@ from io import BytesIO
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import Depends, FastAPI, HTTPException, Request, UploadFile
+from fastapi import Depends, FastAPI, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from openai import APIError, APIStatusError
@@ -121,14 +121,14 @@ def health() -> dict[str, str]:
 
 
 @app.post("/api/streams/parse/excel", response_model=BalanceReport)
-async def ingest_excel(file: UploadFile):
+async def ingest_excel(file: UploadFile, source: str = Form("excel")):
     try:
         content = await file.read(4 * 1024 * 1024 + 1)
     finally:
         await file.close()
     if len(content) > 4 * 1024 * 1024:
         raise HTTPException(413, "Workbook exceeds 4 MiB limit")
-    return await parse_upload(content, file.filename or "workbook.xlsx")
+    return await parse_upload(content, file.filename or "workbook.xlsx", source=source)
 
 
 @app.post("/api/process-description/check", response_model=DescriptionState)
