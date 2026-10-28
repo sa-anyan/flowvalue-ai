@@ -36,3 +36,16 @@ Manual credits remain useful for hypothetical sensitivities; their labels never 
 ## After the MVP build
 
 Independent representative-project/vendor benchmarking, detailed tax specialist review, acquisition of licensed data and additional sector-specific simulator models remain follow-up validation and expansion work. Passing release checks does not certify a complete commercial plant design.
+
+## Future R39 release gate
+
+These are **planned acceptance requirements**, not part of Phase 5's completed verification. Use the [canonical founder workflow](analyst-workflow-specification.md#natural-language-commercial-opportunity-exploration-founder-example-selling-waste) and [full roadmap](product-build-roadmap.md#cross-phase-roadmap--conversational-commercial-opportunities-r39).
+
+1. Food revenue remains unchanged while a given-price waste-sale suggestion creates a **proposed** separate revenue line; saleable quantity, price unit and attributable costs are visible.
+2. No supplied price → permission question. Decline generates **zero** research calls; consent returns comparable sourced prices or an explicit lack-of-evidence result.
+3. Buyers and contract likelihood are evidenced, not invented. No unsupported numerical probability, quotation or signed-contract claim.
+4. Missing stream/grade/volume, unit mismatch or unsupported process route is flagged; neither revenue nor visual process geometry is fabricated.
+5. Independently verify scheduled revenue/OPEX/DCF, NPV/IRR and chart/export reconciliation. Test baseline vs preview, edits, save/reload, rejection and stale-result protection.
+6. Test opt-in boundaries, signed-in end-to-end behaviour, source provenance and separate authorisation before supplier/buyer contact.
+
+Mark R39 complete only once the connected workflow passes these gates, not when AI can generate a narrative.
