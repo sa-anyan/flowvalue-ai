@@ -1,3 +1,0 @@
-[
-  {"period":"2001","value":397,"source_url":"https://github.com/pbtamarona/OpenPyTEA/blob/main/src/openpytea/data/cepci_values.csv","source_title":"OpenPyTEA correlation reference index","retrieved_on":"2026-10-26","reviewed_by":"FlowValue initial basis","status":"assumption","note":"Reference supplied by existing model. Independently verify against licensed source before issuing estimates."}
-]
