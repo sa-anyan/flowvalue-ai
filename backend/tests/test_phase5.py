@@ -110,7 +110,7 @@ def test_index_rights_and_future_month_validation(monkeypatch):
                 ]
             )
 
-    monkeypatch.setattr("app.engine.indices.files", lambda _: FakeFile())
+    monkeypatch.setattr("app.engine.price_escalation.catalog.files", lambda _: FakeFile())
     assert len(index_catalog()["records"]) == 1
 
 

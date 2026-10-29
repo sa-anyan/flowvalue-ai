@@ -10,6 +10,7 @@ import {
 import { CashFlowChart, RiskChart } from "./charts";
 import { CapexEquipmentBasis } from "./capex-guide";
 import { EquipmentData } from "./equipment-data";
+import { EquipmentCatalogMatches } from "./equipment-catalog-matches";
 import { EquipmentPropertiesTable } from "@/components/equipment-properties-table";
 import { BalanceImport } from "./balance-import";
 import type { BalanceAttachment } from "@/lib/balance";
@@ -238,6 +239,7 @@ export default function Dashboard() {
 
   const [filename, setFilename] = useState("");
   const [uploadMessage, setUploadMessage] = useState("");
+  const [balanceDraftRestored, setBalanceDraftRestored] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [exporting, setExporting] = useState("");
   const [notice, setNotice] = useState("");
@@ -267,6 +269,7 @@ export default function Dashboard() {
         });
       }
       setBalanceImport(balance);
+      setBalanceDraftRestored(true);
       setInitialError("");
     });
     return () => {
@@ -274,8 +277,9 @@ export default function Dashboard() {
     };
   }, [retry]);
   useEffect(() => {
-    writeBalanceDraft(balanceImport);
-  }, [balanceImport]);
+    // Do not erase the saved draft with initial null state before restoration.
+    if (balanceDraftRestored) writeBalanceDraft(balanceImport);
+  }, [balanceImport, balanceDraftRestored]);
   const payload = useMemo(() => {
     if (!base || base.legacy_reference) return null;
     const feed =
@@ -841,6 +845,9 @@ export default function Dashboard() {
             onLoad={loadWorkspace}
             onAuth={authChanged}
           />
+          {mode === "capex" && capexTab === "equipment" && (
+            <EquipmentCatalogMatches report={balanceImport?.report ?? null} processDescription={balanceImport?.description.text ?? ""} />
+          )}
           {mode === "data" ? (
             pathname === "/data/equipment-properties" ? (
               <section className="panel" style={{ padding: 28 }}><EquipmentPropertiesTable report={balanceImport?.report ?? null} /></section>
@@ -924,6 +931,7 @@ export default function Dashboard() {
               )}
             </>
           ) : !base ? (
+            mode === "capex" && capexTab === "equipment" ? null :
             <section className="panel" style={{ padding: 32 }}>
               <div className="eyebrow">{workspaceTitles[mode]}</div>
               <h1>No project data yet</h1>

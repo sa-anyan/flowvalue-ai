@@ -1,0 +1,70 @@
+"""Turton et al. reference-basis equipment prices, separate from escalation.
+
+Existing FlowValue screening coefficients retained without changes. Provenance,
+validity ranges and limitations: docs/calculation_basis.md. No sizing or current
+supplier price is inferred here. Material/module factors include documented
+legacy assumptions and are not universally valid.
+"""
+
+from math import isfinite, log10
+
+from app.engine.equipment_costing.models import EquipmentPrice
+from app.engine.price_escalation.models import CostIndex
+
+# K1, K2, K3, B1, B2, minimum/maximum characteristic size, size units.
+# Compressor uses a direct 2.7 module factor; Fm is relative to that CS basis.
+CORRELATIONS = {
+    "heat_exchanger": (4.3247, -0.3030, 0.1634, 1.63, 1.66, 10, 1000, "m2"),
+    "vessel": (3.4974, 0.4485, 0.1074, 2.25, 1.82, 0.3, 520, "m3"),
+    "pump": (3.3892, 0.0536, 0.1538, 1.89, 1.35, 1, 300, "kW shaft"),
+    "compressor": (2.2897, 1.3604, -0.1027, 0, 2.7, 450, 3000, "kW fluid"),
+}
+MATERIAL_FACTORS = {
+    "heat_exchanger": {"carbon_steel": 1, "stainless_steel": 2.7},
+    "vessel": {"carbon_steel": 1, "stainless_steel": 3.1},
+    "pump": {"carbon_steel": 1, "stainless_steel": 2.3},
+    "compressor": {"carbon_steel": 1, "stainless_steel": 5.7 / 2.7},
+}
+
+
+def base_purchase_cost(
+    kind: str, size: float, *, allow_extrapolation: bool = False
+) -> float:
+    if kind not in CORRELATIONS:
+        raise ValueError(f"Unsupported Turton equipment type: {kind}")
+    if not isfinite(size) or size <= 0:
+        raise ValueError("Characteristic size must be finite and positive")
+    k1, k2, k3, _, _, lower, upper, _ = CORRELATIONS[kind]
+    if not allow_extrapolation and not lower <= size <= upper:
+        raise ValueError(
+            f"Characteristic size outside correlation range [{lower}, {upper}]"
+        )
+    exponent = k1 + k2 * log10(size) + k3 * log10(size) ** 2
+    if not -280 <= exponent <= 280:
+        raise ValueError("Extrapolation exceeds numerical cost limits")
+    return 10**exponent
+
+
+def estimate_base_price(equipment_id: str, kind: str, size: float) -> EquipmentPrice:
+    """Unadjusted reference purchase cost; no installation/material/pressure uplift."""
+    amount = base_purchase_cost(kind, size)
+    return EquipmentPrice(
+        equipment_id=equipment_id,
+        amount=str(amount),
+        currency="USD",
+        scope="base_purchase",
+        method="turton_et_al",
+        source_reference="Turton et al., Table A.1; provenance in docs/calculation_basis.md",
+        reference_index=CostIndex(
+            series="CEPCI",
+            basis="1957-1959=100",
+            value=397,
+            period="2001",
+            source="Existing correlation reference; independently verify before issuing estimates",
+            status="assumption",
+        ),
+        notes=[
+            "Reference material/pressure basis only; excludes service-specific adjustments and installation.",
+            f"Characteristic size {size:g} {CORRELATIONS[kind][7]}; no extrapolation allowed.",
+        ],
+    )

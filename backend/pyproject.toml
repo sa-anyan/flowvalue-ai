@@ -40,7 +40,7 @@ include = ["app*"]
 target-version = "py312"
 
 [tool.setuptools.package-data]
-"app.data" = ["*.json"]
+"app.data" = ["*.json", "*.sqlite3"]
 
 # Preserve the founder-supplied parser byte-for-byte; style-only exceptions.
 [tool.ruff.lint.per-file-ignores]

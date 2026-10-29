@@ -24,6 +24,10 @@ from app.agent.copilot_research import (
     research_events,
 )
 from app.agent.engineering_research import research_unit
+from app.agent.equipment_interpretation import (
+    InterpretationRequest,
+    interpret_equipment,
+)
 from app.agent.executive_memo import draft_memo
 from app.agent.process_description import (
     DescriptionRequest,
@@ -37,6 +41,7 @@ from app.agent.universal_advisor import (
 )
 from app.auth import AuthSettings, authenticated_user, project_rest, public_config
 from app.engine.costing import CostingRequest, EquipmentBOM, Model, build_bom
+from app.engine.equipment_catalog import router as equipment_catalog_router
 from app.engine.indices import index_catalog
 from app.engineering.collaboration import router as engineering_reviews_router
 from app.engineering.investigation import investigate, unit_case, unit_digest
@@ -83,6 +88,7 @@ class Settings(BaseSettings):
 settings = Settings()
 app = FastAPI(title="FlowValue AI API", version="0.1.0")
 app.include_router(engineering_reviews_router)
+app.include_router(equipment_catalog_router)
 app.add_middleware(WorkbookRequestLimit)
 app.add_middleware(
     CORSMiddleware,
@@ -152,6 +158,25 @@ async def review_process_description(body: DescriptionRequest):
         raise HTTPException(
             422,
             "AI mapping could not be grounded safely or exceeded scope limits. No engineering data changed.",
+        ) from exc
+
+
+@app.post("/api/equipment/interpret")
+async def interpret_parsed_equipment(body: InterpretationRequest):
+    config = ResearchSettings()
+    require_ai(config)
+    try:
+        return await interpret_equipment(body, config)
+    except APIStatusError as exc:
+        raise HTTPException(503, provider_message(exc.status_code)) from exc
+    except (APIError, TimeoutError) as exc:
+        raise HTTPException(
+            503, "AI interpretation unavailable. Parsed data is unchanged."
+        ) from exc
+    except ValueError as exc:
+        raise HTTPException(
+            422,
+            "Interpretation could not be grounded or exceeded input limits. No engineering data changed.",
         ) from exc
 
 

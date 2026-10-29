@@ -2440,3 +2440,34 @@ select {
 .entry-help .entry-help-content { display:none; position:absolute; top:calc(100% + 7px); left:0; width:min(320px,calc(100vw - 45px)); padding:12px 14px; border:1px solid var(--border); border-radius:9px; background:var(--card); color:var(--foreground); font-size:12px; font-weight:400; line-height:1.55; text-align:left; white-space:normal; box-shadow:0 10px 26px rgba(0,0,0,.17); z-index:55; }
 .entry-help:hover > .entry-help-content, .entry-help[open] > .entry-help-content { display:block; }
 @media (max-width:620px) { .entry-help .entry-help-content { max-width:calc(100vw - 44px); } }
+
+/* Source-linked equipment catalog matches. */
+.equipment-catalog {
+  padding: 28px;
+  margin-bottom: 24px;
+}
+.equipment-catalog h1 { font-size: 24px; line-height: 1.3; margin: 0; }
+.equipment-catalog p { margin: 10px 0; line-height: 1.55; }
+.equipment-catalog table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: left; }
+.equipment-catalog th, .equipment-catalog td { padding: 16px 14px; border-bottom: 1px solid var(--border, #dfe5df); vertical-align: top; text-align: left; }
+.equipment-catalog thead th { font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted-foreground, #718078); background: var(--secondary, #f5f7f4); }
+.equipment-catalog small { font-size: 12px; line-height: 1.5; font-weight: 400; margin-top: 5px; color: var(--muted-foreground, #718078); }
+.equipment-catalog td { min-width: 145px; line-height: 1.5; }
+.equipment-catalog summary { cursor: pointer; font-size: 13px; line-height: 1.5; }
+.equipment-catalog td details[open] { max-width: 300px; }
+.equipment-catalog-status { display: inline-block; font-size: 12px; white-space: nowrap; border: 1px solid currentColor; border-radius: 5px; padding: 3px 8px; font-weight: 600; }
+.equipment-catalog-status[data-status="match"] { color: #26745a; }
+.equipment-catalog-status[data-status="review"] { color: #996718; }
+.equipment-catalog-status[data-status="no_match"] { color: #66736e; }
+
+/* Reviewable AI proposals stay visually separate from computed results. */
+.equipment-interpretation h2 { font-size:22px; font-weight:600; margin:0 0 10px; }
+.equipment-interpretation h3 { font-size:19px; font-weight:600; margin:20px 0 10px; }
+.equipment-interpretation h4 { font-size:13px; font-weight:600; margin:22px 0 10px; }
+.equipment-interpretation ul { list-style:disc; padding-left:22px; margin:10px 0; }
+.equipment-interpretation li { line-height:1.6; margin:6px 0; }
+.equipment-interpretation label { display:block; font-size:13px; font-weight:600; margin:16px 0 8px; }
+.equipment-interpretation select, .equipment-interpretation input { width:min(100%,580px); padding:11px 12px; border:1px solid var(--border); border-radius:7px; background:var(--secondary); color:var(--foreground); }
+.equipment-interpretation button { padding:10px 14px; margin:10px 10px 10px 0; border:1px solid var(--border); border-radius:7px; background:var(--secondary); color:var(--foreground); font-size:13px; font-weight:600; cursor:pointer; }
+.equipment-interpretation button:disabled { opacity:.5; cursor:not-allowed; }
+.equipment-interpretation article { border-top:1px solid var(--border); margin-top:24px; padding-top:8px; }

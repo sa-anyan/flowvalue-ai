@@ -1,6 +1,9 @@
 import { NextRequest } from "next/server";
 
 const paths = new Set([
+  "api/equipment/catalog",
+  "api/equipment/match",
+  "api/equipment/interpret",
   "health",
   "api/config",
   "api/projects",
@@ -61,6 +64,8 @@ async function proxy(
         "api/streams/parse/excel",
         "api/process-description/check",
         "api/process-description/review",
+        "api/equipment/match",
+        "api/equipment/interpret",
       ].includes(target)
     ) {
       const limit = target.endsWith("/excel")

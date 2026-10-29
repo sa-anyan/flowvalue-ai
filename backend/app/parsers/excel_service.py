@@ -87,6 +87,8 @@ class WorkbookRequestLimit:
             "/api/streams/parse/excel": 4 * 1024 * 1024 + 65536,
             "/api/process-description/check": 3 * 1024 * 1024,
             "/api/process-description/review": 3 * 1024 * 1024,
+            "/api/equipment/interpret": 3 * 1024 * 1024,
+            "/api/equipment/match": 3 * 1024 * 1024,
         }
         limit = (
             limits.get(scope.get("path"))
