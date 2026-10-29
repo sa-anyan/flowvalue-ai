@@ -66,3 +66,8 @@ Fresh-worker end-to-end seconds, 20 timed samples per case; an extra first fresh
 Baseline measurements time the old response, which fails new component/reference checks; they are not an accuracy endorsement. The two larger fixtures improved substantially. The tiny mixed fixture is dominated by process startup; its P95 did not improve, while remaining far below ten seconds. All measured representative runs were below the target. This is not a guarantee for untested workbook structures or hosted service wake-up times. Raw warm/fresh distributions, first-launch observations, profiler call counts and stage medians are in the JSON.
 
 Final disposition: implemented and checked for the stated supported cases, on a review branch only. The exact `(1)` revision and hosted Linux performance are not validated by these local tests. Production deployment was not requested and was not triggered.
+
+
+Concurrent source updates through `351d3ea` were integrated into the review branch. The legacy CLI/property helpers retain those changes; the XLSM compatibility function continues delegating to the tested v3 engine. All 239 backend tests passed again after the integration. The baseline remains pinned to `a4db295`.
+
+The optional existing AI dialogue remains tag-based; cross-scope tag disambiguation in that AI workflow is not part of this parser validation. Use the scoped deterministic registers and review ambiguous multi-case descriptions before relying on AI comparison.

@@ -67,8 +67,8 @@ def tags(text):
 def parse_sheet(sheet, matrix):
     found=[]; issues=[]
     def add(sid,desc,r,c,method):
-        if not sid or not desc: return
-        if not (any(x.isalpha() for x in desc)): return
+        if not sid: return
+        if desc and not any(x.isalpha() for x in desc): return
         found.append(dict(sheet=sheet,stream_id=sid,description=desc,source_cell=f'R{r+1}C{c+1}',method=method,equipment_tags=tags(desc)))
 
     for r,row in enumerate(matrix):
@@ -84,7 +84,7 @@ def parse_sheet(sheet, matrix):
                         sid=stream_id(v)
                         if sid and cc != c and cc < len(matrix[r+1]):
                             desc=normalized(matrix[r+1][cc]);
-                            if desc: candidates.append((sid,desc,cc))
+                            candidates.append((sid,desc,cc))
                     if candidates:
                         for sid,desc,cc in candidates: add(sid,desc,r+1,cc,'horizontal-table')
                 # Vertical matrix: stream number in one column, description alongside.
@@ -98,6 +98,7 @@ def parse_sheet(sheet, matrix):
                     nearby=[(normalized(current[cc]),cc) for cc in range(max(0,c-2),min(len(current),c+4)) if cc!=c]
                     descriptions=[(d,cc) for d,cc in nearby if len(d)>8 and any(ch.isalpha() for ch in d) and not STREAM_HEADER.search(d)]
                     if len(descriptions)==1: add(sid,descriptions[0][0],rr,descriptions[0][1],'vertical-table')
+                    elif not descriptions: add(sid,'',rr,c,'vertical-table')
                     elif len(descriptions)>1: issues.append(dict(sheet=sheet,cell=f'R{rr+1}C{c+1}',issue=f'Ambiguous adjacent description for stream {sid}'))
             # Inline descriptive label e.g. 'Stream 47: Feed from tank T-001'.
             m=STREAM_LABEL.search(t)
