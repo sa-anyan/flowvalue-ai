@@ -54,7 +54,9 @@ export type BalanceReport = {
     id_evidence: BalanceEvidence;
     values: BalanceEvidence[];
     status: EvidenceStatus;
+    stream_keys?: string[];
   }[];
+  connections?: { key: string; stream_key: string; equipment_key: string | null; role: "source" | "destination" | "mention"; basis: string; evidence_ids: string[]; status: EvidenceStatus; note: string }[];
   declarations: BalanceEvidence[];
   issues: BalanceIssue[];
   checks: {

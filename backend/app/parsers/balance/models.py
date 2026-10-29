@@ -38,6 +38,7 @@ class Entity(Model):
     id_evidence: Evidence
     values: list[Evidence] = Field(default_factory=list, max_length=256)
     status: Status = "inferred"
+    stream_keys: list[str] = Field(default_factory=list, max_length=1500)
 
 
 class Table(Model):
@@ -66,6 +67,17 @@ class Check(Model):
     evidence_ids: list[str] = Field(default_factory=list)
 
 
+class Connection(Model):
+    key: str
+    stream_key: str
+    equipment_key: str | None = None
+    role: Literal["source", "destination", "mention"]
+    basis: Literal["explicit_field", "directional_text", "mention", "missing"]
+    evidence_ids: list[str] = Field(default_factory=list, max_length=256)
+    status: Status = "unresolved"
+    note: str = ""
+
+
 class BalanceReport(Model):
     schema_version: Literal["flowvalue-balance-v1"] = "flowvalue-balance-v1"
     parser_version: str = "1.0.0"
@@ -76,6 +88,7 @@ class BalanceReport(Model):
     entities: list[Entity] = Field(default_factory=list, max_length=1500)
     issues: list[Issue] = Field(default_factory=list, max_length=2000)
     checks: list[Check] = Field(default_factory=list, max_length=2000)
+    connections: list[Connection] = Field(default_factory=list, max_length=5000)
     declarations: list[Evidence] = Field(default_factory=list, max_length=100)
     coverage: str = "Partial extraction; unsupported and unclassified cells may remain. Review detected tables and source evidence."
     limitations: list[str] = Field(

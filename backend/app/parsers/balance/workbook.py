@@ -1,5 +1,6 @@
 """Bounded workbook reading; never evaluates formula text or follows links."""
 
+import posixpath
 import re
 from dataclasses import dataclass, field
 from io import BytesIO, StringIO
@@ -8,7 +9,9 @@ from zipfile import BadZipFile, ZipFile
 
 import openpyxl
 from defusedxml.ElementTree import fromstring
+from openpyxl.styles.numbers import is_date_format
 from openpyxl.utils import coordinate_to_tuple, get_column_letter, range_boundaries
+from openpyxl.utils.datetime import from_excel
 
 MAX_FILE = 4 * 1024 * 1024
 MAX_CELLS = 150_000
@@ -94,6 +97,8 @@ def read_book(content: bytes, name: str):
                 if len({i.filename for i in entries}) != len(entries):
                     raise ValueError("Duplicate archive members are not supported.")
                 actual_cells = 0
+                caches = {}
+                merged_ranges = {}
                 for i in entries:
                     if i.filename.endswith((".xml", ".rels")):
                         xml = z.read(i)
@@ -118,6 +123,23 @@ def read_book(content: bytes, name: str):
                                     rr, cc = coordinate_to_tuple(
                                         node.attrib.get("r", "A1")
                                     )
+                                    if any(child.tag.rsplit("}", 1)[-1] == "f" for child in node):
+                                        value = next((child.text for child in node if child.tag.rsplit("}", 1)[-1] == "v"), None)
+                                        kind = node.attrib.get("t", "n")
+                                        if value is not None:
+                                            if kind == "b":
+                                                if value not in ("0", "1"):
+                                                    raise ValueError("Malformed boolean formula cache; workbook not parsed.")
+                                                value = value == "1"
+                                            elif kind not in ("str", "e", "s"):
+                                                try:
+                                                    value = float(value) if any(ch in value.lower() for ch in (".", "e")) else int(value)
+                                                except ValueError as exc:
+                                                    raise ValueError("Malformed numeric formula cache; workbook not parsed.") from exc
+                                        if kind == "s":
+                                            value = None  # unsupported shared-string cache index is not a literal value
+                                            warnings.append("A shared-string formula cache could not be resolved; formula evidence retained.")
+                                        caches.setdefault(i.filename, {})[rr, cc] = (value, kind == "e")
                                     if (
                                         rr > MAX_ROWS
                                         or cc > MAX_COLS
@@ -130,6 +152,8 @@ def read_book(content: bytes, name: str):
                                     "dimension",
                                     "mergeCell",
                                 ) and node.attrib.get("ref"):
+                                    if tag == "mergeCell":
+                                        merged_ranges.setdefault(i.filename, []).append(node.attrib["ref"])
                                     c0, r0, c1, r1 = range_boundaries(
                                         node.attrib["ref"]
                                     )
@@ -148,58 +172,59 @@ def read_book(content: bytes, name: str):
                             raise ValueError(
                                 "Workbook style definitions exceed safe limits."
                             )
-            # XLSM can contain expensive embedded objects and styles. Stream its
-            # worksheet cells rather than materialising the complete workbook twice.
-            readonly = ext == ".xlsm"
-            values = openpyxl.load_workbook(
-                BytesIO(content), data_only=True, read_only=readonly, keep_links=False
-            )
+                workbook_xml = fromstring(z.read("xl/workbook.xml"))
+                relations = fromstring(z.read("xl/_rels/workbook.xml.rels"))
+                targets = {item.attrib["Id"]: item.attrib.get("Target", "") for item in relations
+                           if item.attrib.get("TargetMode") != "External"}
+                worksheet_paths = {}
+                for node in workbook_xml.iter():
+                    if node.tag.rsplit("}", 1)[-1] == "sheet":
+                        rel = next((v for k, v in node.attrib.items() if k.endswith("}id")), None)
+                        target = targets.get(rel, "")
+                        worksheet_paths[node.attrib["name"]] = (target.lstrip("/") if target.startswith("/")
+                            else posixpath.normpath(posixpath.join("xl", target)))
+            # The validated OOXML scan already captures formula caches and merges.
+            # One read-only library pass retains formula text (including shared
+            # formula expansion) and styles. No second workbook open is needed.
             formulas = openpyxl.load_workbook(
-                BytesIO(content), data_only=False, read_only=readonly, keep_links=False
+                BytesIO(content), data_only=False, read_only=True, keep_links=False
             )
-            if readonly:
-                warnings.append("XLSM read-only mode does not expand merged headers; review merged-cell layouts.")
             sheets = []
             total = 0
             try:
-                if len(values.worksheets) > MAX_SHEETS:
+                if len(formulas.worksheets) > MAX_SHEETS:
                     raise ValueError("Workbook exceeds 40 worksheets.")
-                for ws in values:
+                for ws in formulas:
                     rows, cols = ws.max_row, ws.max_column
                     total += rows * cols
                     if rows > MAX_ROWS or cols > MAX_COLS or total > MAX_CELLS:
                         raise ValueError(
                             "Workbook exceeds 10,000 rows, 256 columns or 150,000 scanned cells."
                         )
-                    fs = formulas[ws.title]
                     cells = {}
                     merges = {}
-                    value_rows = ws.iter_rows()
-                    formula_rows = fs.iter_rows()
-                    for row, formula_row in zip(value_rows, formula_rows, strict=True):
-                        for c, f in zip(row, formula_row, strict=True):
-                            formula = str(f.value) if f.data_type == "f" else None
+                    path = worksheet_paths.get(ws.title, "")
+                    formula_caches = caches.get(path, {})
+                    for row in ws.iter_rows():
+                        for cell in row:
+                            formula = str(cell.value) if cell.data_type == "f" else None
                             if formula and len(formula) > 2000:
                                 raise ValueError("Formula exceeds 2,000 characters.")
-                            if c.value is None and not formula:
+                            if cell.value is None and not formula:
                                 continue
-                            v = c.value
-                            if not isinstance(v, (int, float, str, bool, type(None))):
-                                v = str(v)
-                            if isinstance(v, str) and len(v) > 4000:
+                            value, error = formula_caches.get((cell.row, cell.column), (None, False)) if formula else (cell.value, cell.data_type == "e")
+                            if formula and isinstance(value, (int, float)) and not isinstance(value, bool) and is_date_format(cell.number_format):
+                                value = from_excel(value, formulas.epoch)
+                            if not isinstance(value, (int, float, str, bool, type(None))):
+                                value = str(value)
+                            if isinstance(value, str) and len(value) > 4000:
                                 raise ValueError("Cell text exceeds 4,000 characters.")
-                            cells[c.row, c.column] = Cell(
-                                v,
-                                formula,
-                                c.data_type == "e",
-                                bool(formula),
-                                c.number_format,
-                            )
-                    if not readonly:
-                        for merged in fs.merged_cells.ranges:
-                            for r in range(merged.min_row, merged.max_row + 1):
-                                for c in range(merged.min_col, merged.max_col + 1):
-                                    merges[r, c] = (merged.min_row, merged.min_col)
+                            cells[cell.row, cell.column] = Cell(value, formula, error, bool(formula), cell.number_format)
+                    for ref in merged_ranges.get(path, []):
+                        c0, r0, c1, r1 = range_boundaries(ref)
+                        for rr in range(r0, r1 + 1):
+                            for cc in range(c0, c1 + 1):
+                                merges[rr, cc] = (r0, c0)
                     sheets.append(
                         Sheet(
                             ws.title,
@@ -211,7 +236,6 @@ def read_book(content: bytes, name: str):
                         )
                     )
             finally:
-                values.close()
                 formulas.close()
             return sheets, list(dict.fromkeys(warnings))
         except (BadZipFile, KeyError, TypeError, OSError, IndexError) as e:

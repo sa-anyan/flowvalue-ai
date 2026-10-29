@@ -1,6 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
 
 /**
  * One row-spanned tag cell per unique equipment ID. Repeated evidence is

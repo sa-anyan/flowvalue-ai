@@ -3,6 +3,7 @@
 import math
 import re
 import unicodedata
+from functools import lru_cache
 
 
 def clean(value):
@@ -134,19 +135,24 @@ UNIT_TOKENS = sorted(
 )
 
 
+UNIT_PATTERNS = [(token, re.compile(r"(?<![a-z])" + re.escape(token) + r"(?![a-z0-9])")) for token in UNIT_TOKENS]
+
+
 def find_unit(label):
-    text = clean(label)
+    return _find_unit(clean(label))
+
+
+@lru_cache(maxsize=4096)
+def _find_unit(text):
     bracket = re.findall(r"\[([^\]]+)\]|\(([^)]+)\)", text)
     for a, b in reversed(bracket):
         u = a or b
         if unit_key(u) in UNIT_TOKENS:
             return u
     # retain pressure bases: bar(a) must be matched before bare bar
-    for token in UNIT_TOKENS:
-        if re.search(
-            r"(?<![a-z])" + re.escape(token) + r"(?![a-z0-9])",
-            text.replace(" ", "").replace("°", ""),
-        ):
+    search_text = text.replace(" ", "").replace("°", "")
+    for token, pattern in UNIT_PATTERNS:
+        if pattern.search(search_text):
             return token
     return (bracket[-1][0] or bracket[-1][1]) if bracket else None
 

@@ -19,9 +19,10 @@ def workbook(rows):
 def test_xlsm_equipment_and_source():
     report = parse_xlsm(workbook([['Stream Number', 1, 2], ['Description', 'Feed from pump P-101', 'Feed to reactor R-201']]), 'sample.xlsm')
     assert [e.identifier for e in report.entities if e.kind == "equipment"] == ['P-101', 'R-201']
-    assert report.entities[0].id_evidence.cell == 'B2'
-    assert report.entities[0].status == 'inferred'
-    assert report.checks == []
+    unit = next(e for e in report.entities if e.kind == 'equipment')
+    assert unit.id_evidence.cell == 'B2'
+    assert unit.status == 'inferred'
+    assert not any(check.status == 'verified' for check in report.checks)
 
 
 def test_xlsm_ignores_macro_payload_and_formula():
@@ -48,7 +49,8 @@ def test_untagged_and_new_streams_are_retained():
     streams = [e for e in report.entities if e.kind == 'material']
     assert [e.identifier for e in streams] == ['13', '14', '15']
     assert not any(e.kind == 'equipment' for e in report.entities)
-    assert streams[1].id_evidence.cell == 'C2'
+    assert streams[1].id_evidence.cell == 'C1'
+    assert next(v for v in streams[1].values if v.property == 'description').cell == 'C2'
 
 
 def test_identical_descriptions_in_separate_blocks_keep_sources():
@@ -56,4 +58,4 @@ def test_identical_descriptions_in_separate_blocks_keep_sources():
         ['Stream Number', 1], ['Description', 'Recycle water outlet'], [],
         ['Stream Number', 1], ['Description', 'Recycle water outlet'],
     ]), 'blocks.xlsm')
-    assert [e.id_evidence.cell for e in report.entities] == ['B2', 'B5']
+    assert [e.id_evidence.cell for e in report.entities if e.kind == 'material'] == ['B1', 'B4']

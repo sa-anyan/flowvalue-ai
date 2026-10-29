@@ -154,3 +154,12 @@ Team 8 regression: 14 main-sheet streams plus 18 on Energy calculation,
 Whole-workbook local timing is approximately 2 seconds with broader extraction
 and checks, not a guarantee for arbitrary workbooks. Test inputs and parsed
 real-workbook evidence are retained under the private ignored outputs folders.
+
+
+### Current stream-centred engine (v3; review branch, not deployed by this task)
+
+See [engineering review](parser-v3-engineering-review.md) and
+[raw benchmark records](parser-v3-benchmarks.json). Region-level adapters now
+coexist on one worksheet; scoped stream/equipment keys and explicit connection
+records replace numerical property copies. The generic worker and compatibility
+XLSM function use one engine. Earlier v1/v2 notes above are historical.

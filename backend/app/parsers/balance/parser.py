@@ -404,9 +404,7 @@ class Parser:
                 "no_tables",
                 "No supported engineering tables found; this is not a successful process reconstruction.",
             )
-        from .validation import validate
-
-        validate(self.report)
+        self.validate_report()
         for entity in self.report.entities:
             if len(entity.values) > 256:
                 raise ValueError(
@@ -430,6 +428,11 @@ class Parser:
                 "Engineering extraction exceeds safe record/issue limits; split the workbook."
             )
         return self.report
+
+    def validate_report(self):
+        from .validation import validate
+
+        validate(self.report)
 
     def tables(self, s, inferred):
         for r in range(1, s.rows + 1):
