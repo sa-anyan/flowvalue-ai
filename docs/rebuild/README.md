@@ -1,3 +1,5 @@
+> Historical reset record. The rebuilt runtime now exists; see the current root [README](../../README.md).
+
 # Entire-application rebuild starting point
 
 Founder decision: rebuild the entire app, retaining the GitHub checkpoint for selective recovery.

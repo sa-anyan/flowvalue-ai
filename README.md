@@ -1,6 +1,45 @@
-# FlowValue AI — controlled rebuild
+# FlowValue AI
 
-This branch is a deliberate clean start for the **entire application**, authorised by the founder on 29 October 2026. It contains product requirements, repository instructions and licence records. There is currently no runnable frontend, backend, parser, costing engine, database migration or deployment configuration in this branch.
+Current controlled rebuild: modular chemical-engineering techno-economic assessment,
+with a Python backend and Next.js frontend. The original application remains in the
+recovery checkpoint below. Historical acceptance documents describe their respective
+versions; they are not certification of this rebuild.
+
+## Current workspace
+
+Canonical local directory: `/Users/user/Documents/ChatGPT/Chemical Engineering Automation`.
+The current build includes equipment costing/unit conversion, CAPEX, OPEX, six-category
+Revenue, financial modelling, workbook ingestion, saved local assessments and the
+Commercial Strategy Analyst. Research and commercial assumptions remain reviewable;
+Python performs the calculations. Independent industrial validation is outstanding.
+
+- Backend: `backend/api/app.py` and the canonical calculation packages.
+- Frontend: `frontend/src`; Entry, Revenue and the connected assessment pages.
+- Commercial agent: `backend/revenue/llm/COMMERCIAL_STRATEGY_ANALYST.md`.
+- Product requirements: `docs/analyst-workflow-specification.md` and `docs/product-build-roadmap.md`.
+
+## Local development
+
+Use Python3.12 and Node24. Install backend requirements from
+`backend/requirements-orchestration.txt` in a virtual environment and run from the
+repository root:
+
+```sh
+python -m uvicorn backend.api.app:app --host 127.0.0.1 --port 8000 --env-file backend/.env
+```
+
+In `frontend`, run `npm ci` and `npm run dev`. Open `http://localhost:3000/entry`.
+Server-only AI configuration is described in `backend/orchestration/.env.example`;
+never commit keys. The local SQLite assessment store and uploaded workbooks are in
+ignored `outputs/`; they are not published to GitHub.
+
+## Deployment status
+
+This rebuild's API currently enforces localhost access and its SQLite persistence is
+local. Cloud release requires explicit access protection, a configured backend URL,
+server-only secrets and durable storage decisions. The earlier production deployment
+must not be treated as proof that this new runtime is cloud-ready. Provider settings
+and release checks must be verified for the actual deployment commit.
 
 ## Recovery checkpoint
 
@@ -20,22 +59,3 @@ git show checkpoint-before-costing-rebuild-2026-10-29:path/to/file
 git restore --source checkpoint-before-costing-rebuild-2026-10-29 -- path/to/file
 ```
 
-## Build together, one agreed increment at a time
-
-1. Agree the next feature and minimal folder structure with the founder.
-2. Review existing checkpoint code before deciding whether to reuse it.
-3. Add only files needed for that increment; do not create speculative future modules.
-4. Keep one canonical implementation per calculation, with traceable sources and tests.
-5. Preserve explicit unknowns; neither an AI suggestion nor a textbook name proves a valid cost method.
-
-The full founder vision remains in `docs/analyst-workflow-specification.md` and `docs/product-build-roadmap.md`. Historical implementation/acceptance records under `docs/` describe the previous application and are not claims about this clean branch. References to old source paths or parser scaffolds can be inspected in the checkpoint; they are not active implementations here. `frontend/AGENTS.md` is retained as repository guidance, not a frontend implementation.
-
-## Local-only archive
-
-Ignored environment files, dependency/build caches, outputs and private references have been moved outside this Git repository to:
-
-`/Users/user/Documents/ChatGPT/FlowValue-local-archive-2026-10-29/`
-
-Do not commit that archive. It may contain credentials and private material. Hosted Supabase data, provider configuration and the existing production deployment are unchanged; this source reset does not reset cloud systems. Local development servers were stopped deliberately.
-
-Original FlowValue code remains proprietary under `LICENSE`. Preserve `THIRD_PARTY_NOTICES.md` when assessing reuse; it documents historical dependencies and does not imply they are installed in this new branch.
