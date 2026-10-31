@@ -21,6 +21,7 @@ const routes: Record<string,string> = {entry:'/entry',overview:'/main-dashboard'
 async function api(path:string,options?:RequestInit) {
   const response=await fetch('/api/'+path,{...options,cache:'no-store'});
   const value=await response.json();
+  if(response.status===401&&typeof window!=='undefined')window.location.assign('/login');
   if (!response.ok) throw new Error(value.detail || 'Request failed');
   return value;
 }
@@ -41,6 +42,7 @@ function replaceAt(value:Json,path:string[],text:string):Json {
   return result;
 }
 export default function AssessmentWorkspace({page='entry'}:{page?:string}) {
+  const [hosted,setHosted]=useState(false);
   const [state,setState]=useState<Assessment|null>(null),[id,setId]=useState(''),[error,setError]=useState('');
   const [description,setDescription]=useState(''),[file,setFile]=useState<File|null>(null),[useAI,setUseAI]=useState(false),[busy,setBusy]=useState(false);
   const [draft,setDraft]=useState<Json>({}),[raw,setRaw]=useState('{}'),[reason,setReason]=useState(''),[version,setVersion]=useState('');
@@ -48,7 +50,7 @@ export default function AssessmentWorkspace({page='entry'}:{page?:string}) {
   const [versions,setVersions]=useState<{id:string;name:string}[]>([]),[comparison,setComparison]=useState<RecordValue|null>(null);
   const section=['opex','revenue','financial'].includes(page)&&state?.plan.operating_economics?'operating_economics':page==='entry'?'equipment':page;
   function select(key:string){window.history.replaceState(null,'',assessmentHref(window.location.pathname+window.location.search+window.location.hash,key));localStorage.setItem('flowvalue-assessment',key);setId(key);}
-  useEffect(()=>{const selected=assessmentFromUrl(window.location.href,localStorage.getItem('flowvalue-assessment'));if(selected)localStorage.setItem('flowvalue-assessment',selected);setId(selected);void api('catalogue').then(c=>setCatalogue(c.equipment)).catch(()=>{});void api('versions').then(setVersions).catch(()=>{});void api('health').then(h=>setUseAI(h.ai_enabled===true)).catch(()=>{});},[]);
+  useEffect(()=>{const selected=assessmentFromUrl(window.location.href,localStorage.getItem('flowvalue-assessment'));if(selected)localStorage.setItem('flowvalue-assessment',selected);setId(selected);void api('catalogue').then(c=>setCatalogue(c.equipment)).catch(()=>{});void api('versions').then(setVersions).catch(()=>{});void api('health').then(h=>{setUseAI(h.ai_enabled===true);setHosted(h.mode==='cloud');}).catch(()=>{});},[]);
   useEffect(()=>{
     if(!id)return;
     let disposed=false,timer:ReturnType<typeof setTimeout>;
@@ -74,7 +76,7 @@ export default function AssessmentWorkspace({page='entry'}:{page?:string}) {
   function mapEquipment(key:string,changes:RecordValue){const rows=Array.isArray(draft)?draft as RecordValue[]:[];const original=rows.find(r=>r.equipment_key===key)||{equipment_key:key,curve_id:null,size:null,size_unit:'',rationale:''};changeDraft([...rows.filter(r=>r.equipment_key!==key),{...original,...changes}]);}
 
   return <div className="shell"><aside><Link className="brand" href={assessmentHref('/entry',id)}>≋ flowvalue <small>AI</small></Link><p className="eyebrow">ANALYST WORKSPACE</p><div className="project">{state?.filename||'New assessment'}<small>Preliminary engineering economics</small></div><nav>{pages.map(([key,label])=><Link aria-current={page===key?'page':undefined} href={assessmentHref(routes[key],id)} key={key}>{label}</Link>)}</nav><p className="aside-note">Local assessment workspace<br/>Historical costs remain dated.</p></aside>
-    <main><header><span>Workspace / {pages.find(([key])=>key===page)?.[1]}</span><span className="badge">Local development</span></header><div className="content"><p className="eyebrow">TRACEABLE PROCESS ECONOMICS</p><h1>{page==='entry'?'Start with your process.':pages.find(([key])=>key===page)?.[1]}</h1>
+    <main><header><span>Workspace / {pages.find(([key])=>key===page)?.[1]}</span><span className="badge">Assessment workspace</span>{hosted&&<button className="secondary" onClick={async()=>{await fetch('/api/auth',post({action:'logout'}));localStorage.removeItem('flowvalue-assessment');window.location.assign('/login');}}>Sign out</button>}</header><div className="content"><p className="eyebrow">TRACEABLE PROCESS ECONOMICS</p><h1>{page==='entry'?'Start with your process.':pages.find(([key])=>key===page)?.[1]}</h1>
       {error&&<p role="alert" className="error">{error}</p>}
       {page==='entry'&&<section className="upload-grid"><div><h2>Mass & energy balance</h2><label className="upload">Choose Excel workbook<input type="file" accept=".xlsx,.xls,.xlsm" onChange={e=>setFile(e.target.files?.[0]||null)}/><small>.xlsx · .xls · .xlsm — up to 4 MiB</small></label></div><div><label htmlFor="description"><h2>Describe your process</h2></label><textarea id="description" value={description} maxLength={12000} onChange={e=>setDescription(e.target.value)} placeholder="Describe the process, what product or service is sold, location and design requirements. Example: we sell treated water from the final outlet by cubic metre."/><label className="check"><input type="checkbox" checked={useAI} onChange={e=>setUseAI(e.target.checked)}/>AI engineer: review workbook, recover missed data and guide calculations (OpenAI usage charges apply)</label><button disabled={active} onClick={()=>void action(upload)}>Run Assessment →</button></div></section>}
       {!state&&versions.length>0&&<section><h2>Saved assessments</h2>{versions.map(v=><div className="toolbar" key={v.id}><span>{v.name}</span><button className="secondary" disabled={busy} aria-label={`Open ${v.name}`} onClick={()=>void action(async()=>select((await api(`versions/${v.id}/open`,post({}))).id))}>Open assessment</button></div>)}</section>}

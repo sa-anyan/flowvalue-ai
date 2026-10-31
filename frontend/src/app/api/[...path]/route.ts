@@ -1,4 +1,5 @@
-import type {NextRequest} from 'next/server';
+import {NextResponse,type NextRequest} from 'next/server';
+import {cloudAuthEnabled,requestSession,setSession} from '../../../lib/cloud-auth';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 async function proxy(request: NextRequest, context: {params: Promise<{path: string[]}>}) {
@@ -11,11 +12,14 @@ async function proxy(request: NextRequest, context: {params: Promise<{path: stri
   const body = ['GET','HEAD'].includes(request.method) ? undefined : await request.arrayBuffer();
   if (body && body.byteLength > 5 * 1024 * 1024) return Response.json({detail:'Request too large'}, {status:413});
   try {
+    const session=cloudAuthEnabled()?await requestSession(request):{access:'',renewed:null};
+    if(cloudAuthEnabled()&&!session.access&&path[0]!=='health')return NextResponse.json({detail:'Sign in required'},{status:401});
     const response = await fetch(`${process.env.FLOWVALUE_BACKEND_URL || 'http://127.0.0.1:8000'}/api/${path.join('/')}`, {
-      method:request.method, body, headers: {'Content-Type':request.headers.get('content-type') || 'application/json'},
+      method:request.method, body, headers: {'Content-Type':request.headers.get('content-type') || 'application/json',...(session.access?{Authorization:'Bearer '+session.access}:{})},
       cache:'no-store', signal:AbortSignal.timeout(15000), redirect:'error'
     });
-    return new Response(response.body,{status:response.status, headers:{'Content-Type':response.headers.get('content-type') || 'application/json','Cache-Control':'no-store'}});
-  } catch {return Response.json({detail:'Local backend unavailable. Start the assessment API on port 8000.'},{status:503});}
+    const outgoing = new NextResponse(response.body,{status:response.status, headers:{'Content-Type':response.headers.get('content-type') || 'application/json','Cache-Control':'no-store'}});
+    return session.renewed?setSession(outgoing,session.renewed):outgoing;
+  } catch {return Response.json({detail:'Assessment backend unavailable. Please retry shortly.'},{status:503});}
 }
 export {proxy as GET,proxy as POST,proxy as PATCH};

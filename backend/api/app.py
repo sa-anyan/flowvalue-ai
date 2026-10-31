@@ -17,7 +17,14 @@ app = FastAPI(title="FlowValue Assessment Orchestration")
 store = Store(
     os.environ.get("FLOWVALUE_ASSESSMENT_DB", "outputs/assessments/local.sqlite3")
 )
-executor = ThreadPoolExecutor(max_workers=1)
+CLOUD = os.environ.get("FLOWVALUE_CLOUD", "false").lower() == "true"
+if CLOUD:
+    from backend.cloud.runtime import WorkspaceProxy, ContextExecutor
+
+    store = WorkspaceProxy()
+    executor = ContextExecutor(max_workers=1)
+else:
+    executor = ThreadPoolExecutor(max_workers=1)
 lock = threading.Lock()
 
 
@@ -93,11 +100,12 @@ def submit(key, **kwargs):
     executor.submit(work)
 
 
+@app.get("/health")
 @app.get("/api/health")
 def health():
     return {
         "status": "ok",
-        "mode": "local",
+        "mode": "cloud" if CLOUD else "local",
         "ai_enabled": os.environ.get("AI_ENABLED", "").lower() == "true",
     }
 
@@ -106,18 +114,25 @@ def health():
 def research(key: str, request: ResearchRequest):
     state = store.get(key)
     if request.consent is not True:
-        raise HTTPException(422, "Explicit consent is required for external research and API usage")
+        raise HTTPException(
+            422, "Explicit consent is required for external research and API usage"
+        )
     if request.kind not in {"equipment", "market"}:
         raise HTTPException(422, "Choose equipment or market research")
-    if state.get('running') or not lock.acquire(blocking=False):
+    if state.get("running") or not lock.acquire(blocking=False):
         raise HTTPException(409, "Wait for the current task to finish")
     try:
-        if request.revision != state['revision']:
-            raise ValueError('Assessment changed; reload before researching')
-        state['running'] = True
-        state['research_job'] = {'status': 'running', 'kind': request.kind, 'target_id': request.target_id,
-                                 'consent': 'Explicit user-triggered scoped research', 'plan_changed': False}
-        state = store.put(state, state['revision'])
+        if request.revision != state["revision"]:
+            raise ValueError("Assessment changed; reload before researching")
+        state["running"] = True
+        state["research_job"] = {
+            "status": "running",
+            "kind": request.kind,
+            "target_id": request.target_id,
+            "consent": "Explicit user-triggered scoped research",
+            "plan_changed": False,
+        }
+        state = store.put(state, state["revision"])
     except Exception:
         lock.release()
         raise
@@ -126,20 +141,30 @@ def research(key: str, request: ResearchRequest):
         from backend.orchestration.deep_research import research_draft
         from backend.orchestration.provider import EngineeringProvider
         from backend.revenue.advisor import RevenueAIError
+
         try:
-            result = research_draft(state, request.kind, request.target_id, EngineeringProvider())
+            result = research_draft(
+                state, request.kind, request.target_id, EngineeringProvider()
+            )
             current = store.get(key)
-            current.setdefault('research_drafts', []).append(result)
-            current['research_job'] = dict(current['research_job'], status='completed')
+            current.setdefault("research_drafts", []).append(result)
+            current["research_job"] = dict(current["research_job"], status="completed")
         except Exception as exc:  # noqa: BLE001 -- retain existing model on research outage
             current = store.get(key)
-            current['research_job'] = dict(current['research_job'], status='failed', notice=str(exc)[:300] if isinstance(exc, (ValueError, RevenueAIError)) else type(exc).__name__)
+            current["research_job"] = dict(
+                current["research_job"],
+                status="failed",
+                notice=str(exc)[:300]
+                if isinstance(exc, (ValueError, RevenueAIError))
+                else type(exc).__name__,
+            )
         finally:
-            current['running'] = False
-            store.put(current, current['revision'])
+            current["running"] = False
+            store.put(current, current["revision"])
             lock.release()
+
     executor.submit(work)
-    return {'id': key}
+    return {"id": key}
 
 
 @app.post("/api/assessments/{key}/comparable-preview")
@@ -147,22 +172,40 @@ def preview_comparable(key: str, request: ComparablePreview):
     store.get(key)
     from backend.equipment_costing.quotes import comparable_cost
     from backend.orchestration.codec import plain
-    return plain(comparable_cost(request.reference, target_size=request.target_size,
-                                 target_unit=request.target_unit, exponent=request.exponent,
-                                 rationale=request.rationale))
+
+    return plain(
+        comparable_cost(
+            request.reference,
+            target_size=request.target_size,
+            target_unit=request.target_unit,
+            exponent=request.exponent,
+            rationale=request.rationale,
+        )
+    )
 
 
 @app.post("/api/assessments/{key}/review-decisions")
 def record_review(key: str, request: ReviewDecision):
     state = store.get(key)
-    if state.get('running') or state['revision'] != request.revision:
-        raise HTTPException(409, 'Wait for the study, then reload its current revision')
-    ids = {f['id'] for r in state.get('analyst_reviews', []) for f in r.get('findings', [])}
-    if request.finding_id not in ids or request.decision not in {'agree', 'challenge', 'defer'}:
-        raise ValueError('Select an existing specialist finding and supported decision')
-    state.setdefault('review_decisions', []).append(dict(request.model_dump(), actor='local user',
-                                                       note='Review recorded; design/cost inputs not changed'))
-    return store.put(state, state['revision'])
+    if state.get("running") or state["revision"] != request.revision:
+        raise HTTPException(409, "Wait for the study, then reload its current revision")
+    ids = {
+        f["id"] for r in state.get("analyst_reviews", []) for f in r.get("findings", [])
+    }
+    if request.finding_id not in ids or request.decision not in {
+        "agree",
+        "challenge",
+        "defer",
+    }:
+        raise ValueError("Select an existing specialist finding and supported decision")
+    state.setdefault("review_decisions", []).append(
+        dict(
+            request.model_dump(),
+            actor="local user",
+            note="Review recorded; design/cost inputs not changed",
+        )
+    )
+    return store.put(state, state["revision"])
 
 
 @app.post("/api/assessments", status_code=202)
@@ -255,6 +298,35 @@ async def local_request_guard(request: Request, call_next):
 
     origin = request.headers.get("origin")
     host = request.headers.get("host", "").split(":")[0]
+    if CLOUD:
+        if request.method in {"POST", "PATCH"}:
+            length = request.headers.get("content-length")
+            if length is None or not length.isdigit():
+                return JSONResponse(
+                    status_code=411, content={"detail": "Content length required"}
+                )
+            if int(length) > 5 * 1024**2:
+                return JSONResponse(
+                    status_code=413, content={"detail": "Request exceeds 5 MiB"}
+                )
+        if request.url.path in {"/health", "/api/health"}:
+            return await call_next(request)
+        from backend.cloud.runtime import verified_workspace, workspace
+
+        authorization = request.headers.get("authorization", "")
+        if not authorization.startswith("Bearer "):
+            return JSONResponse(status_code=401, content={"detail": "Sign in required"})
+        import asyncio
+
+        try:
+            scoped = await asyncio.to_thread(verified_workspace, authorization[7:])
+        except PermissionError:
+            return JSONResponse(status_code=401, content={"detail": "Sign in required"})
+        handle = workspace.set(scoped)
+        try:
+            return await call_next(request)
+        finally:
+            workspace.reset(handle)
     if host not in {"localhost", "127.0.0.1", "testserver"}:
         return JSONResponse(status_code=403, content={"detail": "Local workspace only"})
     if origin and urlsplit(origin).netloc not in {
@@ -327,26 +399,52 @@ class CommercialStrategyRequest(BaseModel):
 def commercial_strategy(key: str, options: CommercialStrategyRequest):
     import copy
     from backend.revenue.llm.commercial_strategy_analyst import execute_strategy
+
     baseline = store.get(key)
     if baseline.get("running") or baseline["revision"] != options.revision:
-        raise HTTPException(409, "Wait for assessment completion or reload current revision")
-    if not (baseline.get("results") or {}).get("stages", {}).get("financial", {}).get("result"):
-        raise HTTPException(422, "A calculated baseline is required for this commercial strategy scenario")
+        raise HTTPException(
+            409, "Wait for assessment completion or reload current revision"
+        )
+    if (
+        not (baseline.get("results") or {})
+        .get("stages", {})
+        .get("financial", {})
+        .get("result")
+    ):
+        raise HTTPException(
+            422,
+            "A calculated baseline is required for this commercial strategy scenario",
+        )
     if not lock.acquire(blocking=False):
         raise HTTPException(409, "Another assessment is running")
     try:
-        with store.db() as db:
-            content = db.execute("SELECT workbook FROM assessments WHERE id=?", (key,)).fetchone()[0]
+        content = store.workbook(key)
         draft = copy.deepcopy(baseline)
-        draft.update(description=options.description, results=None, running=True,
-            parent_assessment=key, status="Commercial Strategy Analyst: queued", progress=[],
-            commercial_strategy={"name":"Commercial Strategy Analyst", "status":"queued"})
+        draft.update(
+            description=options.description,
+            results=None,
+            running=True,
+            parent_assessment=key,
+            status="Commercial Strategy Analyst: queued",
+            progress=[],
+            commercial_strategy={
+                "name": "Commercial Strategy Analyst",
+                "status": "queued",
+            },
+        )
         created = store.create(draft, content)
+
         def work():
             try:
-                execute_strategy(store, created["id"], baseline, research_consent=options.research_consent)
+                execute_strategy(
+                    store,
+                    created["id"],
+                    baseline,
+                    research_consent=options.research_consent,
+                )
             finally:
                 lock.release()
+
         executor.submit(work)
     except Exception:
         lock.release()

@@ -33,13 +33,20 @@ Server-only AI configuration is described in `backend/orchestration/.env.example
 never commit keys. The local SQLite assessment store and uploaded workbooks are in
 ignored `outputs/`; they are not published to GitHub.
 
-## Deployment status
+## Hosted deployment
 
-This rebuild's API currently enforces localhost access and its SQLite persistence is
-local. Cloud release requires explicit access protection, a configured backend URL,
-server-only secrets and durable storage decisions. The earlier production deployment
-must not be treated as proof that this new runtime is cloud-ready. Provider settings
-and release checks must be verified for the actual deployment commit.
+The hosted runtime uses the existing Supabase account system and separate rebuild
+assessment/version/cache tables protected by owner row-level security. The previous
+production tables are unchanged. Browser sessions use server-only HttpOnly cookies;
+Render verifies the caller session and persists each workspace using that caller's
+scoped token. Local mode continues using SQLite and loopback access.
+
+Render uses `backend/Dockerfile` with root directory `backend` and health check
+`/health`. Vercel uses root directory `frontend`. Both require `FLOWVALUE_CLOUD=true`,
+`SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`; Vercel also requires
+`FLOWVALUE_BACKEND_URL`. OpenAI credentials remain on Render only. Schema and RLS
+checks are in `backend/cloud/`. Local study files are not uploaded or committed by
+code deployment; import them into the signed-in hosted workspace when needed.
 
 ## Recovery checkpoint
 

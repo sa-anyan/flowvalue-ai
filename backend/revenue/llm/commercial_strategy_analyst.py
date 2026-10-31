@@ -432,13 +432,7 @@ def execute_strategy(store, key, baseline, *, research_consent=False, provider=N
     # Project-scoped, same-description, recent research only. Never scan unrelated
     # project evidence or apply a previous price decision automatically.
     prior = []
-    with store.db() as db:
-        records = db.execute(
-            "SELECT state FROM assessments WHERE json_extract(state, '$.parent_assessment')=?",
-            (baseline["id"],),
-        ).fetchall()
-    for (saved,) in records:
-        previous = json.loads(saved)
+    for previous in store.related_states(baseline["id"]):
         if (
             previous.get("description") != state["description"]
             or previous.get("commercial_strategy", {}).get("name") != NAME

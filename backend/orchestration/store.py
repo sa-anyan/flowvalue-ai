@@ -119,3 +119,20 @@ class Store:
                     "SELECT id,name,assessment_id FROM versions ORDER BY rowid DESC"
                 )
             ]
+
+    def workbook(self, key):
+        with self.db() as db:
+            row = db.execute(
+                "SELECT workbook FROM assessments WHERE id=?", (key,)
+            ).fetchone()
+        if row is None:
+            raise KeyError("Assessment not found")
+        return row[0]
+
+    def related_states(self, parent):
+        with self.db() as db:
+            rows = db.execute(
+                "SELECT state FROM assessments WHERE json_extract(state, '$.parent_assessment')=?",
+                (parent,),
+            ).fetchall()
+        return [json.loads(row[0]) for row in rows]
