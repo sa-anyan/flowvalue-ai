@@ -1,0 +1,44 @@
+FLOWVALUE AI — CANONICAL OPEX COST REGISTER
+30 October 2026
+
+Delivered as an offline package at backend/opex/cost_register/.
+
+One expense owns its declared scope. Alternative estimates belong to that
+expense; exactly one selected, reviewed option feeds the existing OPEX engine.
+A selected option may contain several detailed lines. Other alternatives are
+compared in isolated draft previews and never added to baseline totals.
+
+Shared quantity, tariff, salary, percentage, annual-cost and capital-base inputs
+are referenced by ID. Inline numerical copies in templates are blocked.
+Supported demand/hour annualisation resolves shared annual consumption once.
+Compiled inputs and results retain source metadata, consumed input lineage and
+selected method identities. Evidence kinds do not imply independent verification.
+
+Checks include ownership overlap, replacement scope completeness, missing values,
+units and currency/period compatibility, source metadata and method review.
+Existing engine category-completeness, factor-range, expense-overlap and circular
+percentage checks remain authoritative. Initial CAPEX or working capital cannot
+replace recurring operating coverage. Unused alternative inputs/bases need not
+be populated before calculating the active case.
+
+Frozen, schema-versioned JSON snapshots support restore and scenario revisions.
+Explicit edits require an actor, rationale and matching expected snapshot hash.
+Input/method changes invalidate affected reviews, including downstream labour
+factors, category/item dependencies, annualisation and capital/revenue bases.
+Original baseline objects remain unchanged. Snapshot history must be retained by
+the caller; this is not an authenticated database or signed approval system.
+
+VALIDATION
+17 new register tests. Full backend: 163 tests passing.
+Lint passed for new package and test module.
+117 pre-existing equipment/CAPEX/OPEX files hash-checked: unchanged.
+Saved local test log, integrity check, synthetic register, results and method
+comparisons under outputs/opex-cost-register-review/ (local ignored artifacts).
+
+BOUNDARY
+No frontend, HTTP route, AI calls, external research or live financial binding.
+No existing calculation formulas, factors or source datasets modified.
+No new third-party dependency or code copied.
+Human review still establishes scope completeness, duplicate semantic labels,
+quote validity, engineering applicability and site-specific assumption quality.
+The engine calculates preliminary estimates; it does not certify plant economics.

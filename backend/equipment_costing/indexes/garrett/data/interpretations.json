@@ -1,0 +1,832 @@
+{
+  "G256-001": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G257-002": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G257-003": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G258-004": {
+    "printed_exponent": 0.53,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G258-005": {
+    "printed_exponent": 0.53,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G258-006": {
+    "printed_exponent": 0.53,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G258-007": {
+    "printed_exponent": 0.53,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G258-008": {
+    "printed_exponent": 0.53,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G259-009": {
+    "printed_exponent": 0.73,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G260-010": {
+    "printed_exponent": 0.6,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G260-011": {
+    "printed_exponent": 0.6,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G260-012": {
+    "printed_exponent": 0.6,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G260-013": {
+    "printed_exponent": 0.42,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G261-014": {
+    "printed_exponent": 0.52,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G261-015": {
+    "printed_exponent": 0.79,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G261-016": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G261-017": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G262-018": {
+    "printed_exponent": 0.65,
+    "blocking_issues": [],
+    "warnings": [],
+    "source_range": [
+      5,
+      1000
+    ]
+  },
+  "G262-019": {
+    "printed_exponent": 0.77,
+    "blocking_issues": [],
+    "warnings": [],
+    "source_range": [
+      6000,
+      600000
+    ]
+  },
+  "G262-020": {
+    "printed_exponent": 0.82,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G263-021": {
+    "printed_exponent": 0.75,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G264-022": {
+    "printed_exponent": 0.8,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G265-023": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G266-024": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G266-025": {
+    "printed_exponent": 1.63,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G266-026": {
+    "printed_exponent": 1.63,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G266-027": {
+    "printed_exponent": 1.63,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G266-028": {
+    "printed_exponent": 1.63,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G266-029": {
+    "printed_exponent": 1.63,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G267-030": {
+    "printed_exponent": 1.32,
+    "blocking_issues": [],
+    "warnings": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion."
+    ]
+  },
+  "G268-031": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G268-032": {
+    "printed_exponent": 0.78,
+    "blocking_issues": [],
+    "warnings": [],
+    "source_range": [
+      100000,
+      1000000
+    ]
+  },
+  "G269-033": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G269-034": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G270-035": {
+    "printed_exponent": -1.16,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G270-036": {
+    "printed_exponent": -0.95,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G270-037": {
+    "printed_exponent": -0.4,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G270-038": {
+    "printed_exponent": -0.95,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G270-039": {
+    "printed_exponent": -0.64,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G270-040": {
+    "printed_exponent": -0.5,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G271-041": {
+    "printed_exponent": 0.87,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G271-042": {
+    "printed_exponent": 0.34,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G271-043": {
+    "printed_exponent": 0.79,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G271-044": {
+    "printed_exponent": 0.51,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G272-045": {
+    "printed_exponent": 0.8,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G273-046": {
+    "printed_exponent": 0.76,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G273-047": {
+    "printed_exponent": 0.5,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G273-048": {
+    "printed_exponent": 0.37,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G273-049": {
+    "printed_exponent": 0.5,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G273-050": {
+    "printed_exponent": 0.78,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G273-051": {
+    "printed_exponent": 1.0,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G274-052": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G274-053": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G274-054": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G274-055": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G275-056": {
+    "printed_exponent": 0.79,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G276-057": {
+    "printed_exponent": 0.68,
+    "blocking_issues": [],
+    "warnings": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion."
+    ]
+  },
+  "G276-058": {
+    "printed_exponent": 0.63,
+    "blocking_issues": [],
+    "warnings": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion."
+    ]
+  },
+  "G276-059": {
+    "printed_exponent": 0.75,
+    "blocking_issues": [],
+    "warnings": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion."
+    ]
+  },
+  "G277-060": {
+    "printed_exponent": 0.48,
+    "blocking_issues": [
+      "Dryer volume plot divisor versus actual volume is unresolved in workbook (+10 label); no silent conversion."
+    ],
+    "warnings": []
+  },
+  "G277-061": {
+    "printed_exponent": 0.45,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G277-062": {
+    "printed_exponent": 0.29,
+    "blocking_issues": [
+      "Dryer volume plot divisor versus actual volume is unresolved in workbook (+10 label); no silent conversion."
+    ],
+    "warnings": []
+  },
+  "G278-063": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": [
+      "Workbook duct graph price scope conflicts with $/ft equation and material labels appear reversed; graph readings not used for price."
+    ]
+  },
+  "G278-064": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": [
+      "Workbook duct graph price scope conflicts with $/ft equation and material labels appear reversed; graph readings not used for price."
+    ]
+  },
+  "G279-065": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G279-066": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G279-067": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G279-068": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G280-069": {
+    "printed_exponent": 0.53,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G280-070": {
+    "printed_exponent": 0.7,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G280-071": {
+    "printed_exponent": 0.53,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G281-072": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G281-073": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G281-074": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G281-075": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G282-076": {
+    "printed_exponent": 0.61,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G282-077": {
+    "printed_exponent": 0.39,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G282-078": {
+    "printed_exponent": 0.39,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G282-079": {
+    "printed_exponent": 0.5,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G282-080": {
+    "printed_exponent": 0.5,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G282-081": {
+    "printed_exponent": 0.5,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G283-082": {
+    "printed_exponent": 0.59,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G283-083": {
+    "printed_exponent": 0.39,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G284-084": {
+    "printed_exponent": 0.7,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G284-085": {
+    "printed_exponent": 0.78,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G284-086": {
+    "printed_exponent": 0.48,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G285-087": {
+    "printed_exponent": 0.71,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G285-088": {
+    "printed_exponent": 0.76,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G286-089": {
+    "printed_exponent": 0.39,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G286-090": {
+    "printed_exponent": 0.68,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G286-091": {
+    "printed_exponent": 0.68,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G287-092": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G287-093": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G288-094": {
+    "printed_exponent": 0.75,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G288-095": {
+    "printed_exponent": 0.39,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G288-096": {
+    "printed_exponent": 0.64,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G288-097": {
+    "printed_exponent": 0.48,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G289-098": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G289-099": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G289-100": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G289-101": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G289-102": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G289-103": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G290-104": {
+    "printed_exponent": 0.97,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G291-105": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion."
+    ]
+  },
+  "G291-106": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion."
+    ]
+  },
+  "G291-107": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion."
+    ]
+  },
+  "G292-108": {
+    "printed_exponent": 0.7,
+    "blocking_issues": [],
+    "warnings": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion."
+    ]
+  },
+  "G292-109": {
+    "printed_exponent": 0.7,
+    "blocking_issues": [],
+    "warnings": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion."
+    ]
+  },
+  "G292-110": {
+    "printed_exponent": 0.53,
+    "blocking_issues": [],
+    "warnings": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion."
+    ]
+  },
+  "G293-111": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G293-112": {
+    "printed_exponent": 0.86,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G293-113": {
+    "printed_exponent": 0.76,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G293-114": {
+    "printed_exponent": 0.41,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G293-115": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G294-116": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G294-117": {
+    "printed_exponent": 0.99,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G294-118": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G294-119": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G295-120": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion."
+    ]
+  },
+  "G295-121": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion."
+    ]
+  },
+  "G296-122": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G296-123": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G296-124": {
+    "printed_exponent": 0.79,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G297-125": {
+    "printed_exponent": null,
+    "blocking_issues": [
+      "Chemical-injection flow basis / grouped pump configurations conflict with source; individual readings and units required."
+    ],
+    "warnings": []
+  },
+  "G297-126": {
+    "printed_exponent": null,
+    "blocking_issues": [
+      "Chemical-injection flow basis / grouped pump configurations conflict with source; individual readings and units required."
+    ],
+    "warnings": []
+  },
+  "G297-127": {
+    "printed_exponent": 0.59,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G297-128": {
+    "printed_exponent": 0.47,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G298-129": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G298-130": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G298-131": {
+    "printed_exponent": 0.64,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G298-132": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G299-133": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G300-134": {
+    "printed_exponent": 0.69,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G301-135": {
+    "printed_exponent": 0.75,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G302-136": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion."
+    ]
+  },
+  "G302-137": {
+    "printed_exponent": 0.12,
+    "blocking_issues": [],
+    "warnings": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion."
+    ]
+  },
+  "G302-138": {
+    "printed_exponent": 0.58,
+    "blocking_issues": [],
+    "warnings": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion."
+    ]
+  },
+  "G302-139": {
+    "printed_exponent": 0.15,
+    "blocking_issues": [],
+    "warnings": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion."
+    ]
+  },
+  "G303-140": {
+    "printed_exponent": 0.71,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G303-141": {
+    "printed_exponent": 0.72,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G303-142": {
+    "printed_exponent": 0.51,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G303-143": {
+    "printed_exponent": 0.51,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G303-144": {
+    "printed_exponent": 0.71,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G303-145": {
+    "printed_exponent": 0.62,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G304-146": {
+    "printed_exponent": 0.57,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G304-147": {
+    "printed_exponent": null,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G304-148": {
+    "printed_exponent": 0.68,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G304-149": {
+    "printed_exponent": 0.48,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G304-150": {
+    "printed_exponent": 0.93,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G305-151": {
+    "printed_exponent": 1.03,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G306-152": {
+    "printed_exponent": 0.67,
+    "blocking_issues": [],
+    "warnings": []
+  },
+  "G306-153": {
+    "printed_exponent": 0.42,
+    "blocking_issues": [
+      "Workbook multiplies air flow by vacuum; source capacity factor divides by absolute mmHg. Correct readings/basis before costing."
+    ],
+    "warnings": []
+  },
+  "G306-154": {
+    "printed_exponent": 0.75,
+    "blocking_issues": [
+      "Workbook multiplies air flow by vacuum; source capacity factor divides by absolute mmHg. Correct readings/basis before costing."
+    ],
+    "warnings": []
+  }
+}

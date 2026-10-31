@@ -1,0 +1,2725 @@
+{
+  "G256-001": {
+    "curve_id": "G256-001",
+    "printed_page": 256,
+    "pdf_page": 6,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G257-002": {
+    "curve_id": "G257-002",
+    "printed_page": 257,
+    "pdf_page": 7,
+    "status": "source_factor",
+    "default": {
+      "id": "257.installation.turbine",
+      "multiplier": 1.32,
+      "range": [
+        1.2,
+        1.4
+      ],
+      "printed_page": 257,
+      "pdf_page": 7,
+      "source_label": "turbine",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Configuration-specific agitator installation factor."
+  },
+  "G257-003": {
+    "curve_id": "G257-003",
+    "printed_page": 257,
+    "pdf_page": 7,
+    "status": "source_factor",
+    "default": {
+      "id": "257.installation.propeller",
+      "multiplier": 1.22,
+      "range": [
+        1.12,
+        1.32
+      ],
+      "printed_page": 257,
+      "pdf_page": 7,
+      "source_label": "propeller",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Configuration-specific agitator installation factor."
+  },
+  "G258-004": {
+    "curve_id": "G258-004",
+    "printed_page": 258,
+    "pdf_page": 8,
+    "status": "source_factor",
+    "default": {
+      "id": "258.installation.autoclave",
+      "multiplier": 1.6,
+      "range": [
+        1.5,
+        1.7
+      ],
+      "printed_page": 258,
+      "pdf_page": 8,
+      "source_label": "autoclave",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Configuration-specific tank installation factor."
+  },
+  "G258-005": {
+    "curve_id": "G258-005",
+    "printed_page": 258,
+    "pdf_page": 8,
+    "status": "source_factor",
+    "default": {
+      "id": "258.installation.autoclave",
+      "multiplier": 1.6,
+      "range": [
+        1.5,
+        1.7
+      ],
+      "printed_page": 258,
+      "pdf_page": 8,
+      "source_label": "autoclave",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Configuration-specific tank installation factor."
+  },
+  "G258-006": {
+    "curve_id": "G258-006",
+    "printed_page": 258,
+    "pdf_page": 8,
+    "status": "source_factor",
+    "default": {
+      "id": "258.installation.low_pressure",
+      "multiplier": 1.44,
+      "range": [
+        1.3,
+        1.57
+      ],
+      "printed_page": 258,
+      "pdf_page": 8,
+      "source_label": "low_pressure",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Configuration-specific tank installation factor."
+  },
+  "G258-007": {
+    "curve_id": "G258-007",
+    "printed_page": 258,
+    "pdf_page": 8,
+    "status": "source_factor",
+    "default": {
+      "id": "258.installation.low_pressure",
+      "multiplier": 1.44,
+      "range": [
+        1.3,
+        1.57
+      ],
+      "printed_page": 258,
+      "pdf_page": 8,
+      "source_label": "low_pressure",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Configuration-specific tank installation factor."
+  },
+  "G258-008": {
+    "curve_id": "G258-008",
+    "printed_page": 258,
+    "pdf_page": 8,
+    "status": "source_factor",
+    "default": {
+      "id": "258.installation.open_tank",
+      "multiplier": 1.58,
+      "range": [
+        1.41,
+        1.66
+      ],
+      "printed_page": 258,
+      "pdf_page": 8,
+      "source_label": "open_tank",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Configuration-specific tank installation factor."
+  },
+  "G259-009": {
+    "curve_id": "G259-009",
+    "printed_page": 259,
+    "pdf_page": 9,
+    "status": "source_factor",
+    "default": {
+      "id": "259.installation.source_average",
+      "multiplier": 1.46,
+      "range": [
+        1.38,
+        1.53
+      ],
+      "printed_page": 259,
+      "pdf_page": 9,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Source labels this Installation, Module factor; use once for installation, never stack as a second module multiplier."
+  },
+  "G260-010": {
+    "curve_id": "G260-010",
+    "printed_page": 260,
+    "pdf_page": 10,
+    "status": "source_factor",
+    "default": {
+      "id": "260.installation.source_average",
+      "multiplier": 1.3,
+      "range": null,
+      "printed_page": 260,
+      "pdf_page": 10,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G260-011": {
+    "curve_id": "G260-011",
+    "printed_page": 260,
+    "pdf_page": 10,
+    "status": "source_factor",
+    "default": {
+      "id": "260.installation.source_average",
+      "multiplier": 1.3,
+      "range": null,
+      "printed_page": 260,
+      "pdf_page": 10,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G260-012": {
+    "curve_id": "G260-012",
+    "printed_page": 260,
+    "pdf_page": 10,
+    "status": "source_factor",
+    "default": {
+      "id": "260.installation.source_average",
+      "multiplier": 1.3,
+      "range": null,
+      "printed_page": 260,
+      "pdf_page": 10,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G260-013": {
+    "curve_id": "G260-013",
+    "printed_page": 260,
+    "pdf_page": 10,
+    "status": "source_factor",
+    "default": {
+      "id": "260.installation.source_average",
+      "multiplier": 1.3,
+      "range": null,
+      "printed_page": 260,
+      "pdf_page": 10,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G261-014": {
+    "curve_id": "G261-014",
+    "printed_page": 261,
+    "pdf_page": 11,
+    "status": "source_factor",
+    "default": {
+      "id": "261.installation.source_average",
+      "multiplier": 1.42,
+      "range": [
+        1.35,
+        1.56
+      ],
+      "printed_page": 261,
+      "pdf_page": 11,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G261-015": {
+    "curve_id": "G261-015",
+    "printed_page": 261,
+    "pdf_page": 11,
+    "status": "source_factor",
+    "default": {
+      "id": "261.installation.source_average",
+      "multiplier": 1.42,
+      "range": [
+        1.35,
+        1.56
+      ],
+      "printed_page": 261,
+      "pdf_page": 11,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G261-016": {
+    "curve_id": "G261-016",
+    "printed_page": 261,
+    "pdf_page": 11,
+    "status": "source_factor",
+    "default": {
+      "id": "261.installation.source_average",
+      "multiplier": 1.42,
+      "range": [
+        1.35,
+        1.56
+      ],
+      "printed_page": 261,
+      "pdf_page": 11,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G261-017": {
+    "curve_id": "G261-017",
+    "printed_page": 261,
+    "pdf_page": 11,
+    "status": "source_factor",
+    "default": {
+      "id": "261.installation.source_average",
+      "multiplier": 1.42,
+      "range": [
+        1.35,
+        1.56
+      ],
+      "printed_page": 261,
+      "pdf_page": 11,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G262-018": {
+    "curve_id": "G262-018",
+    "printed_page": 262,
+    "pdf_page": 12,
+    "status": "source_factor",
+    "default": {
+      "id": "262.installation.source_average",
+      "multiplier": 1.53,
+      "range": [
+        1.21,
+        1.82
+      ],
+      "printed_page": 262,
+      "pdf_page": 12,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G262-019": {
+    "curve_id": "G262-019",
+    "printed_page": 262,
+    "pdf_page": 12,
+    "status": "source_factor",
+    "default": {
+      "id": "262.installation.source_average",
+      "multiplier": 1.53,
+      "range": [
+        1.21,
+        1.82
+      ],
+      "printed_page": 262,
+      "pdf_page": 12,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G262-020": {
+    "curve_id": "G262-020",
+    "printed_page": 262,
+    "pdf_page": 12,
+    "status": "source_factor",
+    "default": {
+      "id": "262.installation.source_average",
+      "multiplier": 1.53,
+      "range": [
+        1.21,
+        1.82
+      ],
+      "printed_page": 262,
+      "pdf_page": 12,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G263-021": {
+    "curve_id": "G263-021",
+    "printed_page": 263,
+    "pdf_page": 13,
+    "status": "source_factor",
+    "default": {
+      "id": "263.installation.source_average",
+      "multiplier": 1.67,
+      "range": [
+        1.4,
+        1.82
+      ],
+      "printed_page": 263,
+      "pdf_page": 13,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G264-022": {
+    "curve_id": "G264-022",
+    "printed_page": 264,
+    "pdf_page": 14,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G265-023": {
+    "curve_id": "G265-023",
+    "printed_page": 265,
+    "pdf_page": 15,
+    "status": "source_factor",
+    "default": {
+      "id": "265.installation.source_average",
+      "multiplier": 1.54,
+      "range": [
+        1.2,
+        2.02
+      ],
+      "printed_page": 265,
+      "pdf_page": 15,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G266-024": {
+    "curve_id": "G266-024",
+    "printed_page": 266,
+    "pdf_page": 16,
+    "status": "source_factor",
+    "default": {
+      "id": "266.installation.source_average",
+      "multiplier": 1.24,
+      "range": [
+        1.2,
+        1.28
+      ],
+      "printed_page": 266,
+      "pdf_page": 16,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G266-025": {
+    "curve_id": "G266-025",
+    "printed_page": 266,
+    "pdf_page": 16,
+    "status": "source_factor",
+    "default": {
+      "id": "266.installation.source_average",
+      "multiplier": 1.24,
+      "range": [
+        1.2,
+        1.28
+      ],
+      "printed_page": 266,
+      "pdf_page": 16,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G266-026": {
+    "curve_id": "G266-026",
+    "printed_page": 266,
+    "pdf_page": 16,
+    "status": "source_factor",
+    "default": {
+      "id": "266.installation.source_average",
+      "multiplier": 1.24,
+      "range": [
+        1.2,
+        1.28
+      ],
+      "printed_page": 266,
+      "pdf_page": 16,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G266-027": {
+    "curve_id": "G266-027",
+    "printed_page": 266,
+    "pdf_page": 16,
+    "status": "source_factor",
+    "default": {
+      "id": "266.installation.source_average",
+      "multiplier": 1.24,
+      "range": [
+        1.2,
+        1.28
+      ],
+      "printed_page": 266,
+      "pdf_page": 16,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G266-028": {
+    "curve_id": "G266-028",
+    "printed_page": 266,
+    "pdf_page": 16,
+    "status": "source_factor",
+    "default": {
+      "id": "266.installation.source_average",
+      "multiplier": 1.24,
+      "range": [
+        1.2,
+        1.28
+      ],
+      "printed_page": 266,
+      "pdf_page": 16,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G266-029": {
+    "curve_id": "G266-029",
+    "printed_page": 266,
+    "pdf_page": 16,
+    "status": "source_factor",
+    "default": {
+      "id": "266.installation.source_average",
+      "multiplier": 1.24,
+      "range": [
+        1.2,
+        1.28
+      ],
+      "printed_page": 266,
+      "pdf_page": 16,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G267-030": {
+    "curve_id": "G267-030",
+    "printed_page": 267,
+    "pdf_page": 17,
+    "status": "source_factor",
+    "default": {
+      "id": "267.installation.source_average",
+      "multiplier": 2.12,
+      "range": [
+        1.63,
+        2.61
+      ],
+      "printed_page": 267,
+      "pdf_page": 17,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G268-031": {
+    "curve_id": "G268-031",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "status": "source_factor",
+    "default": {
+      "id": "268.installation.source_average",
+      "multiplier": 1.72,
+      "range": [
+        1.29,
+        2.03
+      ],
+      "printed_page": 268,
+      "pdf_page": 18,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G268-032": {
+    "curve_id": "G268-032",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "status": "source_factor",
+    "default": {
+      "id": "268.installation.source_average",
+      "multiplier": 1.72,
+      "range": [
+        1.29,
+        2.03
+      ],
+      "printed_page": 268,
+      "pdf_page": 18,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G269-033": {
+    "curve_id": "G269-033",
+    "printed_page": 269,
+    "pdf_page": 19,
+    "status": "source_factor",
+    "default": {
+      "id": "269.installation.source_average",
+      "multiplier": 1.2,
+      "range": null,
+      "printed_page": 269,
+      "pdf_page": 19,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G269-034": {
+    "curve_id": "G269-034",
+    "printed_page": 269,
+    "pdf_page": 19,
+    "status": "source_factor",
+    "default": {
+      "id": "269.installation.source_average",
+      "multiplier": 1.2,
+      "range": null,
+      "printed_page": 269,
+      "pdf_page": 19,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G270-035": {
+    "curve_id": "G270-035",
+    "printed_page": 270,
+    "pdf_page": 20,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G270-036": {
+    "curve_id": "G270-036",
+    "printed_page": 270,
+    "pdf_page": 20,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G270-037": {
+    "curve_id": "G270-037",
+    "printed_page": 270,
+    "pdf_page": 20,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G270-038": {
+    "curve_id": "G270-038",
+    "printed_page": 270,
+    "pdf_page": 20,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G270-039": {
+    "curve_id": "G270-039",
+    "printed_page": 270,
+    "pdf_page": 20,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G270-040": {
+    "curve_id": "G270-040",
+    "printed_page": 270,
+    "pdf_page": 20,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G271-041": {
+    "curve_id": "G271-041",
+    "printed_page": 271,
+    "pdf_page": 21,
+    "status": "source_factor",
+    "default": {
+      "id": "271.installation.source_average",
+      "multiplier": 1.49,
+      "range": [
+        1.3,
+        1.87
+      ],
+      "printed_page": 271,
+      "pdf_page": 21,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G271-042": {
+    "curve_id": "G271-042",
+    "printed_page": 271,
+    "pdf_page": 21,
+    "status": "source_factor",
+    "default": {
+      "id": "271.installation.source_average",
+      "multiplier": 1.49,
+      "range": [
+        1.3,
+        1.87
+      ],
+      "printed_page": 271,
+      "pdf_page": 21,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G271-043": {
+    "curve_id": "G271-043",
+    "printed_page": 271,
+    "pdf_page": 21,
+    "status": "source_factor",
+    "default": {
+      "id": "271.installation.source_average",
+      "multiplier": 1.49,
+      "range": [
+        1.3,
+        1.87
+      ],
+      "printed_page": 271,
+      "pdf_page": 21,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G271-044": {
+    "curve_id": "G271-044",
+    "printed_page": 271,
+    "pdf_page": 21,
+    "status": "source_factor",
+    "default": {
+      "id": "271.installation.source_average",
+      "multiplier": 1.49,
+      "range": [
+        1.3,
+        1.87
+      ],
+      "printed_page": 271,
+      "pdf_page": 21,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G272-045": {
+    "curve_id": "G272-045",
+    "printed_page": 272,
+    "pdf_page": 22,
+    "status": "source_factor",
+    "default": {
+      "id": "272.installation.source_average",
+      "multiplier": 1.49,
+      "range": [
+        1.3,
+        1.87
+      ],
+      "printed_page": 272,
+      "pdf_page": 22,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G273-046": {
+    "curve_id": "G273-046",
+    "printed_page": 273,
+    "pdf_page": 23,
+    "status": "source_factor",
+    "default": {
+      "id": "273.installation.source_average",
+      "multiplier": 1.72,
+      "range": [
+        1.4,
+        2.15
+      ],
+      "printed_page": 273,
+      "pdf_page": 23,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G273-047": {
+    "curve_id": "G273-047",
+    "printed_page": 273,
+    "pdf_page": 23,
+    "status": "source_factor",
+    "default": {
+      "id": "273.installation.source_average",
+      "multiplier": 1.72,
+      "range": [
+        1.4,
+        2.15
+      ],
+      "printed_page": 273,
+      "pdf_page": 23,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G273-048": {
+    "curve_id": "G273-048",
+    "printed_page": 273,
+    "pdf_page": 23,
+    "status": "source_factor",
+    "default": {
+      "id": "273.installation.source_average",
+      "multiplier": 1.72,
+      "range": [
+        1.4,
+        2.15
+      ],
+      "printed_page": 273,
+      "pdf_page": 23,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G273-049": {
+    "curve_id": "G273-049",
+    "printed_page": 273,
+    "pdf_page": 23,
+    "status": "source_factor",
+    "default": {
+      "id": "273.installation.source_average",
+      "multiplier": 1.72,
+      "range": [
+        1.4,
+        2.15
+      ],
+      "printed_page": 273,
+      "pdf_page": 23,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G273-050": {
+    "curve_id": "G273-050",
+    "printed_page": 273,
+    "pdf_page": 23,
+    "status": "source_factor",
+    "default": {
+      "id": "273.installation.source_average",
+      "multiplier": 1.72,
+      "range": [
+        1.4,
+        2.15
+      ],
+      "printed_page": 273,
+      "pdf_page": 23,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G273-051": {
+    "curve_id": "G273-051",
+    "printed_page": 273,
+    "pdf_page": 23,
+    "status": "source_factor",
+    "default": {
+      "id": "273.installation.source_average",
+      "multiplier": 1.72,
+      "range": [
+        1.4,
+        2.15
+      ],
+      "printed_page": 273,
+      "pdf_page": 23,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G274-052": {
+    "curve_id": "G274-052",
+    "printed_page": 274,
+    "pdf_page": 24,
+    "status": "source_factor",
+    "default": {
+      "id": "274.installation.source_average",
+      "multiplier": 1.62,
+      "range": [
+        1.4,
+        1.85
+      ],
+      "printed_page": 274,
+      "pdf_page": 24,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G274-053": {
+    "curve_id": "G274-053",
+    "printed_page": 274,
+    "pdf_page": 24,
+    "status": "source_factor",
+    "default": {
+      "id": "274.installation.source_average",
+      "multiplier": 1.62,
+      "range": [
+        1.4,
+        1.85
+      ],
+      "printed_page": 274,
+      "pdf_page": 24,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G274-054": {
+    "curve_id": "G274-054",
+    "printed_page": 274,
+    "pdf_page": 24,
+    "status": "source_factor",
+    "default": {
+      "id": "274.installation.source_average",
+      "multiplier": 1.62,
+      "range": [
+        1.4,
+        1.85
+      ],
+      "printed_page": 274,
+      "pdf_page": 24,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G274-055": {
+    "curve_id": "G274-055",
+    "printed_page": 274,
+    "pdf_page": 24,
+    "status": "source_factor",
+    "default": {
+      "id": "274.installation.source_average",
+      "multiplier": 1.62,
+      "range": [
+        1.4,
+        1.85
+      ],
+      "printed_page": 274,
+      "pdf_page": 24,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G275-056": {
+    "curve_id": "G275-056",
+    "printed_page": 275,
+    "pdf_page": 25,
+    "status": "source_factor",
+    "default": {
+      "id": "275.installation.source_average",
+      "multiplier": 1.2,
+      "range": null,
+      "printed_page": 275,
+      "pdf_page": 25,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G276-057": {
+    "curve_id": "G276-057",
+    "printed_page": 276,
+    "pdf_page": 26,
+    "status": "source_factor",
+    "default": {
+      "id": "276.installation.source_average",
+      "multiplier": 1.8,
+      "range": [
+        1.3,
+        2.03
+      ],
+      "printed_page": 276,
+      "pdf_page": 26,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G276-058": {
+    "curve_id": "G276-058",
+    "printed_page": 276,
+    "pdf_page": 26,
+    "status": "source_factor",
+    "default": {
+      "id": "276.installation.source_average",
+      "multiplier": 1.8,
+      "range": [
+        1.3,
+        2.03
+      ],
+      "printed_page": 276,
+      "pdf_page": 26,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G276-059": {
+    "curve_id": "G276-059",
+    "printed_page": 276,
+    "pdf_page": 26,
+    "status": "source_factor",
+    "default": {
+      "id": "276.installation.source_average",
+      "multiplier": 1.8,
+      "range": [
+        1.3,
+        2.03
+      ],
+      "printed_page": 276,
+      "pdf_page": 26,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G277-060": {
+    "curve_id": "G277-060",
+    "printed_page": 277,
+    "pdf_page": 27,
+    "status": "source_factor",
+    "default": {
+      "id": "277.installation.source_average",
+      "multiplier": 1.64,
+      "range": [
+        1.25,
+        1.96
+      ],
+      "printed_page": 277,
+      "pdf_page": 27,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G277-061": {
+    "curve_id": "G277-061",
+    "printed_page": 277,
+    "pdf_page": 27,
+    "status": "source_factor",
+    "default": {
+      "id": "277.installation.source_average",
+      "multiplier": 1.64,
+      "range": [
+        1.25,
+        1.96
+      ],
+      "printed_page": 277,
+      "pdf_page": 27,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G277-062": {
+    "curve_id": "G277-062",
+    "printed_page": 277,
+    "pdf_page": 27,
+    "status": "source_factor",
+    "default": {
+      "id": "277.installation.source_average",
+      "multiplier": 1.64,
+      "range": [
+        1.25,
+        1.96
+      ],
+      "printed_page": 277,
+      "pdf_page": 27,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G278-063": {
+    "curve_id": "G278-063",
+    "printed_page": 278,
+    "pdf_page": 28,
+    "status": "source_factor",
+    "default": {
+      "id": "278.installation.source_average",
+      "multiplier": 1.45,
+      "range": null,
+      "printed_page": 278,
+      "pdf_page": 28,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G278-064": {
+    "curve_id": "G278-064",
+    "printed_page": 278,
+    "pdf_page": 28,
+    "status": "source_factor",
+    "default": {
+      "id": "278.installation.source_average",
+      "multiplier": 1.45,
+      "range": null,
+      "printed_page": 278,
+      "pdf_page": 28,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G279-065": {
+    "curve_id": "G279-065",
+    "printed_page": 279,
+    "pdf_page": 29,
+    "status": "source_factor",
+    "default": {
+      "id": "279.installation.source_average",
+      "multiplier": 1.9,
+      "range": [
+        1.76,
+        2.0
+      ],
+      "printed_page": 279,
+      "pdf_page": 29,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G279-066": {
+    "curve_id": "G279-066",
+    "printed_page": 279,
+    "pdf_page": 29,
+    "status": "source_factor",
+    "default": {
+      "id": "279.installation.source_average",
+      "multiplier": 1.9,
+      "range": [
+        1.76,
+        2.0
+      ],
+      "printed_page": 279,
+      "pdf_page": 29,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G279-067": {
+    "curve_id": "G279-067",
+    "printed_page": 279,
+    "pdf_page": 29,
+    "status": "source_factor",
+    "default": {
+      "id": "279.installation.source_average",
+      "multiplier": 1.9,
+      "range": [
+        1.76,
+        2.0
+      ],
+      "printed_page": 279,
+      "pdf_page": 29,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G279-068": {
+    "curve_id": "G279-068",
+    "printed_page": 279,
+    "pdf_page": 29,
+    "status": "source_factor",
+    "default": {
+      "id": "279.installation.source_average",
+      "multiplier": 1.9,
+      "range": [
+        1.76,
+        2.0
+      ],
+      "printed_page": 279,
+      "pdf_page": 29,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G280-069": {
+    "curve_id": "G280-069",
+    "printed_page": 280,
+    "pdf_page": 30,
+    "status": "source_factor",
+    "default": {
+      "id": "280.installation.source_average",
+      "multiplier": 2.09,
+      "range": [
+        1.5,
+        2.5
+      ],
+      "printed_page": 280,
+      "pdf_page": 30,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G280-070": {
+    "curve_id": "G280-070",
+    "printed_page": 280,
+    "pdf_page": 30,
+    "status": "source_factor",
+    "default": {
+      "id": "280.installation.source_average",
+      "multiplier": 2.09,
+      "range": [
+        1.5,
+        2.5
+      ],
+      "printed_page": 280,
+      "pdf_page": 30,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G280-071": {
+    "curve_id": "G280-071",
+    "printed_page": 280,
+    "pdf_page": 30,
+    "status": "source_factor",
+    "default": {
+      "id": "280.installation.source_average",
+      "multiplier": 2.09,
+      "range": [
+        1.5,
+        2.5
+      ],
+      "printed_page": 280,
+      "pdf_page": 30,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G281-072": {
+    "curve_id": "G281-072",
+    "printed_page": 281,
+    "pdf_page": 31,
+    "status": "source_factor",
+    "default": {
+      "id": "281.installation.source_average",
+      "multiplier": 1.61,
+      "range": [
+        1.3,
+        2.05
+      ],
+      "printed_page": 281,
+      "pdf_page": 31,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G281-073": {
+    "curve_id": "G281-073",
+    "printed_page": 281,
+    "pdf_page": 31,
+    "status": "source_factor",
+    "default": {
+      "id": "281.installation.source_average",
+      "multiplier": 1.61,
+      "range": [
+        1.3,
+        2.05
+      ],
+      "printed_page": 281,
+      "pdf_page": 31,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G281-074": {
+    "curve_id": "G281-074",
+    "printed_page": 281,
+    "pdf_page": 31,
+    "status": "source_factor",
+    "default": {
+      "id": "281.installation.source_average",
+      "multiplier": 1.61,
+      "range": [
+        1.3,
+        2.05
+      ],
+      "printed_page": 281,
+      "pdf_page": 31,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G281-075": {
+    "curve_id": "G281-075",
+    "printed_page": 281,
+    "pdf_page": 31,
+    "status": "source_factor",
+    "default": {
+      "id": "281.installation.source_average",
+      "multiplier": 1.61,
+      "range": [
+        1.3,
+        2.05
+      ],
+      "printed_page": 281,
+      "pdf_page": 31,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G282-076": {
+    "curve_id": "G282-076",
+    "printed_page": 282,
+    "pdf_page": 32,
+    "status": "source_factor",
+    "default": {
+      "id": "282.installation.source_average",
+      "multiplier": 1.69,
+      "range": [
+        1.19,
+        2.21
+      ],
+      "printed_page": 282,
+      "pdf_page": 32,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G282-077": {
+    "curve_id": "G282-077",
+    "printed_page": 282,
+    "pdf_page": 32,
+    "status": "source_factor",
+    "default": {
+      "id": "282.installation.source_average",
+      "multiplier": 1.69,
+      "range": [
+        1.19,
+        2.21
+      ],
+      "printed_page": 282,
+      "pdf_page": 32,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G282-078": {
+    "curve_id": "G282-078",
+    "printed_page": 282,
+    "pdf_page": 32,
+    "status": "source_factor",
+    "default": {
+      "id": "282.installation.source_average",
+      "multiplier": 1.69,
+      "range": [
+        1.19,
+        2.21
+      ],
+      "printed_page": 282,
+      "pdf_page": 32,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G282-079": {
+    "curve_id": "G282-079",
+    "printed_page": 282,
+    "pdf_page": 32,
+    "status": "source_factor",
+    "default": {
+      "id": "282.installation.source_average",
+      "multiplier": 1.69,
+      "range": [
+        1.19,
+        2.21
+      ],
+      "printed_page": 282,
+      "pdf_page": 32,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G282-080": {
+    "curve_id": "G282-080",
+    "printed_page": 282,
+    "pdf_page": 32,
+    "status": "source_factor",
+    "default": {
+      "id": "282.installation.source_average",
+      "multiplier": 1.69,
+      "range": [
+        1.19,
+        2.21
+      ],
+      "printed_page": 282,
+      "pdf_page": 32,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G282-081": {
+    "curve_id": "G282-081",
+    "printed_page": 282,
+    "pdf_page": 32,
+    "status": "source_factor",
+    "default": {
+      "id": "282.installation.source_average",
+      "multiplier": 1.69,
+      "range": [
+        1.19,
+        2.21
+      ],
+      "printed_page": 282,
+      "pdf_page": 32,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G283-082": {
+    "curve_id": "G283-082",
+    "printed_page": 283,
+    "pdf_page": 33,
+    "status": "source_factor",
+    "default": {
+      "id": "283.installation.source_average",
+      "multiplier": 1.45,
+      "range": null,
+      "printed_page": 283,
+      "pdf_page": 33,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G283-083": {
+    "curve_id": "G283-083",
+    "printed_page": 283,
+    "pdf_page": 33,
+    "status": "source_factor",
+    "default": {
+      "id": "283.installation.source_average",
+      "multiplier": 1.45,
+      "range": null,
+      "printed_page": 283,
+      "pdf_page": 33,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G284-084": {
+    "curve_id": "G284-084",
+    "printed_page": 284,
+    "pdf_page": 34,
+    "status": "source_factor",
+    "default": {
+      "id": "284.installation.source_average",
+      "multiplier": 1.52,
+      "range": [
+        1.3,
+        1.71
+      ],
+      "printed_page": 284,
+      "pdf_page": 34,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G284-085": {
+    "curve_id": "G284-085",
+    "printed_page": 284,
+    "pdf_page": 34,
+    "status": "source_factor",
+    "default": {
+      "id": "284.installation.source_average",
+      "multiplier": 1.52,
+      "range": [
+        1.3,
+        1.71
+      ],
+      "printed_page": 284,
+      "pdf_page": 34,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G284-086": {
+    "curve_id": "G284-086",
+    "printed_page": 284,
+    "pdf_page": 34,
+    "status": "source_factor",
+    "default": {
+      "id": "284.installation.source_average",
+      "multiplier": 1.52,
+      "range": [
+        1.3,
+        1.71
+      ],
+      "printed_page": 284,
+      "pdf_page": 34,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G285-087": {
+    "curve_id": "G285-087",
+    "printed_page": 285,
+    "pdf_page": 35,
+    "status": "source_factor",
+    "default": {
+      "id": "285.installation.source_average",
+      "multiplier": 2.31,
+      "range": [
+        2.22,
+        2.39
+      ],
+      "printed_page": 285,
+      "pdf_page": 35,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G285-088": {
+    "curve_id": "G285-088",
+    "printed_page": 285,
+    "pdf_page": 35,
+    "status": "source_factor",
+    "default": {
+      "id": "285.installation.source_average",
+      "multiplier": 2.31,
+      "range": [
+        2.22,
+        2.39
+      ],
+      "printed_page": 285,
+      "pdf_page": 35,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G286-089": {
+    "curve_id": "G286-089",
+    "printed_page": 286,
+    "pdf_page": 36,
+    "status": "source_factor",
+    "default": {
+      "id": "286.installation.source_average",
+      "multiplier": 1.61,
+      "range": [
+        1.23,
+        2.1
+      ],
+      "printed_page": 286,
+      "pdf_page": 36,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G286-090": {
+    "curve_id": "G286-090",
+    "printed_page": 286,
+    "pdf_page": 36,
+    "status": "source_factor",
+    "default": {
+      "id": "286.installation.source_average",
+      "multiplier": 1.61,
+      "range": [
+        1.23,
+        2.1
+      ],
+      "printed_page": 286,
+      "pdf_page": 36,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G286-091": {
+    "curve_id": "G286-091",
+    "printed_page": 286,
+    "pdf_page": 36,
+    "status": "source_factor",
+    "default": {
+      "id": "286.installation.source_average",
+      "multiplier": 1.61,
+      "range": [
+        1.23,
+        2.1
+      ],
+      "printed_page": 286,
+      "pdf_page": 36,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G287-092": {
+    "curve_id": "G287-092",
+    "printed_page": 287,
+    "pdf_page": 37,
+    "status": "source_factor",
+    "default": {
+      "id": "287.installation.plate_frame_stainless",
+      "multiplier": 1.53,
+      "range": null,
+      "printed_page": 287,
+      "pdf_page": 37,
+      "source_label": "plate_frame_stainless",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {
+      "mild_steel": {
+        "id": "287.installation.plate_frame_mild_steel",
+        "multiplier": 1.7,
+        "range": null,
+        "printed_page": 287,
+        "pdf_page": 37,
+        "source_label": "plate_frame_mild_steel",
+        "source_status": "PDF installation factor; preliminary applicability",
+        "source_location": "Installation factor table below equipment graph"
+      }
+    },
+    "reason": "Installation table explicitly covers plate-and-frame; material-specific factor."
+  },
+  "G287-093": {
+    "curve_id": "G287-093",
+    "printed_page": 287,
+    "pdf_page": 37,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G288-094": {
+    "curve_id": "G288-094",
+    "printed_page": 288,
+    "pdf_page": 38,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G288-095": {
+    "curve_id": "G288-095",
+    "printed_page": 288,
+    "pdf_page": 38,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G288-096": {
+    "curve_id": "G288-096",
+    "printed_page": 288,
+    "pdf_page": 38,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G288-097": {
+    "curve_id": "G288-097",
+    "printed_page": 288,
+    "pdf_page": 38,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G289-098": {
+    "curve_id": "G289-098",
+    "printed_page": 289,
+    "pdf_page": 39,
+    "status": "already_installed",
+    "default": null,
+    "choices": {},
+    "reason": "Source price already includes installation. No equipment/installation split is supplied; do not apply another factor."
+  },
+  "G289-099": {
+    "curve_id": "G289-099",
+    "printed_page": 289,
+    "pdf_page": 39,
+    "status": "already_installed",
+    "default": null,
+    "choices": {},
+    "reason": "Source price already includes installation. No equipment/installation split is supplied; do not apply another factor."
+  },
+  "G289-100": {
+    "curve_id": "G289-100",
+    "printed_page": 289,
+    "pdf_page": 39,
+    "status": "already_installed",
+    "default": null,
+    "choices": {},
+    "reason": "Source price already includes installation. No equipment/installation split is supplied; do not apply another factor."
+  },
+  "G289-101": {
+    "curve_id": "G289-101",
+    "printed_page": 289,
+    "pdf_page": 39,
+    "status": "already_installed",
+    "default": null,
+    "choices": {},
+    "reason": "Source price already includes installation. No equipment/installation split is supplied; do not apply another factor."
+  },
+  "G289-102": {
+    "curve_id": "G289-102",
+    "printed_page": 289,
+    "pdf_page": 39,
+    "status": "already_installed",
+    "default": null,
+    "choices": {},
+    "reason": "Source price already includes installation. No equipment/installation split is supplied; do not apply another factor."
+  },
+  "G289-103": {
+    "curve_id": "G289-103",
+    "printed_page": 289,
+    "pdf_page": 39,
+    "status": "already_installed",
+    "default": null,
+    "choices": {},
+    "reason": "Source price already includes installation. No equipment/installation split is supplied; do not apply another factor."
+  },
+  "G290-104": {
+    "curve_id": "G290-104",
+    "printed_page": 290,
+    "pdf_page": 40,
+    "status": "source_factor",
+    "default": {
+      "id": "290.installation.source_average",
+      "multiplier": 1.62,
+      "range": [
+        1.58,
+        1.65
+      ],
+      "printed_page": 290,
+      "pdf_page": 40,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G291-105": {
+    "curve_id": "G291-105",
+    "printed_page": 291,
+    "pdf_page": 41,
+    "status": "source_factor",
+    "default": {
+      "id": "291.installation.source_average",
+      "multiplier": 1.83,
+      "range": [
+        1.3,
+        2.15
+      ],
+      "printed_page": 291,
+      "pdf_page": 41,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G291-106": {
+    "curve_id": "G291-106",
+    "printed_page": 291,
+    "pdf_page": 41,
+    "status": "source_factor",
+    "default": {
+      "id": "291.installation.source_average",
+      "multiplier": 1.83,
+      "range": [
+        1.3,
+        2.15
+      ],
+      "printed_page": 291,
+      "pdf_page": 41,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G291-107": {
+    "curve_id": "G291-107",
+    "printed_page": 291,
+    "pdf_page": 41,
+    "status": "source_factor",
+    "default": {
+      "id": "291.installation.source_average",
+      "multiplier": 1.83,
+      "range": [
+        1.3,
+        2.15
+      ],
+      "printed_page": 291,
+      "pdf_page": 41,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G292-108": {
+    "curve_id": "G292-108",
+    "printed_page": 292,
+    "pdf_page": 42,
+    "status": "scope_unresolved",
+    "default": null,
+    "choices": {},
+    "reason": "Source has purchased and installed-with-classifying-circuit mill curves; workbook does not unambiguously identify which one was read."
+  },
+  "G292-109": {
+    "curve_id": "G292-109",
+    "printed_page": 292,
+    "pdf_page": 42,
+    "status": "source_factor",
+    "default": {
+      "id": "292.installation.source_average",
+      "multiplier": 1.83,
+      "range": [
+        1.3,
+        2.15
+      ],
+      "printed_page": 292,
+      "pdf_page": 42,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G292-110": {
+    "curve_id": "G292-110",
+    "printed_page": 292,
+    "pdf_page": 42,
+    "status": "source_factor",
+    "default": {
+      "id": "292.installation.source_average",
+      "multiplier": 1.83,
+      "range": [
+        1.3,
+        2.15
+      ],
+      "printed_page": 292,
+      "pdf_page": 42,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G293-111": {
+    "curve_id": "G293-111",
+    "printed_page": 293,
+    "pdf_page": 43,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G293-112": {
+    "curve_id": "G293-112",
+    "printed_page": 293,
+    "pdf_page": 43,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G293-113": {
+    "curve_id": "G293-113",
+    "printed_page": 293,
+    "pdf_page": 43,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G293-114": {
+    "curve_id": "G293-114",
+    "printed_page": 293,
+    "pdf_page": 43,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G293-115": {
+    "curve_id": "G293-115",
+    "printed_page": 293,
+    "pdf_page": 43,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G294-116": {
+    "curve_id": "G294-116",
+    "printed_page": 294,
+    "pdf_page": 44,
+    "status": "scope_unresolved",
+    "default": null,
+    "choices": {},
+    "reason": "Workbook pipe curve scope conflicts with purchased pipe source curve; resolve installed versus purchase basis before decomposition."
+  },
+  "G294-117": {
+    "curve_id": "G294-117",
+    "printed_page": 294,
+    "pdf_page": 44,
+    "status": "already_installed",
+    "default": null,
+    "choices": {},
+    "reason": "Source price already includes installation. No equipment/installation split is supplied; do not apply another factor."
+  },
+  "G294-118": {
+    "curve_id": "G294-118",
+    "printed_page": 294,
+    "pdf_page": 44,
+    "status": "already_installed",
+    "default": null,
+    "choices": {},
+    "reason": "Source price already includes installation. No equipment/installation split is supplied; do not apply another factor."
+  },
+  "G294-119": {
+    "curve_id": "G294-119",
+    "printed_page": 294,
+    "pdf_page": 44,
+    "status": "already_installed",
+    "default": null,
+    "choices": {},
+    "reason": "Source price already includes installation. No equipment/installation split is supplied; do not apply another factor."
+  },
+  "G295-120": {
+    "curve_id": "G295-120",
+    "printed_page": 295,
+    "pdf_page": 45,
+    "status": "source_factor",
+    "default": {
+      "id": "295.installation.source_average",
+      "multiplier": 2.05,
+      "range": null,
+      "printed_page": 295,
+      "pdf_page": 45,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G295-121": {
+    "curve_id": "G295-121",
+    "printed_page": 295,
+    "pdf_page": 45,
+    "status": "source_factor",
+    "default": {
+      "id": "295.installation.source_average",
+      "multiplier": 2.05,
+      "range": null,
+      "printed_page": 295,
+      "pdf_page": 45,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G296-122": {
+    "curve_id": "G296-122",
+    "printed_page": 296,
+    "pdf_page": 46,
+    "status": "source_factor",
+    "default": {
+      "id": "296.installation.conventional",
+      "multiplier": 1.3,
+      "range": null,
+      "printed_page": 296,
+      "pdf_page": 46,
+      "source_label": "conventional",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Conventional horizontal centrifugal pump installation."
+  },
+  "G296-123": {
+    "curve_id": "G296-123",
+    "printed_page": 296,
+    "pdf_page": 46,
+    "status": "source_factor",
+    "default": {
+      "id": "296.installation.inline",
+      "multiplier": 1.27,
+      "range": null,
+      "printed_page": 296,
+      "pdf_page": 46,
+      "source_label": "inline",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Inline centrifugal pump installation."
+  },
+  "G296-124": {
+    "curve_id": "G296-124",
+    "printed_page": 296,
+    "pdf_page": 46,
+    "status": "configuration_required",
+    "default": null,
+    "choices": {
+      "axial_flow": {
+        "id": "296.installation.axial_flow",
+        "multiplier": 1.58,
+        "range": null,
+        "printed_page": 296,
+        "pdf_page": 46,
+        "source_label": "axial_flow",
+        "source_status": "PDF installation factor; preliminary applicability",
+        "source_location": "Installation factor table below equipment graph"
+      },
+      "mixed_flow": {
+        "id": "296.installation.mixed_flow",
+        "multiplier": 1.32,
+        "range": null,
+        "printed_page": 296,
+        "pdf_page": 46,
+        "source_label": "mixed_flow",
+        "source_status": "PDF installation factor; preliminary applicability",
+        "source_location": "Installation factor table below equipment graph"
+      }
+    },
+    "reason": "Workbook merges axial and mixed flow; installation factors differ. Select installation_variant explicitly."
+  },
+  "G297-125": {
+    "curve_id": "G297-125",
+    "printed_page": 297,
+    "pdf_page": 47,
+    "status": "source_factor",
+    "default": {
+      "id": "297.installation.chemical_injection",
+      "multiplier": 1.58,
+      "range": null,
+      "printed_page": 297,
+      "pdf_page": 47,
+      "source_label": "chemical_injection",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Specific pump factor where printed; otherwise source general average."
+  },
+  "G297-126": {
+    "curve_id": "G297-126",
+    "printed_page": 297,
+    "pdf_page": 47,
+    "status": "source_factor",
+    "default": {
+      "id": "297.installation.general_average",
+      "multiplier": 1.74,
+      "range": [
+        1.25,
+        2.4
+      ],
+      "printed_page": 297,
+      "pdf_page": 47,
+      "source_label": "general_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Specific pump factor where printed; otherwise source general average."
+  },
+  "G297-127": {
+    "curve_id": "G297-127",
+    "printed_page": 297,
+    "pdf_page": 47,
+    "status": "source_factor",
+    "default": {
+      "id": "297.installation.general_average",
+      "multiplier": 1.74,
+      "range": [
+        1.25,
+        2.4
+      ],
+      "printed_page": 297,
+      "pdf_page": 47,
+      "source_label": "general_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Specific pump factor where printed; otherwise source general average."
+  },
+  "G297-128": {
+    "curve_id": "G297-128",
+    "printed_page": 297,
+    "pdf_page": 47,
+    "status": "source_factor",
+    "default": {
+      "id": "297.installation.turbine",
+      "multiplier": 1.38,
+      "range": null,
+      "printed_page": 297,
+      "pdf_page": 47,
+      "source_label": "turbine",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Specific pump factor where printed; otherwise source general average."
+  },
+  "G298-129": {
+    "curve_id": "G298-129",
+    "printed_page": 298,
+    "pdf_page": 48,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G298-130": {
+    "curve_id": "G298-130",
+    "printed_page": 298,
+    "pdf_page": 48,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G298-131": {
+    "curve_id": "G298-131",
+    "printed_page": 298,
+    "pdf_page": 48,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G298-132": {
+    "curve_id": "G298-132",
+    "printed_page": 298,
+    "pdf_page": 48,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G299-133": {
+    "curve_id": "G299-133",
+    "printed_page": 299,
+    "pdf_page": 49,
+    "status": "source_factor",
+    "default": {
+      "id": "299.installation.source_average",
+      "multiplier": 1.7,
+      "range": [
+        1.4,
+        2.1
+      ],
+      "printed_page": 299,
+      "pdf_page": 49,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G300-134": {
+    "curve_id": "G300-134",
+    "printed_page": 300,
+    "pdf_page": 50,
+    "status": "source_factor",
+    "default": {
+      "id": "300.installation.source_average",
+      "multiplier": 1.46,
+      "range": [
+        1.38,
+        1.53
+      ],
+      "printed_page": 300,
+      "pdf_page": 50,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Source labels this Installation, Module factor; use once for installation, never stack as a second module multiplier."
+  },
+  "G301-135": {
+    "curve_id": "G301-135",
+    "printed_page": 301,
+    "pdf_page": 51,
+    "status": "source_factor",
+    "default": {
+      "id": "301.installation.source_average",
+      "multiplier": 1.85,
+      "range": [
+        1.45,
+        2.27
+      ],
+      "printed_page": 301,
+      "pdf_page": 51,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G302-136": {
+    "curve_id": "G302-136",
+    "printed_page": 302,
+    "pdf_page": 52,
+    "status": "source_factor",
+    "default": {
+      "id": "302.installation.source_average",
+      "multiplier": 2.05,
+      "range": null,
+      "printed_page": 302,
+      "pdf_page": 52,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G302-137": {
+    "curve_id": "G302-137",
+    "printed_page": 302,
+    "pdf_page": 52,
+    "status": "source_factor",
+    "default": {
+      "id": "302.installation.source_average",
+      "multiplier": 2.05,
+      "range": null,
+      "printed_page": 302,
+      "pdf_page": 52,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G302-138": {
+    "curve_id": "G302-138",
+    "printed_page": 302,
+    "pdf_page": 52,
+    "status": "source_factor",
+    "default": {
+      "id": "302.installation.source_average",
+      "multiplier": 2.05,
+      "range": null,
+      "printed_page": 302,
+      "pdf_page": 52,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G302-139": {
+    "curve_id": "G302-139",
+    "printed_page": 302,
+    "pdf_page": 52,
+    "status": "source_factor",
+    "default": {
+      "id": "302.installation.source_average",
+      "multiplier": 2.05,
+      "range": null,
+      "printed_page": 302,
+      "pdf_page": 52,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G303-140": {
+    "curve_id": "G303-140",
+    "printed_page": 303,
+    "pdf_page": 53,
+    "status": "source_factor",
+    "default": {
+      "id": "303.installation.source_average",
+      "multiplier": 1.88,
+      "range": [
+        1.2,
+        2.3
+      ],
+      "printed_page": 303,
+      "pdf_page": 53,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G303-141": {
+    "curve_id": "G303-141",
+    "printed_page": 303,
+    "pdf_page": 53,
+    "status": "source_factor",
+    "default": {
+      "id": "303.installation.source_average",
+      "multiplier": 1.88,
+      "range": [
+        1.2,
+        2.3
+      ],
+      "printed_page": 303,
+      "pdf_page": 53,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G303-142": {
+    "curve_id": "G303-142",
+    "printed_page": 303,
+    "pdf_page": 53,
+    "status": "source_factor",
+    "default": {
+      "id": "303.installation.source_average",
+      "multiplier": 1.88,
+      "range": [
+        1.2,
+        2.3
+      ],
+      "printed_page": 303,
+      "pdf_page": 53,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G303-143": {
+    "curve_id": "G303-143",
+    "printed_page": 303,
+    "pdf_page": 53,
+    "status": "source_factor",
+    "default": {
+      "id": "303.installation.source_average",
+      "multiplier": 1.88,
+      "range": [
+        1.2,
+        2.3
+      ],
+      "printed_page": 303,
+      "pdf_page": 53,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G303-144": {
+    "curve_id": "G303-144",
+    "printed_page": 303,
+    "pdf_page": 53,
+    "status": "source_factor",
+    "default": {
+      "id": "303.installation.source_average",
+      "multiplier": 1.88,
+      "range": [
+        1.2,
+        2.3
+      ],
+      "printed_page": 303,
+      "pdf_page": 53,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G303-145": {
+    "curve_id": "G303-145",
+    "printed_page": 303,
+    "pdf_page": 53,
+    "status": "source_factor",
+    "default": {
+      "id": "303.installation.source_average",
+      "multiplier": 1.88,
+      "range": [
+        1.2,
+        2.3
+      ],
+      "printed_page": 303,
+      "pdf_page": 53,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G304-146": {
+    "curve_id": "G304-146",
+    "printed_page": 304,
+    "pdf_page": 54,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G304-147": {
+    "curve_id": "G304-147",
+    "printed_page": 304,
+    "pdf_page": 54,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G304-148": {
+    "curve_id": "G304-148",
+    "printed_page": 304,
+    "pdf_page": 54,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G304-149": {
+    "curve_id": "G304-149",
+    "printed_page": 304,
+    "pdf_page": 54,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G304-150": {
+    "curve_id": "G304-150",
+    "printed_page": 304,
+    "pdf_page": 54,
+    "status": "missing_source_factor",
+    "default": null,
+    "choices": {},
+    "reason": "No installation factor supplied for this configuration on the source page."
+  },
+  "G305-151": {
+    "curve_id": "G305-151",
+    "printed_page": 305,
+    "pdf_page": 55,
+    "status": "source_factor",
+    "default": {
+      "id": "305.installation.source_average",
+      "multiplier": 2.12,
+      "range": [
+        1.63,
+        2.61
+      ],
+      "printed_page": 305,
+      "pdf_page": 55,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G306-152": {
+    "curve_id": "G306-152",
+    "printed_page": 306,
+    "pdf_page": 56,
+    "status": "source_factor",
+    "default": {
+      "id": "306.installation.source_average",
+      "multiplier": 1.12,
+      "range": null,
+      "printed_page": 306,
+      "pdf_page": 56,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G306-153": {
+    "curve_id": "G306-153",
+    "printed_page": 306,
+    "pdf_page": 56,
+    "status": "source_factor",
+    "default": {
+      "id": "306.installation.source_average",
+      "multiplier": 1.12,
+      "range": null,
+      "printed_page": 306,
+      "pdf_page": 56,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  },
+  "G306-154": {
+    "curve_id": "G306-154",
+    "printed_page": 306,
+    "pdf_page": 56,
+    "status": "source_factor",
+    "default": {
+      "id": "306.installation.source_average",
+      "multiplier": 1.12,
+      "range": null,
+      "printed_page": 306,
+      "pdf_page": 56,
+      "source_label": "source_average",
+      "source_status": "PDF installation factor; preliminary applicability",
+      "source_location": "Installation factor table below equipment graph"
+    },
+    "choices": {},
+    "reason": "Printed average/scalar; installation-only = purchase * (factor - 1)."
+  }
+}

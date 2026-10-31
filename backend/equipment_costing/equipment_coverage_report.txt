@@ -1,0 +1,200 @@
+FLOWVALUE AI — GARRETT EQUIPMENT COSTING COVERAGE REPORT
+Source: Donald E. Garrett, Chemical Engineering Economics (1989), Appendix 1
+Source SHA256: 720cca1e5e8927c4dc010812548953e622235dac0185f1d6d1f18eba4412ea51
+
+Coverage: Appendix 1, printed pages 256–306 (PDF pages 6–56).
+Counts refer to equipment/chart groups, not individual equipment variants.
+51 groups: 4 direct-price groups; 39 reference-price scaling groups; 8 graph-only groups.
+
+DIRECT-PRICE FORMULAS — 4 GROUPS
+================================
+1. Activated-carbon adsorbers — printed p. 256; PDF p. 6
+   File: garrett/activated_carbon_adsorbers.py
+   Supported variants: mild_steel
+2. Coolers/quenchers — printed p. 274; PDF p. 24
+   File: garrett/coolers_quenchers.py
+   Supported variants: spray_chamber, quencher
+3. Ducts — printed p. 278; PDF p. 28
+   File: garrett/ducts.py
+   Supported variants: mild_steel, stainless, water_cooled
+4. Spiral/plate-and-frame exchangers — printed p. 287; PDF p. 37
+   File: garrett/heat_exchangers_spiral_plate.py
+   Supported variants: spiral_plate, plate_and_frame
+
+NO STANDALONE PRICE — 39 GROUPS
+===============================
+1. Agitators — printed p. 257; PDF p. 7
+   File: garrett/agitators.py
+   Supported variants: turbine, propeller
+2. Agitated tanks — printed p. 258; PDF p. 8
+   File: garrett/agitated_tanks.py
+   Supported variants: standard
+3. Air conditioning — printed p. 259; PDF p. 9
+   File: garrett/air_conditioning.py
+   Supported variants: standard
+4. Blenders — printed p. 260; PDF p. 10
+   File: garrett/blenders.py
+   Supported variants: ribbon, double_arm, sigma, twin_shell, double_cone
+5. Blowers — printed p. 261; PDF p. 11
+   File: garrett/blowers.py
+   Supported variants: 30_psi, 10_psi
+6. Boilers — printed p. 262; PDF p. 12
+   File: garrett/boilers.py
+   Supported variants: package_hp, package_steam, field_erected
+7. Waste-heat boilers — printed p. 263; PDF p. 13
+   File: garrett/waste_heat_boilers.py
+   Supported variants: standard
+8. Buildings — printed p. 264; PDF p. 14
+   File: garrett/buildings.py
+   Supported variants: office
+9. Chimneys/stacks — printed p. 266; PDF p. 16
+   File: garrett/chimneys_stacks.py
+   Supported variants: tall
+10. Classifiers — printed p. 267; PDF p. 17
+   File: garrett/classifiers.py
+   Supported variants: rake, spiral
+11. Columns — printed p. 268; PDF p. 18
+   File: garrett/columns.py
+   Supported variants: weight_basis
+12. Column packing — printed p. 270; PDF p. 20
+   File: garrett/column_packing.py
+   Supported variants: berl_saddles_porcelain, pall_rings_stainless, pall_rings_polypropylene, interlox_saddles_porcelain, interlox_saddles_polypropylene, raschig_rings_porcelain
+13. Medium/low-pressure compressors — printed p. 271; PDF p. 21
+   File: garrett/compressors_medium_low_pressure.py
+   Supported variants: straight_lobe, sliding_vane, helical_screw, reciprocating_air
+14. High-capacity/pressure compressors — printed p. 272; PDF p. 22
+   File: garrett/compressors_high_capacity_pressure.py
+   Supported variants: centrifugal, reciprocating
+15. Conveyors — printed p. 273; PDF p. 23
+   File: garrett/conveyors.py
+   Supported variants: screw, belt, bucket_elevator, roll, pneumatic, vibrating
+16. Cooling towers — printed p. 275; PDF p. 25
+   File: garrett/cooling_towers.py
+   Supported variants: standard
+17. Crystallizers — printed p. 276; PDF p. 26
+   File: garrett/crystallizers.py
+   Supported variants: cooling_evaporative, growth, forced_circulation, dtb, vapor_recompression
+18. Dryers — printed p. 277; PDF p. 27
+   File: garrett/dryers.py
+   Supported variants: rotary, fluid_bed, spray
+19. Evaporators — printed p. 280; PDF p. 30
+   File: garrett/evaporators.py
+   Supported variants: forced_circulation, falling_film, long_tube, short_tube
+20. Filters — printed p. 282; PDF p. 32
+   File: garrett/filters.py
+   Supported variants: rotary_vacuum_drum, rotary_leaf, vacuum_table, tilting_pan, belt, pressure_leaf, plate_and_frame
+21. Flares — printed p. 283; PDF p. 33
+   File: garrett/flares.py
+   Supported variants: elevated, ground
+22. Furnaces — printed p. 284; PDF p. 34
+   File: garrett/furnaces.py
+   Supported variants: hershoff, box, cylindrical
+23. Electric generators — printed p. 285; PDF p. 35
+   File: garrett/electric_generators.py
+   Supported variants: diesel_drive, turbine_drive
+24. Shell-and-tube/double-pipe/air-cooled exchangers — printed p. 286; PDF p. 36
+   File: garrett/heat_exchangers_shell_tube.py
+   Supported variants: shell_and_tube, double_pipe, air_cooled
+25. Incinerators — printed p. 288; PDF p. 38
+   File: garrett/incinerators.py
+   Supported variants: rotary_kiln, hearth, catalytic, direct_flame
+26. Ion exchange — printed p. 290; PDF p. 40
+   File: garrett/ion_exchange.py
+   Supported variants: standard
+27. Ball/rod/pebble/jet/rubbish mills and shredders — printed p. 292; PDF p. 42
+   File: garrett/grinding_mills.py
+   Supported variants: shredder, mill_purchased, mill_installed
+28. Motors/drives — printed p. 293; PDF p. 43
+   File: garrett/motors_drives.py
+   Supported variants: small_electric_motor, gas_turbine, gas_engine, steam_turbine
+29. Pipe/pipelines — printed p. 294; PDF p. 44
+   File: garrett/pipe_pipelines.py
+   Supported variants: pipeline
+30. Centrifugal pumps — printed p. 296; PDF p. 46
+   File: garrett/pumps_centrifugal.py
+   Supported variants: axial_flow, mixed_flow
+31. Miscellaneous pumps — printed p. 297; PDF p. 47
+   File: garrett/pumps_miscellaneous.py
+   Supported variants: reciprocating, turbine, chemical_injection, diaphragm, rotary, gear, sump
+32. Pressure vessels — printed p. 298; PDF p. 48
+   File: garrett/pressure_vessels.py
+   Supported variants: 15_psi_volume
+33. Refrigeration — printed p. 300; PDF p. 50
+   File: garrett/refrigeration.py
+   Supported variants: 40_F
+34. Vibrating screens — printed p. 301; PDF p. 51
+   File: garrett/vibrating_screens.py
+   Supported variants: single_deck
+35. Size enlargement — printed p. 302; PDF p. 52
+   File: garrett/size_enlargement.py
+   Supported variants: pug_mill, pellet_mill, pelletizing_rolls
+36. Storage tanks — printed p. 303; PDF p. 53
+   File: garrett/storage_tanks.py
+   Supported variants: small_cone_top, large_cone_top, horizontal_pressure, sphere, fiberglass, small_storage
+37. Small stainless tanks — printed p. 304; PDF p. 54
+   File: garrett/small_stainless_tanks.py
+   Supported variants: dished_head_50_psi, flanged_dished_head, cone_top_bottom_legs, flat_top_bottom
+38. Thickeners/clarifiers — printed p. 305; PDF p. 55
+   File: garrett/thickeners_clarifiers.py
+   Supported variants: rake_concrete_tank_drive
+39. Vacuum equipment — printed p. 306; PDF p. 56
+   File: garrett/vacuum_equipment.py
+   Supported variants: vacuum_pump, steam_jet_ejector, barometric_condenser
+
+GRAPH-ONLY — 8 GROUPS LEFT UNPRICED
+===================================
+1. Centrifuges — printed p. 265; PDF p. 15
+   Catalogued only; no calculation implemented.
+2. Column trays — printed p. 269; PDF p. 19
+   Catalogued only; no calculation implemented.
+3. Dust collectors — printed p. 279; PDF p. 29
+   Catalogued only; no calculation implemented.
+4. Fans — printed p. 281; PDF p. 31
+   Catalogued only; no calculation implemented.
+5. Insulation — printed p. 289; PDF p. 39
+   Catalogued only; no calculation implemented.
+6. Hammer/jaw/gyratory/roll mills and crushers — printed p. 291; PDF p. 41
+   Catalogued only; no calculation implemented.
+7. Roll/screw presses — printed p. 295; PDF p. 45
+   Catalogued only; no calculation implemented.
+8. Reactors — printed p. 299; PDF p. 49
+   Catalogued only; no calculation implemented.
+
+SKIPPED VARIANTS AND PARTIAL COVERAGE
+====================================
+- Activated-carbon adsorbers (printed p. 256): Exact 10,000 lb carbon branch boundary is unassigned in the printed inequalities and remains rejected. Outer extrapolation uses a disclosed assumed exponent.
+- Agitators (printed p. 257): Agitator reference-to-target scaling across exponent bands is blocked.
+- Blowers (printed p. 261): Below-3-psi variable-exponent blower curve.
+- Chimneys/stacks (printed p. 266): Short stacks: no numerical exponent.
+- Columns (printed p. 268): Diameter/per-height column graph is not the weight-based cost method.
+- Coolers/quenchers (printed p. 274): Cascade cooler and dilution-air-port graph-only variants.
+- Motors/drives (printed p. 293): Large electric motors and variable-speed drives: no separately specified base-price exponent.
+- Pipe/pipelines (printed p. 294): Bare pipe, slurry pipeline and submarine pipeline curves: no separately specified exponent. Fittings/valves are factors only.
+- Centrifugal pumps (printed p. 296): Conventional and inline centrifugal pumps: exponent cells are blank.
+- Miscellaneous pumps (printed p. 297): Sliding-vane curve: no distinct printed exponent. Chemical-injection flow unit unresolved: identical documented source basis required.
+- Pressure vessels (printed p. 298): 250-psi volume and horizontal/vertical weight curves: no printed exponent.
+- Size enlargement (printed p. 302): Screw extrusion and disk/drum granulation: factors only; no separate base-price method.
+
+IMPORTANT PRICE SCOPES AND BASIS
+===============================
+- Direct-price formulas retain historical early-1987 USD, CE Index 320.
+- Reference scaling preserves the documented reference currency, date, index and configuration.
+- Ducts: price per foot, not total duct cost.
+- Column packing: price per cubic foot, not total packing/equipment cost.
+- Pipelines: installed price per foot, scaled by pipe size; not total pipeline cost.
+- Grinding mills distinguish installed and purchased price scopes.
+- Reference-price methods require a documented comparable price and reviewed size interval.
+- Source gallon/ton definitions and unresolved chemical-injection flow basis are retained explicitly.
+- Out-of-range targets use nearest-boundary anchors and are labelled unvalidated extrapolations.
+
+VERIFICATION AND REMAINING WORK
+===============================
+31 automated test methods passed at completion of this build; lint passed.
+Tests cover arithmetic, exponent transcription, source metadata, units, scopes, invalid inputs, boundary handling and catalogue reconciliation.
+Passing tests does not establish industrial accuracy or universal applicability.
+Graph digitization, automatic installation/material/pressure correction factors, current-price escalation, equipment sizing and frontend integration remain unimplemented in this increment.
+Appendix 2 whole-plant costs and Appendix 1 bibliography pages are outside this equipment build.
+Turton and price-escalation placeholders remain unchanged. The earlier empty pumps.py scaffold remains unused; pumps_centrifugal.py and pumps_miscellaneous.py hold the implemented methods.
+
+Supporting records: garrett/COVERAGE.md; garrett/README.md; garrett/catalogue.json.
+Local review images and test log: outputs/garrett-final-review/ (ignored by Git).

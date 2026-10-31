@@ -1,0 +1,8 @@
+# Optional local API/parser runtime. Canonical calculation engines remain stdlib-only.
+fastapi==0.162.0
+uvicorn==0.54.0
+pydantic==2.14.1
+python-multipart==0.0.32
+openpyxl==3.1.5
+xlrd==2.0.2
+defusedxml==0.7.1

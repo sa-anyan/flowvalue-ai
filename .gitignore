@@ -25,3 +25,7 @@ backend/.venv-biosteam/
 
 # User-supplied private study references
 /reference-materials/private/
+
+# Local development dependency links and TypeScript cache
+/frontend/node_modules
+*.tsbuildinfo

@@ -1,0 +1,659 @@
+{
+  "source": "Donald E. Garrett, Chemical Engineering Economics (1989), Appendix 1",
+  "source_sha256": "720cca1e5e8927c4dc010812548953e622235dac0185f1d6d1f18eba4412ea51",
+  "count_basis": "One chart group per printed page 256\u2013306, not individual variants.",
+  "entries": [
+    {
+      "name": "Activated-carbon adsorbers",
+      "printed_page": 256,
+      "pdf_page": 6,
+      "module": "activated_carbon_adsorbers",
+      "category": "direct_price",
+      "limitations": [
+        "Exact 10,000 lb carbon branch boundary is unassigned in the printed inequalities and remains rejected. Outer extrapolation uses a disclosed assumed exponent."
+      ],
+      "supported_variants": [
+        "mild_steel"
+      ]
+    },
+    {
+      "name": "Agitators",
+      "printed_page": 257,
+      "pdf_page": 7,
+      "module": "agitators",
+      "category": "reference_scaling",
+      "limitations": [
+        "Agitator reference-to-target scaling across exponent bands is blocked."
+      ],
+      "supported_variants": [
+        "turbine",
+        "propeller"
+      ]
+    },
+    {
+      "name": "Agitated tanks",
+      "printed_page": 258,
+      "pdf_page": 8,
+      "module": "agitated_tanks",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "standard"
+      ]
+    },
+    {
+      "name": "Air conditioning",
+      "printed_page": 259,
+      "pdf_page": 9,
+      "module": "air_conditioning",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "standard"
+      ]
+    },
+    {
+      "name": "Blenders",
+      "printed_page": 260,
+      "pdf_page": 10,
+      "module": "blenders",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "ribbon",
+        "double_arm",
+        "sigma",
+        "twin_shell",
+        "double_cone"
+      ]
+    },
+    {
+      "name": "Blowers",
+      "printed_page": 261,
+      "pdf_page": 11,
+      "module": "blowers",
+      "category": "reference_scaling",
+      "limitations": [
+        "Below-3-psi variable-exponent blower curve."
+      ],
+      "supported_variants": [
+        "30_psi",
+        "10_psi"
+      ]
+    },
+    {
+      "name": "Boilers",
+      "printed_page": 262,
+      "pdf_page": 12,
+      "module": "boilers",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "package_hp",
+        "package_steam",
+        "field_erected"
+      ]
+    },
+    {
+      "name": "Waste-heat boilers",
+      "printed_page": 263,
+      "pdf_page": 13,
+      "module": "waste_heat_boilers",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "standard"
+      ]
+    },
+    {
+      "name": "Buildings",
+      "printed_page": 264,
+      "pdf_page": 14,
+      "module": "buildings",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "office"
+      ]
+    },
+    {
+      "name": "Centrifuges",
+      "printed_page": 265,
+      "pdf_page": 15,
+      "module": null,
+      "category": "graph_only",
+      "limitations": [
+        "Graphs and/or adjustment factors only; no standalone base-price equation or numerical size exponent. No graph price digitized; costing is not implemented."
+      ]
+    },
+    {
+      "name": "Chimneys/stacks",
+      "printed_page": 266,
+      "pdf_page": 16,
+      "module": "chimneys_stacks",
+      "category": "reference_scaling",
+      "limitations": [
+        "Short stacks: no numerical exponent."
+      ],
+      "supported_variants": [
+        "tall"
+      ]
+    },
+    {
+      "name": "Classifiers",
+      "printed_page": 267,
+      "pdf_page": 17,
+      "module": "classifiers",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "rake",
+        "spiral"
+      ]
+    },
+    {
+      "name": "Columns",
+      "printed_page": 268,
+      "pdf_page": 18,
+      "module": "columns",
+      "category": "reference_scaling",
+      "limitations": [
+        "Diameter/per-height column graph is not the weight-based cost method."
+      ],
+      "supported_variants": [
+        "weight_basis"
+      ]
+    },
+    {
+      "name": "Column trays",
+      "printed_page": 269,
+      "pdf_page": 19,
+      "module": null,
+      "category": "graph_only",
+      "limitations": [
+        "Graphs and/or adjustment factors only; no standalone base-price equation or numerical size exponent. No graph price digitized; costing is not implemented."
+      ]
+    },
+    {
+      "name": "Column packing",
+      "printed_page": 270,
+      "pdf_page": 20,
+      "module": "column_packing",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "berl_saddles_porcelain",
+        "pall_rings_stainless",
+        "pall_rings_polypropylene",
+        "interlox_saddles_porcelain",
+        "interlox_saddles_polypropylene",
+        "raschig_rings_porcelain"
+      ]
+    },
+    {
+      "name": "Medium/low-pressure compressors",
+      "printed_page": 271,
+      "pdf_page": 21,
+      "module": "compressors_medium_low_pressure",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "straight_lobe",
+        "sliding_vane",
+        "helical_screw",
+        "reciprocating_air"
+      ]
+    },
+    {
+      "name": "High-capacity/pressure compressors",
+      "printed_page": 272,
+      "pdf_page": 22,
+      "module": "compressors_high_capacity_pressure",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "centrifugal",
+        "reciprocating"
+      ]
+    },
+    {
+      "name": "Conveyors",
+      "printed_page": 273,
+      "pdf_page": 23,
+      "module": "conveyors",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "screw",
+        "belt",
+        "bucket_elevator",
+        "roll",
+        "pneumatic",
+        "vibrating"
+      ]
+    },
+    {
+      "name": "Coolers/quenchers",
+      "printed_page": 274,
+      "pdf_page": 24,
+      "module": "coolers_quenchers",
+      "category": "direct_price",
+      "limitations": [
+        "Cascade cooler and dilution-air-port graph-only variants."
+      ],
+      "supported_variants": [
+        "spray_chamber",
+        "quencher"
+      ]
+    },
+    {
+      "name": "Cooling towers",
+      "printed_page": 275,
+      "pdf_page": 25,
+      "module": "cooling_towers",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "standard"
+      ]
+    },
+    {
+      "name": "Crystallizers",
+      "printed_page": 276,
+      "pdf_page": 26,
+      "module": "crystallizers",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "cooling_evaporative",
+        "growth",
+        "forced_circulation",
+        "dtb",
+        "vapor_recompression"
+      ]
+    },
+    {
+      "name": "Dryers",
+      "printed_page": 277,
+      "pdf_page": 27,
+      "module": "dryers",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "rotary",
+        "fluid_bed",
+        "spray"
+      ]
+    },
+    {
+      "name": "Ducts",
+      "printed_page": 278,
+      "pdf_page": 28,
+      "module": "ducts",
+      "category": "direct_price",
+      "limitations": [],
+      "supported_variants": [
+        "mild_steel",
+        "stainless",
+        "water_cooled"
+      ]
+    },
+    {
+      "name": "Dust collectors",
+      "printed_page": 279,
+      "pdf_page": 29,
+      "module": null,
+      "category": "graph_only",
+      "limitations": [
+        "Graphs and/or adjustment factors only; no standalone base-price equation or numerical size exponent. No graph price digitized; costing is not implemented."
+      ]
+    },
+    {
+      "name": "Evaporators",
+      "printed_page": 280,
+      "pdf_page": 30,
+      "module": "evaporators",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "forced_circulation",
+        "falling_film",
+        "long_tube",
+        "short_tube"
+      ]
+    },
+    {
+      "name": "Fans",
+      "printed_page": 281,
+      "pdf_page": 31,
+      "module": null,
+      "category": "graph_only",
+      "limitations": [
+        "Graphs and/or adjustment factors only; no standalone base-price equation or numerical size exponent. No graph price digitized; costing is not implemented."
+      ]
+    },
+    {
+      "name": "Filters",
+      "printed_page": 282,
+      "pdf_page": 32,
+      "module": "filters",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "rotary_vacuum_drum",
+        "rotary_leaf",
+        "vacuum_table",
+        "tilting_pan",
+        "belt",
+        "pressure_leaf",
+        "plate_and_frame"
+      ]
+    },
+    {
+      "name": "Flares",
+      "printed_page": 283,
+      "pdf_page": 33,
+      "module": "flares",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "elevated",
+        "ground"
+      ]
+    },
+    {
+      "name": "Furnaces",
+      "printed_page": 284,
+      "pdf_page": 34,
+      "module": "furnaces",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "hershoff",
+        "box",
+        "cylindrical"
+      ]
+    },
+    {
+      "name": "Electric generators",
+      "printed_page": 285,
+      "pdf_page": 35,
+      "module": "electric_generators",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "diesel_drive",
+        "turbine_drive"
+      ]
+    },
+    {
+      "name": "Shell-and-tube/double-pipe/air-cooled exchangers",
+      "printed_page": 286,
+      "pdf_page": 36,
+      "module": "heat_exchangers_shell_tube",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "shell_and_tube",
+        "double_pipe",
+        "air_cooled"
+      ]
+    },
+    {
+      "name": "Spiral/plate-and-frame exchangers",
+      "printed_page": 287,
+      "pdf_page": 37,
+      "module": "heat_exchangers_spiral_plate",
+      "category": "direct_price",
+      "limitations": [],
+      "supported_variants": [
+        "spiral_plate",
+        "plate_and_frame"
+      ]
+    },
+    {
+      "name": "Incinerators",
+      "printed_page": 288,
+      "pdf_page": 38,
+      "module": "incinerators",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "rotary_kiln",
+        "hearth",
+        "catalytic",
+        "direct_flame"
+      ]
+    },
+    {
+      "name": "Insulation",
+      "printed_page": 289,
+      "pdf_page": 39,
+      "module": null,
+      "category": "graph_only",
+      "limitations": [
+        "Graphs and/or adjustment factors only; no standalone base-price equation or numerical size exponent. No graph price digitized; costing is not implemented."
+      ]
+    },
+    {
+      "name": "Ion exchange",
+      "printed_page": 290,
+      "pdf_page": 40,
+      "module": "ion_exchange",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "standard"
+      ]
+    },
+    {
+      "name": "Hammer/jaw/gyratory/roll mills and crushers",
+      "printed_page": 291,
+      "pdf_page": 41,
+      "module": null,
+      "category": "graph_only",
+      "limitations": [
+        "Graphs and/or adjustment factors only; no standalone base-price equation or numerical size exponent. No graph price digitized; costing is not implemented."
+      ]
+    },
+    {
+      "name": "Ball/rod/pebble/jet/rubbish mills and shredders",
+      "printed_page": 292,
+      "pdf_page": 42,
+      "module": "grinding_mills",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "shredder",
+        "mill_purchased",
+        "mill_installed"
+      ]
+    },
+    {
+      "name": "Motors/drives",
+      "printed_page": 293,
+      "pdf_page": 43,
+      "module": "motors_drives",
+      "category": "reference_scaling",
+      "limitations": [
+        "Large electric motors and variable-speed drives: no separately specified base-price exponent."
+      ],
+      "supported_variants": [
+        "small_electric_motor",
+        "gas_turbine",
+        "gas_engine",
+        "steam_turbine"
+      ]
+    },
+    {
+      "name": "Pipe/pipelines",
+      "printed_page": 294,
+      "pdf_page": 44,
+      "module": "pipe_pipelines",
+      "category": "reference_scaling",
+      "limitations": [
+        "Bare pipe, slurry pipeline and submarine pipeline curves: no separately specified exponent. Fittings/valves are factors only."
+      ],
+      "supported_variants": [
+        "pipeline"
+      ]
+    },
+    {
+      "name": "Roll/screw presses",
+      "printed_page": 295,
+      "pdf_page": 45,
+      "module": null,
+      "category": "graph_only",
+      "limitations": [
+        "Graphs and/or adjustment factors only; no standalone base-price equation or numerical size exponent. No graph price digitized; costing is not implemented."
+      ]
+    },
+    {
+      "name": "Centrifugal pumps",
+      "printed_page": 296,
+      "pdf_page": 46,
+      "module": "pumps_centrifugal",
+      "category": "reference_scaling",
+      "limitations": [
+        "Conventional and inline centrifugal pumps: exponent cells are blank."
+      ],
+      "supported_variants": [
+        "axial_flow",
+        "mixed_flow"
+      ]
+    },
+    {
+      "name": "Miscellaneous pumps",
+      "printed_page": 297,
+      "pdf_page": 47,
+      "module": "pumps_miscellaneous",
+      "category": "reference_scaling",
+      "limitations": [
+        "Sliding-vane curve: no distinct printed exponent. Chemical-injection flow unit unresolved: identical documented source basis required."
+      ],
+      "supported_variants": [
+        "reciprocating",
+        "turbine",
+        "chemical_injection",
+        "diaphragm",
+        "rotary",
+        "gear",
+        "sump"
+      ]
+    },
+    {
+      "name": "Pressure vessels",
+      "printed_page": 298,
+      "pdf_page": 48,
+      "module": "pressure_vessels",
+      "category": "reference_scaling",
+      "limitations": [
+        "250-psi volume and horizontal/vertical weight curves: no printed exponent."
+      ],
+      "supported_variants": [
+        "15_psi_volume"
+      ]
+    },
+    {
+      "name": "Reactors",
+      "printed_page": 299,
+      "pdf_page": 49,
+      "module": null,
+      "category": "graph_only",
+      "limitations": [
+        "Graphs and/or adjustment factors only; no standalone base-price equation or numerical size exponent. No graph price digitized; costing is not implemented."
+      ]
+    },
+    {
+      "name": "Refrigeration",
+      "printed_page": 300,
+      "pdf_page": 50,
+      "module": "refrigeration",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "40_F"
+      ]
+    },
+    {
+      "name": "Vibrating screens",
+      "printed_page": 301,
+      "pdf_page": 51,
+      "module": "vibrating_screens",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "single_deck"
+      ]
+    },
+    {
+      "name": "Size enlargement",
+      "printed_page": 302,
+      "pdf_page": 52,
+      "module": "size_enlargement",
+      "category": "reference_scaling",
+      "limitations": [
+        "Screw extrusion and disk/drum granulation: factors only; no separate base-price method."
+      ],
+      "supported_variants": [
+        "pug_mill",
+        "pellet_mill",
+        "pelletizing_rolls"
+      ]
+    },
+    {
+      "name": "Storage tanks",
+      "printed_page": 303,
+      "pdf_page": 53,
+      "module": "storage_tanks",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "small_cone_top",
+        "large_cone_top",
+        "horizontal_pressure",
+        "sphere",
+        "fiberglass",
+        "small_storage"
+      ]
+    },
+    {
+      "name": "Small stainless tanks",
+      "printed_page": 304,
+      "pdf_page": 54,
+      "module": "small_stainless_tanks",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "dished_head_50_psi",
+        "flanged_dished_head",
+        "cone_top_bottom_legs",
+        "flat_top_bottom"
+      ]
+    },
+    {
+      "name": "Thickeners/clarifiers",
+      "printed_page": 305,
+      "pdf_page": 55,
+      "module": "thickeners_clarifiers",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "rake_concrete_tank_drive"
+      ]
+    },
+    {
+      "name": "Vacuum equipment",
+      "printed_page": 306,
+      "pdf_page": 56,
+      "module": "vacuum_equipment",
+      "category": "reference_scaling",
+      "limitations": [],
+      "supported_variants": [
+        "vacuum_pump",
+        "steam_jet_ejector",
+        "barometric_condenser"
+      ]
+    }
+  ]
+}

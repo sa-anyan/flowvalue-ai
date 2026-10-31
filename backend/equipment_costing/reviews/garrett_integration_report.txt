@@ -1,0 +1,25 @@
+GARRETT WORKBOOK INTEGRATION REVIEW — 30 OCTOBER 2026
+
+51 equipment chart groups, 154 workbook configurations, 498 numeric point candidates.
+Every group has at least one calculable configuration. All graph models are provisional; no source reading is approved by this build.
+
+Representative in-range checks:
+formula_estimate: 7
+provisional: 140
+needs_review: 7
+
+CONFIGURATIONS BLOCKED FOR REVIEW
+G273-049 | Roll conveyor | At least two distinct non-holdout graph sizes are required for fitted n; one documented point suffices with printed n
+G277-060 | Fluid-bed dryer | Dryer volume plot divisor versus actual volume is unresolved in workbook (+10 label); no silent conversion.
+G277-062 | Spray dryer | Dryer volume plot divisor versus actual volume is unresolved in workbook (+10 label); no silent conversion.
+G297-125 | Chemical injection | Chemical-injection flow basis / grouped pump configurations conflict with source; individual readings and units required.
+G297-126 | Other: diaphragm / rotary / gear / sump | Chemical-injection flow basis / grouped pump configurations conflict with source; individual readings and units required.
+G306-153 | Steam-jet ejector | Workbook multiplies air flow by vacuum; source capacity factor divides by absolute mmHg. Correct readings/basis before costing.
+G306-154 | Vacuum pump | Workbook multiplies air flow by vacuum; source capacity factor divides by absolute mmHg. Correct readings/basis before costing.
+
+Direct equations remain authoritative. Graph fits use fixed printed exponents where identified; otherwise log-space fitted exponents. Holdouts are excluded from training and reported in diagnostics.
+Source size intervals take precedence over sample ranges; observed ranges are not validated engineering limits. Fitted n does not authorize extrapolation without a recorded justification.
+Scalar material/module/installation/design/pressure factors are scoped and require caller applicability confirmation. Unimplemented formula/table/combination factors remain review evidence only; requesting an unknown factor is blocked.
+The active clean rebuild had no implemented cost-index system. Its existing escalator.py placeholder now contains explicit same-series target/base ratio adjustment with required target period and source. No current index value or live feed is invented.
+No frontend, deployment, LLM calls, unrelated source or original workbook was modified.
+48 test methods passed; lint passed. Source agreement is not industrial validation.

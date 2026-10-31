@@ -1,0 +1,86 @@
+[
+  {
+    "source": "backend/app/parsers/__init__.py",
+    "target": "backend/ingestion/__init__.py",
+    "checkpoint": "checkpoint-before-costing-rebuild-2026-10-29",
+    "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "backend/app/parsers/workbook_pipeline.py",
+    "target": "backend/ingestion/workbook_pipeline.py",
+    "checkpoint": "checkpoint-before-costing-rebuild-2026-10-29",
+    "source_sha256": "f85c60c84e379ee7212b759ac39e450172efca28348547b465934d7faa06278d"
+  },
+  {
+    "source": "backend/app/parsers/stream_layout.py",
+    "target": "backend/ingestion/stream_layout.py",
+    "checkpoint": "checkpoint-before-costing-rebuild-2026-10-29",
+    "source_sha256": "311655eacdb1292325cff6654dd0ed85a3b210fe74349adbcc926e9e6613f9c8"
+  },
+  {
+    "source": "backend/app/parsers/engineering_register.py",
+    "target": "backend/ingestion/engineering_register.py",
+    "checkpoint": "checkpoint-before-costing-rebuild-2026-10-29",
+    "source_sha256": "d15788f528dc31bb84e9d9b36e64d1769111b08340c914950b0151ac167003ba"
+  },
+  {
+    "source": "backend/app/parsers/balance/__init__.py",
+    "target": "backend/ingestion/balance/__init__.py",
+    "checkpoint": "checkpoint-before-costing-rebuild-2026-10-29",
+    "source_sha256": "4a48422e051ba8e6f17f53082420b013c30edbb65aa68a1d4e9f5f5b04b8ec89"
+  },
+  {
+    "source": "backend/app/parsers/balance/models.py",
+    "target": "backend/ingestion/balance/models.py",
+    "checkpoint": "checkpoint-before-costing-rebuild-2026-10-29",
+    "source_sha256": "dcd65c8e2f967bd596f7455a95a36953dbeff6afc053c42c75d2834af2f5bae3"
+  },
+  {
+    "source": "backend/app/parsers/balance/parser.py",
+    "target": "backend/ingestion/balance/parser.py",
+    "checkpoint": "checkpoint-before-costing-rebuild-2026-10-29",
+    "source_sha256": "91644d78368a1089862bed46c1014fb2f3af1827f52461d21a3decaeee48cb02"
+  },
+  {
+    "source": "backend/app/parsers/balance/units.py",
+    "target": "backend/ingestion/balance/units.py",
+    "checkpoint": "checkpoint-before-costing-rebuild-2026-10-29",
+    "source_sha256": "2aa4beed5c1e0010a21afd59efdff44c06c323aa9f6dbfcc2ed1073f6fd98a61"
+  },
+  {
+    "source": "backend/app/parsers/balance/validation.py",
+    "target": "backend/ingestion/balance/validation.py",
+    "checkpoint": "checkpoint-before-costing-rebuild-2026-10-29",
+    "source_sha256": "e37fb5b76eeb1cac1f629d2c7c08ec2cbe550a655734e33e663f7d8e80293cfd"
+  },
+  {
+    "source": "backend/app/parsers/balance/workbook.py",
+    "target": "backend/ingestion/balance/workbook.py",
+    "checkpoint": "checkpoint-before-costing-rebuild-2026-10-29",
+    "source_sha256": "b4cf8fafa4bd89065163c94273b351ec728bec5ea48e907006a8dcca75d113e3"
+  },
+  {
+    "source": "backend/app/parsers/inputs/__init__.py",
+    "target": "backend/ingestion/inputs/__init__.py",
+    "checkpoint": "checkpoint-before-costing-rebuild-2026-10-29",
+    "source_sha256": "e7f4358d9ce72a98a9dbbfcb89ffcefb60fa42bb3f15bba608b290e0edd87feb"
+  },
+  {
+    "source": "backend/app/parsers/inputs/README.md",
+    "target": "backend/ingestion/inputs/README.md",
+    "checkpoint": "checkpoint-before-costing-rebuild-2026-10-29",
+    "source_sha256": "f9016ff7ebe465bef78f86cf45a05c4d1e9fd99164df13d5f278ae50ddeaadfa"
+  },
+  {
+    "source": "backend/app/parsers/inputs/xlsm_parser.py",
+    "target": "backend/ingestion/inputs/xlsm_parser.py",
+    "checkpoint": "checkpoint-before-costing-rebuild-2026-10-29",
+    "source_sha256": "784dc87f001e2632832c5e2d43e8564f5c2e89bd3f00c0e19523adcbd33c74a6"
+  },
+  {
+    "source": "backend/app/parsers/inputs/xlsm_properties.py",
+    "target": "backend/ingestion/inputs/xlsm_properties.py",
+    "checkpoint": "checkpoint-before-costing-rebuild-2026-10-29",
+    "source_sha256": "3af0c3c2d602d8a53a4f7938d1828b4dd353e177af46a757e4745abb0e8d1a36"
+  }
+]

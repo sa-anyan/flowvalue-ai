@@ -1,0 +1,34 @@
+GARRETT ALL-51 WORKBOOK: DIRECT-FORMULA SPOT CHECK
+Source workbook: /Users/user/Downloads/garrett_all_51_equipment_cost_curves_review.xlsx
+SHA256: d500c5b2558dd0f42da81883f31b7ae18de3d4aa7bf09d9b3bb814555d9b1856
+Historical USD, early 1987 / CE Index 320.
+Difference = graph minus formula; percentage denominator = formula.
+Caller ranges in diagnostic calls only bound supplied sample points; they are not validated applicability limits.
+Original workbook unchanged. No points approved or integrated.
+10,000 lb adsorber boundary excluded: source branch inequalities leave it unassigned.
+Duct readings have incompatible stated price scope, so no error percentage calculated.
+
+{"row": 2, "curve": "Mild steel / activated carbon", "size": 1, "unit": "1,000 lb carbon", "graph_usd": 46000, "formula_usd": 45706.521151170244, "difference_usd": 293.4788488297563, "difference_percent": 0.642094041371255}
+{"row": 3, "curve": "Mild steel / activated carbon", "size": 2, "unit": "1,000 lb carbon", "graph_usd": 55000, "formula_usd": 57778.279946608855, "difference_usd": -2778.2799466088545, "difference_percent": -4.808519653364862}
+{"row": 4, "curve": "Mild steel / activated carbon", "size": 5, "unit": "1,000 lb carbon", "graph_usd": 77000, "formula_usd": 81360.26822377586, "difference_usd": -4360.268223775856, "difference_percent": -5.359210728980434}
+{"row": 6, "curve": "Mild steel / activated carbon", "size": 20, "unit": "1,000 lb carbon", "graph_usd": 138000, "formula_usd": 137371.40361439748, "difference_usd": 628.5963856025191, "difference_percent": 0.4575889661628585}
+{"row": 7, "curve": "Mild steel / activated carbon", "size": 50, "unit": "1,000 lb carbon", "graph_usd": 255000, "formula_usd": 259886.1688554821, "difference_usd": -4886.168855482101, "difference_percent": -1.880118852419277}
+{"row": 8, "curve": "Mild steel / activated carbon", "size": 100, "unit": "1,000 lb carbon", "graph_usd": 495000, "formula_usd": 498199.99999999977, "difference_usd": -3199.999999999767, "difference_percent": -0.6423123243676776}
+{"row": 326, "curve": "Quencher", "size": 10, "unit": "inlet flow, thousand cfm", "graph_usd": 14000, "formula_usd": 15550.0, "difference_usd": -1550.0, "difference_percent": -9.967845659163988}
+{"row": 327, "curve": "Quencher", "size": 50, "unit": "inlet flow, thousand cfm", "graph_usd": 28000, "formula_usd": 28950.0, "difference_usd": -950.0, "difference_percent": -3.2815198618307395}
+{"row": 328, "curve": "Quencher", "size": 100, "unit": "inlet flow, thousand cfm", "graph_usd": 46000, "formula_usd": 45700.0, "difference_usd": 300.0, "difference_percent": 0.6564551422319376}
+{"row": 333, "curve": "Spray chamber", "size": 10, "unit": "inlet flow, thousand cfm", "graph_usd": 70000, "formula_usd": 68580.0, "difference_usd": 1420.0, "difference_percent": 2.0705745115193963}
+{"row": 334, "curve": "Spray chamber", "size": 50, "unit": "inlet flow, thousand cfm", "graph_usd": 86000, "formula_usd": 82900.0, "difference_usd": 3100.0, "difference_percent": 3.7394451145958962}
+{"row": 335, "curve": "Spray chamber", "size": 200, "unit": "inlet flow, thousand cfm", "graph_usd": 155000, "formula_usd": 136600.0, "difference_usd": 18400.0, "difference_percent": 13.469985358711556}
+{"row": 389, "curve": "Mild steel; 1/8-inch wall", "size": 8, "unit": "duct diameter, in", "graph_usd": 3000, "formula_usd_per_ft": 11.059999999999999, "status": "NOT COMPARABLE: workbook USD thousands versus formula USD/ft; length/basis unknown"}
+{"row": 390, "curve": "Mild steel; 1/8-inch wall", "size": 40, "unit": "duct diameter, in", "graph_usd": 18000, "formula_usd_per_ft": 64.17999999999999, "status": "NOT COMPARABLE: workbook USD thousands versus formula USD/ft; length/basis unknown"}
+{"row": 391, "curve": "Mild steel; 1/8-inch wall", "size": 200, "unit": "duct diameter, in", "graph_usd": 145000, "formula_usd_per_ft": 329.78, "status": "NOT COMPARABLE: workbook USD thousands versus formula USD/ft; length/basis unknown"}
+{"row": 396, "curve": "Stainless steel; 1/8-inch wall", "size": 8, "unit": "duct diameter, in", "graph_usd": 1200, "formula_usd_per_ft": 40.29, "status": "NOT COMPARABLE: workbook USD thousands versus formula USD/ft; length/basis unknown"}
+{"row": 397, "curve": "Stainless steel; 1/8-inch wall", "size": 40, "unit": "duct diameter, in", "graph_usd": 7000, "formula_usd_per_ft": 227.17, "status": "NOT COMPARABLE: workbook USD thousands versus formula USD/ft; length/basis unknown"}
+{"row": 398, "curve": "Stainless steel; 1/8-inch wall", "size": 200, "unit": "duct diameter, in", "graph_usd": 37000, "formula_usd_per_ft": 1161.57, "status": "NOT COMPARABLE: workbook USD thousands versus formula USD/ft; length/basis unknown"}
+{"row": 592, "curve": "Plate and frame \u2014 stainless steel", "size": 50, "unit": "heat-transfer area, ft\u00b2", "graph_usd": 3000, "formula_usd": 2114.446024501853, "difference_usd": 885.5539754981469, "difference_percent": 41.881134123855276}
+{"row": 593, "curve": "Plate and frame \u2014 stainless steel", "size": 200, "unit": "heat-transfer area, ft\u00b2", "graph_usd": 12000, "formula_usd": 6234.525371093256, "difference_usd": 5765.474628906744, "difference_percent": 92.4765605356056}
+{"row": 594, "curve": "Plate and frame \u2014 stainless steel", "size": 1000, "unit": "heat-transfer area, ft\u00b2", "graph_usd": 62000, "formula_usd": 21877.616239495528, "difference_usd": 40122.38376050447, "difference_percent": 183.39467756122247}
+{"row": 599, "curve": "Spiral plate \u2014 stainless steel", "size": 10, "unit": "heat-transfer area, ft\u00b2", "graph_usd": 3500, "formula_usd": 2567.6979569622517, "difference_usd": 932.3020430377483, "difference_percent": 36.30886726804583}
+{"row": 600, "curve": "Spiral plate \u2014 stainless steel", "size": 100, "unit": "heat-transfer area, ft\u00b2", "graph_usd": 12000, "formula_usd": 9989.504239678972, "difference_usd": 2010.4957603210278, "difference_percent": 20.12608145592656}
+{"row": 601, "curve": "Spiral plate \u2014 stainless steel", "size": 1000, "unit": "heat-transfer area, ft\u00b2", "graph_usd": 48000, "formula_usd": 38863.681253468865, "difference_usd": 9136.318746531135, "difference_percent": 23.508629269945057}

@@ -1,0 +1,70 @@
+FLOWVALUE AI — OFFLINE OPEX BUILD
+Date: 30 October 2026
+
+DELIVERY
+Modular Garrett Chapter 4 annual OPEX engine under backend/opex.
+Default/only registered model: garrett. Future methodologies can be registered
+independently without mixing factors. No frontend, live calculation, HTTP route,
+LLM provider, external research or deployment integration was activated.
+
+SOURCE REVIEW
+Garrett: Chemical Engineering Economics (1989), Chapter 4 pp.44–63;
+Table 4-4 printed p.52 / PDF p.64 visually checked against the supplied PDF.
+Source SHA-256:
+fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff
+Original Charlie workbook inspected read-only, Opex worksheet. Metadata,
+section cell references and differences stored in indexes/legacy_reference.py.
+Workbook SHA-256:
+bff6c13a62c5d9e83cd7a00c79b2ce4c4db2042fc37312676efe6e450080cca0
+No spreadsheet formulas copied or made authoritative. No source files changed.
+No new runtime dependency or third-party source code incorporated.
+
+IMPLEMENTATION
+- 18 Table 4-4 categories plus optional other-manufacturing category.
+- Exact factor bases, inclusive bounds, conditions and source provenance.
+- Itemized raw materials, utilities, operating labour and interest.
+- Quantity/price, FTE/salary, explicit percentage dependencies, fixed allowances,
+  and evidence-bearing engineering/market estimates.
+- Maintenance, supplies, environmental, depreciation, combined local taxes and
+  insurance, plant overhead, payroll, supervision, laboratory, royalties,
+  packaging/storage, administration, distribution/sales and R&D.
+- No automatic factor or price selection; overrides need explicit rationale.
+- Named capital bases distinguish purchased, installed, bare module, fixed
+  capital and plant-with-startup-excluding-working-capital.
+- Operating-labour-only factors do not use loaded payroll automatically.
+- Recurring fixed/variable cash costs separated from depreciation, financing,
+  CAPEX and working capital.
+- Hierarchical scope checking, missing-category review, circular-dependency
+  prevention, units and currency/price-period compatibility checks.
+- Immutable snapshots, SHA-256 input identity and separate scenario copies.
+- Pure canonical CAPEX adapter and separate future financial handoff.
+- Future engineering advisor/research protocols only; no calls implemented.
+
+SOURCE LIMITATIONS PRESERVED
+Table R&D maximum 4% versus prose 5%; table remains default.
+Sales row maxima sum to 36% versus printed group maximum 37%.
+Group totals are comparison guidance, never extra costs or forced reconciliation.
+Depreciation table factors are preliminary allowances, not tax depreciation.
+Separate straight-line helper excludes land through caller's asset basis and
+requires explicit life, salvage and operating year. Historical utility tariffs,
+wages, shift examples and industry surveys are not present-day defaults.
+
+TESTS
+24 OPEX tests; full backend suite 146 tests passing.
+Ruff lint and formatting checks passed for the new OPEX code and tests.
+Independent min/max arithmetic checks, all source factor bounds/bases, selected
+factors and overrides, all calculation methods, overlap, cycles, missing data,
+units, price basis, exclusions, deterministic scenarios and canonical adapters.
+Integrity check: 104 existing CAPEX/equipment files unchanged; none added there.
+Local test logs and synthetic scenario artifacts: outputs/opex-source-review/.
+
+RELIABILITY BOUNDARY
+These are software and source-transcription checks, not industrial validation.
+Engine returns calculated_preliminary or needs_review; never verified accuracy.
+Category/scoping completeness remains a user engineering review responsibility.
+Costs hidden behind different semantic labels cannot be automatically deduplicated.
+Other engineering results/quotes are documented supplied estimates, not validated
+merely because evidence strings were provided. Market prices, staffing, tariffs,
+jurisdictional taxes and process-specific consumption still need project evidence.
+One annual scenario only; no new ramp-up, loan, tax or multiyear financial model.
+No live LLM, external research or frontend changes requested or delivered.

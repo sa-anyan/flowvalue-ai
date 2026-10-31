@@ -1,0 +1,114 @@
+FLOWVALUE AI — ANNUAL FINANCIAL MODELLING ENGINE
+Date: 30 October 2026
+
+DELIVERED
+One deterministic financial engine and one immutable annual ledger, reusing the
+existing CAPEX, OPEX, Revenue and canonical unit/assumption structures.
+No working upstream engine, parser or frontend was modified.
+No paid LLM call or financial research request was executed.
+
+IMPLEMENTED
+- Sourced editable assumptions, strict monetary basis/FX/date/period validation.
+- Multi-year construction, exact 100% spending allocation and optional time zero.
+- Commissioning/first production/shutdown dates and annual active-day fractions.
+- Explicit physical hours, availability, utilisation and ramp via Revenue reuse.
+- Actual production, saleable output and sales remain distinct.
+- CAPEX direct/indirect/offsite/startup kept separate from working capital.
+- Replacement, sustaining, expansion, asset disposal and closure cash.
+- Actual annual OPEX or explicit physical-driver scaling; fixed costs stay separate.
+- Stale Revenue/CAPEX-based OPEX factors rejected by upstream adapters.
+- Asset-specific straight line, declining balance and supplied MACRS rate tables.
+- Nondepreciable fractions, residuals, service/disposal years and replacement assets.
+- Explicit annual taxes, deductibility, loss expiry/limits, separate unlevered and
+  levered loss pools, supplied nonrefundable current-year tax credits.
+- COGS/gross profit where classification supports it; EBITDA, EBIT, interest,
+  profit before tax, income tax and net income.
+- Operating/investing/financing cash, FCFF and FCFE, annual/cumulative/discounted cash.
+- Term debt with draw timing, grace period, equal-principal or annuity repayment,
+  cash-paid construction/operating interest, optional balloon and DSCR.
+- Residual or specified equity funding; funding shortfalls flagged.
+- NPV, project/equity IRR, MIRR, ROI, payback, profitability index, accounting
+  break-even, LCOP, production cost and contribution metrics from the same ledger.
+- Multiple/undefined IRRs and unavailable denominator/recovery metrics explicit.
+- Generic future LLM proposal protocol only; no provider in financial calculations.
+- Saved typed input/result JSON, source snapshots, immutable scenario revisions,
+  stale-edit checks and one-engine Playground connector.
+
+REFERENCE EVIDENCE
+Garrett Chemical Engineering Economics (1989), Chapters 5–6.
+Table 6-3 printed p.91 / PDF p.103 visually inspected.
+Full-textbook SHA-256:
+fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff
+Exact matching continuous-uniform operating-flow / point-terminal cash case:
+  NPV at 10% = 2.523460409 MM (printed rounded result 2.5228 MM).
+  NPV at 12% = -0.980838822 MM (printed rounded result -0.9808 MM).
+  Exact continuous IRR = 11.396448706%.
+  Printed approximate IRR 11.54% remains a recorded discrepancy, not a fitted target.
+End-year discounting is a different explicit convention, not silently compared
+against this uniformly distributed cash example.
+
+Charlie workbook: NPV Calculation, ROI, Revenue and Final Summary layouts inspected
+read-only. No workbook formulas, coefficients or expected numerical results used.
+Workbook SHA-256:
+bff6c13a62c5d9e83cd7a00c79b2ce4c4db2042fc37312676efe6e450080cca0
+This respects the founder's prior prohibition on using unvalidated workbook logic.
+
+OpenPyTEA 3.2.1 installed MIT licence inspected. Optional development-only NPV
+reference harness imports that installed package; no code copied or vendored.
+Its future-cash array starts at year one. Explicitly align timing and add initial
+investment once. Independent (-110, 50, 60), 10% end-year case:
+  FlowValue NPV = -14.95867768595041322314
+  OpenPyTEA NPV = -14.95867768595042
+  Absolute difference approximately 6.8e-15.
+This is NPV reference agreement, not wholesale OpenPyTEA model equivalence.
+IRS Publication 946 consulted for the supplied-MACRS-table/applicability boundary;
+no statutory eligibility or current tax treatment is inferred automatically.
+
+VALIDATION
+24 new automated financial tests; full backend suite 214 tests passing.
+Lint, formatting and package import checks pass.
+140 existing equipment/CAPEX/OPEX/Revenue/frontend files hash-checked unchanged.
+Independent cases cover construction, delayed/midyear dates, 20% startup ramp,
+annual price/OPEX changes, working capital, all depreciation methods, losses,
+credits, P&L/cash/debt/WC bridges, financing, return metrics, undefined cases,
+source-base mismatch, saved scenarios and real upstream output integration.
+
+SAVED LOCAL EVIDENCE (ignored development artifacts)
+outputs/financial-modelling-review/
+  backend-tests.txt
+  existing-engines-integrity.json
+  independent-reference-assessment.json
+  complete-synthetic-assessment.json
+  complete-synthetic-summary.json
+  build_example.py
+  openpytea-comparison.json
+  legacy-layout-reference.json
+  garrett-table6-3.png
+The complete synthetic example uses actual upstream engine calls, three construction
+years, 20% initial production, later full production, refreshed annual Garrett
+OPEX factors, working capital and term debt. Its short illustrative lifetime yields
+negative NPV. No reference assumptions were tuned to make the project profitable.
+Saved results were restored and recalculated identically.
+
+PROVISIONAL CONVENTIONS / REMAINING VALIDATION
+- Annual timing, not monthly/XNPV; dates prorate physical operation only.
+- One project-currency term facility; no capitalized/rolled-up construction interest,
+  floating-rate/multiple-facility refinancing or foreign-debt remeasurement.
+- Shared preliminary book/tax depreciation; no deferred-tax accounting.
+- MACRS applies supplied tables only; eligibility, special recapture/bonus rules
+  and legal filing validation remain external.
+- Generic flat annual tax policies; no automatic jurisdictional rates, VAT, loss
+  carryback, refundable/carrying tax credits or credit eligibility checks.
+- Time-zero expensed startup uses a model loss bucket, not a legal tax-year return.
+- Break-even is annual zero-PBT, not project NPV-zero optimization.
+- Multi-product unit economics require explicit allocation and are unavailable
+  where it is missing; no arbitrary byproduct credits or mixed-unit sums.
+- Nonconventional uniform-flow IRR uses disclosed bounded candidates and withholds
+  a unique rate. Ill-conditioned numerical cases may be unavailable.
+- Financial scenarios do not silently rerun upstream cost/revenue correlations;
+  dependent source snapshots require explicit refresh or documented actual overrides.
+- Only Garrett is registered; future profiles must use the same engine and ledger.
+- Snapshots/actor labels are not authentication, signed approval or database history.
+- No frontend, dashboard, export redesign, deployment or live API binding added.
+Industrial calibration, accounting/tax review and broader independent validation
+remain outstanding. Software test success is not certification or accreditation.

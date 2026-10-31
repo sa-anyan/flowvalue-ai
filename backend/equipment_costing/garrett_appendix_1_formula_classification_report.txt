@@ -1,0 +1,107 @@
+FLOWVALUE AI — GARRETT APPENDIX 1 FORMULA CLASSIFICATION REPORT
+Prepared: 30 October 2026
+
+SUMMARY
+=======
+51 equipment/chart groups in total:
+  4 groups have standalone direct-price formulas.
+ 39 groups have size exponents and require a documented reference price.
+  8 groups are graph-only, without a usable base-price formula or numerical size exponent.
+
+Therefore 47 groups lack standalone price formulas: 39 support reference-price scaling and 8 remain unpriced.
+Counts refer to chart groups, not individual variants or the number of equations.
+
+COMPLETE APPENDIX 1 LIST
+========================
+Printed page | Equipment/chart group | Classification
+----------------------------------------------------------------------------------------------------
+256 | Activated-carbon adsorbers | DIRECT PRICE FORMULA
+257 | Agitators | REFERENCE PRICE REQUIRED
+258 | Agitated tanks | REFERENCE PRICE REQUIRED
+259 | Air conditioning | REFERENCE PRICE REQUIRED
+260 | Blenders | REFERENCE PRICE REQUIRED
+261 | Blowers | REFERENCE PRICE REQUIRED
+262 | Boilers | REFERENCE PRICE REQUIRED
+263 | Waste-heat boilers | REFERENCE PRICE REQUIRED
+264 | Buildings | REFERENCE PRICE REQUIRED
+265 | Centrifuges | GRAPH ONLY — UNPRICED
+266 | Chimneys/stacks | REFERENCE PRICE REQUIRED
+267 | Classifiers | REFERENCE PRICE REQUIRED
+268 | Columns | REFERENCE PRICE REQUIRED
+269 | Column trays | GRAPH ONLY — UNPRICED
+270 | Column packing | REFERENCE PRICE REQUIRED
+271 | Medium/low-pressure compressors | REFERENCE PRICE REQUIRED
+272 | High-capacity/pressure compressors | REFERENCE PRICE REQUIRED
+273 | Conveyors | REFERENCE PRICE REQUIRED
+274 | Coolers/quenchers | DIRECT PRICE FORMULA
+275 | Cooling towers | REFERENCE PRICE REQUIRED
+276 | Crystallizers | REFERENCE PRICE REQUIRED
+277 | Dryers | REFERENCE PRICE REQUIRED
+278 | Ducts | DIRECT PRICE FORMULA
+279 | Dust collectors | GRAPH ONLY — UNPRICED
+280 | Evaporators | REFERENCE PRICE REQUIRED
+281 | Fans | GRAPH ONLY — UNPRICED
+282 | Filters | REFERENCE PRICE REQUIRED
+283 | Flares | REFERENCE PRICE REQUIRED
+284 | Furnaces | REFERENCE PRICE REQUIRED
+285 | Electric generators | REFERENCE PRICE REQUIRED
+286 | Shell-and-tube/double-pipe/air-cooled exchangers | REFERENCE PRICE REQUIRED
+287 | Spiral/plate-and-frame exchangers | DIRECT PRICE FORMULA
+288 | Incinerators | REFERENCE PRICE REQUIRED
+289 | Insulation | GRAPH ONLY — UNPRICED
+290 | Ion exchange | REFERENCE PRICE REQUIRED
+291 | Hammer/jaw/gyratory/roll mills and crushers | GRAPH ONLY — UNPRICED
+292 | Ball/rod/pebble/jet/rubbish mills and shredders | REFERENCE PRICE REQUIRED
+293 | Motors/drives | REFERENCE PRICE REQUIRED
+294 | Pipe/pipelines | REFERENCE PRICE REQUIRED
+295 | Roll/screw presses | GRAPH ONLY — UNPRICED
+296 | Centrifugal pumps | REFERENCE PRICE REQUIRED
+297 | Miscellaneous pumps | REFERENCE PRICE REQUIRED
+298 | Pressure vessels | REFERENCE PRICE REQUIRED
+299 | Reactors | GRAPH ONLY — UNPRICED
+300 | Refrigeration | REFERENCE PRICE REQUIRED
+301 | Vibrating screens | REFERENCE PRICE REQUIRED
+302 | Size enlargement | REFERENCE PRICE REQUIRED
+303 | Storage tanks | REFERENCE PRICE REQUIRED
+304 | Small stainless tanks | REFERENCE PRICE REQUIRED
+305 | Thickeners/clarifiers | REFERENCE PRICE REQUIRED
+306 | Vacuum equipment | REFERENCE PRICE REQUIRED
+
+INTERPRETATION AND LIMITATIONS
+==============================
+- Classification applies to supported variants within each group, not every curve.
+- Reference-price methods use C2 = C1 * (S2 / S1)**n. A size exponent alone does not establish an absolute price.
+- Direct-price equations retain the historical early-1987 USD / CE Index 320 basis; they are not current supplier prices.
+- Duct formulas return price per foot. Column packing uses price per cubic foot. Pipelines use installed price per foot. These are not total equipment prices.
+- Graph-only groups remain catalogued but unpriced; no graph prices or exponents were invented.
+- Out-of-range targets use boundary anchors with explicitly labelled, unvalidated extrapolation.
+- Formula availability, graph agreement and passing arithmetic tests do not establish industrial accuracy.
+
+PARTIAL COVERAGE AND SKIPPED VARIANTS
+====================================
+- Activated-carbon adsorbers (p. 256): Exact 10,000 lb carbon branch boundary is unassigned in the printed inequalities and remains rejected. Outer extrapolation uses a disclosed assumed exponent.
+- Agitators (p. 257): Agitator reference-to-target scaling across exponent bands is blocked.
+- Blowers (p. 261): Below-3-psi variable-exponent blower curve.
+- Chimneys/stacks (p. 266): Short stacks: no numerical exponent.
+- Columns (p. 268): Diameter/per-height column graph is not the weight-based cost method.
+- Coolers/quenchers (p. 274): Cascade cooler and dilution-air-port graph-only variants.
+- Motors/drives (p. 293): Large electric motors and variable-speed drives: no separately specified base-price exponent.
+- Pipe/pipelines (p. 294): Bare pipe, slurry pipeline and submarine pipeline curves: no separately specified exponent. Fittings/valves are factors only.
+- Centrifugal pumps (p. 296): Conventional and inline centrifugal pumps: exponent cells are blank.
+- Miscellaneous pumps (p. 297): Sliding-vane curve: no distinct printed exponent. Chemical-injection flow unit unresolved: identical documented source basis required.
+- Pressure vessels (p. 298): 250-psi volume and horizontal/vertical weight curves: no printed exponent.
+- Size enlargement (p. 302): Screw extrusion and disk/drum granulation: factors only; no separate base-price method.
+
+SCOPE
+=====
+This inventory covers Garrett Appendix 1 equipment charts, printed pages 256–306 (PDF pages 6–56).
+Bibliography pages 307–308 and Appendix 2 whole-plant costs are excluded.
+Graph digitization, automatic adjustment factors, current-price escalation and other author databases are outside this classification report.
+
+SOURCE
+======
+Donald E. Garrett, Chemical Engineering Economics (1989), Appendix 1
+PDF: Chemical Engineering Economics - Appendix 1 - Equipment Cost Estimates (1).pdf
+SHA256: 720cca1e5e8927c4dc010812548953e622235dac0185f1d6d1f18eba4412ea51
+Structured inventory: garrett/catalogue.json
+Detailed coverage: garrett/COVERAGE.md

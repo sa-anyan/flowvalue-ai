@@ -1,0 +1,27 @@
+GARRETT GRAPH READING SPOT CHECK
+Input: /Users/user/Downloads/garrett_equipment_graphs_01-10_review_points.xlsx
+Input SHA256: 326e93f0eb265711e3e015c8f715760cd8243b421782865bbbdeb7a9fa9536b3
+Graph prices: historical USD, early 1987 / CE Index 320.
+Difference = graph reading minus formula result; percentage denominator = formula result.
+Original workbook unchanged. No reference prices accepted or costing methods changed.
+
+DIRECT ABSOLUTE-PRICE CHECK — ACTIVATED CARBON ADSORBERS
+{"sheet": "Point Readings", "row": 2, "size_lb": 1000, "graph_usd": 46000, "formula_usd": 45706.521151170244, "difference_usd": 293.4788488297563, "difference_percent": 0.6420940413712546}
+{"sheet": "Point Readings", "row": 3, "size_lb": 2000, "graph_usd": 55000, "formula_usd": 57778.279946608855, "difference_usd": -2778.2799466088545, "difference_percent": -4.80851965336486}
+{"sheet": "Point Readings", "row": 4, "size_lb": 5000, "graph_usd": 77000, "formula_usd": 81360.26822377586, "difference_usd": -4360.268223775856, "difference_percent": -5.359210728980436}
+Row 5: 10000 lb, graph $104,000. Exact branch boundary unassigned. Branch limiting values $107,540.60 and $102,826.40; diagnostic only, not an accepted estimate.
+{"sheet": "Point Readings", "row": 6, "size_lb": 20000, "graph_usd": 138000, "formula_usd": 137371.40361439748, "difference_usd": 628.5963856025191, "difference_percent": 0.4575889661628513}
+{"sheet": "Point Readings", "row": 7, "size_lb": 50000, "graph_usd": 255000, "formula_usd": 259886.1688554821, "difference_usd": -4886.168855482101, "difference_percent": -1.8801188524192718}
+{"sheet": "Point Readings", "row": 8, "size_lb": 100000, "graph_usd": 495000, "formula_usd": 498199.99999999977, "difference_usd": -3199.999999999767, "difference_percent": -0.6423123243676774}
+
+RELATIVE SHAPE CHECKS — NOT INDEPENDENT PRICE VALIDATION
+Use first Fit reading on same named curve as assumed anchor; compare Holdout readings only. No fitting or coefficients adjusted. Same curve/basis is assumed for this diagnostic, not established engineering comparability.
+{"equipment": "Air conditioning", "curve": "Complete air-conditioning package", "anchor_row": 44, "anchor_size": 1, "anchor_price": 10000, "target_row": 45, "target_size": 5, "size_unit": "refrigeration ton", "graph_usd": 32000, "scaled_usd": 32377.85718910406, "difference_usd": -377.8571891040592, "difference_percent": -1.1670234595735305, "exponent": 0.73}
+{"equipment": "Air conditioning", "curve": "Complete air-conditioning package", "anchor_row": 44, "anchor_size": 1, "anchor_price": 10000, "target_row": 47, "target_size": 100, "size_unit": "refrigeration ton", "graph_usd": 290000, "scaled_usd": 288403.1503126606, "difference_usd": 1596.8496873393888, "difference_percent": 0.5536866312341695, "exponent": 0.73}
+{"equipment": "Waste-heat boilers", "curve": "Flue-gas waste-heat boiler", "anchor_row": 100, "anchor_size": 20, "anchor_price": 19000, "target_row": 101, "target_size": 100, "size_unit": "1,000 scfm flue gas", "graph_usd": 62000, "scaled_usd": 63530.32897276009, "difference_usd": -1530.3289727600932, "difference_percent": -2.4088163834571867, "exponent": 0.75}
+{"equipment": "Waste-heat boilers", "curve": "Flue-gas waste-heat boiler", "anchor_row": 100, "anchor_size": 20, "anchor_price": 19000, "target_row": 103, "target_size": 1000, "size_unit": "1,000 scfm flue gas", "graph_usd": 350000, "scaled_usd": 357257.2938432074, "difference_usd": -7257.293843207415, "difference_percent": -2.031391372066006, "exponent": 0.75}
+{"equipment": "Buildings", "curve": "Office-type building (baseline)", "anchor_row": 105, "anchor_size": 100, "anchor_price": 9000, "target_row": 106, "target_size": 1000, "size_unit": "ft\u00b2 (all floors)", "graph_usd": 56000, "scaled_usd": 56786.1610032174, "difference_usd": -786.1610032173994, "difference_percent": -1.3844235801973952, "exponent": 0.8}
+{"equipment": "Buildings", "curve": "Office-type building (baseline)", "anchor_row": 105, "anchor_size": 100, "anchor_price": 9000, "target_row": 108, "target_size": 10000, "size_unit": "ft\u00b2 (all floors)", "graph_usd": 340000, "scaled_usd": 358296.4534981476, "difference_usd": -18296.453498147603, "difference_percent": -5.106512587415883, "exponent": 0.8}
+{"equipment": "Blenders", "curve": "Ribbon", "anchor_row": 49, "anchor_size": 40, "anchor_price": 9000, "target_row": 51, "target_size": 160, "size_unit": "ft\u00b3", "graph_usd": 24000, "scaled_usd": 20676.570389946628, "difference_usd": 3323.429610053372, "difference_percent": 16.07340843948323, "exponent": 0.6}
+
+Interpretation: agreement with a printed historical correlation is not validation against supplier prices. Relative checks inherit any anchor reading error. No universal pass threshold has been assigned.

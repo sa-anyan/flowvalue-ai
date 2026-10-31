@@ -1,0 +1,45 @@
+FLOWVALUE — OFFLINE CAPEX ENGINE
+Prepared 30 October 2026
+
+Default: Garrett detailed factorial.
+Alternatives: Nottingham detailed profiles; Nottingham Lang overall method.
+
+Shared API:
+  list_models()
+  get_model(model_id='garrett')
+  get_factor_ranges(model_id, process_type)
+  calculate_capex(model_id='garrett', inputs=CapexInputs(...))
+
+Sources verified against rendered original pages:
+  Garrett, Chemical Engineering Economics, Ch.3 Table 3-4:
+    printed p.29 / PDF p.41, with surrounding installation and capital guidance.
+    Working capital and startup: printed p.41 / PDF p.53.
+  Nottingham CEEDG501 Cost Estimation Rev 3:
+    page 5 embedded table and Lang factors; page 12 working-capital guidance.
+    Body footer's older revision label retained as source metadata.
+
+Important findings:
+  Garrett whole-plant installation is embedded in the other direct categories.
+  Do not add equipment-specific installation or module costs to this method.
+  Alternative indirect percentages use the direct subtotal, not final plant cost.
+  Offsite/startup factors use core plant cost before those additions.
+  Working capital has distinct plant-cost, annual-OPEX and total-investment bases.
+  Nottingham rounded table and approximate subtotal formulas are separate modes.
+  Lang is an alternative method, never an additional factorial charge.
+  Missing Nottingham categories are not given invented Garrett coefficients.
+
+Financial results retain purchased equipment, direct, indirect, core plant,
+fixed capital, startup, working capital and total CAPEX separately.
+Currency/date/index basis and component scopes must reconcile upstream.
+
+Connector is a pure input adapter and is not attached to the application.
+Future LLM interface and draft validator are inactive; no model is invoked.
+No frontend, dashboard, deployment or live CAPEX binding added.
+
+Validation:
+  25 new CAPEX test methods; all 122 backend test methods passed.
+  Includes all source process categories, min/max/selected factors, different
+  bases, working capital, exclusions/overrides, double counting, switching,
+  inactive connectors, draft validation and missing/unsupported inputs.
+
+Methodology and numerical tests do not establish industrial project accuracy.

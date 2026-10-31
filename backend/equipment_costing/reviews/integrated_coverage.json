@@ -1,0 +1,1945 @@
+[
+  {
+    "id": "G256-001",
+    "page": 256,
+    "configuration": "Mild steel / activated carbon",
+    "size": 20,
+    "unit": "1,000 lb carbon",
+    "status": "formula_estimate",
+    "amount": 137371.40361439748,
+    "issues": []
+  },
+  {
+    "id": "G257-002",
+    "page": 257,
+    "configuration": "Dual turbine blades",
+    "size": 30,
+    "unit": "HP",
+    "status": "provisional",
+    "amount": 25354.13633100391,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G257-003",
+    "page": 257,
+    "configuration": "Single-blade propeller",
+    "size": 10,
+    "unit": "HP",
+    "status": "provisional",
+    "amount": 4008.6826076743287,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G258-004",
+    "page": 258,
+    "configuration": "Autoclave \u2014 1,500 psi",
+    "size": 200,
+    "unit": "gal",
+    "status": "provisional",
+    "amount": 67965.90346782091,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G258-005",
+    "page": 258,
+    "configuration": "Autoclave \u2014 600 psi",
+    "size": 600,
+    "unit": "gal",
+    "status": "provisional",
+    "amount": 30167.73209172759,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G258-006",
+    "page": 258,
+    "configuration": "Reactor \u2014 300 psi",
+    "size": 400,
+    "unit": "gal",
+    "status": "provisional",
+    "amount": 13846.06943074691,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G258-007",
+    "page": 258,
+    "configuration": "Reactor \u2014 50 psi",
+    "size": 400,
+    "unit": "gal",
+    "status": "provisional",
+    "amount": 12723.57220473167,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G258-008",
+    "page": 258,
+    "configuration": "Open tank",
+    "size": 1000,
+    "unit": "gal",
+    "status": "provisional",
+    "amount": 10095.553008430606,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G259-009",
+    "page": 259,
+    "configuration": "Complete air-conditioning package",
+    "size": 20,
+    "unit": "refrigeration ton",
+    "status": "provisional",
+    "amount": 91310.66957767139,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G260-010",
+    "page": 260,
+    "configuration": "Ribbon",
+    "size": 160,
+    "unit": "ft\u00b3",
+    "status": "provisional",
+    "amount": 23529.15611306288,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G260-011",
+    "page": 260,
+    "configuration": "Double arm / sigma",
+    "size": 160,
+    "unit": "ft\u00b3",
+    "status": "provisional",
+    "amount": 17848.58256991732,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G260-012",
+    "page": 260,
+    "configuration": "Twin shell",
+    "size": 80,
+    "unit": "ft\u00b3",
+    "status": "provisional",
+    "amount": 13170.843643224609,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G260-013",
+    "page": 260,
+    "configuration": "Double cone",
+    "size": 160,
+    "unit": "ft\u00b3",
+    "status": "provisional",
+    "amount": 14230.834155474302,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G261-014",
+    "page": 261,
+    "configuration": "Turbo \u2014 30 psi",
+    "size": 10000,
+    "unit": "cfm",
+    "status": "provisional",
+    "amount": 239284.57278119502,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G261-015",
+    "page": 261,
+    "configuration": "Rotary / centrifugal / turbo \u2014 10 psi",
+    "size": 2000,
+    "unit": "cfm",
+    "status": "provisional",
+    "amount": 22787.35370649684,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G261-016",
+    "page": 261,
+    "configuration": "Turbo \u2014 3 psi",
+    "size": 2000,
+    "unit": "cfm",
+    "status": "provisional",
+    "amount": 12936.16765475144,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G261-017",
+    "page": 261,
+    "configuration": "Centrifugal / rotary \u2014 1 psi",
+    "size": 10000,
+    "unit": "cfm",
+    "status": "provisional",
+    "amount": 11999.11273422299,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G262-018",
+    "page": 262,
+    "configuration": "Small package \u2014 150 psi",
+    "size": 30,
+    "unit": "HP (small axis)",
+    "status": "provisional",
+    "amount": 8962.230458312933,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G262-019",
+    "page": 262,
+    "configuration": "Large package \u2014 250 psi",
+    "size": 100000,
+    "unit": "lb steam/h (large axis)",
+    "status": "provisional",
+    "amount": 245210.99935491965,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G262-020",
+    "page": 262,
+    "configuration": "Field erected \u2014 400 psi",
+    "size": 300000,
+    "unit": "lb steam/h (large axis)",
+    "status": "provisional",
+    "amount": 3730951.561083008,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G263-021",
+    "page": 263,
+    "configuration": "Flue-gas waste-heat boiler",
+    "size": 400,
+    "unit": "1,000 scfm flue gas",
+    "status": "provisional",
+    "amount": 177249.10779965346,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G264-022",
+    "page": 264,
+    "configuration": "Office-type building (baseline)",
+    "size": 4000,
+    "unit": "ft\u00b2 (all floors)",
+    "status": "provisional",
+    "amount": 172899.07264163118,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G265-023",
+    "page": 265,
+    "configuration": "Solid-bowl / screen-bowl / pusher, 316 SS",
+    "size": 35,
+    "unit": "t/hr (as printed)",
+    "status": "provisional",
+    "amount": 287547.0329147318,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G266-024",
+    "page": 266,
+    "configuration": "Short \u2014 unlined",
+    "size": 60,
+    "unit": "height, ft (short scale)",
+    "status": "provisional",
+    "amount": 12824.246688596917,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G266-025",
+    "page": 266,
+    "configuration": "Tall \u2014 15 ft diameter",
+    "size": 350,
+    "unit": "height, ft",
+    "status": "provisional",
+    "amount": 1162.314461731827,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G266-026",
+    "page": 266,
+    "configuration": "Tall \u2014 20 ft diameter",
+    "size": 400,
+    "unit": "height, ft",
+    "status": "provisional",
+    "amount": 1866.309511860271,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G266-027",
+    "page": 266,
+    "configuration": "Tall \u2014 30 ft diameter",
+    "size": 350,
+    "unit": "height, ft",
+    "status": "provisional",
+    "amount": 2491.487013628406,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G266-028",
+    "page": 266,
+    "configuration": "Tall \u2014 40 ft diameter",
+    "size": 350,
+    "unit": "height, ft",
+    "status": "provisional",
+    "amount": 3055.5716666840126,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G266-029",
+    "page": 266,
+    "configuration": "Tall \u2014 8 ft diameter",
+    "size": 250,
+    "unit": "height, ft",
+    "status": "provisional",
+    "amount": 438.7282520405977,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G267-030",
+    "page": 267,
+    "configuration": "Rake / spiral \u2014 mild steel",
+    "size": 10,
+    "unit": "solids handled, tonnes/h",
+    "status": "provisional",
+    "amount": 239566.43899337586,
+    "issues": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion.",
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G268-031",
+    "page": 268,
+    "configuration": "Vertical vessel \u2014 diameter cost per height, 0\u201350 psi",
+    "size": 5,
+    "unit": "diameter, ft",
+    "status": "provisional",
+    "amount": 748.5440002633056,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G268-032",
+    "page": 268,
+    "configuration": "Vertical vessel \u2014 weight cost relation, 0\u201315,000 psi",
+    "size": 100000,
+    "unit": "vessel weight, lb",
+    "status": "provisional",
+    "amount": 173076.69883392146,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G269-033",
+    "page": 269,
+    "configuration": "Bubble-cap tray \u2014 mild steel",
+    "size": 4,
+    "unit": "column diameter, ft",
+    "status": "provisional",
+    "amount": 7713.332685337841,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G269-034",
+    "page": 269,
+    "configuration": "Valve / trough tray \u2014 mild steel",
+    "size": 4,
+    "unit": "column diameter, ft",
+    "status": "provisional",
+    "amount": 5616.0409152704515,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G270-035",
+    "page": 270,
+    "configuration": "Berl saddles \u2014 porcelain",
+    "size": 1,
+    "unit": "packing size, in",
+    "status": "provisional",
+    "amount": 30.44161544308888,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G270-036",
+    "page": 270,
+    "configuration": "Interlox saddles \u2014 polypropylene",
+    "size": 2,
+    "unit": "packing size, in",
+    "status": "provisional",
+    "amount": 14.114973081855066,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G270-037",
+    "page": 270,
+    "configuration": "Interlox saddles \u2014 porcelain",
+    "size": 2,
+    "unit": "packing size, in",
+    "status": "provisional",
+    "amount": 15.342002958180501,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G270-038",
+    "page": 270,
+    "configuration": "Pall rings \u2014 polypropylene",
+    "size": 1.5,
+    "unit": "packing size, in",
+    "status": "provisional",
+    "amount": 20.38730883012651,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G270-039",
+    "page": 270,
+    "configuration": "Pall rings \u2014 stainless steel (SS)",
+    "size": 1.5,
+    "unit": "packing size, in",
+    "status": "provisional",
+    "amount": 77.02724441110809,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G270-040",
+    "page": 270,
+    "configuration": "Raschig rings \u2014 porcelain",
+    "size": 2,
+    "unit": "packing size, in",
+    "status": "provisional",
+    "amount": 14.842594579840105,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G271-041",
+    "page": 271,
+    "configuration": "Helical-screw",
+    "size": 600,
+    "unit": "air flow capacity, cfm",
+    "status": "provisional",
+    "amount": 69957.97469716186,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G271-042",
+    "page": 271,
+    "configuration": "Reciprocating \u2014 air",
+    "size": 200,
+    "unit": "air flow capacity, cfm",
+    "status": "provisional",
+    "amount": 39790.572078963945,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G271-043",
+    "page": 271,
+    "configuration": "Sliding-vane",
+    "size": 200,
+    "unit": "air flow capacity, cfm",
+    "status": "provisional",
+    "amount": 24245.436299393754,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G271-044",
+    "page": 271,
+    "configuration": "Straight-lobe",
+    "size": 200,
+    "unit": "air flow capacity, cfm",
+    "status": "provisional",
+    "amount": 5557.788832156862,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G272-045",
+    "page": 272,
+    "configuration": "Electric motor, gear reducer, 1,000 psi",
+    "size": 200,
+    "unit": "horsepower, HP",
+    "status": "provisional",
+    "amount": 151125.0540317064,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G273-046",
+    "page": 273,
+    "configuration": "Belt conveyor",
+    "size": 40,
+    "unit": "length, ft",
+    "status": "provisional",
+    "amount": 17030.797046078398,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G273-047",
+    "page": 273,
+    "configuration": "Bucket elevator",
+    "size": 40,
+    "unit": "length, ft",
+    "status": "provisional",
+    "amount": 16888.288668465993,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G273-048",
+    "page": 273,
+    "configuration": "Pneumatic conveyor",
+    "size": 40,
+    "unit": "length, ft",
+    "status": "provisional",
+    "amount": 3296.181042428021,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G273-049",
+    "page": 273,
+    "configuration": "Roll conveyor",
+    "size": 1,
+    "unit": "length, ft",
+    "status": "needs_review",
+    "amount": null,
+    "issues": [
+      "At least two distinct non-holdout graph sizes are required for fitted n; one documented point suffices with printed n"
+    ]
+  },
+  {
+    "id": "G273-050",
+    "page": 273,
+    "configuration": "Screw conveyor",
+    "size": 40,
+    "unit": "length, ft",
+    "status": "provisional",
+    "amount": 10533.342401497564,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G273-051",
+    "page": 273,
+    "configuration": "Vibrating conveyor",
+    "size": 40,
+    "unit": "length, ft",
+    "status": "provisional",
+    "amount": 12461.985844442643,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G274-052",
+    "page": 274,
+    "configuration": "Cascade cooler \u2014 2-inch pipe",
+    "size": 30,
+    "unit": "heat-transfer area, ft\u00b2",
+    "status": "provisional",
+    "amount": 6.6364310429989795,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G274-053",
+    "page": 274,
+    "configuration": "Dilution air port",
+    "size": 40,
+    "unit": "duct diameter, in",
+    "status": "provisional",
+    "amount": 10107.866157460317,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G274-054",
+    "page": 274,
+    "configuration": "Quencher",
+    "size": 50,
+    "unit": "inlet flow, thousand cfm",
+    "status": "formula_estimate",
+    "amount": 28950.0,
+    "issues": []
+  },
+  {
+    "id": "G274-055",
+    "page": 274,
+    "configuration": "Spray chamber",
+    "size": 50,
+    "unit": "inlet flow, thousand cfm",
+    "status": "formula_estimate",
+    "amount": 82900.0,
+    "issues": []
+  },
+  {
+    "id": "G275-056",
+    "page": 275,
+    "configuration": "15\u00b0F range; 10\u00b0F approach; 82\u00b0F wet bulb",
+    "size": 15,
+    "unit": "capacity, 1,000 gpm",
+    "status": "provisional",
+    "amount": 131534.04546005552,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G276-057",
+    "page": 276,
+    "configuration": "Cooling / evaporative",
+    "size": 20,
+    "unit": "capacity, ton/h",
+    "status": "provisional",
+    "amount": 73842.9694850313,
+    "issues": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion.",
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G276-058",
+    "page": 276,
+    "configuration": "Growth; forced circulation; draft tube baffle (DTB)",
+    "size": 20,
+    "unit": "capacity, ton/h",
+    "status": "provisional",
+    "amount": 140745.07590206395,
+    "issues": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion.",
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G276-059",
+    "page": 276,
+    "configuration": "Vapour recompression",
+    "size": 20,
+    "unit": "capacity, ton/h",
+    "status": "provisional",
+    "amount": 286324.1479890977,
+    "issues": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion.",
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G277-060",
+    "page": 277,
+    "configuration": "Fluid-bed dryer",
+    "size": 200,
+    "unit": "chamber volume, ft\u00b3 (+10 per source)",
+    "status": "needs_review",
+    "amount": null,
+    "issues": [
+      "Dryer volume plot divisor versus actual volume is unresolved in workbook (+10 label); no silent conversion."
+    ]
+  },
+  {
+    "id": "G277-061",
+    "page": 277,
+    "configuration": "Rotary dryer",
+    "size": 2000,
+    "unit": "peripheral heat-transfer area, ft\u00b2",
+    "status": "provisional",
+    "amount": 69980.41490279498,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G277-062",
+    "page": 277,
+    "configuration": "Spray dryer",
+    "size": 1,
+    "unit": "chamber volume, ft\u00b3 (+10 per source)",
+    "status": "needs_review",
+    "amount": null,
+    "issues": [
+      "Dryer volume plot divisor versus actual volume is unresolved in workbook (+10 label); no silent conversion."
+    ]
+  },
+  {
+    "id": "G278-063",
+    "page": 278,
+    "configuration": "Mild steel; 1/8-inch wall",
+    "size": 40,
+    "unit": "duct diameter, in",
+    "status": "formula_estimate",
+    "amount": 64.17999999999999,
+    "issues": [
+      "Workbook duct graph price scope conflicts with $/ft equation and material labels appear reversed; graph readings not used for price."
+    ]
+  },
+  {
+    "id": "G278-064",
+    "page": 278,
+    "configuration": "Stainless steel; 1/8-inch wall",
+    "size": 40,
+    "unit": "duct diameter, in",
+    "status": "formula_estimate",
+    "amount": 227.17,
+    "issues": [
+      "Workbook duct graph price scope conflicts with $/ft equation and material labels appear reversed; graph readings not used for price."
+    ]
+  },
+  {
+    "id": "G279-065",
+    "page": 279,
+    "configuration": "Bag filter",
+    "size": 200,
+    "unit": "gas flow, 1,000 cfm",
+    "status": "provisional",
+    "amount": 176474.0053611403,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G279-066",
+    "page": 279,
+    "configuration": "Cyclone / multiclone",
+    "size": 200,
+    "unit": "gas flow, 1,000 cfm",
+    "status": "provisional",
+    "amount": 24713.94291242104,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G279-067",
+    "page": 279,
+    "configuration": "Electrostatic precipitator",
+    "size": 200,
+    "unit": "gas flow, 1,000 cfm",
+    "status": "provisional",
+    "amount": 264686.8118233815,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G279-068",
+    "page": 279,
+    "configuration": "Venturi scrubber",
+    "size": 200,
+    "unit": "gas flow, 1,000 cfm",
+    "status": "provisional",
+    "amount": 68232.59388609345,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G280-069",
+    "page": 280,
+    "configuration": "Falling film",
+    "size": 1000,
+    "unit": "heat-transfer area, ft\u00b2",
+    "status": "provisional",
+    "amount": 173227.2188291441,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G280-070",
+    "page": 280,
+    "configuration": "Forced circulation",
+    "size": 1000,
+    "unit": "heat-transfer area, ft\u00b2",
+    "status": "provisional",
+    "amount": 286591.3824980901,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G280-071",
+    "page": 280,
+    "configuration": "Long/short tube",
+    "size": 1000,
+    "unit": "heat-transfer area, ft\u00b2",
+    "status": "provisional",
+    "amount": 103659.35703938449,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G281-072",
+    "page": 281,
+    "configuration": "Backward-curved vane",
+    "size": 10,
+    "unit": "flow rate, 1,000 cfm",
+    "status": "provisional",
+    "amount": 4748.937897341665,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G281-073",
+    "page": 281,
+    "configuration": "Centrifugal",
+    "size": 10,
+    "unit": "flow rate, 1,000 cfm",
+    "status": "provisional",
+    "amount": 9079.299240167955,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G281-074",
+    "page": 281,
+    "configuration": "Radial",
+    "size": 10,
+    "unit": "flow rate, 1,000 cfm",
+    "status": "provisional",
+    "amount": 6344.8053078656285,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G281-075",
+    "page": 281,
+    "configuration": "Tube axial",
+    "size": 10,
+    "unit": "flow rate, 1,000 cfm",
+    "status": "provisional",
+    "amount": 3180.6691667852656,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G282-076",
+    "page": 282,
+    "configuration": "Pressure leaf / plate and frame",
+    "size": 40,
+    "unit": "filter area, ft\u00b2",
+    "status": "provisional",
+    "amount": 8293.521857331105,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G282-077",
+    "page": 282,
+    "configuration": "Rotary drum",
+    "size": 50,
+    "unit": "filter area, ft\u00b2",
+    "status": "provisional",
+    "amount": 43992.42293768385,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G282-078",
+    "page": 282,
+    "configuration": "Rotary leaf",
+    "size": 300,
+    "unit": "filter area, ft\u00b2",
+    "status": "provisional",
+    "amount": 72304.02703092551,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G282-079",
+    "page": 282,
+    "configuration": "Tilting pan",
+    "size": 300,
+    "unit": "filter area, ft\u00b2",
+    "status": "provisional",
+    "amount": 475589.221388369,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G282-080",
+    "page": 282,
+    "configuration": "Vacuum belt",
+    "size": 100,
+    "unit": "filter area, ft\u00b2",
+    "status": "provisional",
+    "amount": 140717.4059326101,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G282-081",
+    "page": 282,
+    "configuration": "Vacuum table",
+    "size": 100,
+    "unit": "filter area, ft\u00b2",
+    "status": "provisional",
+    "amount": 234746.9737769688,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G283-082",
+    "page": 283,
+    "configuration": "Elevated flare; high-Btu gas",
+    "size": 20000,
+    "unit": "waste gas flow, lb/h",
+    "status": "provisional",
+    "amount": 137946.20881905616,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G283-083",
+    "page": 283,
+    "configuration": "Ground flare; high-Btu gas",
+    "size": 20000,
+    "unit": "waste gas flow, lb/h",
+    "status": "provisional",
+    "amount": 25962.47050925553,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G284-084",
+    "page": 284,
+    "configuration": "Box furnace",
+    "size": 40,
+    "unit": "heat transferred, MM Btu/h",
+    "status": "provisional",
+    "amount": 696354.0201050388,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G284-085",
+    "page": 284,
+    "configuration": "Cylindrical furnace",
+    "size": 40,
+    "unit": "heat transferred, MM Btu/h",
+    "status": "provisional",
+    "amount": 567241.5529471909,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G284-086",
+    "page": 284,
+    "configuration": "Hershoff furnace",
+    "size": 10,
+    "unit": "heat transferred, MM Btu/h",
+    "status": "provisional",
+    "amount": 114398.50823597056,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G285-087",
+    "page": 285,
+    "configuration": "Diesel engine driven",
+    "size": 1000,
+    "unit": "generating capacity, kW",
+    "status": "provisional",
+    "amount": 241655.22471921094,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G285-088",
+    "page": 285,
+    "configuration": "Turbine driven",
+    "size": 10000,
+    "unit": "generating capacity, kW",
+    "status": "provisional",
+    "amount": 3882410.3774430137,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G286-089",
+    "page": 286,
+    "configuration": "Air cooled \u2014 mild steel",
+    "size": 2,
+    "unit": "heat transfer area, 1,000 ft\u00b2",
+    "status": "provisional",
+    "amount": 31355.27788739404,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G286-090",
+    "page": 286,
+    "configuration": "Double pipe \u2014 mild steel",
+    "size": 2,
+    "unit": "heat-transfer area, 10 ft\u00b2 (different from shell/tube)",
+    "status": "provisional",
+    "amount": 18658.396975958272,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G286-091",
+    "page": 286,
+    "configuration": "Shell and tube \u2014 mild steel",
+    "size": 2,
+    "unit": "heat transfer area, 1,000 ft\u00b2",
+    "status": "provisional",
+    "amount": 35246.02975263968,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G287-092",
+    "page": 287,
+    "configuration": "Plate and frame \u2014 stainless steel",
+    "size": 200,
+    "unit": "heat-transfer area, ft\u00b2",
+    "status": "formula_estimate",
+    "amount": 6234.525371093256,
+    "issues": [
+      "Workbook graph readings conflict with PDF equation by more than 20%; equation retained"
+    ]
+  },
+  {
+    "id": "G287-093",
+    "page": 287,
+    "configuration": "Spiral plate \u2014 stainless steel",
+    "size": 100,
+    "unit": "heat-transfer area, ft\u00b2",
+    "status": "formula_estimate",
+    "amount": 9989.504239678972,
+    "issues": [
+      "Workbook graph readings conflict with PDF equation by more than 20%; equation retained"
+    ]
+  },
+  {
+    "id": "G288-094",
+    "page": 288,
+    "configuration": "Catalytic",
+    "size": 10,
+    "unit": "heat input, million Btu/h",
+    "status": "provisional",
+    "amount": 621446.5011907719,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G288-095",
+    "page": 288,
+    "configuration": "Direct flame",
+    "size": 10,
+    "unit": "heat input, million Btu/h",
+    "status": "provisional",
+    "amount": 159856.64242548184,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G288-096",
+    "page": 288,
+    "configuration": "Hearth",
+    "size": 10,
+    "unit": "heat input, million Btu/h",
+    "status": "provisional",
+    "amount": 391486.7641168867,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G288-097",
+    "page": 288,
+    "configuration": "Rotary kiln",
+    "size": 10,
+    "unit": "heat input, million Btu/h",
+    "status": "provisional",
+    "amount": 1090272.355699285,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G289-098",
+    "page": 289,
+    "configuration": "Pipe insulation \u2014 85% magnesia; 2-inch thickness",
+    "size": 5,
+    "unit": "nominal pipe diameter, in",
+    "status": "provisional",
+    "amount": 5.6642284884648815,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G289-099",
+    "page": 289,
+    "configuration": "Pipe insulation \u2014 fibreglass; 2-inch thickness",
+    "size": 5,
+    "unit": "nominal pipe diameter, in",
+    "status": "provisional",
+    "amount": 9.184297593399176,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G289-100",
+    "page": 289,
+    "configuration": "Pipe insulation \u2014 foamglass; 2-inch thickness",
+    "size": 5,
+    "unit": "nominal pipe diameter, in",
+    "status": "provisional",
+    "amount": 13.4006868430982,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G289-101",
+    "page": 289,
+    "configuration": "Vessel insulation \u2014 cork",
+    "size": 2,
+    "unit": "insulation thickness, in",
+    "status": "provisional",
+    "amount": 17.100380460076728,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G289-102",
+    "page": 289,
+    "configuration": "Vessel insulation \u2014 fibreglass / magnesia",
+    "size": 2,
+    "unit": "insulation thickness, in",
+    "status": "provisional",
+    "amount": 7.026814137463283,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G289-103",
+    "page": 289,
+    "configuration": "Vessel insulation \u2014 foamglass",
+    "size": 2,
+    "unit": "insulation thickness, in",
+    "status": "provisional",
+    "amount": 12.77189564561219,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G290-104",
+    "page": 290,
+    "configuration": "Mild-steel ion exchanger; 465 ppm removed",
+    "size": 100,
+    "unit": "water treated, gpm",
+    "status": "provisional",
+    "amount": 34760.26644886452,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G291-105",
+    "page": 291,
+    "configuration": "Gyratory / roll crushers",
+    "size": 100,
+    "unit": "throughput, ton/h",
+    "status": "provisional",
+    "amount": 121155.50436709411,
+    "issues": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion.",
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G291-106",
+    "page": 291,
+    "configuration": "Hammer crusher",
+    "size": 50,
+    "unit": "throughput, ton/h",
+    "status": "provisional",
+    "amount": 83634.466073692,
+    "issues": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion.",
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G291-107",
+    "page": 291,
+    "configuration": "Jaw crusher",
+    "size": 50,
+    "unit": "throughput, ton/h",
+    "status": "provisional",
+    "amount": 30566.99418689837,
+    "issues": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion.",
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G292-108",
+    "page": 292,
+    "configuration": "Ball, rod or pebble wet mill",
+    "size": 5,
+    "unit": "grinding capacity, ton/h",
+    "status": "provisional",
+    "amount": 58284.76683251454,
+    "issues": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion.",
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G292-109",
+    "page": 292,
+    "configuration": "Jet mill",
+    "size": 5,
+    "unit": "grinding capacity, ton/h",
+    "status": "provisional",
+    "amount": 27832.331309220157,
+    "issues": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion.",
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G292-110",
+    "page": 292,
+    "configuration": "Rubbish shredder",
+    "size": 5,
+    "unit": "grinding capacity, ton/h",
+    "status": "provisional",
+    "amount": 10670.679913470187,
+    "issues": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion.",
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G293-111",
+    "page": 293,
+    "configuration": "Electric motor; larger TEFC",
+    "size": 1000,
+    "unit": "motor rating, HP",
+    "status": "provisional",
+    "amount": 29426.129453682777,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G293-112",
+    "page": 293,
+    "configuration": "Electric motor; small (TEFC)",
+    "size": 10,
+    "unit": "motor rating, HP",
+    "status": "provisional",
+    "amount": 999.9999999999995,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G293-113",
+    "page": 293,
+    "configuration": "Gas turbine / engine",
+    "size": 1000,
+    "unit": "drive rating, HP",
+    "status": "provisional",
+    "amount": 132761.43942617733,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G293-114",
+    "page": 293,
+    "configuration": "Steam turbine",
+    "size": 1000,
+    "unit": "drive rating, HP",
+    "status": "provisional",
+    "amount": 64199.248833904814,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G293-115",
+    "page": 293,
+    "configuration": "Variable-speed drive",
+    "size": 100,
+    "unit": "motor rating, HP",
+    "status": "provisional",
+    "amount": 17925.618986228652,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G294-116",
+    "page": 294,
+    "configuration": "Pipe \u2014 purchased plus installation",
+    "size": 10,
+    "unit": "pipe diameter, in",
+    "status": "provisional",
+    "amount": 13.544513481269348,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G294-117",
+    "page": 294,
+    "configuration": "Pipeline \u2014 conventional land",
+    "size": 10,
+    "unit": "pipe diameter, in",
+    "status": "provisional",
+    "amount": 42.9916661876356,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G294-118",
+    "page": 294,
+    "configuration": "Pipeline \u2014 slurry carrying",
+    "size": 10,
+    "unit": "pipe diameter, in",
+    "status": "provisional",
+    "amount": 61.530840534470066,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G294-119",
+    "page": 294,
+    "configuration": "Pipeline \u2014 submarine",
+    "size": 10,
+    "unit": "pipe diameter, in",
+    "status": "provisional",
+    "amount": 53.12812870328462,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G295-120",
+    "page": 295,
+    "configuration": "Roll press \u2014 mild steel",
+    "size": 10,
+    "unit": "capacity, ton/h",
+    "status": "provisional",
+    "amount": 36377.177092167774,
+    "issues": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion.",
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G295-121",
+    "page": 295,
+    "configuration": "Screw press \u2014 mild steel",
+    "size": 10,
+    "unit": "capacity, ton/h",
+    "status": "provisional",
+    "amount": 19705.939003079653,
+    "issues": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion.",
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G296-122",
+    "page": 296,
+    "configuration": "Conventional horizontal centrifugal",
+    "size": 10,
+    "unit": "flow \u00d7 pressure, gpm\u00b7psi/1,000",
+    "status": "provisional",
+    "amount": 19442.96285007386,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G296-123",
+    "page": 296,
+    "configuration": "In-line centrifugal",
+    "size": 10,
+    "unit": "flow \u00d7 pressure, gpm\u00b7psi/1,000",
+    "status": "provisional",
+    "amount": 14422.495703074082,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G296-124",
+    "page": 296,
+    "configuration": "Mixed / axial flow",
+    "size": 10,
+    "unit": "flow \u00d7 pressure, gpm\u00b7psi/1,000",
+    "status": "provisional",
+    "amount": 4071.6264248923617,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G297-125",
+    "page": 297,
+    "configuration": "Chemical injection",
+    "size": 1,
+    "unit": "flow \u00d7 pressure, gpm\u00b7psi/1,000",
+    "status": "needs_review",
+    "amount": null,
+    "issues": [
+      "Chemical-injection flow basis / grouped pump configurations conflict with source; individual readings and units required."
+    ]
+  },
+  {
+    "id": "G297-126",
+    "page": 297,
+    "configuration": "Other: diaphragm / rotary / gear / sump",
+    "size": 1,
+    "unit": "flow \u00d7 pressure, gpm\u00b7psi/1,000",
+    "status": "needs_review",
+    "amount": null,
+    "issues": [
+      "Chemical-injection flow basis / grouped pump configurations conflict with source; individual readings and units required."
+    ]
+  },
+  {
+    "id": "G297-127",
+    "page": 297,
+    "configuration": "Reciprocating",
+    "size": 10,
+    "unit": "flow \u00d7 pressure, gpm\u00b7psi/1,000",
+    "status": "provisional",
+    "amount": 23440.774357346403,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G297-128",
+    "page": 297,
+    "configuration": "Turbine",
+    "size": 10,
+    "unit": "flow \u00d7 pressure, gpm\u00b7psi/1,000",
+    "status": "provisional",
+    "amount": 11292.43234657234,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G298-129",
+    "page": 298,
+    "configuration": "Horizontal vessel by weight",
+    "size": 10000,
+    "unit": "vessel weight, lb",
+    "status": "provisional",
+    "amount": 36501.82007267477,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G298-130",
+    "page": 298,
+    "configuration": "Vertical vessel by weight",
+    "size": 10000,
+    "unit": "vessel weight, lb",
+    "status": "provisional",
+    "amount": 48966.2485102713,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G298-131",
+    "page": 298,
+    "configuration": "Vessel by capacity \u2014 15 psi design",
+    "size": 20,
+    "unit": "vessel capacity, 1,000 gal",
+    "status": "provisional",
+    "amount": 14915.534317265572,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G298-132",
+    "page": 298,
+    "configuration": "Vessel by capacity \u2014 250 psi design",
+    "size": 20,
+    "unit": "vessel capacity, 1,000 gal",
+    "status": "provisional",
+    "amount": 19368.047262081574,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G299-133",
+    "page": 299,
+    "configuration": "Jacketed reactor, 304 stainless, no agitation",
+    "size": 5,
+    "unit": "reactor volume, 1,000 gal",
+    "status": "provisional",
+    "amount": 29697.371636098374,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G300-134",
+    "page": 300,
+    "configuration": "40\u00b0F evaporative temperature basis",
+    "size": 400,
+    "unit": "refrigeration capacity, tons",
+    "status": "provisional",
+    "amount": 142399.1283665032,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G301-135",
+    "page": 301,
+    "configuration": "Single-deck, mild steel",
+    "size": 20,
+    "unit": "screen area, ft\u00b2",
+    "status": "provisional",
+    "amount": 18306.659709641615,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G302-136",
+    "page": 302,
+    "configuration": "Disk / drum granulator",
+    "size": 2,
+    "unit": "capacity, ton/h",
+    "status": "provisional",
+    "amount": 8434.32665301749,
+    "issues": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion.",
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G302-137",
+    "page": 302,
+    "configuration": "Pellet mill",
+    "size": 2,
+    "unit": "capacity, ton/h",
+    "status": "provisional",
+    "amount": 16741.177502819948,
+    "issues": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion.",
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G302-138",
+    "page": 302,
+    "configuration": "Pelletising rolls",
+    "size": 2,
+    "unit": "capacity, ton/h",
+    "status": "provisional",
+    "amount": 21253.171383652232,
+    "issues": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion.",
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G302-139",
+    "page": 302,
+    "configuration": "Pug mill",
+    "size": 2,
+    "unit": "capacity, ton/h",
+    "status": "provisional",
+    "amount": 23944.31534516754,
+    "issues": [
+      "Source ton definition is unresolved; use identical source units, not an assumed SI conversion.",
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G303-140",
+    "page": 303,
+    "configuration": "Fibreglass tank",
+    "size": 10,
+    "unit": "tank capacity, 1,000 gal",
+    "status": "provisional",
+    "amount": 12974.308233432694,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G303-141",
+    "page": 303,
+    "configuration": "Horizontal pressurised tank",
+    "size": 10,
+    "unit": "tank capacity, 1,000 gal",
+    "status": "provisional",
+    "amount": 15577.482305553314,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G303-142",
+    "page": 303,
+    "configuration": "Large cone-top storage tank",
+    "size": 10,
+    "unit": "tank capacity, 1,000 gal",
+    "status": "provisional",
+    "amount": 21472.2916901894,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G303-143",
+    "page": 303,
+    "configuration": "Small cone-top tank",
+    "size": 10,
+    "unit": "tank capacity, 1,000 gal",
+    "status": "provisional",
+    "amount": 25712.815906582382,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G303-144",
+    "page": 303,
+    "configuration": "Small storage tank",
+    "size": 10,
+    "unit": "tank capacity, 1,000 gal",
+    "status": "provisional",
+    "amount": 7166.095742031887,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G303-145",
+    "page": 303,
+    "configuration": "Spherical tank",
+    "size": 10,
+    "unit": "tank capacity, 1,000 gal",
+    "status": "provisional",
+    "amount": 25987.173160227074,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G304-146",
+    "page": 304,
+    "configuration": "Cone top, bottom and legs",
+    "size": 2,
+    "unit": "tank capacity, 1,000 gal",
+    "status": "provisional",
+    "amount": 4693.854120698344,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G304-147",
+    "page": 304,
+    "configuration": "Cone top, flat bottom \u2014 API code",
+    "size": 20,
+    "unit": "tank capacity, 1,000 gal",
+    "status": "provisional",
+    "amount": 36118.948112773374,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "A power law is a provisional approximation; curvature/linear-axis plots may not follow one exponent"
+    ]
+  },
+  {
+    "id": "G304-148",
+    "page": 304,
+    "configuration": "Dished head, 50 psi",
+    "size": 1,
+    "unit": "tank capacity, 1,000 gal",
+    "status": "provisional",
+    "amount": 9259.133904475757,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G304-149",
+    "page": 304,
+    "configuration": "Flanged, dished head",
+    "size": 2,
+    "unit": "tank capacity, 1,000 gal",
+    "status": "provisional",
+    "amount": 5604.078661310774,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G304-150",
+    "page": 304,
+    "configuration": "Flat top and bottom",
+    "size": 4,
+    "unit": "tank capacity, 1,000 gal",
+    "status": "provisional",
+    "amount": 5198.002123540625,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation",
+      "Fit/source discrepancy exceeds 20% for at least one point; review diagnostics (not an accuracy bound)"
+    ]
+  },
+  {
+    "id": "G305-151",
+    "page": 305,
+    "configuration": "Rake mechanism; concrete tank and drive",
+    "size": 40,
+    "unit": "tank diameter, ft",
+    "status": "provisional",
+    "amount": 169669.33561224394,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G306-152",
+    "page": 306,
+    "configuration": "Barometric condenser",
+    "size": 3,
+    "unit": "water throughput, 1,000 gpm",
+    "status": "provisional",
+    "amount": 12519.883356658442,
+    "issues": [
+      "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
+    ]
+  },
+  {
+    "id": "G306-153",
+    "page": 306,
+    "configuration": "Steam-jet ejector",
+    "size": 0.1,
+    "unit": "capacity factor (equiv. air flow \u00d7 vacuum), source units",
+    "status": "needs_review",
+    "amount": null,
+    "issues": [
+      "Workbook multiplies air flow by vacuum; source capacity factor divides by absolute mmHg. Correct readings/basis before costing."
+    ]
+  },
+  {
+    "id": "G306-154",
+    "page": 306,
+    "configuration": "Vacuum pump",
+    "size": 0.1,
+    "unit": "capacity factor (equiv. air flow \u00d7 vacuum), source units",
+    "status": "needs_review",
+    "amount": null,
+    "issues": [
+      "Workbook multiplies air flow by vacuum; source capacity factor divides by absolute mmHg. Correct readings/basis before costing."
+    ]
+  }
+]

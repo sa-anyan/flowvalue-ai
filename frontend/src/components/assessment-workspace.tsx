@@ -1,0 +1,210 @@
+'use client';
+import Link from 'next/link';
+import {CommercialStrategy} from './commercial-strategy';
+import {RevenueEditor} from './revenue-editor';
+import {assessmentFromUrl,assessmentHref} from '../lib/assessment-navigation';
+import {AnalystReviewPanel,CommercialPriceEditor,EquipmentComparableEditor} from './analyst-review';
+import {useEffect, useState} from 'react';
+
+type Json = null | string | number | boolean | Json[] | {[key: string]: Json};
+type RecordValue = {[key:string]: Json};
+type Stage = {status:string; result?: RecordValue; issues?: string[]};
+type EngineeringEntity = {key:string;identifier:string;kind:string;values:RecordValue[];stream_keys?:string[];id_evidence?:RecordValue};
+type EngineeringReport = {entities:EngineeringEntity[];sheets:Json[];review_summary?:string;scope_notes?:string[];product_candidates?:RecordValue[]};
+type Assessment = {id:string; revision:number; filename:string; description:string; running:boolean; status?:string; error?:string;
+  plan:Record<string,Json>; locked:string[]; assumptions:Record<string,RecordValue>; questions?:string[]; ai?:RecordValue;
+  commercial_strategy?:RecordValue; analyst_reviews?:RecordValue[]; scoped_report?:EngineeringReport; cost_coverage?:RecordValue[]; research_job?:RecordValue; research_drafts?:RecordValue[]; review_decisions?:RecordValue[];
+  review?:RecordValue[]; engineering_review?:RecordValue; effective_report?:EngineeringReport; assumption_register?:RecordValue[]; progress:{stage:string;status:string}[]; parsed?:{report:EngineeringReport};
+  results?:{screening_comparisons?:RecordValue[];stages:Record<string,Stage>;scope:string;notice:string;exclusions:{equipment_tag:string;reason:string}[]}};
+const pages = [['entry','Entry'],['overview','TEA overview'],['data','Engineering data'],['equipment','Equipment'],['capex','CAPEX'],['opex','OPEX'],['revenue','Revenue'],['financial','Financial model']] as const;
+const routes: Record<string,string> = {entry:'/entry',overview:'/main-dashboard',data:'/data',equipment:'/capex/equipment',capex:'/capex',opex:'/opex',revenue:'/revenue',financial:'/financial-modelling'};
+async function api(path:string,options?:RequestInit) {
+  const response=await fetch('/api/'+path,{...options,cache:'no-store'});
+  const value=await response.json();
+  if (!response.ok) throw new Error(value.detail || 'Request failed');
+  return value;
+}
+const post=(value:unknown)=>({method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(value)});
+function display(value: Json | undefined): string {
+  if(value===undefined || value===null) return 'Unresolved';
+  return typeof value==='object'? JSON.stringify(value):String(value);
+}
+function scalarRows(value:Json,path:string[]=[]):{path:string[];value:Json}[] {
+  if (value!==null && typeof value==='object') return Object.entries(value).flatMap(([k,v])=>scalarRows(v,[...path,k]));
+  return [{path,value}];
+}
+function replaceAt(value:Json,path:string[],text:string):Json {
+  const result=structuredClone(value); let cursor=result as Record<string,Json>;
+  for(const key of path.slice(0,-1)) cursor=cursor[key] as Record<string,Json>;
+  const previous=cursor[path.at(-1)!];
+  cursor[path.at(-1)!]=typeof previous==='boolean'? text==='true':typeof previous==='number'?Number(text):text==='null'?null:text;
+  return result;
+}
+export default function AssessmentWorkspace({page='entry'}:{page?:string}) {
+  const [state,setState]=useState<Assessment|null>(null),[id,setId]=useState(''),[error,setError]=useState('');
+  const [description,setDescription]=useState(''),[file,setFile]=useState<File|null>(null),[useAI,setUseAI]=useState(false),[busy,setBusy]=useState(false);
+  const [draft,setDraft]=useState<Json>({}),[raw,setRaw]=useState('{}'),[reason,setReason]=useState(''),[version,setVersion]=useState('');
+  const [catalogue,setCatalogue]=useState<{id:string;equipment:string;configuration:string;size_unit:string}[]>([]);
+  const [versions,setVersions]=useState<{id:string;name:string}[]>([]),[comparison,setComparison]=useState<RecordValue|null>(null);
+  const section=['opex','revenue','financial'].includes(page)&&state?.plan.operating_economics?'operating_economics':page==='entry'?'equipment':page;
+  function select(key:string){window.history.replaceState(null,'',assessmentHref(window.location.pathname+window.location.search+window.location.hash,key));localStorage.setItem('flowvalue-assessment',key);setId(key);}
+  useEffect(()=>{const selected=assessmentFromUrl(window.location.href,localStorage.getItem('flowvalue-assessment'));if(selected)localStorage.setItem('flowvalue-assessment',selected);setId(selected);void api('catalogue').then(c=>setCatalogue(c.equipment)).catch(()=>{});void api('versions').then(setVersions).catch(()=>{});void api('health').then(h=>setUseAI(h.ai_enabled===true)).catch(()=>{});},[]);
+  useEffect(()=>{
+    if(!id)return;
+    let disposed=false,timer:ReturnType<typeof setTimeout>;
+    async function refresh(){try{
+      const next:Assessment=await api('assessments/'+id);
+      if(disposed)return;setState(next);
+      if(next.running)timer=setTimeout(refresh,1200);
+    }catch(e){if(!disposed)setError((e as Error).message);}}
+    void refresh();return()=>{disposed=true;clearTimeout(timer);};
+  },[id,busy]);
+  useEffect(()=>{if(state)setDescription(state.description);},[state?.id]);
+  useEffect(()=>{const v=state?.plan[section]??{};setDraft(v);setRaw(JSON.stringify(v,null,2));},[state?.revision,section]);
+  async function action(work:()=>Promise<void>){setError('');setBusy(true);try{await work();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
+  const active=busy||state?.running;
+  async function upload(){if(!file)throw new Error('Choose a workbook first');const form=new FormData();form.set('file',file);form.set('description',description);form.set('use_ai',String(useAI));select((await api('assessments',{method:'POST',body:form})).id);}
+  async function saveEdits(){if(!state)return;JSON.parse(raw);const next=await api('assessments/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision:state.revision,section,value:draft,rationale:reason})});setState(next);setReason('');}
+  const report=state?.scoped_report??state?.effective_report??state?.parsed?.report;
+  const stage=state?.results?.stages[page==='entry'?'equipment':page];
+  const equipment=state?.results?.stages.equipment?.result?.equipment as RecordValue[]|undefined;
+  const editorRoots:Record<string,string[]>={opex:['operating','materials','energy','labour','additional_expenses','garrett_factors'],revenue:['operating','sales','commercial_lines','avoided_costs'],financial:['financial','operating','price_basis']};
+  const scalar=scalarRows(draft).filter(row=>section!=='operating_economics'||(editorRoots[page]||[]).includes(row.path[0]));
+  function changeDraft(value:Json){setDraft(value);setRaw(JSON.stringify(value,null,2));}
+  function mapEquipment(key:string,changes:RecordValue){const rows=Array.isArray(draft)?draft as RecordValue[]:[];const original=rows.find(r=>r.equipment_key===key)||{equipment_key:key,curve_id:null,size:null,size_unit:'',rationale:''};changeDraft([...rows.filter(r=>r.equipment_key!==key),{...original,...changes}]);}
+
+  return <div className="shell"><aside><Link className="brand" href={assessmentHref('/entry',id)}>≋ flowvalue <small>AI</small></Link><p className="eyebrow">ANALYST WORKSPACE</p><div className="project">{state?.filename||'New assessment'}<small>Preliminary engineering economics</small></div><nav>{pages.map(([key,label])=><Link aria-current={page===key?'page':undefined} href={assessmentHref(routes[key],id)} key={key}>{label}</Link>)}</nav><p className="aside-note">Local assessment workspace<br/>Historical costs remain dated.</p></aside>
+    <main><header><span>Workspace / {pages.find(([key])=>key===page)?.[1]}</span><span className="badge">Local development</span></header><div className="content"><p className="eyebrow">TRACEABLE PROCESS ECONOMICS</p><h1>{page==='entry'?'Start with your process.':pages.find(([key])=>key===page)?.[1]}</h1>
+      {error&&<p role="alert" className="error">{error}</p>}
+      {page==='entry'&&<section className="upload-grid"><div><h2>Mass & energy balance</h2><label className="upload">Choose Excel workbook<input type="file" accept=".xlsx,.xls,.xlsm" onChange={e=>setFile(e.target.files?.[0]||null)}/><small>.xlsx · .xls · .xlsm — up to 4 MiB</small></label></div><div><label htmlFor="description"><h2>Describe your process</h2></label><textarea id="description" value={description} maxLength={12000} onChange={e=>setDescription(e.target.value)} placeholder="Describe the process, what product or service is sold, location and design requirements. Example: we sell treated water from the final outlet by cubic metre."/><label className="check"><input type="checkbox" checked={useAI} onChange={e=>setUseAI(e.target.checked)}/>AI engineer: review workbook, recover missed data and guide calculations (OpenAI usage charges apply)</label><button disabled={active} onClick={()=>void action(upload)}>Run Assessment →</button></div></section>}
+      {!state&&versions.length>0&&<section><h2>Saved assessments</h2>{versions.map(v=><div className="toolbar" key={v.id}><span>{v.name}</span><button className="secondary" disabled={busy} aria-label={`Open ${v.name}`} onClick={()=>void action(async()=>select((await api(`versions/${v.id}/open`,post({}))).id))}>Open assessment</button></div>)}</section>}
+      {state&&<>{page==='revenue'&&<CommercialStrategy key={state.id} description={state.description} busy={Boolean(active)} trace={state.commercial_strategy} onRun={(text,consent)=>void action(async()=>{select((await api(`assessments/${id}/commercial-strategy`,post({revision:state.revision,description:text,research_consent:consent}))).id);})}/>}<section className="toolbar"><div><strong>{state.filename}</strong><small>{state.status||'Assessing'} · Revision {state.revision}</small></div><button disabled={active} onClick={()=>void action(async()=>{await api(`assessments/${id}/run`,post({use_ai:false}));})}>Run Again · Python only</button><button className="secondary" disabled={active} onClick={()=>void action(async()=>{await api(`assessments/${id}/run`,post({use_ai:true}));})}>Refresh AI proposals</button></section>
+        {state.results?.stages.financial?.result&&<section className="toolbar"><div><strong>Techno-economic assessment results</strong><small>One saved scenario feeds OPEX, revenue and financial schedules.</small></div><a className="report-link" href={`/api/assessments/${id}/report`} target="_blank" rel="noreferrer">Open TEA report ↗</a><a className="report-link" href={`/api/assessments/${id}/snapshot`} download="FlowValue-TEA-assessment.json">Download full assessment</a></section>}
+        <details open={state.running}><summary>{state.running?"Assessment running — calculation stages":"Calculation stages"}</summary><div className="progress" aria-live="polite">{state.progress.filter(p=>p.status!=='running').map((p,i)=><span key={i}>{p.stage}: {p.status.replaceAll('_',' ')}</span>)}{state.running&&<span>{state.progress.at(-1)?.stage==='engineering_review'?'AI engineer is reading the workbook…':state.progress.at(-1)?.stage==='engineering_advisor'?'AI engineer is selecting equipment models and economic assumptions…':'Processing…'}</span>}</div></details>
+        {state.error&&<p className="error">{state.error}</p>}{state.ai?.notice&&<p className="notice">{display(state.ai.notice)}</p>}
+        {state.results&&<p className="notice">{state.results.scope}. {state.results.notice}</p>}
+        {(page==='entry'||page==='overview')&&<AssessmentOverview state={state}/>}
+        {(page==='entry'||page==='equipment'||page==='data')&&report&&<EngineeringRegister assessmentId={id} report={report} full={page!=='entry'}/>}
+        {page==='equipment'&&<section><h2>Equipment costing</h2><div className="table-wrap"><table><thead><tr><th>Tag</th><th>Matched costing model</th><th>Purchased cost</th><th>Basis / why</th></tr></thead><tbody>{equipment?.map((row,i)=><tr key={i}><td>{display(row.equipment_tag)}</td><td>{display(row.curve_id)}</td><td>{display(row.equipment_cost)}</td><td>{display((row.parsed_source as RecordValue)?.rationale)}<small>{display(row.status)} · {display(row.issues)}</small></td></tr>)}</tbody></table></div>{!equipment?.length&&<p>Upload a workbook to inspect its equipment.</p>}</section>}
+        {page!=='entry'&&page!=='data'&&page!=='overview'&&<><section><h2>Calculation results <span className="badge">{stage?.status||'Awaiting inputs'}</span></h2>{stage?.issues?.map((x,i)=><p key={i} className="error">{x}</p>)}<StudyResults page={page} value={stage?.result}/></section>
+          <section><h2>{section==='operating_economics'?'Shared operating-study assumptions':'Editable assumptions'} {state.locked.includes(section)&&<span className="badge">User locked</span>}</h2><p>{display(state.assumptions[section]?.origin)} · {display(state.assumptions[section]?.rationale)}<small>{display(state.assumptions[section]?.uncertainty)}</small></p>
+            <p className="muted">Edits lock this section against AI replacement. Save your edits, then Run Again. Source workbook values stay unchanged.</p>
+            {section==='equipment'&&report?.entities.filter(e=>e.kind==='equipment').map(e=>{const mapping=(Array.isArray(draft)?draft as RecordValue[]:[]).find(r=>r.equipment_key===e.key)||{};const options=(mapping.costing_options||{}) as RecordValue;return <details key={e.key}><summary>{e.identifier} · model and sizing assumption</summary><p>{e.values.map(v=>display(v.original_value)).join('; ')}</p><label className="field"><span>Costing configuration</span><select value={String(mapping.curve_id||'')} onChange={event=>{const model=catalogue.find(m=>m.id===event.target.value);mapEquipment(e.key,{curve_id:model?.id||null,size_unit:model?.size_unit||''});}}><option value="">Unpriced / no model selected</option>{Boolean(mapping.external_quote)&&<option value="external:reviewed-comparable">Reviewed comparable price</option>}{catalogue.map(m=><option value={m.id} key={m.id}>{m.id} · {m.equipment} · {m.configuration}</option>)}</select></label><label className="field"><span>Size (explicit design/scenario assumption)</span><input value={mapping.size===null?'':String(mapping.size||'')} onChange={event=>mapEquipment(e.key,{size:event.target.value||null})}/></label><label className="field"><span>Size unit</span><input value={String(mapping.size_unit||'')} onChange={event=>mapEquipment(e.key,{size_unit:event.target.value})}/></label><label className="field"><span>Selection and sizing rationale</span><input value={String(mapping.rationale||'')} onChange={event=>mapEquipment(e.key,{rationale:event.target.value})}/></label><label className="check"><input type="checkbox" checked={options.allow_unverified===true} onChange={event=>mapEquipment(e.key,{costing_options:{...options,allow_unverified:event.target.checked}})}/>Allow provisional digitised graph readings for this item</label><label className="field"><span>Gallon basis for Garrett curve (when applicable)</span><select value={String((options.unit_context as RecordValue)?.target_gallon_basis||'')} onChange={event=>mapEquipment(e.key,{costing_options:{...options,unit_context:{...((options.unit_context||{}) as RecordValue),target_gallon_basis:event.target.value||null}}})}><option value="">Unresolved</option><option value="US">US</option><option value="Imperial">Imperial</option></select></label></details>;})}
+            {section==='capex'&&<><label className="field"><span>Process classification</span><select value={String((draft as RecordValue).process_type||'')} onChange={e=>changeDraft({...draft as RecordValue,process_type:e.target.value})}><option value="">Select classification</option><option value="solids">Solids</option><option value="mixed">Mixed solids / fluids</option><option value="fluids">Fluids</option></select></label><label className="field"><span>Equipment delivery basis</span><select value={String((draft as RecordValue).delivery_basis||'')} onChange={e=>changeDraft({...draft as RecordValue,delivery_basis:e.target.value})}><option value="">Confirm basis</option><option value="delivered">Delivered</option><option value="ex_works">Ex works</option></select></label><label className="field"><span>Garrett factor scenario</span><select value={String((draft as RecordValue).factor_selection||'')} onChange={e=>changeDraft({...draft as RecordValue,factor_selection:e.target.value})}><option value="">Select explicit factor scenario</option><option value="minimum">Published minimum</option><option value="midpoint">Midpoint assumption</option><option value="maximum">Published maximum (offsite scope confirmation required)</option><option value="selected">Individually selected factors</option></select></label></>}
+
+            {section==='operating_economics'&&page==='revenue'&&<RevenueEditor config={draft} calculated={state.results?.stages.revenue?.result} onChange={value=>{changeDraft(value);setReason('Edited commercial payment mechanisms and annual assumptions');}}/>}
+            {section==='operating_economics'&&['opex','revenue'].includes(page)&&<CommercialPriceEditor key={state.id} config={draft} onChange={value=>{changeDraft(value as Json);setReason('Recorded dated commercial observation and explicit discount assumption');}}/>}
+            {section==='equipment'&&<EquipmentComparableEditor key={state.id} equipment={report?.entities} onChange={(key,value)=>{mapEquipment(key,value as RecordValue);setReason('Reviewed comparable equipment, size calibration and dated cost basis');}}/>}
+            {scalar.filter(r=>r.path.length).slice(0,300).map(({path,value})=><label className="field" key={path.join('.')}><span>{path.join(' › ')}</span><input aria-label={path.join('.')} value={display(value)==='Unresolved'?'null':display(value)} onChange={e=>{const v=replaceAt(draft,path,e.target.value);setDraft(v);setRaw(JSON.stringify(v,null,2));}}/></label>)}
+            <details><summary>Saved value-level evidence register</summary><Result value={{assumptions:(state.assumption_register||[]).filter(r=>String(r.path).startsWith(section+'.'))}}/></details>
+            <details><summary>Structured section editor / add missing inputs</summary><p>Use the canonical contracts below. No generated code is executed.</p><textarea className="code" aria-label="Structured assumptions" value={raw} onChange={e=>{setRaw(e.target.value);try{setDraft(JSON.parse(e.target.value));setError('');}catch{setError('Structured input needs valid JSON before saving');}}}/><a href="/api/catalogue" target="_blank" rel="noreferrer">Open available models and input contracts ↗</a></details>
+            <label className="field"><span>Reason for change</span><input value={reason} onChange={e=>setReason(e.target.value)} placeholder="Basis, source and uncertainty for this scenario"/></label><button disabled={active||!reason.trim()} onClick={()=>void action(saveEdits)}>Save assumptions</button>
+          </section></>}
+        {page==='capex'&&!!state.results?.screening_comparisons?.length&&<details><summary>Lang screening comparison — excluded from detailed CAPEX</summary><p>This is a separately calculated whole-plant cross-check. Its value is never added to the selected detailed capital estimate.</p><Result value={{comparisons:state.results.screening_comparisons}}/></details>}
+        {['overview','equipment','opex','revenue','data'].includes(page)&&<AnalystReviewPanel key={state.id} state={state} busy={Boolean(active)} onResearch={(kind,target)=>void action(async()=>{await api(`assessments/${id}/research`,post({revision:state.revision,kind,target_id:target,consent:true}));})} onDecision={(finding,decision,comment)=>void action(async()=>{setState(await api(`assessments/${id}/review-decisions`,post({revision:state.revision,finding_id:finding,decision,comment})));})}/>}
+        {page!=='entry'&&!!state.review?.length&&<section><h2>Workbook review · interpretations pending confirmation</h2>{state.review.map((r,i)=><p key={i}><strong>{display(r.sheet)}!{display(r.cell)}</strong> — {display(r.finding)}<small>{display(r.proposed_interpretation)}</small></p>)}</section>}
+        {!!state.questions?.length&&<details><summary>Engineering assumptions & clarification questions ({state.questions.length})</summary>{state.questions.map((q,i)=><p key={i}>{q}</p>)}</details>}
+        {!!state.results?.exclusions.length&&<details><summary>Unpriced / excluded equipment ({state.results.exclusions.length})</summary>{state.results.exclusions.map((r,i)=><p key={i}><strong>{r.equipment_tag}</strong> — {r.reason}</p>)}</details>}
+        <section><h2>Saved versions & comparisons</h2><div className="toolbar"><label>Version name<input value={version} onChange={e=>setVersion(e.target.value)} placeholder="Baseline / alternative"/></label><button disabled={active||!version.trim()} onClick={()=>void action(async()=>{await api(`assessments/${id}/versions`,post({name:version}));setVersions(await api('versions'));})}>Save named version</button><button className="secondary" onClick={()=>void action(async()=>setVersions(await api('versions')))}>List saved versions</button></div>{versions.map(v=><div className="toolbar" key={v.id}><strong>{v.name}</strong><button className="secondary" onClick={()=>void action(async()=>select((await api(`versions/${v.id}/open`,post({}))).id))}>Open as independent model</button><button className="secondary" onClick={()=>void action(async()=>{const other=await api(`versions/${v.id}/open`,post({}));setComparison(await api(`assessments/${id}/compare/${other.id}`));})}>Compare with current</button></div>)}{comparison&&<Result value={comparison}/>}</section>
+      </>}
+      {!state&&page!=='entry'&&<p>Start by <Link href="/entry">uploading a mass and energy balance</Link>.</p>}
+    </div></main></div>;
+}
+function Result({value}:{value:RecordValue|undefined}) {
+  if(!value)return <p className="muted">Required inputs remain unresolved. No numerical result has been substituted.</p>;
+  const simple=Object.entries(value).filter(([,v])=>v===null||typeof v!=='object');
+  const arrays=Object.entries(value).filter(([,v])=>Array.isArray(v)) as [string,Json[]][];
+  const pairs = (Array.isArray(value.metrics) ? value.metrics as [string,RecordValue][] : []).filter(([k])=>['project_npv','project_irr','project_payback','project_discounted_payback','levelised_cost','roi','project_mirr','project_profitability_index'].includes(k));
+  return <>{pairs.length>0&&<div className="metrics">{pairs.map(([key,m])=><div key={key}><small>{key.replaceAll('_',' ')}</small><strong>{display(m.value)}</strong><small>{display(m.unit)} · {display(m.status)}</small></div>)}</div>}<div className="metrics">{simple.map(([k,v])=><div key={k}><small>{k.replaceAll('_',' ')}</small><strong>{display(v)}</strong></div>)}</div>{arrays.map(([k,rows])=><details key={k}><summary>{k.replaceAll('_',' ')} ({rows.length})</summary><div className="table-wrap">{rows.length>0&&rows.every(r=>r!==null&&typeof r==='object'&&!Array.isArray(r))?<table><thead><tr>{Object.keys(rows[0] as RecordValue).map(key=><th key={key}>{key.replaceAll('_',' ')}</th>)}</tr></thead><tbody>{rows.map((r,i)=><tr key={i}>{Object.keys(rows[0] as RecordValue).map(key=><td key={key}>{display((r as RecordValue)[key])}</td>)}</tr>)}</tbody></table>:rows.map((r,i)=><p key={i}>{display(r)}</p>)}</div></details>)}<details><summary>Full calculation, ledger and source evidence</summary><pre>{JSON.stringify(value,null,2)}</pre></details></>;
+}
+
+function EngineeringRegister({report,full,assessmentId}:{report:EngineeringReport;full:boolean;assessmentId:string}) {
+  const equipment=report.entities.filter(e=>e.kind==='equipment');
+  const streams=report.entities.filter(e=>e.kind!=='equipment');
+  const prop=(e:EngineeringEntity,name:string)=>[...e.values].reverse().find(v=>v.property===name&&v.status!=='unresolved');
+  const source=(e:EngineeringEntity)=>{const v=e.id_evidence||e.values[0];return v?`${display(v.sheet)}!${display(v.cell)}`:'';};
+  return <><section><h2>Equipment list <span className="badge">{equipment.length} identified</span></h2>
+    <div className="table-wrap"><table><thead><tr><th>Tag / name</th><th>Equipment / service</th><th>Linked streams</th><th>Workbook source</th></tr></thead><tbody>{equipment.map(e=><tr key={e.key}><td>{e.identifier}</td><td>{display(prop(e,'type')?.normalized_value??prop(e,'name')?.normalized_value)}<small>{String(prop(e,'type')?.note||'Python extraction')}</small></td><td>{(e.stream_keys||[]).map(k=>report.entities.find(v=>v.key===k)?.identifier||k).join(', ')||'Not specified'}</td><td>{source(e)}</td></tr>)}</tbody></table></div>
+    {!equipment.length&&<p>No equipment identified yet; stream extraction and AI review continue independently.</p>}
+    {report.review_summary&&<p className="notice">{report.review_summary}</p>}
+    {!full&&<Link href={assessmentHref('/data',assessmentId)}>Inspect {streams.length} stream records, components, units and properties →</Link>}
+  </section>{full&&<section><h2>Streams, units & properties <span className="badge">{streams.length} records</span></h2>{streams.map(e=><details key={e.key}><summary>{e.identifier} · {display(prop(e,'name')?.normalized_value??prop(e,'description')?.normalized_value??e.kind)} · {e.values.length} observations</summary><div className="table-wrap"><table><thead><tr><th>Property</th><th>Component</th><th>Workbook value</th><th>Original unit</th><th>Normalised value / unit</th><th>Source</th></tr></thead><tbody>{e.values.filter(v=>!['name','description'].includes(String(v.property))).map((v,i)=><tr key={i}><td>{display(v.property)}</td><td>{v.component?display(v.component):'—'}</td><td>{display(v.original_value)}</td><td>{v.original_unit?display(v.original_unit):'—'}</td><td>{display(v.normalized_value)} {v.normalized_unit?display(v.normalized_unit):''}</td><td title={String(v.note||'')}>{display(v.sheet)}!{display(v.cell)}</td></tr>)}</tbody></table></div></details>)}</section>}</>;
+}
+
+function record(value:Json|undefined):RecordValue {return value&&typeof value==='object'&&!Array.isArray(value)?value:{};}
+function rows(value:Json|undefined):RecordValue[] {return Array.isArray(value)?value.map(v=>record(v)):[];}
+function amount(value:Json|undefined,digits=2):string {
+  if(value===null||value===undefined)return '—';
+  const number=Number(value);return Number.isFinite(number)?new Intl.NumberFormat('en-GB',{maximumFractionDigits:digits}).format(number):String(value);
+}
+function StudyTable({columns,data}:{columns:[string,string][];data:RecordValue[]}) {
+  return <div className="table-wrap"><table><thead><tr>{columns.map(([key,label])=><th key={key}>{label}</th>)}</tr></thead><tbody>{data.map((r,i)=><tr key={String(r.id||r.product_id||'')+i}>{columns.map(([key])=><td className={r[key]!==null&&r[key]!==undefined&&String(r[key]).trim()!==''&&Number.isFinite(Number(r[key]))?'numeric':undefined} title={String(r.rationale||r.basis||'')} key={key}>{r[key]===null||r[key]===undefined?'—':typeof r[key]==='object'?display(r[key]):amount(r[key],/price|rate|factor|fraction|tariff|fte/.test(key)?6:2)}</td>)}</tr>)}</tbody></table></div>;
+}
+function StudyResults({page,value}:{page:string;value:RecordValue|undefined}) {
+  const [year,setYear]=useState('1');
+  if(!value)return <Result value={value}/>;
+  if(page==='capex'&&value.total_capex!==undefined)return <><p className="notice">{display(value.model_id)} · {display(value.process_type)} · {display(value.currency)} · {display(value.period)}. Purchased equipment, direct/indirect plant costs and working capital remain distinct.</p>
+    <div className="metrics">{[['purchased_equipment','Purchased equipment'],['direct_costs','Direct costs'],['indirect_costs','Indirect costs'],['fixed_capital','Fixed capital'],['startup_expenses','Start-up'],['working_capital','Working capital'],['total_capex','Total CAPEX']].map(([key,label])=><div key={key}><small>{label}</small><strong>{amount(value[key])}</strong><small>{display(value.currency)}</small></div>)}</div>
+    <h2>Capital cost calculations</h2><StudyTable columns={[["id","Cost category"],["base","Calculation base"],["base_amount","Base amount"],["fraction","Selected factor"],["formula","Calculation"],["amount","Cost"],["status","Basis status"]]} data={rows(value.lines)}/><details><summary>Capital factor rationale and source evidence</summary><pre>{JSON.stringify(value,null,2)}</pre></details></>;
+  if(page==='opex'&&value.operating_detail){
+    const detail=record(value.operating_detail),years=record(value.years),selected=record(years[year]);
+    const operating=record(record(detail.years)[year]);
+    return <><p className="notice">Garrett manufacturing costs · {display(value.currency)} · {display(value.price_period)}. {display(detail.operating_days)} operating days / {amount(detail.annual_hours)} scheduled hours per year. This is a planning assumption.</p>
+      <label className="field"><span>Operating year</span><select value={year} onChange={e=>setYear(e.target.value)}>{Object.keys(years).map(y=><option key={y} value={y}>Year {y}</option>)}</select></label>
+      <div className="metrics">{[['annual_cash_opex','Annual cash OPEX'],['cash_fixed','Fixed cash OPEX'],['cash_variable','Variable cash OPEX']].map(([key,label])=><div key={key}><small>{label}</small><strong>{amount(selected[key])}</strong><small>{display(value.currency)} / year</small></div>)}</div>
+      <h2>Purchased feeds, reagents & catalysts</h2><StudyTable columns={[["name","Material"],["annual_quantity","Annual quantity"],["quantity_unit","Unit"],["unit_price","Price / unit"],["annual_cost","Annual cost"]]} data={rows(operating.materials)}/><p className="muted">Material cost = source consumption per hour × operating hours × production ramp × delivered unit price. Source observations and assumptions are retained below.</p>
+      <h2>Equipment utility demand</h2><StudyTable columns={[["name","Duty"],["method","Calculation basis"],["input_kw","Input kW"],["annual_energy_kwh","Annual kWh"],["tariff_per_kwh","Tariff / kWh"],["annual_cost","Annual cost"]]} data={rows(operating.energy)}/><p className="muted">Energy cost = input kW × load fraction × operating hours × applicable production ramp × tariff.</p>
+      <h2>Staffing & expertise</h2><StudyTable columns={[["role","Role"],["arrangement","Employment basis"],["allocated_fte","Allocated FTE"],["annual_base_salary","Base salary / FTE"],["annual_cost","Annual cost"],["coverage","Cost owner / coverage"]]} data={rows(operating.labour).map(person=>({...person,coverage:person.coverage||'Itemised staffing'}))}/><p className="muted">Staff cost = headcount FTE × allocation fraction × annual salary, with throughput scaling only for roles explicitly classified variable.</p>
+      <h2>Garrett factors and operating ledger</h2><StudyTable columns={[["category","Category"],["method","Method"],["calculation_base","Calculation base"],["base_amount","Base amount"],["rate","Factor / unit rate"],["behavior","Fixed / variable"],["accounting","Cash / non-cash"],["amount","Annual amount"]]} data={rows(selected.lines).map(line=>({...line,calculation_base:line.calculation_base||line.quantity_unit||"Annual allowance",base_amount:line.base_amount??line.quantity??"—"}))}/>
+      <details><summary>Calculation evidence, exclusions and all operating years</summary><pre>{JSON.stringify(value,null,2)}</pre></details></>;
+  }
+  if(page==='revenue'&&Array.isArray(value.products))return <><p className="notice">Conditional annual commercial income · {display(record(value.basis).currency)} · {display(record(value.basis).price_period)}. Sold quantities, prices and specifications are scenario assumptions; no offtake commitment is implied. Cost-plus prices, when selected, are operating-cost recovery targets plus margin, not researched market prices.</p>
+    <StudyTable columns={[["year","Year"],["product_id","Product"],["quantity_unit","Unit"],["produced_quantity","Produced"],["saleable_quantity","Saleable"],["quantity_sold","Sold"],["net_selling_price","Net price / unit"],["net_sales_revenue","Annual revenue"]]} data={rows(value.products)}/>
+    {!!rows(value.commercial).length&&<><h2>Commercial payments</h2><StudyTable columns={[["year","Year"],["line_id","Payment"],["category","Category"],["quantity","Billable quantity"],["quantity_unit","Unit"],["rate","Rate"],["fixed_payment","Fixed payment"],["revenue","Annual revenue"],["status","Status"]]} data={rows(value.commercial)}/></>}
+    <h2>Consolidated annual revenue</h2><StudyTable columns={[["year","Year"],["sales_revenue","Total commercial revenue"]]} data={rows(value.annual)}/>
+    {!!rows(value.avoided_costs).length&&<><h2>Avoided costs — excluded from revenue</h2><StudyTable columns={[["id","Saving"],["target_opex_id","OPEX owner"],["rationale","Basis"]]} data={rows(value.avoided_costs)}/></>}
+    <details><summary>Price, sales and source evidence</summary><pre>{JSON.stringify(value,null,2)}</pre></details></>;
+  if(page==='financial'&&Array.isArray(value.ledger)){
+    const metrics=Array.isArray(value.metrics)?value.metrics as [string,RecordValue][]:[];
+    const main=metrics.filter(([k])=>['project_npv','project_irr','project_payback','project_discounted_payback','levelised_cost','roi'].includes(k));
+    const ledger=rows(value.ledger).map(r=>({...r,year:record(r.period).year,total_cash_opex:Number(r.fixed_opex)+Number(r.variable_opex)}));
+    return <><p className="notice">{display(value.currency)} · constant {display(value.financial_base_year)} prices · unlevered planning model. Taxes, depreciation and financing assumptions remain editable.</p>
+      <div className="metrics">{main.map(([key,m])=><div key={key}><small>{key.replaceAll('_',' ')}</small><strong>{m.value===null?(m.status==='not_recovered'?'Not reached':display(m.status)):key==='project_irr'||key==='roi'?amount(Number(m.value)*100)+'%':amount(m.value)}</strong><small>{key==='project_irr'?'% / year':key==='roi'?'% lifetime return':display(m.unit)}</small></div>)}</div>
+      <CashFlowCurve ledger={ledger}/><h2>Annual financial ledger</h2><StudyTable columns={[["year","Year"],["revenue","Revenue"],["fixed_opex","Fixed OPEX"],["variable_opex","Variable OPEX"],["depreciation","Depreciation"],["income_tax","Tax"],["net_income","Net income"],["capex","Capital spend"],["fcff","Project cash flow"],["cumulative_project_cash","Cumulative cash flow"]]} data={ledger}/>
+      <details><summary>Full financial schedules and methodology</summary><pre>{JSON.stringify(value,null,2)}</pre></details></>;
+  }
+  return <Result value={value}/>;
+}
+function CashFlowCurve({ledger}:{ledger:RecordValue[]}) {
+  const values=ledger.map(r=>Number(r.cumulative_project_cash));
+  if(values.length<2||values.some(v=>!Number.isFinite(v)))return null;
+  const low=Math.min(0,...values),high=Math.max(0,...values),span=high-low||1;
+  const points=values.map((v,i)=>`${45+i/(values.length-1)*690},${175-(v-low)/span*140}`).join(' ');
+  const zero=175-(0-low)/span*140;
+  return <div className="cash-curve"><h2>Cumulative project cash flow</h2><svg viewBox="0 0 760 210" role="img" aria-label="Cumulative project cash flow using the saved annual financial ledger"><line x1="45" x2="735" y1={zero} y2={zero} stroke="#c9d2c2"/><polyline points={points} stroke="#568471" strokeWidth="3" fill="none"/><text x="45" y="200" fontSize="11" fill="#6f8275">Year 0</text><text x="670" y="200" fontSize="11" fill="#6f8275">Year {values.length-1}</text><text x="45" y="20" fontSize="11" fill="#6f8275">Range {amount(low)} → {amount(high)}</text></svg></div>;
+}
+
+function AssessmentOverview({state}:{state:Assessment}) {
+  const stages=state.results?.stages||{},capex=record(stages.capex?.result),opex=record(stages.opex?.result),revenue=record(stages.revenue?.result),financial=record(stages.financial?.result);
+  const annual=record(record(opex.years)['1']);
+  const metrics=Array.isArray(financial.metrics)?financial.metrics as [string,RecordValue][]:[];
+  const metric=(key:string)=>metrics.find(([id])=>id===key)?.[1];
+  const npv=metric('project_npv'),irr=metric('project_irr');
+  const sales=rows(revenue.products),firstSales=sales.filter(r=>Number(r.year)===1);
+  const firstRevenue=rows(revenue.annual).find(r=>Number(r.year)===1)?.sales_revenue??(firstSales.length?firstSales.reduce((sum,r)=>sum+Number(r.net_sales_revenue),0):undefined);
+  const currency=capex.currency||financial.currency;
+  const cards:[string,Json|undefined,string][]=[['Total CAPEX',capex.total_capex,'/capex'],['Year 1 cash OPEX',annual.annual_cash_opex,'/opex'],['Year 1 revenue',firstRevenue,'/revenue'],['Project NPV',npv?.value,'/financial-modelling']];
+  return <section className="assessment-overview"><div className="toolbar"><div><h2>Techno-economic assessment</h2><p className="muted">{state.running?'Building your study from the uploaded workbook…':'Calculated results from this uploaded workbook and its saved engineering assumptions.'}</p></div><Link className="report-link" href={assessmentHref('/main-dashboard',state.id)}>Open TEA overview →</Link></div>
+    <div className="metrics">{cards.map(([label,value,href])=><div key={label}><small>{label}</small><strong>{value===undefined?'Calculating / awaiting inputs':amount(value)}</strong><small>{currency?`${display(currency)} · ${display(capex.period)}`:''}</small><Link href={assessmentHref(href,state.id)}>Inspect calculations →</Link></div>)}</div>
+    {!!state.analyst_reviews?.length&&<p><a className="report-link" href="#analyst-review">Inspect {state.analyst_reviews.length} specialist reviews, material alternatives and research tools ↓</a></p>}
+    {irr&&<p><strong>Project IRR: {irr.value===null?display(irr.status):amount(Number(irr.value)*100)+'%'}</strong> · {rows(financial.ledger).length} annual ledger periods · {sales.length} annual product-sales records</p>}
+    <div className="study-sections">{[['capex','CAPEX','Purchased equipment, installation and plant factors, start-up and working capital.'],['opex','OPEX','Feeds, reagents, equipment energy, staff, maintenance and manufacturing expenses.'],['revenue','Revenue','Saleable production, quantity sold, unit prices and annual sales.'],['financial','Financial model','Construction, depreciation, taxation, cash flow, NPV, IRR and payback.']].map(([key,label,description])=><div key={key}><h3><Link href={assessmentHref(routes[key],state.id)}>{label} →</Link></h3><span className="badge">{stages[key]?.status|| (state.running?'In progress':'Not calculated')}</span><p>{description}</p>{stages[key]?.issues?.map((issue,i)=><p className="error" key={i}>{issue}</p>)}</div>)}</div>
+    {!state.running&&!financial.ledger&&<p className="error">This upload has not produced a complete financial model. Review the stage issues above; missing results are not a completed assessment.</p>}
+    {Array.isArray(financial.ledger)&&<><h2>Annual techno-economic model</h2><StudyTable columns={[["year","Project year"],["revenue","Revenue"],["fixed_opex","Fixed cash OPEX"],["variable_opex","Variable cash OPEX"],["depreciation","Depreciation"],["income_tax","Tax"],["net_income","Net income"],["capex","Capital investment"],["fcff","Project cash flow"],["cumulative_project_cash","Cumulative cash flow"]]} data={rows(financial.ledger).map(r=>({...r,year:record(r.period).year}))}/><p className="muted">This table and all individual models read the same calculated annual ledger. {display(record(record(state.plan.operating_economics).operating).days_per_year)} operating days/year is an editable planning assumption.</p></>}
+    {pageEvidence(state)}
+  </section>;
+}
+function pageEvidence(state:Assessment) {
+  const errors=record(state.ai?.advisor_errors);
+  return Object.keys(errors).length>0?<div role="alert"><h3>AI stage failures</h3>{Object.entries(errors).map(([key,value])=><p className="error" key={key}>{key}: {display(value)}</p>)}</div>:null;
+}

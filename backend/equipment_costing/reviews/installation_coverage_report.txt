@@ -1,0 +1,169 @@
+FLOWVALUE — GARRETT INSTALLATION COVERAGE
+
+All 51 groups / 154 registered curves carry explicit installation metadata.
+115 default source factors; 27 missing source factors; 9 already installed and unsplit; 2 unresolved cost scopes; 1 merged pump configuration requiring a subtype.
+Installation-only = equipment * (factor - 1). Combined = equipment + installation.
+Factors use historical source basis; index adjustments apply identically to all three components.
+Unknown is not zero. Source factors are preliminary; no industrial accuracy is claimed.
+
+CANONICAL TOTAL FIELDS: equipment_cost_total, installation_cost_total, equipment_and_installation_cost_total.
+Legacy total/source-scope fields remain unchanged for compatibility.
+
+G256-001 | Mild steel / activated carbon | p. 256 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G257-002 | Dual turbine blades | p. 257 | source_factor | factor: 1.32 | Configuration-specific agitator installation factor.
+G257-003 | Single-blade propeller | p. 257 | source_factor | factor: 1.22 | Configuration-specific agitator installation factor.
+G258-004 | Autoclave — 1,500 psi | p. 258 | source_factor | factor: 1.6 | Configuration-specific tank installation factor.
+G258-005 | Autoclave — 600 psi | p. 258 | source_factor | factor: 1.6 | Configuration-specific tank installation factor.
+G258-006 | Reactor — 300 psi | p. 258 | source_factor | factor: 1.44 | Configuration-specific tank installation factor.
+G258-007 | Reactor — 50 psi | p. 258 | source_factor | factor: 1.44 | Configuration-specific tank installation factor.
+G258-008 | Open tank | p. 258 | source_factor | factor: 1.58 | Configuration-specific tank installation factor.
+G259-009 | Complete air-conditioning package | p. 259 | source_factor | factor: 1.46 | Source labels this Installation, Module factor; use once for installation, never stack as a second module multiplier.
+G260-010 | Ribbon | p. 260 | source_factor | factor: 1.3 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G260-011 | Double arm / sigma | p. 260 | source_factor | factor: 1.3 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G260-012 | Twin shell | p. 260 | source_factor | factor: 1.3 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G260-013 | Double cone | p. 260 | source_factor | factor: 1.3 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G261-014 | Turbo — 30 psi | p. 261 | source_factor | factor: 1.42 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G261-015 | Rotary / centrifugal / turbo — 10 psi | p. 261 | source_factor | factor: 1.42 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G261-016 | Turbo — 3 psi | p. 261 | source_factor | factor: 1.42 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G261-017 | Centrifugal / rotary — 1 psi | p. 261 | source_factor | factor: 1.42 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G262-018 | Small package — 150 psi | p. 262 | source_factor | factor: 1.53 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G262-019 | Large package — 250 psi | p. 262 | source_factor | factor: 1.53 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G262-020 | Field erected — 400 psi | p. 262 | source_factor | factor: 1.53 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G263-021 | Flue-gas waste-heat boiler | p. 263 | source_factor | factor: 1.67 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G264-022 | Office-type building (baseline) | p. 264 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G265-023 | Solid-bowl / screen-bowl / pusher, 316 SS | p. 265 | source_factor | factor: 1.54 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G266-024 | Short — unlined | p. 266 | source_factor | factor: 1.24 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G266-025 | Tall — 15 ft diameter | p. 266 | source_factor | factor: 1.24 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G266-026 | Tall — 20 ft diameter | p. 266 | source_factor | factor: 1.24 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G266-027 | Tall — 30 ft diameter | p. 266 | source_factor | factor: 1.24 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G266-028 | Tall — 40 ft diameter | p. 266 | source_factor | factor: 1.24 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G266-029 | Tall — 8 ft diameter | p. 266 | source_factor | factor: 1.24 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G267-030 | Rake / spiral — mild steel | p. 267 | source_factor | factor: 2.12 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G268-031 | Vertical vessel — diameter cost per height, 0–50 psi | p. 268 | source_factor | factor: 1.72 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G268-032 | Vertical vessel — weight cost relation, 0–15,000 psi | p. 268 | source_factor | factor: 1.72 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G269-033 | Bubble-cap tray — mild steel | p. 269 | source_factor | factor: 1.2 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G269-034 | Valve / trough tray — mild steel | p. 269 | source_factor | factor: 1.2 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G270-035 | Berl saddles — porcelain | p. 270 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G270-036 | Interlox saddles — polypropylene | p. 270 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G270-037 | Interlox saddles — porcelain | p. 270 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G270-038 | Pall rings — polypropylene | p. 270 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G270-039 | Pall rings — stainless steel (SS) | p. 270 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G270-040 | Raschig rings — porcelain | p. 270 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G271-041 | Helical-screw | p. 271 | source_factor | factor: 1.49 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G271-042 | Reciprocating — air | p. 271 | source_factor | factor: 1.49 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G271-043 | Sliding-vane | p. 271 | source_factor | factor: 1.49 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G271-044 | Straight-lobe | p. 271 | source_factor | factor: 1.49 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G272-045 | Electric motor, gear reducer, 1,000 psi | p. 272 | source_factor | factor: 1.49 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G273-046 | Belt conveyor | p. 273 | source_factor | factor: 1.72 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G273-047 | Bucket elevator | p. 273 | source_factor | factor: 1.72 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G273-048 | Pneumatic conveyor | p. 273 | source_factor | factor: 1.72 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G273-049 | Roll conveyor | p. 273 | source_factor | factor: 1.72 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G273-050 | Screw conveyor | p. 273 | source_factor | factor: 1.72 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G273-051 | Vibrating conveyor | p. 273 | source_factor | factor: 1.72 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G274-052 | Cascade cooler — 2-inch pipe | p. 274 | source_factor | factor: 1.62 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G274-053 | Dilution air port | p. 274 | source_factor | factor: 1.62 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G274-054 | Quencher | p. 274 | source_factor | factor: 1.62 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G274-055 | Spray chamber | p. 274 | source_factor | factor: 1.62 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G275-056 | 15°F range; 10°F approach; 82°F wet bulb | p. 275 | source_factor | factor: 1.2 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G276-057 | Cooling / evaporative | p. 276 | source_factor | factor: 1.8 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G276-058 | Growth; forced circulation; draft tube baffle (DTB) | p. 276 | source_factor | factor: 1.8 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G276-059 | Vapour recompression | p. 276 | source_factor | factor: 1.8 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G277-060 | Fluid-bed dryer | p. 277 | source_factor | factor: 1.64 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G277-061 | Rotary dryer | p. 277 | source_factor | factor: 1.64 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G277-062 | Spray dryer | p. 277 | source_factor | factor: 1.64 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G278-063 | Mild steel; 1/8-inch wall | p. 278 | source_factor | factor: 1.45 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G278-064 | Stainless steel; 1/8-inch wall | p. 278 | source_factor | factor: 1.45 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G279-065 | Bag filter | p. 279 | source_factor | factor: 1.9 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G279-066 | Cyclone / multiclone | p. 279 | source_factor | factor: 1.9 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G279-067 | Electrostatic precipitator | p. 279 | source_factor | factor: 1.9 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G279-068 | Venturi scrubber | p. 279 | source_factor | factor: 1.9 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G280-069 | Falling film | p. 280 | source_factor | factor: 2.09 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G280-070 | Forced circulation | p. 280 | source_factor | factor: 2.09 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G280-071 | Long/short tube | p. 280 | source_factor | factor: 2.09 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G281-072 | Backward-curved vane | p. 281 | source_factor | factor: 1.61 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G281-073 | Centrifugal | p. 281 | source_factor | factor: 1.61 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G281-074 | Radial | p. 281 | source_factor | factor: 1.61 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G281-075 | Tube axial | p. 281 | source_factor | factor: 1.61 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G282-076 | Pressure leaf / plate and frame | p. 282 | source_factor | factor: 1.69 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G282-077 | Rotary drum | p. 282 | source_factor | factor: 1.69 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G282-078 | Rotary leaf | p. 282 | source_factor | factor: 1.69 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G282-079 | Tilting pan | p. 282 | source_factor | factor: 1.69 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G282-080 | Vacuum belt | p. 282 | source_factor | factor: 1.69 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G282-081 | Vacuum table | p. 282 | source_factor | factor: 1.69 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G283-082 | Elevated flare; high-Btu gas | p. 283 | source_factor | factor: 1.45 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G283-083 | Ground flare; high-Btu gas | p. 283 | source_factor | factor: 1.45 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G284-084 | Box furnace | p. 284 | source_factor | factor: 1.52 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G284-085 | Cylindrical furnace | p. 284 | source_factor | factor: 1.52 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G284-086 | Hershoff furnace | p. 284 | source_factor | factor: 1.52 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G285-087 | Diesel engine driven | p. 285 | source_factor | factor: 2.31 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G285-088 | Turbine driven | p. 285 | source_factor | factor: 2.31 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G286-089 | Air cooled — mild steel | p. 286 | source_factor | factor: 1.61 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G286-090 | Double pipe — mild steel | p. 286 | source_factor | factor: 1.61 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G286-091 | Shell and tube — mild steel | p. 286 | source_factor | factor: 1.61 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G287-092 | Plate and frame — stainless steel | p. 287 | source_factor | factor: 1.53 | Installation table explicitly covers plate-and-frame; material-specific factor.
+G287-093 | Spiral plate — stainless steel | p. 287 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G288-094 | Catalytic | p. 288 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G288-095 | Direct flame | p. 288 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G288-096 | Hearth | p. 288 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G288-097 | Rotary kiln | p. 288 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G289-098 | Pipe insulation — 85% magnesia; 2-inch thickness | p. 289 | already_installed | factor: not determined | Source price already includes installation. No equipment/installation split is supplied; do not apply another factor.
+G289-099 | Pipe insulation — fibreglass; 2-inch thickness | p. 289 | already_installed | factor: not determined | Source price already includes installation. No equipment/installation split is supplied; do not apply another factor.
+G289-100 | Pipe insulation — foamglass; 2-inch thickness | p. 289 | already_installed | factor: not determined | Source price already includes installation. No equipment/installation split is supplied; do not apply another factor.
+G289-101 | Vessel insulation — cork | p. 289 | already_installed | factor: not determined | Source price already includes installation. No equipment/installation split is supplied; do not apply another factor.
+G289-102 | Vessel insulation — fibreglass / magnesia | p. 289 | already_installed | factor: not determined | Source price already includes installation. No equipment/installation split is supplied; do not apply another factor.
+G289-103 | Vessel insulation — foamglass | p. 289 | already_installed | factor: not determined | Source price already includes installation. No equipment/installation split is supplied; do not apply another factor.
+G290-104 | Mild-steel ion exchanger; 465 ppm removed | p. 290 | source_factor | factor: 1.62 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G291-105 | Gyratory / roll crushers | p. 291 | source_factor | factor: 1.83 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G291-106 | Hammer crusher | p. 291 | source_factor | factor: 1.83 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G291-107 | Jaw crusher | p. 291 | source_factor | factor: 1.83 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G292-108 | Ball, rod or pebble wet mill | p. 292 | scope_unresolved | factor: not determined | Source has purchased and installed-with-classifying-circuit mill curves; workbook does not unambiguously identify which one was read.
+G292-109 | Jet mill | p. 292 | source_factor | factor: 1.83 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G292-110 | Rubbish shredder | p. 292 | source_factor | factor: 1.83 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G293-111 | Electric motor; larger TEFC | p. 293 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G293-112 | Electric motor; small (TEFC) | p. 293 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G293-113 | Gas turbine / engine | p. 293 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G293-114 | Steam turbine | p. 293 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G293-115 | Variable-speed drive | p. 293 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G294-116 | Pipe — purchased plus installation | p. 294 | scope_unresolved | factor: not determined | Workbook pipe curve scope conflicts with purchased pipe source curve; resolve installed versus purchase basis before decomposition.
+G294-117 | Pipeline — conventional land | p. 294 | already_installed | factor: not determined | Source price already includes installation. No equipment/installation split is supplied; do not apply another factor.
+G294-118 | Pipeline — slurry carrying | p. 294 | already_installed | factor: not determined | Source price already includes installation. No equipment/installation split is supplied; do not apply another factor.
+G294-119 | Pipeline — submarine | p. 294 | already_installed | factor: not determined | Source price already includes installation. No equipment/installation split is supplied; do not apply another factor.
+G295-120 | Roll press — mild steel | p. 295 | source_factor | factor: 2.05 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G295-121 | Screw press — mild steel | p. 295 | source_factor | factor: 2.05 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G296-122 | Conventional horizontal centrifugal | p. 296 | source_factor | factor: 1.3 | Conventional horizontal centrifugal pump installation.
+G296-123 | In-line centrifugal | p. 296 | source_factor | factor: 1.27 | Inline centrifugal pump installation.
+G296-124 | Mixed / axial flow | p. 296 | configuration_required | factor: not determined | Workbook merges axial and mixed flow; installation factors differ. Select installation_variant explicitly.
+G297-125 | Chemical injection | p. 297 | source_factor | factor: 1.58 | Specific pump factor where printed; otherwise source general average.
+G297-126 | Other: diaphragm / rotary / gear / sump | p. 297 | source_factor | factor: 1.74 | Specific pump factor where printed; otherwise source general average.
+G297-127 | Reciprocating | p. 297 | source_factor | factor: 1.74 | Specific pump factor where printed; otherwise source general average.
+G297-128 | Turbine | p. 297 | source_factor | factor: 1.38 | Specific pump factor where printed; otherwise source general average.
+G298-129 | Horizontal vessel by weight | p. 298 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G298-130 | Vertical vessel by weight | p. 298 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G298-131 | Vessel by capacity — 15 psi design | p. 298 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G298-132 | Vessel by capacity — 250 psi design | p. 298 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G299-133 | Jacketed reactor, 304 stainless, no agitation | p. 299 | source_factor | factor: 1.7 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G300-134 | 40°F evaporative temperature basis | p. 300 | source_factor | factor: 1.46 | Source labels this Installation, Module factor; use once for installation, never stack as a second module multiplier.
+G301-135 | Single-deck, mild steel | p. 301 | source_factor | factor: 1.85 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G302-136 | Disk / drum granulator | p. 302 | source_factor | factor: 2.05 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G302-137 | Pellet mill | p. 302 | source_factor | factor: 2.05 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G302-138 | Pelletising rolls | p. 302 | source_factor | factor: 2.05 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G302-139 | Pug mill | p. 302 | source_factor | factor: 2.05 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G303-140 | Fibreglass tank | p. 303 | source_factor | factor: 1.88 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G303-141 | Horizontal pressurised tank | p. 303 | source_factor | factor: 1.88 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G303-142 | Large cone-top storage tank | p. 303 | source_factor | factor: 1.88 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G303-143 | Small cone-top tank | p. 303 | source_factor | factor: 1.88 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G303-144 | Small storage tank | p. 303 | source_factor | factor: 1.88 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G303-145 | Spherical tank | p. 303 | source_factor | factor: 1.88 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G304-146 | Cone top, bottom and legs | p. 304 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G304-147 | Cone top, flat bottom — API code | p. 304 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G304-148 | Dished head, 50 psi | p. 304 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G304-149 | Flanged, dished head | p. 304 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G304-150 | Flat top and bottom | p. 304 | missing_source_factor | factor: not determined | No installation factor supplied for this configuration on the source page.
+G305-151 | Rake mechanism; concrete tank and drive | p. 305 | source_factor | factor: 2.12 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G306-152 | Barometric condenser | p. 306 | source_factor | factor: 1.12 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G306-153 | Steam-jet ejector | p. 306 | source_factor | factor: 1.12 | Printed average/scalar; installation-only = purchase * (factor - 1).
+G306-154 | Vacuum pump | p. 306 | source_factor | factor: 1.12 | Printed average/scalar; installation-only = purchase * (factor - 1).
+
+Checked example: 100 source-gallon, 1,500 psi autoclave, early-1987 USD:
+Equipment: 47,070.10820099594; installation: 28,242.06492059757; combined: 75,312.17312159351.
+67 automated tests pass; lint passes.

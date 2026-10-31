@@ -106,3 +106,40 @@ explicit permission or a verified licence.
 These notices concern **source-code licensing**. They are not an End User
 Licence Agreement, website Terms of Service, privacy policy, trademark
 licence, or guarantee of rights to patents, trademarks or uploaded datasets.
+
+## Garrett review-workbook offline importer (30 October 2026)
+
+The optional offline importer was exercised with bundled **openpyxl 3.1.5**.
+Its installed distribution declares the MIT licence; the installed LICENCE.rst
+was inspected. The importer calls that library without copying its code. MIT
+permits proprietary integration while retaining its copyright/licence notice
+when distributing the library. This change adds no runtime dependency and does
+not vendor or redistribute openpyxl. Original FlowValue code retains its licence.
+User-supplied Garrett workbook/PDF data remain separately sourced reference data;
+this notice does not assert ownership of or change rights in those sources.
+
+## Optional financial reference check — OpenPyTEA 3.2.1
+
+The installed OpenPyTEA 3.2.1 distribution and its MIT licence (copyright Panji
+Tamarona, 2025) were inspected for the optional development NPV comparison.
+The comparison invokes the installed package only; no source is copied or vendored
+and no production dependency is added. If distributing that dependency later,
+retain its upstream copyright and MIT licence. Original FlowValue financial
+calculations remain separately authored proprietary source. The comparison
+establishes only a declared-timing numerical reference case, not model equivalence
+or adoption of OpenPyTEA's default engineering/economic assumptions.
+
+## Local orchestration runtime (30 October 2026)
+
+The optional API/parser requirements declare FastAPI 0.162.0 (MIT), Uvicorn
+0.54.0 (BSD-3-Clause), Pydantic 2.14.1 (MIT), python-multipart 0.0.32
+(Apache-2.0), openpyxl 3.1.5 (MIT), xlrd 2.0.2 (its distribution's BSD-style
+notices), and defusedxml 0.7.1 (PSF licence). Installed distribution metadata
+and licence files were inspected before integration. No library source is vendored.
+Retain each distribution's exact licences/notices if distributing it.
+The restored local UI uses Next.js 16.4.3 and React/React DOM 19.3.0 (MIT);
+TypeScript is Apache-2.0. Their installed licence files were inspected.
+Resolved JavaScript dependencies are recorded in frontend/package-lock.json.
+Original parser source was selectively recovered from FlowValue's own checkpoint,
+with its recovery manifest in backend/ingestion/RECOVERY.json; no third-party
+simulator script was copied or executed. This does not change FlowValue's licence.

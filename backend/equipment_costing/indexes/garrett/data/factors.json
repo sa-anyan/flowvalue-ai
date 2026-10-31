@@ -1,0 +1,3017 @@
+[
+  {
+    "id": "257.module.standard",
+    "printed_page": 257,
+    "pdf_page": 7,
+    "kind": "module",
+    "target_configuration": "standard",
+    "multiplier": 2.0,
+    "allowed_curve_ids": [
+      "G257-002",
+      "G257-003"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "258.module.standard",
+    "printed_page": 258,
+    "pdf_page": 8,
+    "kind": "module",
+    "target_configuration": "standard",
+    "multiplier": 2.5,
+    "allowed_curve_ids": [
+      "G258-004",
+      "G258-005",
+      "G258-006",
+      "G258-007",
+      "G258-008"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "262.module.package",
+    "printed_page": 262,
+    "pdf_page": 12,
+    "kind": "module",
+    "target_configuration": "package",
+    "multiplier": 1.8,
+    "allowed_curve_ids": [
+      "G262-018",
+      "G262-019"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "263.module.standard",
+    "printed_page": 263,
+    "pdf_page": 13,
+    "kind": "module",
+    "target_configuration": "standard",
+    "multiplier": 1.81,
+    "allowed_curve_ids": [
+      "G263-021"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "265.module.standard",
+    "printed_page": 265,
+    "pdf_page": 15,
+    "kind": "module",
+    "target_configuration": "standard",
+    "multiplier": 2.0,
+    "allowed_curve_ids": [
+      "G265-023"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "267.module.standard",
+    "printed_page": 267,
+    "pdf_page": 17,
+    "kind": "module",
+    "target_configuration": "standard",
+    "multiplier": 2.3,
+    "allowed_curve_ids": [
+      "G267-030"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "271.module.average",
+    "printed_page": 271,
+    "pdf_page": 21,
+    "kind": "module",
+    "target_configuration": "average",
+    "multiplier": 2.6,
+    "allowed_curve_ids": [
+      "G271-041",
+      "G271-042",
+      "G271-043",
+      "G271-044"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "272.module.average",
+    "printed_page": 272,
+    "pdf_page": 22,
+    "kind": "module",
+    "target_configuration": "average",
+    "multiplier": 2.6,
+    "allowed_curve_ids": [
+      "G272-045"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "275.module.standard",
+    "printed_page": 275,
+    "pdf_page": 25,
+    "kind": "module",
+    "target_configuration": "standard",
+    "multiplier": 1.7,
+    "allowed_curve_ids": [
+      "G275-056"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "276.module.average",
+    "printed_page": 276,
+    "pdf_page": 26,
+    "kind": "module",
+    "target_configuration": "average",
+    "multiplier": 2.6,
+    "allowed_curve_ids": [
+      "G276-057",
+      "G276-058",
+      "G276-059"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "281.module.standard",
+    "printed_page": 281,
+    "pdf_page": 31,
+    "kind": "module",
+    "target_configuration": "standard",
+    "multiplier": 2.2,
+    "allowed_curve_ids": [
+      "G281-072",
+      "G281-073",
+      "G281-074",
+      "G281-075"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "284.module.standard",
+    "printed_page": 284,
+    "pdf_page": 34,
+    "kind": "module",
+    "target_configuration": "standard",
+    "multiplier": 2.1,
+    "allowed_curve_ids": [
+      "G284-084",
+      "G284-085",
+      "G284-086"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "285.module.standard",
+    "printed_page": 285,
+    "pdf_page": 35,
+    "kind": "module",
+    "target_configuration": "standard",
+    "multiplier": 2.5,
+    "allowed_curve_ids": [
+      "G285-087",
+      "G285-088"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "288.module.standard",
+    "printed_page": 288,
+    "pdf_page": 38,
+    "kind": "module",
+    "target_configuration": "standard",
+    "multiplier": 2.2,
+    "allowed_curve_ids": [
+      "G288-094",
+      "G288-095",
+      "G288-096",
+      "G288-097"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "290.module.standard",
+    "printed_page": 290,
+    "pdf_page": 40,
+    "kind": "module",
+    "target_configuration": "standard",
+    "multiplier": 2.0,
+    "allowed_curve_ids": [
+      "G290-104"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "292.module.average",
+    "printed_page": 292,
+    "pdf_page": 42,
+    "kind": "module",
+    "target_configuration": "average",
+    "multiplier": 2.3,
+    "allowed_curve_ids": [
+      "G292-108",
+      "G292-109",
+      "G292-110"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "295.module.standard",
+    "printed_page": 295,
+    "pdf_page": 45,
+    "kind": "module",
+    "target_configuration": "standard",
+    "multiplier": 2.4,
+    "allowed_curve_ids": [
+      "G295-120",
+      "G295-121"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "301.module.standard",
+    "printed_page": 301,
+    "pdf_page": 51,
+    "kind": "module",
+    "target_configuration": "standard",
+    "multiplier": 2.8,
+    "allowed_curve_ids": [
+      "G301-135"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "305.module.standard",
+    "printed_page": 305,
+    "pdf_page": 55,
+    "kind": "module",
+    "target_configuration": "standard",
+    "multiplier": 3.0,
+    "allowed_curve_ids": [
+      "G305-151"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "306.module.standard",
+    "printed_page": 306,
+    "pdf_page": 56,
+    "kind": "module",
+    "target_configuration": "standard",
+    "multiplier": 2.2,
+    "allowed_curve_ids": [
+      "G306-152",
+      "G306-153",
+      "G306-154"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "260.module.ribbon",
+    "printed_page": 260,
+    "pdf_page": 10,
+    "kind": "module",
+    "target_configuration": "ribbon",
+    "multiplier": 2.0,
+    "allowed_curve_ids": [
+      "G260-010"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "260.module.sigma",
+    "printed_page": 260,
+    "pdf_page": 10,
+    "kind": "module",
+    "target_configuration": "sigma",
+    "multiplier": 2.8,
+    "allowed_curve_ids": [
+      "G260-011"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "260.module.double_arm",
+    "printed_page": 260,
+    "pdf_page": 10,
+    "kind": "module",
+    "target_configuration": "double_arm",
+    "multiplier": 2.2,
+    "allowed_curve_ids": [
+      "G260-011"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "260.module.double_cone_twin_shell",
+    "printed_page": 260,
+    "pdf_page": 10,
+    "kind": "module",
+    "target_configuration": "double_cone_twin_shell",
+    "multiplier": 2.2,
+    "allowed_curve_ids": [
+      "G260-012",
+      "G260-013"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "262.module.field_erected_average",
+    "printed_page": 262,
+    "pdf_page": 12,
+    "kind": "module",
+    "target_configuration": "field_erected_average",
+    "multiplier": 1.9,
+    "allowed_curve_ids": [
+      "G262-020"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.module.vertical",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "module",
+    "target_configuration": "vertical",
+    "multiplier": 4.16,
+    "allowed_curve_ids": [
+      "G268-031",
+      "G268-032"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "274.module.spray_quencher",
+    "printed_page": 274,
+    "pdf_page": 24,
+    "kind": "module",
+    "target_configuration": "spray_quencher",
+    "multiplier": 2.7,
+    "allowed_curve_ids": [
+      "G274-054",
+      "G274-055"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "277.module.rotary",
+    "printed_page": 277,
+    "pdf_page": 27,
+    "kind": "module",
+    "target_configuration": "rotary",
+    "multiplier": 2.3,
+    "allowed_curve_ids": [
+      "G277-061"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "277.module.fluid_spray",
+    "printed_page": 277,
+    "pdf_page": 27,
+    "kind": "module",
+    "target_configuration": "fluid_spray",
+    "multiplier": 2.7,
+    "allowed_curve_ids": [
+      "G277-060",
+      "G277-062"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "279.module.bag",
+    "printed_page": 279,
+    "pdf_page": 29,
+    "kind": "module",
+    "target_configuration": "bag",
+    "multiplier": 2.2,
+    "allowed_curve_ids": [
+      "G279-065"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "279.module.cyclone",
+    "printed_page": 279,
+    "pdf_page": 29,
+    "kind": "module",
+    "target_configuration": "cyclone",
+    "multiplier": 3.0,
+    "allowed_curve_ids": [
+      "G279-066"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "279.module.electrostatic",
+    "printed_page": 279,
+    "pdf_page": 29,
+    "kind": "module",
+    "target_configuration": "electrostatic",
+    "multiplier": 2.3,
+    "allowed_curve_ids": [
+      "G279-067"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "279.module.venturi",
+    "printed_page": 279,
+    "pdf_page": 29,
+    "kind": "module",
+    "target_configuration": "venturi",
+    "multiplier": 2.5,
+    "allowed_curve_ids": [
+      "G279-068"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "280.module.forced_circulation",
+    "printed_page": 280,
+    "pdf_page": 30,
+    "kind": "module",
+    "target_configuration": "forced_circulation",
+    "multiplier": 2.9,
+    "allowed_curve_ids": [
+      "G280-070"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "280.module.falling_film",
+    "printed_page": 280,
+    "pdf_page": 30,
+    "kind": "module",
+    "target_configuration": "falling_film",
+    "multiplier": 2.3,
+    "allowed_curve_ids": [
+      "G280-069"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "286.module.shell_tube",
+    "printed_page": 286,
+    "pdf_page": 36,
+    "kind": "module",
+    "target_configuration": "shell_tube",
+    "multiplier": 3.2,
+    "allowed_curve_ids": [
+      "G286-091"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "286.module.double_pipe",
+    "printed_page": 286,
+    "pdf_page": 36,
+    "kind": "module",
+    "target_configuration": "double_pipe",
+    "multiplier": 1.8,
+    "allowed_curve_ids": [
+      "G286-090"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "286.module.air_cooled",
+    "printed_page": 286,
+    "pdf_page": 36,
+    "kind": "module",
+    "target_configuration": "air_cooled",
+    "multiplier": 2.2,
+    "allowed_curve_ids": [
+      "G286-089"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "291.module.hammer",
+    "printed_page": 291,
+    "pdf_page": 41,
+    "kind": "module",
+    "target_configuration": "hammer",
+    "multiplier": 2.8,
+    "allowed_curve_ids": [
+      "G291-106"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "291.module.other",
+    "printed_page": 291,
+    "pdf_page": 41,
+    "kind": "module",
+    "target_configuration": "other",
+    "multiplier": 2.1,
+    "allowed_curve_ids": [
+      "G291-105",
+      "G291-107"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "293.module.electric",
+    "printed_page": 293,
+    "pdf_page": 43,
+    "kind": "module",
+    "target_configuration": "electric",
+    "multiplier": 2.0,
+    "allowed_curve_ids": [
+      "G293-111",
+      "G293-112"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "293.module.gas_steam_turbines",
+    "printed_page": 293,
+    "pdf_page": 43,
+    "kind": "module",
+    "target_configuration": "gas_steam_turbines",
+    "multiplier": 3.5,
+    "allowed_curve_ids": [
+      "G293-113",
+      "G293-114"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "297.module.reciprocating",
+    "printed_page": 297,
+    "pdf_page": 47,
+    "kind": "module",
+    "target_configuration": "reciprocating",
+    "multiplier": 3.3,
+    "allowed_curve_ids": [
+      "G297-127"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "297.module.turbine",
+    "printed_page": 297,
+    "pdf_page": 47,
+    "kind": "module",
+    "target_configuration": "turbine",
+    "multiplier": 1.8,
+    "allowed_curve_ids": [
+      "G297-128"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "297.module.chemical_injection",
+    "printed_page": 297,
+    "pdf_page": 47,
+    "kind": "module",
+    "target_configuration": "chemical_injection",
+    "multiplier": 2.83,
+    "allowed_curve_ids": [
+      "G297-125"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "302.module.pug",
+    "printed_page": 302,
+    "pdf_page": 52,
+    "kind": "module",
+    "target_configuration": "pug",
+    "multiplier": 2.2,
+    "allowed_curve_ids": [
+      "G302-139"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "302.module.disk_drum",
+    "printed_page": 302,
+    "pdf_page": 52,
+    "kind": "module",
+    "target_configuration": "disk_drum",
+    "multiplier": 1.8,
+    "allowed_curve_ids": [
+      "G302-136"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "302.module.pellet",
+    "printed_page": 302,
+    "pdf_page": 52,
+    "kind": "module",
+    "target_configuration": "pellet",
+    "multiplier": 2.05,
+    "allowed_curve_ids": [
+      "G302-137",
+      "G302-138"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "303.module.small_cone",
+    "printed_page": 303,
+    "pdf_page": 53,
+    "kind": "module",
+    "target_configuration": "small_cone",
+    "multiplier": 1.6,
+    "allowed_curve_ids": [
+      "G303-143"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "303.module.large_cone",
+    "printed_page": 303,
+    "pdf_page": 53,
+    "kind": "module",
+    "target_configuration": "large_cone",
+    "multiplier": 1.9,
+    "allowed_curve_ids": [
+      "G303-142"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "303.module.horizontal_pressure",
+    "printed_page": 303,
+    "pdf_page": 53,
+    "kind": "module",
+    "target_configuration": "horizontal_pressure",
+    "multiplier": 2.08,
+    "allowed_curve_ids": [
+      "G303-141"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "303.module.sphere",
+    "printed_page": 303,
+    "pdf_page": 53,
+    "kind": "module",
+    "target_configuration": "sphere",
+    "multiplier": 1.87,
+    "allowed_curve_ids": [
+      "G303-145"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "258.material.stainless_average",
+    "printed_page": 258,
+    "pdf_page": 8,
+    "kind": "material",
+    "target_configuration": "stainless_average",
+    "multiplier": 1.7,
+    "allowed_curve_ids": [
+      "G258-004",
+      "G258-005",
+      "G258-006",
+      "G258-007",
+      "G258-008"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "258.material.glass_lined_average",
+    "printed_page": 258,
+    "pdf_page": 8,
+    "kind": "material",
+    "target_configuration": "glass_lined_average",
+    "multiplier": 1.6,
+    "allowed_curve_ids": [
+      "G258-004",
+      "G258-005",
+      "G258-006",
+      "G258-007",
+      "G258-008"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "260.material.304_stainless",
+    "printed_page": 260,
+    "pdf_page": 10,
+    "kind": "material",
+    "target_configuration": "304_stainless",
+    "multiplier": 1.6,
+    "allowed_curve_ids": [
+      "G260-010",
+      "G260-011",
+      "G260-012",
+      "G260-013"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "261.material.stainless",
+    "printed_page": 261,
+    "pdf_page": 11,
+    "kind": "material",
+    "target_configuration": "stainless",
+    "multiplier": 2.6,
+    "allowed_curve_ids": [
+      "G261-014",
+      "G261-015",
+      "G261-016",
+      "G261-017"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "265.material.carbon_steel",
+    "printed_page": 265,
+    "pdf_page": 15,
+    "kind": "material",
+    "target_configuration": "carbon_steel",
+    "multiplier": 0.68,
+    "allowed_curve_ids": [
+      "G265-023"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "265.material.monel",
+    "printed_page": 265,
+    "pdf_page": 15,
+    "kind": "material",
+    "target_configuration": "monel",
+    "multiplier": 1.35,
+    "allowed_curve_ids": [
+      "G265-023"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "265.material.nickel",
+    "printed_page": 265,
+    "pdf_page": 15,
+    "kind": "material",
+    "target_configuration": "nickel",
+    "multiplier": 1.7,
+    "allowed_curve_ids": [
+      "G265-023"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "265.material.hastelloy_C",
+    "printed_page": 265,
+    "pdf_page": 15,
+    "kind": "material",
+    "target_configuration": "hastelloy_C",
+    "multiplier": 2.6,
+    "allowed_curve_ids": [
+      "G265-023"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.material.304_stainless",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "material",
+    "target_configuration": "304_stainless",
+    "multiplier": 1.7,
+    "allowed_curve_ids": [
+      "G268-031",
+      "G268-032"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.material.316_stainless",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "material",
+    "target_configuration": "316_stainless",
+    "multiplier": 2.1,
+    "allowed_curve_ids": [
+      "G268-031",
+      "G268-032"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.material.monel_400",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "material",
+    "target_configuration": "monel_400",
+    "multiplier": 3.6,
+    "allowed_curve_ids": [
+      "G268-031",
+      "G268-032"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.material.titanium",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "material",
+    "target_configuration": "titanium",
+    "multiplier": 7.7,
+    "allowed_curve_ids": [
+      "G268-031",
+      "G268-032"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.material.carpenter_20",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "material",
+    "target_configuration": "carpenter_20",
+    "multiplier": 3.2,
+    "allowed_curve_ids": [
+      "G268-031",
+      "G268-032"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.material.nickel_200",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "material",
+    "target_configuration": "nickel_200",
+    "multiplier": 5.4,
+    "allowed_curve_ids": [
+      "G268-031",
+      "G268-032"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.material.inconel_600",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "material",
+    "target_configuration": "inconel_600",
+    "multiplier": 3.6,
+    "allowed_curve_ids": [
+      "G268-031",
+      "G268-032"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.material.incoloy_825",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "material",
+    "target_configuration": "incoloy_825",
+    "multiplier": 3.7,
+    "allowed_curve_ids": [
+      "G268-031",
+      "G268-032"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "269.material.brass",
+    "printed_page": 269,
+    "pdf_page": 19,
+    "kind": "material",
+    "target_configuration": "brass",
+    "multiplier": 1.2,
+    "allowed_curve_ids": [
+      "G269-033",
+      "G269-034"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "269.material.304_stainless",
+    "printed_page": 269,
+    "pdf_page": 19,
+    "kind": "material",
+    "target_configuration": "304_stainless",
+    "multiplier": 1.5,
+    "allowed_curve_ids": [
+      "G269-033",
+      "G269-034"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "269.material.316_stainless",
+    "printed_page": 269,
+    "pdf_page": 19,
+    "kind": "material",
+    "target_configuration": "316_stainless",
+    "multiplier": 1.9,
+    "allowed_curve_ids": [
+      "G269-033",
+      "G269-034"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "269.material.347_stainless",
+    "printed_page": 269,
+    "pdf_page": 19,
+    "kind": "material",
+    "target_configuration": "347_stainless",
+    "multiplier": 2.1,
+    "allowed_curve_ids": [
+      "G269-033",
+      "G269-034"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "269.material.inconel",
+    "printed_page": 269,
+    "pdf_page": 19,
+    "kind": "material",
+    "target_configuration": "inconel",
+    "multiplier": 3.3,
+    "allowed_curve_ids": [
+      "G269-033",
+      "G269-034"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "269.material.monel",
+    "printed_page": 269,
+    "pdf_page": 19,
+    "kind": "material",
+    "target_configuration": "monel",
+    "multiplier": 7.7,
+    "allowed_curve_ids": [
+      "G269-033",
+      "G269-034"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "272.material.stainless",
+    "printed_page": 272,
+    "pdf_page": 22,
+    "kind": "material",
+    "target_configuration": "stainless",
+    "multiplier": 2.5,
+    "allowed_curve_ids": [
+      "G272-045"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "272.material.nickel_alloy",
+    "printed_page": 272,
+    "pdf_page": 22,
+    "kind": "material",
+    "target_configuration": "nickel_alloy",
+    "multiplier": 5.0,
+    "allowed_curve_ids": [
+      "G272-045"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "276.material.stainless",
+    "printed_page": 276,
+    "pdf_page": 26,
+    "kind": "material",
+    "target_configuration": "stainless",
+    "multiplier": 2.1,
+    "allowed_curve_ids": [
+      "G276-057",
+      "G276-058",
+      "G276-059"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "276.material.copper_alloy",
+    "printed_page": 276,
+    "pdf_page": 26,
+    "kind": "material",
+    "target_configuration": "copper_alloy",
+    "multiplier": 1.3,
+    "allowed_curve_ids": [
+      "G276-057",
+      "G276-058",
+      "G276-059"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "276.material.nickel_alloy",
+    "printed_page": 276,
+    "pdf_page": 26,
+    "kind": "material",
+    "target_configuration": "nickel_alloy",
+    "multiplier": 2.6,
+    "allowed_curve_ids": [
+      "G276-057",
+      "G276-058",
+      "G276-059"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "276.material.titanium",
+    "printed_page": 276,
+    "pdf_page": 26,
+    "kind": "material",
+    "target_configuration": "titanium",
+    "multiplier": 6.0,
+    "allowed_curve_ids": [
+      "G276-057",
+      "G276-058",
+      "G276-059"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "277.material.nickel_alloy",
+    "printed_page": 277,
+    "pdf_page": 27,
+    "kind": "material",
+    "target_configuration": "nickel_alloy",
+    "multiplier": 3.7,
+    "allowed_curve_ids": [
+      "G277-060",
+      "G277-061",
+      "G277-062"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "277.material.brick_lined_stainless",
+    "printed_page": 277,
+    "pdf_page": 27,
+    "kind": "material",
+    "target_configuration": "brick_lined_stainless",
+    "multiplier": 2.2,
+    "allowed_curve_ids": [
+      "G277-060",
+      "G277-061",
+      "G277-062"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "280.material.mild_steel",
+    "printed_page": 280,
+    "pdf_page": 30,
+    "kind": "material",
+    "target_configuration": "mild_steel",
+    "multiplier": 0.44,
+    "allowed_curve_ids": [
+      "G280-069",
+      "G280-070",
+      "G280-071"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "280.material.copper_alloy",
+    "printed_page": 280,
+    "pdf_page": 30,
+    "kind": "material",
+    "target_configuration": "copper_alloy",
+    "multiplier": 0.57,
+    "allowed_curve_ids": [
+      "G280-069",
+      "G280-070",
+      "G280-071"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "280.material.nickel_alloy",
+    "printed_page": 280,
+    "pdf_page": 30,
+    "kind": "material",
+    "target_configuration": "nickel_alloy",
+    "multiplier": 1.22,
+    "allowed_curve_ids": [
+      "G280-069",
+      "G280-070",
+      "G280-071"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "280.material.titanium",
+    "printed_page": 280,
+    "pdf_page": 30,
+    "kind": "material",
+    "target_configuration": "titanium",
+    "multiplier": 2.93,
+    "allowed_curve_ids": [
+      "G280-069",
+      "G280-070",
+      "G280-071"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "281.material.fiberglass",
+    "printed_page": 281,
+    "pdf_page": 31,
+    "kind": "material",
+    "target_configuration": "fiberglass",
+    "multiplier": 1.8,
+    "allowed_curve_ids": [
+      "G281-072",
+      "G281-073",
+      "G281-074",
+      "G281-075"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "281.material.stainless",
+    "printed_page": 281,
+    "pdf_page": 31,
+    "kind": "material",
+    "target_configuration": "stainless",
+    "multiplier": 2.5,
+    "allowed_curve_ids": [
+      "G281-072",
+      "G281-073",
+      "G281-074",
+      "G281-075"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "282.material.mild_steel",
+    "printed_page": 282,
+    "pdf_page": 32,
+    "kind": "material",
+    "target_configuration": "mild_steel",
+    "multiplier": 0.69,
+    "allowed_curve_ids": [
+      "G282-076",
+      "G282-077",
+      "G282-078",
+      "G282-079",
+      "G282-080",
+      "G282-081"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "287.material.mild_steel",
+    "printed_page": 287,
+    "pdf_page": 37,
+    "kind": "material",
+    "target_configuration": "mild_steel",
+    "multiplier": 0.43,
+    "allowed_curve_ids": [
+      "G287-092",
+      "G287-093"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "287.material.316_stainless",
+    "printed_page": 287,
+    "pdf_page": 37,
+    "kind": "material",
+    "target_configuration": "316_stainless",
+    "multiplier": 1.1,
+    "allowed_curve_ids": [
+      "G287-092",
+      "G287-093"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "287.material.nickel",
+    "printed_page": 287,
+    "pdf_page": 37,
+    "kind": "material",
+    "target_configuration": "nickel",
+    "multiplier": 1.2,
+    "allowed_curve_ids": [
+      "G287-092",
+      "G287-093"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "287.material.titanium",
+    "printed_page": 287,
+    "pdf_page": 37,
+    "kind": "material",
+    "target_configuration": "titanium",
+    "multiplier": 2.6,
+    "allowed_curve_ids": [
+      "G287-092",
+      "G287-093"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "288.material.316_stainless",
+    "printed_page": 288,
+    "pdf_page": 38,
+    "kind": "material",
+    "target_configuration": "316_stainless",
+    "multiplier": 2.7,
+    "allowed_curve_ids": [
+      "G288-094",
+      "G288-095",
+      "G288-096",
+      "G288-097"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "288.material.monel",
+    "printed_page": 288,
+    "pdf_page": 38,
+    "kind": "material",
+    "target_configuration": "monel",
+    "multiplier": 3.3,
+    "allowed_curve_ids": [
+      "G288-094",
+      "G288-095",
+      "G288-096",
+      "G288-097"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "288.material.nickel",
+    "printed_page": 288,
+    "pdf_page": 38,
+    "kind": "material",
+    "target_configuration": "nickel",
+    "multiplier": 3.5,
+    "allowed_curve_ids": [
+      "G288-094",
+      "G288-095",
+      "G288-096",
+      "G288-097"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "295.material.stainless",
+    "printed_page": 295,
+    "pdf_page": 45,
+    "kind": "material",
+    "target_configuration": "stainless",
+    "multiplier": 1.5,
+    "allowed_curve_ids": [
+      "G295-120",
+      "G295-121"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "295.material.nickel_alloy",
+    "printed_page": 295,
+    "pdf_page": 45,
+    "kind": "material",
+    "target_configuration": "nickel_alloy",
+    "multiplier": 1.9,
+    "allowed_curve_ids": [
+      "G295-120",
+      "G295-121"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "299.material.316_stainless",
+    "printed_page": 299,
+    "pdf_page": 49,
+    "kind": "material",
+    "target_configuration": "316_stainless",
+    "multiplier": 1.2,
+    "allowed_curve_ids": [
+      "G299-133"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "299.material.glass_lined",
+    "printed_page": 299,
+    "pdf_page": 49,
+    "kind": "material",
+    "target_configuration": "glass_lined",
+    "multiplier": 0.8,
+    "allowed_curve_ids": [
+      "G299-133"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "299.material.lead_lined",
+    "printed_page": 299,
+    "pdf_page": 49,
+    "kind": "material",
+    "target_configuration": "lead_lined",
+    "multiplier": 0.7,
+    "allowed_curve_ids": [
+      "G299-133"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "299.material.mild_steel",
+    "printed_page": 299,
+    "pdf_page": 49,
+    "kind": "material",
+    "target_configuration": "mild_steel",
+    "multiplier": 0.6,
+    "allowed_curve_ids": [
+      "G299-133"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "301.material.stainless",
+    "printed_page": 301,
+    "pdf_page": 51,
+    "kind": "material",
+    "target_configuration": "stainless",
+    "multiplier": 1.25,
+    "allowed_curve_ids": [
+      "G301-135"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "301.material.nickel_alloy",
+    "printed_page": 301,
+    "pdf_page": 51,
+    "kind": "material",
+    "target_configuration": "nickel_alloy",
+    "multiplier": 1.8,
+    "allowed_curve_ids": [
+      "G301-135"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "303.material.rubber_lined",
+    "printed_page": 303,
+    "pdf_page": 53,
+    "kind": "material",
+    "target_configuration": "rubber_lined",
+    "multiplier": 1.5,
+    "allowed_curve_ids": [
+      "G303-140",
+      "G303-141",
+      "G303-142",
+      "G303-143",
+      "G303-144",
+      "G303-145"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "303.material.lead_lined",
+    "printed_page": 303,
+    "pdf_page": 53,
+    "kind": "material",
+    "target_configuration": "lead_lined",
+    "multiplier": 1.6,
+    "allowed_curve_ids": [
+      "G303-140",
+      "G303-141",
+      "G303-142",
+      "G303-143",
+      "G303-144",
+      "G303-145"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "303.material.stainless",
+    "printed_page": 303,
+    "pdf_page": 53,
+    "kind": "material",
+    "target_configuration": "stainless",
+    "multiplier": 2.0,
+    "allowed_curve_ids": [
+      "G303-140",
+      "G303-141",
+      "G303-142",
+      "G303-143",
+      "G303-144",
+      "G303-145"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "304.material.316_stainless",
+    "printed_page": 304,
+    "pdf_page": 54,
+    "kind": "material",
+    "target_configuration": "316_stainless",
+    "multiplier": 1.39,
+    "allowed_curve_ids": [
+      "G304-146",
+      "G304-147",
+      "G304-148",
+      "G304-149",
+      "G304-150"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "306.material.carbon_steel",
+    "printed_page": 306,
+    "pdf_page": 56,
+    "kind": "material",
+    "target_configuration": "carbon_steel",
+    "multiplier": 1.3,
+    "allowed_curve_ids": [
+      "G306-153"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "306.material.stainless",
+    "printed_page": 306,
+    "pdf_page": 56,
+    "kind": "material",
+    "target_configuration": "stainless",
+    "multiplier": 2.0,
+    "allowed_curve_ids": [
+      "G306-153"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "306.material.hastelloy",
+    "printed_page": 306,
+    "pdf_page": 56,
+    "kind": "material",
+    "target_configuration": "hastelloy",
+    "multiplier": 3.0,
+    "allowed_curve_ids": [
+      "G306-153"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "306.material.nickel_alloy",
+    "printed_page": 306,
+    "pdf_page": 56,
+    "kind": "material",
+    "target_configuration": "nickel_alloy",
+    "multiplier": 2.2,
+    "allowed_curve_ids": [
+      "G306-153"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "264.design.warehouse",
+    "printed_page": 264,
+    "pdf_page": 14,
+    "kind": "design",
+    "target_configuration": "warehouse",
+    "multiplier": 0.25,
+    "allowed_curve_ids": [
+      "G264-022"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "264.design.laboratory",
+    "printed_page": 264,
+    "pdf_page": 14,
+    "kind": "design",
+    "target_configuration": "laboratory",
+    "multiplier": 1.5,
+    "allowed_curve_ids": [
+      "G264-022"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "264.design.manufacturing",
+    "printed_page": 264,
+    "pdf_page": 14,
+    "kind": "design",
+    "target_configuration": "manufacturing",
+    "multiplier": 0.5,
+    "allowed_curve_ids": [
+      "G264-022"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "263.design.high_temperature",
+    "printed_page": 263,
+    "pdf_page": 13,
+    "kind": "design",
+    "target_configuration": "high_temperature",
+    "multiplier": 1.2,
+    "allowed_curve_ids": [
+      "G263-021"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "263.design.finned_tubes",
+    "printed_page": 263,
+    "pdf_page": 13,
+    "kind": "design",
+    "target_configuration": "finned_tubes",
+    "multiplier": 1.5,
+    "allowed_curve_ids": [
+      "G263-021"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "263.design.alloy_clad_tubes",
+    "printed_page": 263,
+    "pdf_page": 13,
+    "kind": "design",
+    "target_configuration": "alloy_clad_tubes",
+    "multiplier": 3.0,
+    "allowed_curve_ids": [
+      "G263-021"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "263.design.mechanical_ash_removal",
+    "printed_page": 263,
+    "pdf_page": 13,
+    "kind": "design",
+    "target_configuration": "mechanical_ash_removal",
+    "multiplier": 1.8,
+    "allowed_curve_ids": [
+      "G263-021"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "263.design.radiation_section",
+    "printed_page": 263,
+    "pdf_page": 13,
+    "kind": "design",
+    "target_configuration": "radiation_section",
+    "multiplier": 2.0,
+    "allowed_curve_ids": [
+      "G263-021"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "288.design.corrosive",
+    "printed_page": 288,
+    "pdf_page": 38,
+    "kind": "design",
+    "target_configuration": "corrosive",
+    "multiplier": 1.5,
+    "allowed_curve_ids": [
+      "G288-094",
+      "G288-095",
+      "G288-096",
+      "G288-097"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "288.design.toxic_waste",
+    "printed_page": 288,
+    "pdf_page": 38,
+    "kind": "design",
+    "target_configuration": "toxic_waste",
+    "multiplier": 2.0,
+    "allowed_curve_ids": [
+      "G288-094",
+      "G288-095",
+      "G288-096",
+      "G288-097"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "301.design.double_deck",
+    "printed_page": 301,
+    "pdf_page": 51,
+    "kind": "design",
+    "target_configuration": "double_deck",
+    "multiplier": 1.6,
+    "allowed_curve_ids": [
+      "G301-135"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.pressure.50_psi",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "pressure",
+    "target_configuration": "50_psi",
+    "multiplier": 1.0,
+    "allowed_curve_ids": [
+      "G268-031"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.pressure.100_psi",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "pressure",
+    "target_configuration": "100_psi",
+    "multiplier": 1.25,
+    "allowed_curve_ids": [
+      "G268-031"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.pressure.200_psi",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "pressure",
+    "target_configuration": "200_psi",
+    "multiplier": 1.55,
+    "allowed_curve_ids": [
+      "G268-031"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.pressure.300_psi",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "pressure",
+    "target_configuration": "300_psi",
+    "multiplier": 2.0,
+    "allowed_curve_ids": [
+      "G268-031"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.pressure.400_psi",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "pressure",
+    "target_configuration": "400_psi",
+    "multiplier": 2.4,
+    "allowed_curve_ids": [
+      "G268-031"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.pressure.500_psi",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "pressure",
+    "target_configuration": "500_psi",
+    "multiplier": 2.8,
+    "allowed_curve_ids": [
+      "G268-031"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.pressure.600_psi",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "pressure",
+    "target_configuration": "600_psi",
+    "multiplier": 3.0,
+    "allowed_curve_ids": [
+      "G268-031"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.pressure.700_psi",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "pressure",
+    "target_configuration": "700_psi",
+    "multiplier": 3.25,
+    "allowed_curve_ids": [
+      "G268-031"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.pressure.800_psi",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "pressure",
+    "target_configuration": "800_psi",
+    "multiplier": 3.8,
+    "allowed_curve_ids": [
+      "G268-031"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.pressure.900_psi",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "pressure",
+    "target_configuration": "900_psi",
+    "multiplier": 4.0,
+    "allowed_curve_ids": [
+      "G268-031"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.pressure.1000_psi",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "pressure",
+    "target_configuration": "1000_psi",
+    "multiplier": 4.2,
+    "allowed_curve_ids": [
+      "G268-031"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.pressure.1500_psi",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "pressure",
+    "target_configuration": "1500_psi",
+    "multiplier": 5.4,
+    "allowed_curve_ids": [
+      "G268-031"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.pressure.2000_psi",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "pressure",
+    "target_configuration": "2000_psi",
+    "multiplier": 6.5,
+    "allowed_curve_ids": [
+      "G268-031"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.pressure.3000_psi",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "pressure",
+    "target_configuration": "3000_psi",
+    "multiplier": 8.75,
+    "allowed_curve_ids": [
+      "G268-031"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.pressure.4000_psi",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "pressure",
+    "target_configuration": "4000_psi",
+    "multiplier": 11.25,
+    "allowed_curve_ids": [
+      "G268-031"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "268.pressure.5000_psi",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "pressure",
+    "target_configuration": "5000_psi",
+    "multiplier": 13.75,
+    "allowed_curve_ids": [
+      "G268-031"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; page factor table",
+    "requires_baseline_confirmation": true
+  },
+  {
+    "id": "257.installation.turbine",
+    "printed_page": 257,
+    "pdf_page": 7,
+    "kind": "installation",
+    "target_configuration": "turbine",
+    "multiplier": 1.32,
+    "allowed_curve_ids": [
+      "G257-002"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.2,
+      1.4
+    ]
+  },
+  {
+    "id": "257.installation.propeller",
+    "printed_page": 257,
+    "pdf_page": 7,
+    "kind": "installation",
+    "target_configuration": "propeller",
+    "multiplier": 1.22,
+    "allowed_curve_ids": [
+      "G257-003"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.12,
+      1.32
+    ]
+  },
+  {
+    "id": "258.installation.autoclave",
+    "printed_page": 258,
+    "pdf_page": 8,
+    "kind": "installation",
+    "target_configuration": "autoclave",
+    "multiplier": 1.6,
+    "allowed_curve_ids": [
+      "G258-004",
+      "G258-005"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.5,
+      1.7
+    ]
+  },
+  {
+    "id": "258.installation.low_pressure",
+    "printed_page": 258,
+    "pdf_page": 8,
+    "kind": "installation",
+    "target_configuration": "low_pressure",
+    "multiplier": 1.44,
+    "allowed_curve_ids": [
+      "G258-006",
+      "G258-007"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.3,
+      1.57
+    ]
+  },
+  {
+    "id": "258.installation.open_tank",
+    "printed_page": 258,
+    "pdf_page": 8,
+    "kind": "installation",
+    "target_configuration": "open_tank",
+    "multiplier": 1.58,
+    "allowed_curve_ids": [
+      "G258-008"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.41,
+      1.66
+    ]
+  },
+  {
+    "id": "259.installation.source_average",
+    "printed_page": 259,
+    "pdf_page": 9,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.46,
+    "allowed_curve_ids": [
+      "G259-009"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.38,
+      1.53
+    ]
+  },
+  {
+    "id": "260.installation.source_average",
+    "printed_page": 260,
+    "pdf_page": 10,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.3,
+    "allowed_curve_ids": [
+      "G260-010",
+      "G260-011",
+      "G260-012",
+      "G260-013"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": null
+  },
+  {
+    "id": "261.installation.source_average",
+    "printed_page": 261,
+    "pdf_page": 11,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.42,
+    "allowed_curve_ids": [
+      "G261-014",
+      "G261-015",
+      "G261-016",
+      "G261-017"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.35,
+      1.56
+    ]
+  },
+  {
+    "id": "262.installation.source_average",
+    "printed_page": 262,
+    "pdf_page": 12,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.53,
+    "allowed_curve_ids": [
+      "G262-018",
+      "G262-019",
+      "G262-020"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.21,
+      1.82
+    ]
+  },
+  {
+    "id": "263.installation.source_average",
+    "printed_page": 263,
+    "pdf_page": 13,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.67,
+    "allowed_curve_ids": [
+      "G263-021"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.4,
+      1.82
+    ]
+  },
+  {
+    "id": "265.installation.source_average",
+    "printed_page": 265,
+    "pdf_page": 15,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.54,
+    "allowed_curve_ids": [
+      "G265-023"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.2,
+      2.02
+    ]
+  },
+  {
+    "id": "266.installation.source_average",
+    "printed_page": 266,
+    "pdf_page": 16,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.24,
+    "allowed_curve_ids": [
+      "G266-024",
+      "G266-025",
+      "G266-026",
+      "G266-027",
+      "G266-028",
+      "G266-029"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.2,
+      1.28
+    ]
+  },
+  {
+    "id": "267.installation.source_average",
+    "printed_page": 267,
+    "pdf_page": 17,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 2.12,
+    "allowed_curve_ids": [
+      "G267-030"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.63,
+      2.61
+    ]
+  },
+  {
+    "id": "268.installation.source_average",
+    "printed_page": 268,
+    "pdf_page": 18,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.72,
+    "allowed_curve_ids": [
+      "G268-031",
+      "G268-032"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.29,
+      2.03
+    ]
+  },
+  {
+    "id": "269.installation.source_average",
+    "printed_page": 269,
+    "pdf_page": 19,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.2,
+    "allowed_curve_ids": [
+      "G269-033",
+      "G269-034"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": null
+  },
+  {
+    "id": "271.installation.source_average",
+    "printed_page": 271,
+    "pdf_page": 21,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.49,
+    "allowed_curve_ids": [
+      "G271-041",
+      "G271-042",
+      "G271-043",
+      "G271-044"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.3,
+      1.87
+    ]
+  },
+  {
+    "id": "272.installation.source_average",
+    "printed_page": 272,
+    "pdf_page": 22,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.49,
+    "allowed_curve_ids": [
+      "G272-045"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.3,
+      1.87
+    ]
+  },
+  {
+    "id": "273.installation.source_average",
+    "printed_page": 273,
+    "pdf_page": 23,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.72,
+    "allowed_curve_ids": [
+      "G273-046",
+      "G273-047",
+      "G273-048",
+      "G273-049",
+      "G273-050",
+      "G273-051"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.4,
+      2.15
+    ]
+  },
+  {
+    "id": "274.installation.source_average",
+    "printed_page": 274,
+    "pdf_page": 24,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.62,
+    "allowed_curve_ids": [
+      "G274-052",
+      "G274-053",
+      "G274-054",
+      "G274-055"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.4,
+      1.85
+    ]
+  },
+  {
+    "id": "275.installation.source_average",
+    "printed_page": 275,
+    "pdf_page": 25,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.2,
+    "allowed_curve_ids": [
+      "G275-056"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": null
+  },
+  {
+    "id": "276.installation.source_average",
+    "printed_page": 276,
+    "pdf_page": 26,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.8,
+    "allowed_curve_ids": [
+      "G276-057",
+      "G276-058",
+      "G276-059"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.3,
+      2.03
+    ]
+  },
+  {
+    "id": "277.installation.source_average",
+    "printed_page": 277,
+    "pdf_page": 27,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.64,
+    "allowed_curve_ids": [
+      "G277-060",
+      "G277-061",
+      "G277-062"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.25,
+      1.96
+    ]
+  },
+  {
+    "id": "278.installation.source_average",
+    "printed_page": 278,
+    "pdf_page": 28,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.45,
+    "allowed_curve_ids": [
+      "G278-063",
+      "G278-064"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": null
+  },
+  {
+    "id": "279.installation.source_average",
+    "printed_page": 279,
+    "pdf_page": 29,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.9,
+    "allowed_curve_ids": [
+      "G279-065",
+      "G279-066",
+      "G279-067",
+      "G279-068"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.76,
+      2.0
+    ]
+  },
+  {
+    "id": "280.installation.source_average",
+    "printed_page": 280,
+    "pdf_page": 30,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 2.09,
+    "allowed_curve_ids": [
+      "G280-069",
+      "G280-070",
+      "G280-071"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.5,
+      2.5
+    ]
+  },
+  {
+    "id": "281.installation.source_average",
+    "printed_page": 281,
+    "pdf_page": 31,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.61,
+    "allowed_curve_ids": [
+      "G281-072",
+      "G281-073",
+      "G281-074",
+      "G281-075"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.3,
+      2.05
+    ]
+  },
+  {
+    "id": "282.installation.source_average",
+    "printed_page": 282,
+    "pdf_page": 32,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.69,
+    "allowed_curve_ids": [
+      "G282-076",
+      "G282-077",
+      "G282-078",
+      "G282-079",
+      "G282-080",
+      "G282-081"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.19,
+      2.21
+    ]
+  },
+  {
+    "id": "283.installation.source_average",
+    "printed_page": 283,
+    "pdf_page": 33,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.45,
+    "allowed_curve_ids": [
+      "G283-082",
+      "G283-083"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": null
+  },
+  {
+    "id": "284.installation.source_average",
+    "printed_page": 284,
+    "pdf_page": 34,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.52,
+    "allowed_curve_ids": [
+      "G284-084",
+      "G284-085",
+      "G284-086"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.3,
+      1.71
+    ]
+  },
+  {
+    "id": "285.installation.source_average",
+    "printed_page": 285,
+    "pdf_page": 35,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 2.31,
+    "allowed_curve_ids": [
+      "G285-087",
+      "G285-088"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      2.22,
+      2.39
+    ]
+  },
+  {
+    "id": "286.installation.source_average",
+    "printed_page": 286,
+    "pdf_page": 36,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.61,
+    "allowed_curve_ids": [
+      "G286-089",
+      "G286-090",
+      "G286-091"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.23,
+      2.1
+    ]
+  },
+  {
+    "id": "287.installation.plate_frame_stainless",
+    "printed_page": 287,
+    "pdf_page": 37,
+    "kind": "installation",
+    "target_configuration": "plate_frame_stainless",
+    "multiplier": 1.53,
+    "allowed_curve_ids": [
+      "G287-092"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": null
+  },
+  {
+    "id": "287.installation.plate_frame_mild_steel",
+    "printed_page": 287,
+    "pdf_page": 37,
+    "kind": "installation",
+    "target_configuration": "plate_frame_mild_steel",
+    "multiplier": 1.7,
+    "allowed_curve_ids": [
+      "G287-092"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": null
+  },
+  {
+    "id": "290.installation.source_average",
+    "printed_page": 290,
+    "pdf_page": 40,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.62,
+    "allowed_curve_ids": [
+      "G290-104"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.58,
+      1.65
+    ]
+  },
+  {
+    "id": "291.installation.source_average",
+    "printed_page": 291,
+    "pdf_page": 41,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.83,
+    "allowed_curve_ids": [
+      "G291-105",
+      "G291-106",
+      "G291-107"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.3,
+      2.15
+    ]
+  },
+  {
+    "id": "292.installation.source_average",
+    "printed_page": 292,
+    "pdf_page": 42,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.83,
+    "allowed_curve_ids": [
+      "G292-109",
+      "G292-110"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.3,
+      2.15
+    ]
+  },
+  {
+    "id": "295.installation.source_average",
+    "printed_page": 295,
+    "pdf_page": 45,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 2.05,
+    "allowed_curve_ids": [
+      "G295-120",
+      "G295-121"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": null
+  },
+  {
+    "id": "296.installation.conventional",
+    "printed_page": 296,
+    "pdf_page": 46,
+    "kind": "installation",
+    "target_configuration": "conventional",
+    "multiplier": 1.3,
+    "allowed_curve_ids": [
+      "G296-122"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": null
+  },
+  {
+    "id": "296.installation.inline",
+    "printed_page": 296,
+    "pdf_page": 46,
+    "kind": "installation",
+    "target_configuration": "inline",
+    "multiplier": 1.27,
+    "allowed_curve_ids": [
+      "G296-123"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": null
+  },
+  {
+    "id": "296.installation.axial_flow",
+    "printed_page": 296,
+    "pdf_page": 46,
+    "kind": "installation",
+    "target_configuration": "axial_flow",
+    "multiplier": 1.58,
+    "allowed_curve_ids": [
+      "G296-124"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": null
+  },
+  {
+    "id": "296.installation.mixed_flow",
+    "printed_page": 296,
+    "pdf_page": 46,
+    "kind": "installation",
+    "target_configuration": "mixed_flow",
+    "multiplier": 1.32,
+    "allowed_curve_ids": [
+      "G296-124"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": null
+  },
+  {
+    "id": "297.installation.chemical_injection",
+    "printed_page": 297,
+    "pdf_page": 47,
+    "kind": "installation",
+    "target_configuration": "chemical_injection",
+    "multiplier": 1.58,
+    "allowed_curve_ids": [
+      "G297-125"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": null
+  },
+  {
+    "id": "297.installation.general_average",
+    "printed_page": 297,
+    "pdf_page": 47,
+    "kind": "installation",
+    "target_configuration": "general_average",
+    "multiplier": 1.74,
+    "allowed_curve_ids": [
+      "G297-126",
+      "G297-127"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.25,
+      2.4
+    ]
+  },
+  {
+    "id": "297.installation.turbine",
+    "printed_page": 297,
+    "pdf_page": 47,
+    "kind": "installation",
+    "target_configuration": "turbine",
+    "multiplier": 1.38,
+    "allowed_curve_ids": [
+      "G297-128"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": null
+  },
+  {
+    "id": "299.installation.source_average",
+    "printed_page": 299,
+    "pdf_page": 49,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.7,
+    "allowed_curve_ids": [
+      "G299-133"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.4,
+      2.1
+    ]
+  },
+  {
+    "id": "300.installation.source_average",
+    "printed_page": 300,
+    "pdf_page": 50,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.46,
+    "allowed_curve_ids": [
+      "G300-134"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.38,
+      1.53
+    ]
+  },
+  {
+    "id": "301.installation.source_average",
+    "printed_page": 301,
+    "pdf_page": 51,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.85,
+    "allowed_curve_ids": [
+      "G301-135"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.45,
+      2.27
+    ]
+  },
+  {
+    "id": "302.installation.source_average",
+    "printed_page": 302,
+    "pdf_page": 52,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 2.05,
+    "allowed_curve_ids": [
+      "G302-136",
+      "G302-137",
+      "G302-138",
+      "G302-139"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": null
+  },
+  {
+    "id": "303.installation.source_average",
+    "printed_page": 303,
+    "pdf_page": 53,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.88,
+    "allowed_curve_ids": [
+      "G303-140",
+      "G303-141",
+      "G303-142",
+      "G303-143",
+      "G303-144",
+      "G303-145"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.2,
+      2.3
+    ]
+  },
+  {
+    "id": "305.installation.source_average",
+    "printed_page": 305,
+    "pdf_page": 55,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 2.12,
+    "allowed_curve_ids": [
+      "G305-151"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": [
+      1.63,
+      2.61
+    ]
+  },
+  {
+    "id": "306.installation.source_average",
+    "printed_page": 306,
+    "pdf_page": 56,
+    "kind": "installation",
+    "target_configuration": "source_average",
+    "multiplier": 1.12,
+    "allowed_curve_ids": [
+      "G306-152",
+      "G306-153",
+      "G306-154"
+    ],
+    "status": "source_transcription_requires_applicability_review",
+    "source": "Garrett Appendix 1; installation factor table",
+    "requires_baseline_confirmation": true,
+    "range": null
+  }
+]

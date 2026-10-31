@@ -1,0 +1,74 @@
+FLOWVALUE AI — REVENUE ESTIMATION ENGINE
+Date: 30 October 2026
+
+DELIVERED
+Garrett-guided modular revenue engine in backend/revenue.
+Main/by-product records reference explicit physical outlet stream IDs.
+Production, allocation, saleable quality, quantities sold and unsold quantities
+are separate. Nothing automatically treats every outlet as revenue.
+Shared annual hours/throughput schedule; explicit product-specific annual sales
+methods, prices, market demand/growth and commercial adjustments.
+Annual revenue = sum(quantity sold * net unit selling price).
+Net FOB/gross price terms, included charges, additional charges, premiums,
+deductions and separate unapplied OPEX charges are explicit and traceable.
+Duplicate allocation, duplicate/hierarchical deductions and deductions already
+included in net prices are blocked. No product purchasing costs are added.
+
+METHODOLOGY
+Garrett Chemical Engineering Economics (1989), Chapter 5 sales/market research
+section, printed pp.75–76 / PDF pp.87–88. Page 76 visually inspected.
+Source SHA-256:
+fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff
+The historical 10% established-market share guidance is a review warning, not a
+universal limit. No invented textbook prices, discounts, growth or premiums.
+No legacy spreadsheet formulas, assumptions or validation results were used.
+
+AI
+Implemented optional OpenAI Responses structured-output provider adapter using
+standard-library HTTP, bounded context/output/time, server-side credentials,
+store=false, no tools/search, blocked redirects and sanitized failures.
+Explicit model configuration; no implicit model choice or automatic paid retry.
+Prompt/model/time/project-snapshot metadata retained with structured proposals.
+Candidate streams must exist; supplied citations must occur in provided context.
+No contract-probability field, automatic approval or AI financial arithmetic.
+Commercial estimates are unverified, reviewable proposals; unknowns stay unknown.
+Physical flow, allocation and quality cannot be established from LLM values.
+No live provider call, paid generation or external market research was made.
+Live provider access/quota/model compatibility therefore remain unverified.
+Future market-research consent/evidence protocol only; no research implementation.
+
+EDITING AND STORAGE
+Immutable baseline, versioned JSON snapshots, source/assumption metadata,
+reviewed product decisions, stale-edit protection and independent draft previews.
+Price/quantity/share/market/deduction edits recalculate in Python without AI.
+Matching input/result/optional-proposal bundles saved without overwriting files.
+Canonical Measurement bridge preserves source and leaves boundary unresolved
+until explicitly established. Canonical MoneyBase adapter provides annual net
+sales to future Garrett OPEX integration. Separate selling OPEX is not applied.
+No existing calculation or source dataset modified.
+
+TEST RESULTS
+27 new revenue tests. Full backend: 190 tests pass.
+Ruff lint/format checks pass for the new package and test module.
+Independent synthetic arithmetic: quantities, ramp-up, by-products, unsold
+production, price/sales changes, demand/growth/share, units, FOB deductions,
+premiums, separate OPEX and allocation/duplication limits.
+Snapshot restoration, stale edits, saved result reconciliation and canonical
+adapters tested. AI permission/schema/fabricated stream/source/unsupported
+probability/refusal/incomplete/provider errors tested with mocks.
+124 pre-existing equipment, CAPEX, OPEX and frontend files hash-checked unchanged.
+Local test logs, integrity report and synthetic assessment/results saved under
+outputs/revenue-source-review/. The saved AI proposal is explicitly mocked.
+
+BOUNDARY AND REMAINING INTEGRATION
+The current clean checkout has no running parser, AI service or Revenue page.
+Founder explicitly deferred frontend restoration. No old app was restored and
+no HTTP route, frontend, deployment, DCF or live OPEX integration was added.
+Restore/wire those components separately using the explicit adapters/contracts.
+Configure/authorize the optional provider before live generation validation.
+Scope identity, quote validity, current price, market demand and actual product
+suitability require engineering/commercial review. Schema tests are not evidence
+that a suggested market assumption is true. No industrial validation claim.
+Snapshots/actor labels are not authenticated database history or signed approval.
+Inventory carryover, resale purchases, chemical separation design, density/moisture
+inference, FX/inflation and jurisdictional policy compliance are not introduced.
