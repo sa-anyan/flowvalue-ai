@@ -147,3 +147,12 @@ a{text-decoration:none}a:hover{text-decoration:underline}aside{width:258px;paddi
 @keyframes peq-overlay-in{from{opacity:0}to{opacity:1}}
 @media(max-width:650px){.peq-drawer{width:100vw}.peq-drawer .peq-detail-head{padding:14px}.peq-drawer .peq-tabs{top:92px}.peq-drawer .peq-tab-content{padding:15px}}
 @media(prefers-reduced-motion:reduce){.peq-drawer,.peq-drawer-backdrop{animation:none}}
+
+
+/* Duplicate-name equipment grouping: existing cards expand into the same grid */
+.peq-group,.peq-group-items{display:contents}
+.peq-group-card .peq-group-chevron{font-size:22px;font-weight:650;color:var(--accent)}
+.peq-group-card[aria-expanded=true]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 5%,var(--paper))}
+.peq-group-items>.peq-card{animation:peq-group-reveal .2s ease-out both}
+@keyframes peq-group-reveal{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.peq-group-items>.peq-card{animation:none}}
