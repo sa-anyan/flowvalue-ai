@@ -251,3 +251,41 @@ a{text-decoration:none}a:hover{text-decoration:underline}aside{width:258px;paddi
 .dark .tea-overview-status[data-status=ready]{background:#153c30;color:#a1e2c4}
 .dark .tea-overview-status[data-status=processing]{background:#1b3351;color:#b5d2f5}
 .dark .tea-overview-status[data-status=review]{background:#40311f;color:#f4d4a8}
+
+
+/* TEA Overview: modular, on-demand model exploration */
+.tea-overview-launcher{padding:6px 2px 0}
+.tea-overview-launcher h3{font-size:19px;margin:5px 0;font-weight:740}
+.tea-overview-launcher p{color:var(--muted);font-size:12px;margin:0;line-height:1.6}
+.tea-module-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.tea-module-tile{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:13px;min-width:0;text-align:left;display:flex;flex-direction:column;gap:10px;padding:20px;cursor:pointer;transition:box-shadow .16s,border-color .16s,transform .16s}
+.tea-module-tile:hover,.tea-module-tile:focus-visible{border-color:var(--accent);box-shadow:0 9px 23px rgba(17,35,56,.08);transform:translateY(-2px)}
+.tea-module-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.tea-module-icon{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:#e9f0fb;color:#426b9e;font-size:20px}
+.tea-module-icon[data-module=opex]{background:#faf0e1;color:#9c723e}
+.tea-module-icon[data-module=revenue]{background:#e7f5ee;color:#287858}
+.tea-module-icon[data-module=financial]{background:#f0ecf8;color:#7660a0}
+.tea-module-state{font-size:10px;letter-spacing:.02em;font-weight:700;border-radius:99px;padding:6px 9px;background:var(--soft);color:var(--muted)}
+.tea-module-state[data-status=ready]{background:#e7f6ed;color:#186f51}
+.tea-module-state[data-status=warning]{background:#fff0dc;color:#9c5c1d}
+.tea-module-tile>strong{font-size:17px;font-weight:740}
+.tea-module-tile>small{font-size:12px;color:var(--muted);line-height:1.5}
+.tea-module-open{font-size:12px;color:var(--accent);font-weight:700;display:flex;justify-content:space-between;padding-top:13px;margin-top:auto;border-top:1px solid var(--line)}
+.tea-ledger-module{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:20px}
+.tea-ledger-module h3{font-size:17px;margin:6px 0}
+.tea-ledger-module p{font-size:12px;color:var(--muted);margin:0}
+.tea-ledger-expanded{width:100%;overflow-x:auto;border-top:1px solid var(--line);padding-top:18px}
+.tea-drawer-backdrop{position:fixed;inset:0;z-index:1200;background:rgba(9,21,37,.48);display:flex;justify-content:flex-end}
+.tea-overview-drawer{width:min(530px,100vw);height:100dvh;overflow:auto;overscroll-behavior:contain;background:var(--paper);color:var(--ink);box-shadow:-16px 0 55px rgba(0,0,0,.18);animation:peq-slide-in .2s ease-out}
+.tea-drawer-head{position:sticky;top:0;z-index:2;background:var(--paper);display:flex;justify-content:space-between;gap:16px;align-items:flex-start;border-bottom:1px solid var(--line);padding:24px}
+.tea-drawer-head h2{font-size:23px;margin:9px 0 0}
+.tea-drawer-body{padding:24px;display:grid;align-content:start;gap:19px}
+.tea-drawer-body>p{font-size:13px;line-height:1.65;color:var(--muted)}
+.tea-drawer-insight{padding:18px;background:var(--soft);border-radius:12px;display:grid;gap:7px}
+.tea-drawer-insight small{font-size:12px;color:var(--muted)}
+.tea-drawer-insight strong{font-size:26px;font-variant-numeric:tabular-nums}
+.tea-drawer-warnings{border-left:3px solid #ba7c37;background:var(--soft);padding:14px;border-radius:8px;font-size:12px;line-height:1.6}
+.tea-drawer-link{display:block;border-radius:9px;padding:14px 17px;background:var(--accent);color:white;text-decoration:none;text-align:center;font-size:13px;font-weight:700}
+.tea-drawer-link:hover{filter:brightness(.93)}
+@media(max-width:680px){.tea-module-grid{grid-template-columns:minmax(0,1fr)}.tea-drawer-head,.tea-drawer-body{padding:17px}}
+@media(prefers-reduced-motion:reduce){.tea-module-tile,.tea-overview-drawer{animation:none;transition:none}}
