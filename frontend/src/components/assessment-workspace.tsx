@@ -224,8 +224,16 @@ function AssessmentOverview({state}:{state:Assessment}) {
   const firstRevenue=rows(revenue.annual).find(r=>Number(r.year)===1)?.sales_revenue??(firstSales.length?firstSales.reduce((sum,r)=>sum+Number(r.net_sales_revenue),0):undefined);
   const currency=capex.currency||financial.currency;
   const cards:[string,Json|undefined,string][]=[['Total CAPEX',capex.total_capex,'/capex'],['Year 1 cash OPEX',annual.annual_cash_opex,'/opex'],['Year 1 revenue',firstRevenue,'/revenue'],['Project NPV',npv?.value,'/financial-modelling']];
-  return <section className="assessment-overview"><div className="toolbar"><div><h2>Techno-economic assessment</h2><p className="muted">{state.running?'Building your study from the uploaded workbook…':'Calculated results from this uploaded workbook and its saved engineering assumptions.'}</p></div><Link className="report-link" href={assessmentHref('/main-dashboard',state.id)}>Open TEA overview →</Link></div>
-    <div className="metrics">{cards.map(([label,value,href])=><div key={label}><small>{label}</small><strong>{value===undefined?'Calculating / awaiting inputs':amount(value)}</strong><small>{currency?`${display(currency)} · ${display(capex.period)}`:''}</small><Link href={assessmentHref(href,state.id)}>Inspect calculations →</Link></div>)}</div>
+  const missing=cards.filter(([,value])=>value===undefined||value===null).length;
+  const stageCount=['capex','opex','revenue','financial'].filter(key=>Boolean(stages[key]?.result)).length;
+  const ready=!state.running&&stageCount===4;
+  return <section className="assessment-overview tea-premium-overview">
+    <div className="tea-overview-hero">
+      <div className="tea-overview-intro"><span className="tea-eyebrow">PROJECT ASSESSMENT · EXECUTIVE SUMMARY</span><h2>Your project's economic picture</h2><p>Understand investment, operating costs and potential returns. Every figure links to its underlying calculation and assumptions.</p></div>
+      <div className="tea-overview-status" data-status={state.running?'processing':ready&&!missing?'ready':'review'}><span className="tea-status-dot"/>{state.running?'Calculations in progress':ready&&!missing?'Model calculated':'Review outstanding inputs'}</div>
+    </div>
+    <div className="tea-overview-metrics">{cards.map(([label,value,href],i)=><Link key={label} className="tea-metric-card" data-category={['capital','operating','income','investment'][i]} href={assessmentHref(href,state.id)}><span className="tea-metric-label">{label}</span><strong>{value===undefined||value===null?'Not available':amount(value)}</strong><span className="tea-metric-context">{currency?display(currency):'Currency not specified'}{i===1||i===2?' · Year 1':i===3?' · Project lifetime':' · Project investment'}</span><span className="tea-metric-action">View calculation <span aria-hidden="true">↗</span></span></Link>)}</div>
+    <div className="tea-overview-context"><span><strong>{stageCount} of 4</strong> core calculation areas have results</span><span><strong>{missing}</strong> headline figures unavailable</span><span>Values reflect the current saved assessment, not independently verified engineering performance.</span></div>
     <StageVisuals page="overview" stages={stages}/>
     {!!state.analyst_reviews?.length&&<p><a className="report-link" href="#analyst-review">Inspect {state.analyst_reviews.length} specialist reviews, material alternatives and research tools ↓</a></p>}
     {irr&&<p><strong>Project IRR: {irr.value===null?display(irr.status):amount(Number(irr.value)*100)+'%'}</strong> · {rows(financial.ledger).length} annual ledger periods · {sales.length+rows(revenue.commercial).length} annual revenue records</p>}
