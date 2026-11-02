@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import {EquipmentDataExplorer} from './equipment-data';
 import {AssessmentProgress} from './assessment-progress';
+import {TeaDashboardCharts} from './tea-dashboard-charts';
 import {PremiumEquipmentWorkspace, type EquipmentCard} from './premium-equipment-workspace';
 import {StageVisuals,WorkspaceIcon} from './workspace-visuals';
 import {CommercialStrategy} from './commercial-strategy';
@@ -237,6 +238,7 @@ function AssessmentOverview({state}:{state:Assessment}) {
     </div>
     <div className="tea-overview-metrics">{cards.map(([label,value,href],i)=><Link key={label} className="tea-metric-card" data-category={['capital','operating','income','investment'][i]} href={assessmentHref(href,state.id)}><span className="tea-metric-label">{label}</span><strong>{value===undefined||value===null?'Not available':amount(value)}</strong><span className="tea-metric-context">{currency?display(currency):'Currency not specified'}{i===1||i===2?' · Year 1':i===3?' · Project lifetime':' · Project investment'}</span><span className="tea-metric-action">View calculation <span aria-hidden="true">↗</span></span></Link>)}</div>
     <div className="tea-overview-context"><span><strong>{stageCount} of 4</strong> core calculation areas have results</span><span><strong>{missing}</strong> headline figures unavailable</span><span>Values reflect the current saved assessment, not independently verified engineering performance.</span></div>
+    <TeaDashboardCharts stages={stages} onExplore={setPanel}/>
     <div className="tea-overview-launcher"><div><span className="tea-eyebrow">INVESTIGATE YOUR ASSESSMENT</span><h3>Explore the economics</h3><p>Open only the part you want to inspect. Your underlying calculations remain unchanged.</p></div></div>
     {!!state.analyst_reviews?.length&&<p><a className="report-link" href="#analyst-review">Inspect {state.analyst_reviews.length} specialist reviews, material alternatives and research tools ↓</a></p>}
     {irr&&<p><strong>Project IRR: {irr.value===null?display(irr.status):amount(Number(irr.value)*100)+'%'}</strong> · {rows(financial.ledger).length} annual ledger periods · {sales.length+rows(revenue.commercial).length} annual revenue records</p>}
