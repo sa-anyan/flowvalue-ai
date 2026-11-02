@@ -319,3 +319,38 @@ a{text-decoration:none}a:hover{text-decoration:underline}aside{width:258px;paddi
 .fv-stage-track .fv-stage-indeterminate{animation:none;position:static;transform:none}
 .fv-stage-track>span{transition:width .35s ease-out}
 @media(prefers-reduced-motion:reduce){.fv-stage-track>span{transition:none}}
+
+
+/* Interactive BI dashboard for the TEA executive overview */
+.tea-bi-dashboard{display:grid;gap:15px;min-width:0}
+.tea-bi-intro{display:flex;align-items:center;justify-content:space-between}
+.tea-bi-intro h2{font-size:21px;letter-spacing:-.025em;margin:6px 0}
+.tea-bi-intro p{font-size:12px;color:var(--muted);line-height:1.55;margin:0}
+.tea-bi-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.tea-bi-chart{border:1px solid var(--line);border-radius:14px;background:var(--paper);padding:19px;min-width:0;display:flex;flex-direction:column;gap:16px}
+.tea-bi-chart-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.tea-bi-chart-head h3{font-size:16px;font-weight:740;letter-spacing:-.02em;margin:6px 0 0}
+.tea-bi-explore{font-size:11px;font-weight:750;color:var(--accent);border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:7px 10px;cursor:pointer}
+.tea-bi-explore:hover{border-color:var(--accent)}
+.tea-bi-donut-layout{display:grid;gap:17px;justify-items:center;align-content:start}
+.tea-bi-donut{width:min(160px,75%);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;position:relative}
+.tea-bi-donut-hole{width:64%;aspect-ratio:1;background:var(--paper);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;padding:6px;text-align:center}
+.tea-bi-donut-hole small{color:var(--muted);font-size:10px;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.tea-bi-donut-hole strong{font-size:20px;line-height:1.15;font-variant-numeric:tabular-nums}
+.tea-bi-legend{display:grid;width:100%;gap:3px}
+.tea-bi-legend button{border:0;background:transparent;color:var(--ink);padding:6px 4px;text-align:left;display:flex;align-items:center;gap:8px;cursor:pointer;border-radius:7px}
+.tea-bi-legend button:hover,.tea-bi-legend button[aria-pressed=true]{background:var(--soft)}
+.tea-bi-swatch{height:9px;width:9px;flex:0 0 9px;border-radius:3px}
+.tea-bi-legend-name{font-size:11px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tea-bi-legend strong{font-size:11px;font-variant-numeric:tabular-nums}
+.tea-bi-caption{margin:auto 0 0;color:var(--muted);font-size:10px;line-height:1.55}
+.tea-bi-empty{background:var(--soft);border-radius:10px;padding:34px 15px;text-align:center;font-size:12px;color:var(--muted);line-height:1.6}
+.tea-bi-cashflow{padding:20px 22px}
+.tea-bi-chart-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.tea-bi-mode{display:flex;background:var(--soft);border-radius:8px;padding:3px}
+.tea-bi-mode button{border:0;background:transparent;color:var(--muted);padding:7px 10px;border-radius:6px;font-size:11px;cursor:pointer}
+.tea-bi-mode button[aria-pressed=true]{background:var(--paper);color:var(--ink);font-weight:750;box-shadow:0 1px 5px rgba(0,0,0,.07)}
+.tea-bi-line{width:100%;max-height:300px;overflow:visible}
+@media(max-width:1100px){.tea-bi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.tea-bi-grid{grid-template-columns:minmax(0,1fr)}.tea-bi-chart{padding:16px}.tea-bi-donut-layout{grid-template-columns:130px minmax(0,1fr);align-items:center;justify-items:stretch}.tea-bi-donut{width:130px}}
+@media(max-width:390px){.tea-bi-donut-layout{grid-template-columns:minmax(0,1fr);justify-items:center}.tea-bi-donut{width:150px}}
