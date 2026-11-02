@@ -156,3 +156,53 @@ a{text-decoration:none}a:hover{text-decoration:underline}aside{width:258px;paddi
 .peq-group-items>.peq-card{animation:peq-group-reveal .2s ease-out both}
 @keyframes peq-group-reveal{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.peq-group-items>.peq-card{animation:none}}
+
+
+/* Engineering Data UX — legible, calm, source-led */
+.fv-stage-progress{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:clamp(16px,2.4vw,25px);display:grid;gap:15px;min-width:0;margin-bottom:16px}
+.fv-stage-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;flex-wrap:wrap}
+.fv-stage-eyebrow,.fv-directory-kicker{font-size:10px;letter-spacing:.12em;font-weight:750;color:var(--muted)}
+.fv-stage-head h2{font-size:clamp(18px,2.5vw,23px);font-weight:740;line-height:1.3;margin:5px 0 7px}
+.fv-stage-head p{font-size:12px;line-height:1.6;margin:0;max-width:66ch;color:var(--muted)}
+.fv-stage-state{display:inline-flex;align-items:center;white-space:nowrap;border-radius:999px;padding:7px 12px;font-size:11px;font-weight:700;background:var(--soft);color:var(--ink)}
+.fv-stage-state[data-state=running]{background:#e8f0fd;color:#224d93}
+.fv-stage-state[data-state=warning]{background:#fff0da;color:#945116}
+.fv-stage-state[data-state=complete]{background:#e7f6ee;color:#136b50}
+.fv-stage-track{width:100%;height:11px;background:var(--soft);border-radius:999px;overflow:hidden}
+.fv-stage-track span{display:block;height:100%;background:#3a71c1;border-radius:999px;transition:width .3s ease}
+.fv-stage-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:11px}
+.fv-stage-history{margin:0!important;border:0!important;border-top:1px solid var(--line)!important;padding:10px 0 0!important;box-shadow:none!important;background:transparent!important}
+.fv-stage-history summary{font-size:12px;font-weight:650;color:var(--ink);cursor:pointer}
+.fv-stage-history summary span{color:var(--muted);font-size:11px}
+.fv-stage-history ol{list-style:none;display:grid;gap:8px;margin:14px 0 0;padding:0}
+.fv-stage-history li{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:9px}
+.fv-stage-history li>span:last-child{display:grid;gap:4px}
+.fv-stage-history strong{font-size:12px}
+.fv-stage-history small{font-size:11px;color:var(--muted);text-transform:capitalize}
+.fv-history-symbol{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--muted);font-weight:750;flex:0 0 auto}
+.fv-stage-history li[data-state=done] .fv-history-symbol{background:#e7f6ee;color:#136b50}
+.fv-stage-history li[data-state=warning] .fv-history-symbol{background:#fff0da;color:#945116}
+.fv-stage-error{color:#b45309;font-size:12px}
+.equipment-explorer{border-radius:14px;overflow:hidden;min-width:0}
+.equipment-explorer .explorer-heading{padding:23px 25px}
+.equipment-explorer .explorer-heading h2{font-size:21px;font-weight:740;letter-spacing:-.02em}
+.equipment-explorer .explorer-heading p{font-size:12px;line-height:1.6;max-width:58ch}
+.equipment-explorer .register-stats>div{background:var(--paper)}
+.equipment-explorer .register-stats strong{font-size:25px;font-weight:740}
+.equipment-explorer .asset-directory{background:color-mix(in srgb,var(--soft) 50%,var(--paper))}
+.equipment-explorer .asset-directory>.fv-directory-kicker,.equipment-explorer .asset-detail>.fv-directory-kicker{margin:0 0 13px;font-size:10px}
+.equipment-explorer .asset-item{border-radius:8px;transition:border-color .12s,background .12s}
+.equipment-explorer .asset-item[aria-pressed=true]{background:color-mix(in srgb,var(--accent) 9%,var(--paper));border-color:var(--accent)}
+.equipment-explorer .asset-title h2{font-size:22px;font-weight:730}
+.equipment-explorer .detail-tabs button[aria-pressed=true]{color:var(--accent);font-weight:750}
+.equipment-explorer .observation-card{border-radius:10px;background:var(--paper)}
+.equipment-explorer .observation-card h3{font-size:12px}
+.equipment-explorer .observation-value{font-size:20px;font-weight:750}
+.equipment-explorer [data-status=verified]{background:#e7f6ee;color:#136b50;border-color:#b9e5d1}
+.equipment-explorer [data-status=inferred]{background:#e8f0fd;color:#224d93;border-color:#bfd0f5}
+.equipment-explorer [data-status=unresolved]{background:#fff0da;color:#945116;border-color:#f5d3a5}
+.dark .fv-stage-state[data-state=running],.dark .equipment-explorer [data-status=inferred]{background:#193452;color:#b1cff8}
+.dark .fv-stage-state[data-state=warning],.dark .equipment-explorer [data-status=unresolved],.dark .fv-stage-history li[data-state=warning] .fv-history-symbol{background:#43321c;color:#f5d2a2}
+.dark .fv-stage-state[data-state=complete],.dark .equipment-explorer [data-status=verified],.dark .fv-stage-history li[data-state=done] .fv-history-symbol{background:#133b30;color:#9be2c4}
+@media(max-width:650px){.fv-stage-progress{padding:15px}.equipment-explorer .explorer-heading{padding:16px}.equipment-explorer .asset-detail{padding:15px}}
+@media(prefers-reduced-motion:reduce){.fv-stage-track span{transition:none}}
