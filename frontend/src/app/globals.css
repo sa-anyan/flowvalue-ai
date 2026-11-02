@@ -386,3 +386,25 @@ a{text-decoration:none}a:hover{text-decoration:underline}aside{width:258px;paddi
 @media(max-width:1100px){.tea-premium-overview .tea-bi-grid{grid-template-columns:minmax(0,1fr)}.tea-premium-overview .tea-bi-grid>.tea-bi-chart:first-child{grid-row:auto;min-height:360px}}
 @media(max-width:630px){.tea-premium-overview .tea-bi-donut-layout.tea-bi-spacious{grid-template-columns:minmax(0,1fr);justify-items:center}.tea-premium-overview .tea-bi-legend{width:100%}.tea-assumptions-cards{grid-template-columns:minmax(0,1fr)}.tea-assumptions-trigger,.tea-assumptions-body{padding:17px}}
 @media(prefers-reduced-motion:reduce){.tea-assumptions-cards button{transition:none}.tea-assumptions-cards button:hover{transform:none}}
+
+
+/* TEA overview: full-width financial chapters instead of an uneven chart grid */
+.tea-premium-overview .tea-bi-grid{display:flex;flex-direction:column;gap:22px;min-width:0}
+.tea-premium-overview .tea-bi-grid>.tea-bi-chart,
+.tea-premium-overview .tea-bi-grid>.tea-bi-chart:first-child,
+.tea-premium-overview .tea-bi-grid>.tea-bi-chart:not(:first-child){width:100%;min-height:365px;grid-row:auto}
+.tea-premium-overview .tea-bi-grid>.tea-bi-chart{display:flex;flex-direction:column;gap:24px;padding:clamp(24px,3vw,42px)}
+.tea-premium-overview .tea-bi-grid .tea-bi-donut-layout.tea-bi-spacious{display:grid;grid-template-columns:minmax(210px,340px) minmax(0,1fr);align-items:center;gap:clamp(35px,5vw,90px);justify-content:start;justify-items:stretch;flex:1}
+.tea-premium-overview .tea-bi-grid .tea-bi-donut{width:min(100%,320px);margin-inline:auto}
+.tea-premium-overview .tea-bi-grid .tea-bi-legend{max-height:none;overflow-y:visible;width:100%;max-width:560px}
+.tea-premium-overview .tea-bi-grid .tea-bi-legend button{padding:12px 14px;border-bottom:1px solid var(--line);border-radius:5px}
+.tea-premium-overview .tea-bi-grid .tea-bi-legend-name{font-size:13px}
+.tea-premium-overview .tea-bi-grid .tea-bi-legend strong{font-size:13px}
+.tea-premium-overview .tea-bi-grid .tea-bi-chart-head h3{font-size:clamp(21px,2.1vw,27px)}
+.tea-premium-overview .tea-bi-grid .tea-bi-chart-head{align-items:center}
+@media(max-width:720px){
+.tea-premium-overview .tea-bi-grid .tea-bi-donut-layout.tea-bi-spacious{grid-template-columns:minmax(0,1fr);gap:23px;justify-items:center}
+.tea-premium-overview .tea-bi-grid .tea-bi-donut{width:min(75%,255px)}
+.tea-premium-overview .tea-bi-grid .tea-bi-legend{max-width:none}
+.tea-premium-overview .tea-bi-grid>.tea-bi-chart{padding:22px;min-height:0}
+}
