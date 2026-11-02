@@ -314,3 +314,8 @@ a{text-decoration:none}a:hover{text-decoration:underline}aside{width:258px;paddi
 .tea-analyst-module #analyst-review .review-finding{border:1px solid var(--line);border-radius:10px;padding:14px;margin:10px 0;background:var(--soft)}
 .tea-premium-overview ~ .fv-stage-progress{margin-top:12px}
 @media(max-width:650px){.tea-revenue-intent,.tea-analyst-module{padding:15px}}
+
+/* Monotonic estimated assessment progress; no sweeping animation */
+.fv-stage-track .fv-stage-indeterminate{animation:none;position:static;transform:none}
+.fv-stage-track>span{transition:width .35s ease-out}
+@media(prefers-reduced-motion:reduce){.fv-stage-track>span{transition:none}}
