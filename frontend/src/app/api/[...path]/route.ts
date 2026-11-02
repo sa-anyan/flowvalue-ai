@@ -1,7 +1,5 @@
 import {NextResponse,type NextRequest} from 'next/server';
 import {cloudAuthEnabled,requestSession,setSession} from '../../../lib/cloud-auth';
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 async function proxy(request: NextRequest, context: {params: Promise<{path: string[]}>}) {
   const origin=request.headers.get('origin');
   if (origin && origin !== request.nextUrl.origin)

@@ -212,19 +212,20 @@ def record_review(key: str, request: ReviewDecision):
 async def upload(
     file: UploadFile = File(...),  # noqa: B008 -- FastAPI dependency declaration
     description: str = Form(""),
+    revenue_description: str = Form(""),
     use_ai: bool = Form(False),
 ):
     content = await file.read(4 * 1024**2 + 1)
     if not content or len(content) > 4 * 1024**2:
         raise HTTPException(413, "Choose a workbook up to 4 MiB")
-    if len(description) > 12000:
+    if len(description) + len(revenue_description) > 12000:
         raise HTTPException(422, "Description exceeds 12,000 characters")
     name = Path(file.filename or "workbook").name
     if Path(name).suffix.lower() not in {".xlsx", ".xls", ".xlsm"}:
         raise HTTPException(422, "Choose .xlsx, .xls or .xlsm")
     if lock.locked():
         raise HTTPException(409, "Another assessment is running")
-    state = new_assessment(store, content, name, description)
+    state = new_assessment(store, content, name, description, revenue_description)
     submit(state["id"], content=content, use_ai=use_ai)
     return {"id": state["id"]}
 
@@ -392,6 +393,8 @@ class CommercialStrategyRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     revision: int
     description: str = Field(min_length=10, max_length=12000)
+    process_description: str | None = Field(default=None, max_length=12000)
+    revenue_description: str | None = Field(default=None, max_length=6000)
     research_consent: bool = False
 
 
@@ -422,6 +425,10 @@ def commercial_strategy(key: str, options: CommercialStrategyRequest):
         draft = copy.deepcopy(baseline)
         draft.update(
             description=options.description,
+            process_description=options.process_description
+            if options.process_description is not None
+            else options.description,
+            revenue_description=options.revenue_description or "",
             results=None,
             running=True,
             parent_assessment=key,

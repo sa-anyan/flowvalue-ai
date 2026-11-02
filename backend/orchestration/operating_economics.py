@@ -506,6 +506,8 @@ def calculate_operating_study(
             raise ValueError(
                 "Operating price assumptions use a different currency/period; update their stated price basis explicitly"
             )
+        from backend.revenue.commercial_intent import require_resolved_intent
+        require_resolved_intent(config, description)
         basis = Basis(capex.currency, capex.period)
         hours, ramp = operating_schedule(config)
         costs = {}

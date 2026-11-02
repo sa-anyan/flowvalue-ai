@@ -25,11 +25,18 @@ def _diagnostic(exc):
     return "Engineering service unavailable; previous results and inputs retained."
 
 
-def new_assessment(store, content, filename, description):
+def new_assessment(store, content, filename, description, revenue_description=""):
     return store.create(
         {
             "filename": filename,
-            "description": description,
+            "process_description": description,
+            "revenue_description": revenue_description,
+            "description": description
+            + (
+                "\n\nUSER REVENUE DESCRIPTION:\n" + revenue_description
+                if revenue_description.strip()
+                else ""
+            ),
             "plan": empty_plan(),
             "locked": [],
             "assumptions": {},
@@ -97,10 +104,23 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
             from .workbook_scope import calculation_scope
 
             state["analyst_reviews"] = review_team(
-                report, state["description"], "engineering", store, provider, review_notes=state.get("review_decisions", []), progress=progress
+                report,
+                state["description"],
+                "engineering",
+                store,
+                provider,
+                review_notes=state.get("review_decisions", []),
+                progress=progress,
             )
-            scope_review = next((r for r in state["analyst_reviews"]
-                                 if r["role"] == "process_equipment_engineer" and r.get("sheet_decisions")), None)
+            scope_review = next(
+                (
+                    r
+                    for r in state["analyst_reviews"]
+                    if r["role"] == "process_equipment_engineer"
+                    and r.get("sheet_decisions")
+                ),
+                None,
+            )
             if scope_review:
                 try:
                     report = calculation_scope(report, scope_review["sheet_decisions"])
@@ -153,12 +173,23 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
                 progress(stage_name, "running")
                 try:
                     if requested == ("revenue", "opex"):
-                        capital = ((interim or {}).get("stages", {}).get("capex", {}).get("result") or {})
+                        capital = (interim or {}).get("stages", {}).get(
+                            "capex", {}
+                        ).get("result") or {}
                         state["analyst_reviews"] += review_team(
-                            report, state["description"], "operating", store, provider,
-                            prior=state["analyst_reviews"], capital=capital, review_notes=state.get("review_decisions", []), progress=progress,
+                            report,
+                            state["description"],
+                            "operating",
+                            store,
+                            provider,
+                            prior=state["analyst_reviews"],
+                            capital=capital,
+                            review_notes=state.get("review_decisions", []),
+                            progress=progress,
                         )
-                        state["cost_coverage"] = coverage_register(state["analyst_reviews"])
+                        state["cost_coverage"] = coverage_register(
+                            state["analyst_reviews"]
+                        )
                     summary = {}
                     if interim:
                         for stage_key in ("capex", "revenue", "opex"):
@@ -264,7 +295,10 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
                     progress(stage_name, "unavailable")
         state["assumption_register"] = register(state["plan"], state["assumptions"])
         state["results"] = run(
-            state.get("scoped_report", state.get("effective_report", state["parsed"]["report"])),
+            state.get(
+                "scoped_report",
+                state.get("effective_report", state["parsed"]["report"]),
+            ),
             state["description"],
             state["plan"],
             progress=progress,
@@ -296,7 +330,21 @@ def edit(store, key, revision, section, value, rationale):
         raise ValueError("Wait for assessment to finish before editing")
     if state["revision"] != revision:
         raise ValueError("Assessment changed; reload before editing")
-    state["plan"][section] = copy.deepcopy(value)
+    value = copy.deepcopy(value)
+    if section == "operating_economics":
+        from backend.revenue.commercial_intent import capture_manual_methods
+
+        def methods(config):
+            return [
+                (row.get("id"), "product_sales") for row in config.get("sales", [])
+            ] + [
+                (row.get("id"), row.get("category"))
+                for row in config.get("commercial_lines", [])
+            ]
+
+        if methods(value) != methods(state["plan"].get(section, {})):
+            value = capture_manual_methods(value, rationale)
+    state["plan"][section] = value
     state["locked"] = sorted(set(state["locked"]) | {section})
     state["assumptions"][section] = {
         "origin": "user_assumption",

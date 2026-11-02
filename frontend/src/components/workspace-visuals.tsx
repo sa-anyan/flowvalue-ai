@@ -1,0 +1,34 @@
+'use client';
+import {useState} from 'react';
+type Row=Record<string,unknown>;
+const record=(v:unknown):Row=>v&&typeof v==='object'&&!Array.isArray(v)?v as Row:{};
+const rows=(v:unknown):Row[]=>Array.isArray(v)?v.map(record):[];
+const number=(v:unknown):number|null=>v===null||v===undefined||v===''?null:Number.isFinite(Number(v))?Number(v):null;
+const fmt=(v:number)=>new Intl.NumberFormat('en-GB',{notation:'compact',maximumFractionDigits:2}).format(v);
+export function WorkspaceIcon({name}:{name:string}){
+ const paths:Record<string,string>={entry:'M5 3h9l5 5v13H5z M14 3v6h5 M8 14h8 M8 18h5',overview:'M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z',data:'M3 6l9-4 9 4-9 4z M3 12l9 4 9-4 M3 18l9 4 9-4',equipment:'M4 8h16v12H4z M8 8V4h8v4 M4 13h16',capex:'M12 3v18 M17 7c-1-4-10-4-10 1s10 3 10 8-9 5-10 1',opex:'M4 3h16v18H4z M8 7h8 M8 12h8 M8 17h5',revenue:'M3 18l6-6 4 3 8-11 M15 4h6v6',financial:'M4 21V3 M4 21h17 M8 17v-5 M13 17V8 M18 17V5'};
+ return <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths[name]||paths.overview}/></svg>;
+}
+export function StageVisuals({page,stages}:{page:string;stages:Record<string,{result?:unknown;status:string}>}){
+ const [mode,setMode]=useState<'cumulative'|'annual'>('cumulative');
+ const [selected,setSelected]=useState<number|null>(null);
+ const [year,setYear]=useState('1');
+ const capex=record(stages.capex?.result),opex=record(stages.opex?.result),revenue=record(stages.revenue?.result),financial=record(stages.financial?.result),equipment=record(stages.equipment?.result);
+ const ledger=rows(financial.ledger),years=Object.keys(record(opex.years));
+ const annual=record(record(opex.years)[year]);
+ const revenueRows=[...rows(revenue.products).map(r=>({label:String(r.product_id),value:r.net_sales_revenue,year:r.year})),...rows(revenue.commercial).map(r=>({label:String(r.line_id),value:r.revenue,year:r.year}))].filter(r=>String(r.year)===year);
+ const capexBars=[{label:'Purchased equipment',value:capex.purchased_equipment},...rows(capex.lines).map(r=>({label:String(r.id).replaceAll('_',' '),value:r.amount}))];
+ const bars=page==='equipment'?rows(equipment.equipment).map(r=>({label:String(r.equipment_tag),value:r.equipment_cost})):page==='opex'?rows(annual.lines).filter(r=>r.accounting==='cash').map(r=>({label:String(r.category).replaceAll('_',' '),value:r.amount})):page==='revenue'?revenueRows:capexBars;
+ const valid=bars.map(r=>({...r,value:number(r.value)})).filter((r):r is {label:string;value:number}=>r.value!==null);
+ const max=Math.max(1,...valid.map(r=>Math.abs(r.value)));
+ const chartLedger=ledger.map((r,i)=>({year:number(record(r.period).year)??i,value:number(mode==='cumulative'?r.cumulative_project_cash:r.fcff)})).filter((r):r is {year:number;value:number}=>r.value!==null);
+ const low=Math.min(0,...chartLedger.map(r=>r.value)),high=Math.max(0,...chartLedger.map(r=>r.value)),span=high-low||1;
+ const point=(i:number,v:number)=>({x:65+i/Math.max(1,chartLedger.length-1)*690,y:200-(v-low)/span*160});
+ const points=chartLedger.map((r,i)=>{const p=point(i,r.value);return `${p.x},${p.y}`;}).join(' ');
+ const showCash=['overview','financial'].includes(page),showBars=['overview','capex','opex','revenue','equipment'].includes(page);
+ if(!showCash&&!showBars)return null;
+ return <div className={`analytics-grid ${showCash&&showBars?'':'single'}`}>
+ {showCash&&<section className="visual-panel"><div className="panel-heading"><div><small>INVESTMENT PERFORMANCE</small><h2>Project cash flow</h2></div><div className="segmented" aria-label="Cash flow chart"><button aria-pressed={mode==='cumulative'} onClick={()=>{setMode('cumulative');setSelected(null);}}>Cumulative</button><button aria-pressed={mode==='annual'} onClick={()=>{setMode('annual');setSelected(null);}}>Annual</button></div></div>{chartLedger.length>1?<><svg className="interactive-chart" viewBox="0 0 780 240" role="img" aria-label={`${mode} project cash flow. Focus a point to inspect its saved ledger value.`}>{[0,.5,1].map(t=><g key={t}><line x1="65" x2="755" y1={40+t*160} y2={40+t*160} className="grid-line"/><text x="0" y={44+t*160}>{fmt(high-t*span)}</text></g>)}<line x1="65" x2="755" y1={point(0,0).y} y2={point(0,0).y} className="zero-line"/><polyline points={points} fill="none" stroke="var(--primary)" strokeWidth="3"/>{chartLedger.map((r,i)=>{const p=point(i,r.value);return <g key={i}><circle cx={p.x} cy={p.y} r={selected===i?6:3} fill="var(--primary)"/><circle cx={p.x} cy={p.y} r="11" fill="transparent" tabIndex={0} role="button" aria-label={`Year ${r.year}: ${r.value}`} onMouseEnter={()=>setSelected(i)} onFocus={()=>setSelected(i)} onClick={()=>setSelected(i)} onKeyDown={e=>{if(e.key==='Enter'||e.key===' ')setSelected(i);}}><title>Year {r.year}: {r.value.toLocaleString('en-GB')}</title></circle></g>;})}<text x="65" y="228">Year {chartLedger[0].year}</text><text x="700" y="228">Year {chartLedger.at(-1)?.year}</text></svg><div className="chart-caption" aria-live="polite">{selected!==null&&chartLedger[selected]?`Year ${chartLedger[selected].year} · ${financial.currency||''} ${chartLedger[selected].value.toLocaleString('en-GB',{maximumFractionDigits:2})}`:'Hover or focus a point to inspect the annual ledger.'}</div></>:<div className="chart-empty">Cash flow will appear after the financial model is calculated.</div>}</section>}
+ {showBars&&<section className="visual-panel"><div className="panel-heading"><div><small>{page==='revenue'?'COMMERCIAL MIX':page==='opex'?'MANUFACTURING COSTS':'CAPITAL ALLOCATION'}</small><h2>{page==='revenue'?'Revenue by payment method':page==='opex'?'Operating cost breakdown':page==='equipment'?'Purchased equipment costs':'Capital cost breakdown'}</h2></div>{['opex','revenue'].includes(page)&&<label className="year-filter">Year<select aria-label="Chart operating year" value={year} onChange={e=>setYear(e.target.value)}>{(years.length?years:['1']).map(y=><option key={y}>{y}</option>)}</select></label>}</div><div className="breakdown-list">{valid.length?valid.map((r,i)=><div className="breakdown-row" key={`${r.label}-${i}`}><div><span>{r.label}</span><strong>{fmt(r.value)}</strong></div><div className="bar-track"><div style={{width:`${Math.abs(r.value)/max*100}%`}} title={`${r.label}: ${r.value.toLocaleString('en-GB')}`}/></div></div>):<div className="chart-empty">No calculated breakdown yet. Missing values remain unresolved.</div>}</div><div className="chart-caption">{String((page==='revenue'?record(revenue.basis).currency:page==='opex'?opex.currency:capex.currency)||'Currency pending')} · Saved calculation results · inspect the detailed tables below</div></section>}
+ </div>;
+}

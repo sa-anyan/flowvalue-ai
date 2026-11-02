@@ -215,6 +215,10 @@ def render_study(state):
         + text(opex["first_year_variable_opex"])
         + ". Depreciation and financing reference rows are not added to cash OPEX.</p>"
     ]
+    if config.get("commercial_intent"):
+        blocks += ["<h2>User-stated revenue methods</h2>", table([
+            ("id", "Method"), ("category", "Category"), ("context_quote", "User statement"),
+            ("interpretation", "Interpretation")], config["commercial_intent"]["mechanisms"])]
     revenue = stages["revenue"]["result"]
     blocks += [
         "<h2>Production, saleability and annual revenue</h2>",

@@ -135,7 +135,25 @@ class AgentTests(unittest.TestCase):
         p.generate.return_value = {
             "retained_product_ids": ["water-sales"],
             "retain_price_policy": "freeze_previous_annual_prices",
-            "new_payments": [new],
+            "new_payments": [{**new, "intent_id": "treatment"}],
+            "commercial_intent": {
+                "status": "explicit",
+                "mechanisms": [
+                    {
+                        "id": "water-sales",
+                        "category": "product_sales",
+                        "context_quote": "sells treated water",
+                        "interpretation": "Explicit water sale",
+                    },
+                    {
+                        "id": "treatment",
+                        "category": "processing_services",
+                        "context_quote": "receive treatment fees",
+                        "interpretation": "Explicit treatment fee",
+                    },
+                ],
+                "questions": [],
+            },
             "research_line_ids": ["treatment"],
             "rationale": "Two distinct synthetic payments",
             "questions": [],
@@ -144,7 +162,12 @@ class AgentTests(unittest.TestCase):
             "backend.revenue.llm.commercial_strategy_analyst.research_draft"
         ) as web:
             with self.assertRaises(PermissionError):
-                analyse(s, DESCRIPTION, p, research_consent=False)
+                analyse(
+                    s,
+                    DESCRIPTION + " We receive treatment fees.",
+                    p,
+                    research_consent=False,
+                )
             web.assert_not_called()
 
     def test_agent_driver_selects_and_routes_without_touching_cost_inputs(self):
@@ -157,7 +180,25 @@ class AgentTests(unittest.TestCase):
             {
                 "retained_product_ids": ["water-sales"],
                 "retain_price_policy": "freeze_previous_annual_prices",
-                "new_payments": [new],
+                "new_payments": [{**new, "intent_id": "treatment"}],
+                "commercial_intent": {
+                    "status": "explicit",
+                    "mechanisms": [
+                        {
+                            "id": "water-sales",
+                            "category": "product_sales",
+                            "context_quote": "sells treated water",
+                            "interpretation": "Explicit water sale",
+                        },
+                        {
+                            "id": "treatment",
+                            "category": "processing_services",
+                            "context_quote": "receive treatment fees",
+                            "interpretation": "Explicit treatment fee",
+                        },
+                    ],
+                    "questions": [],
+                },
                 "research_line_ids": ["treatment"],
                 "rationale": "Two distinct synthetic payments",
                 "questions": [],
@@ -174,7 +215,9 @@ class AgentTests(unittest.TestCase):
                 return_value={"stages": {"financial": {"result": {"ok": True}}}},
             ),
         ):
-            plan, _, agent, _ = analyse(s, DESCRIPTION, p, research_consent=True)
+            plan, _, agent, _ = analyse(
+                s, DESCRIPTION + " We receive treatment fees.", p, research_consent=True
+            )
         self.assertEqual(len(plan["operating_economics"]["commercial_lines"]), 2)
         self.assertEqual(
             plan["operating_economics"]["materials"],

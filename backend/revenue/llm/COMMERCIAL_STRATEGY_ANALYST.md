@@ -1,6 +1,6 @@
 # Commercial Strategy Analyst
 
-Explicit scenario agent, version `commercial-strategy-1`. This is a named FlowValue application agent using the existing configured LLM provider, not a separate model or a Codex subagent.
+Explicit scenario agent, version `commercial-strategy-2-user-intent`. This is a named FlowValue application agent using the existing configured LLM provider, not a separate model or a Codex subagent.
 
 ## Local workflow
 
@@ -23,3 +23,20 @@ The action creates and calculates a conditional scenario; it does not approve an
 ## Verification
 
 Unit tests cover price arithmetic, source/date/currency controls, missing candidate handling, baseline quantity/price retention, research refusal, agent-to-Python routing, failure audit and independent-scenario API creation. Broader pipeline tests remain required. Live M&E8 execution records and any failed attempts are in private `outputs/commercial-strategy-agent/`.
+
+## User-stated revenue authority
+
+The initial assessment and strategy agent now record `commercial_intent`: one or
+several named payment mechanisms, each with an exact user-context quotation and
+interpretation. Every calculated income line references its mechanism and must use
+the same category. A physical outlet is not automatically a sale. Missing/conflicting
+commercial intent produces a question; prices may remain unknown without changing
+the revenue mechanism. This validates traceability and routing, not the semantic
+accuracy of every future LLM interpretation or any actual contract.
+
+Entry accepts a separate free-text revenue description as well as the process text.
+Existing saved assumptions are not silently migrated. The Entry re-evaluation action
+creates a separate strategy scenario. Explicit user edits can revise the interpreted
+methods and retain their edit reason as the evidence; AI proposals cannot claim that
+manual authority. Generation has at most one category-correction call, no unbounded
+retry and no external research without consent.
