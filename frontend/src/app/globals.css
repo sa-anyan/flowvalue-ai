@@ -206,3 +206,10 @@ a{text-decoration:none}a:hover{text-decoration:underline}aside{width:258px;paddi
 .dark .fv-stage-state[data-state=complete],.dark .equipment-explorer [data-status=verified],.dark .fv-stage-history li[data-state=done] .fv-history-symbol{background:#133b30;color:#9be2c4}
 @media(max-width:650px){.fv-stage-progress{padding:15px}.equipment-explorer .explorer-heading{padding:16px}.equipment-explorer .asset-detail{padding:15px}}
 @media(prefers-reduced-motion:reduce){.fv-stage-track span{transition:none}}
+
+
+/* Assessment progress measures lifecycle completion, not event-history row counts */
+.fv-stage-track{position:relative}
+.fv-stage-track .fv-stage-indeterminate{position:absolute;left:0;top:0;bottom:0;width:35%;animation:fv-progress-active 1.5s ease-in-out infinite;transition:none}
+@keyframes fv-progress-active{0%{transform:translateX(-110%)}100%{transform:translateX(300%)}}
+@media(prefers-reduced-motion:reduce){.fv-stage-track .fv-stage-indeterminate{animation:none;left:0;width:100%!important;opacity:.45}}
