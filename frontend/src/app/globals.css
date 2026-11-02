@@ -289,3 +289,28 @@ a{text-decoration:none}a:hover{text-decoration:underline}aside{width:258px;paddi
 .tea-drawer-link:hover{filter:brightness(.93)}
 @media(max-width:680px){.tea-module-grid{grid-template-columns:minmax(0,1fr)}.tea-drawer-head,.tea-drawer-body{padding:17px}}
 @media(prefers-reduced-motion:reduce){.tea-module-tile,.tea-overview-drawer{animation:none;transition:none}}
+
+
+/* TEA section modules — focused cards instead of dense summary dropdowns */
+.tea-revenue-intent,.tea-analyst-module{min-width:0;background:var(--paper);border:1px solid var(--line);border-radius:15px;padding:22px;display:grid;gap:17px}
+.tea-section-heading{display:flex;align-items:start;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.tea-section-heading h2{font-size:20px;margin:6px 0 8px;font-weight:750;letter-spacing:-.02em}
+.tea-section-heading p{max-width:70ch;font-size:12px;line-height:1.65;color:var(--muted);margin:0}
+.tea-count{border:1px solid var(--line);border-radius:999px;background:var(--soft);padding:7px 11px;font-size:11px;font-weight:700;white-space:nowrap}
+.tea-revenue-strip{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;padding:1px 1px 10px}
+.tea-revenue-card{flex:0 0 min(285px,84vw);scroll-snap-align:start;min-width:0;border:1px solid var(--line);border-top:3px solid #2f866f;border-radius:12px;padding:17px;background:var(--paper);display:flex;flex-direction:column;gap:10px}
+.tea-revenue-index{font-size:10px;color:#247b63;font-weight:750;letter-spacing:.08em}
+.tea-revenue-card h3{font-size:16px;text-transform:capitalize;margin:0}
+.tea-revenue-card p{font-size:12px;line-height:1.6;color:var(--muted);margin:0;overflow-wrap:anywhere}
+.tea-revenue-card details{margin-top:auto;border-top:1px solid var(--line);padding-top:11px}
+.tea-revenue-card summary{font-size:11px;font-weight:700;color:var(--accent);cursor:pointer}
+.tea-revenue-questions{padding:13px;border-radius:10px;background:var(--soft);font-size:12px}
+.tea-revenue-questions p{margin:7px 0}
+.tea-analyst-module #analyst-review{border:0;padding:0;background:transparent;box-shadow:none;min-width:0}
+.tea-analyst-module #analyst-review>h2:first-child,.tea-analyst-module #analyst-review>p.muted:first-of-type{display:none}
+.tea-analyst-module #analyst-review>details{display:block;border:1px solid var(--line);border-radius:11px;background:var(--paper);padding:15px 17px;margin:10px 0}
+.tea-analyst-module #analyst-review>details>summary{font-size:13px;font-weight:750;cursor:pointer}
+.tea-analyst-module #analyst-review>details[open]{border-color:var(--accent)}
+.tea-analyst-module #analyst-review .review-finding{border:1px solid var(--line);border-radius:10px;padding:14px;margin:10px 0;background:var(--soft)}
+.tea-premium-overview ~ .fv-stage-progress{margin-top:12px}
+@media(max-width:650px){.tea-revenue-intent,.tea-analyst-module{padding:15px}}
