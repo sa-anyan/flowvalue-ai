@@ -125,3 +125,25 @@ a{text-decoration:none}a:hover{text-decoration:underline}aside{width:258px;paddi
 .dark .peq-status[data-tone=ready],.dark .peq-legend-ready{background:#133b30;color:#9be2c4;border-color:#255848}
 .dark .peq-status[data-tone=attention],.dark .peq-legend-attention{background:#43321c;color:#f5d2a2;border-color:#77572d}
 @media(max-width:550px){.peq-head h2{font-size:21px}.peq-stat-total small,.peq-stats small{font-size:10px}.peq-card[aria-pressed=true]::after{display:none}.peq-card[aria-pressed=true] .peq-card-open{visibility:visible}.peq-detail-head h3{font-size:17px}}
+
+
+/* Right-edge equipment inspector; the register never needs to scroll to the details */
+.peq-drawer-backdrop{position:fixed;inset:0;z-index:1100;background:rgba(12,22,38,.44);display:flex;justify-content:flex-end;overflow:hidden;animation:peq-overlay-in .18s ease-out}
+.peq-drawer{height:100dvh;width:min(610px,94vw);background:var(--paper);color:var(--ink);overflow-y:auto;overscroll-behavior:contain;box-shadow:-18px 0 50px rgba(0,0,0,.18);animation:peq-slide-in .22s ease-out;min-width:0}
+.peq-drawer .peq-detail{border:0;border-radius:0;box-shadow:none;min-height:100%;overflow:visible}
+.peq-drawer .peq-detail-head{position:sticky;top:0;z-index:5;align-items:flex-start;gap:12px;background:var(--paper);box-shadow:0 2px 12px rgba(0,0,0,.04);padding:19px 22px}
+.peq-drawer .peq-detail-head>div:first-child{flex:1 1 250px}
+.peq-drawer .peq-detail-head h3{overflow-wrap:anywhere}
+.peq-drawer-close{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;cursor:pointer;border:1px solid var(--line);border-radius:9px;background:var(--soft);color:var(--ink);font-size:15px}
+.peq-drawer-close:hover,.peq-drawer-close:focus-visible{border-color:var(--accent);outline-offset:2px}
+.peq-drawer .peq-review-controls{flex:1 1 100%;justify-content:space-between}
+.peq-drawer .peq-tabs{position:sticky;top:109px;z-index:4;box-shadow:0 1px 0 var(--line)}
+.peq-drawer .peq-tab-content{padding:22px}
+.peq-drawer .peq-edit{gap:16px}
+.peq-drawer .peq-edit>details{border-radius:9px}
+.peq-drawer .peq-edit .field{display:grid;gap:7px}
+.peq-drawer .peq-edit :is(input,select,textarea){min-width:0}
+@keyframes peq-slide-in{from{transform:translateX(22px);opacity:.8}to{transform:translateX(0);opacity:1}}
+@keyframes peq-overlay-in{from{opacity:0}to{opacity:1}}
+@media(max-width:650px){.peq-drawer{width:100vw}.peq-drawer .peq-detail-head{padding:14px}.peq-drawer .peq-tabs{top:92px}.peq-drawer .peq-tab-content{padding:15px}}
+@media(prefers-reduced-motion:reduce){.peq-drawer,.peq-drawer-backdrop{animation:none}}
