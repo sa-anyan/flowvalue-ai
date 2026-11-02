@@ -19,6 +19,8 @@ export function PremiumEquipmentWorkspace({items,selectedKey,onSelect,dirty=fals
  const statuses=useMemo(()=>Array.from(new Set(items.map(x=>x.status).filter(Boolean))),[items]);
  const visible=useMemo(()=>items.filter(x=>(status==='all'||x.status===status)&&[x.tag,x.name,x.type,x.model].join(' ').toLowerCase().includes(query.trim().toLowerCase())).sort((a,b)=>sort==='name'?a.name.localeCompare(b.name):sort==='cost'?Number(b.cost.replace(/[^0-9.-]/g,''))-Number(a.cost.replace(/[^0-9.-]/g,'')):a.tag.localeCompare(b.tag)),[items,query,status,sort]);
  const nameKey=(name:string)=>name.trim().toLowerCase().replace(/\s+/g,' ');
+ const pluralName=(name:string)=>{const words=name.trim().split(/\s+/);const last=words.pop()||'';const lower=last.toLowerCase();const irregular:Record<string,string>={machinery:'machinery',equipment:'equipment',series:'series',species:'species',manifold:'manifolds',vessel:'vessels'};const plural=irregular[lower]||(/(ss|us|is)$/.test(lower)?last+'es':/(ch|sh|x|z)$/.test(lower)?last+'es':/[^aeiou]y$/.test(lower)?last.slice(0,-1)+'ies':/s$/.test(lower)?last:last+'s');const result=last[0]===last[0]?.toUpperCase()?plural[0].toUpperCase()+plural.slice(1):plural;return [...words,result].join(' ');};
+
  const groups=useMemo(()=>{
   const buckets=new Map<string,EquipmentCard[]>();
   for(const item of visible){const key=nameKey(item.name);buckets.set(key,[...(buckets.get(key)||[]),item]);}
@@ -51,9 +53,9 @@ export function PremiumEquipmentWorkspace({items,selectedKey,onSelect,dirty=fals
       const currencies=Array.from(new Set(group.members.filter((m,i)=>amounts[i]!==null).map(m=>costPrefix(m.cost))));
       const total=known.length&&currencies.length===1?currencies[0]+known.reduce((a,b)=>a+b,0).toLocaleString(undefined,{maximumFractionDigits:2}):'Unavailable';
       return <div className="peq-group" key={group.key}>
-        <button type="button" className="peq-card peq-group-card" aria-expanded={open} aria-label={group.name+', '+group.members.length+' units'} onClick={()=>setExpandedGroups(g=>open?g.filter(v=>v!==group.key):[...g,group.key])}>
+        <button type="button" className="peq-card peq-group-card" aria-expanded={open} aria-label={pluralName(group.name)+', '+group.members.length+' units'} onClick={()=>setExpandedGroups(g=>open?g.filter(v=>v!==group.key):[...g,group.key])}>
           <span className="peq-card-top"><span className="peq-tag">{group.members.length} UNITS</span><span className="peq-status">{unavailable?unavailable+' unpriced':'Grouped'}</span></span>
-          <strong className="peq-name">{group.name}</strong>
+          <strong className="peq-name">{pluralName(group.name)}</strong>
           <span className="peq-card-bottom"><span><small>Total purchased cost</small><b>{total}</b></span><span className="peq-group-chevron" aria-hidden="true">{open?'⌃':'⌄'}</span></span>
           <span className="peq-card-open">{open?'Hide units ↑':'Show units ↓'}</span>
         </button>
