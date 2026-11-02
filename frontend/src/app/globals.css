@@ -75,3 +75,53 @@ a{text-decoration:none}a:hover{text-decoration:underline}aside{width:258px;paddi
 .peq-empty{padding:24px;color:var(--muted);grid-column:1/-1}
 @media(max-width:900px){.peq-controls{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.peq-controls input{grid-column:1/-1}}
 @media(max-width:550px){.peq-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.peq-stats>div{padding:10px}.peq-stats strong{font-size:19px}.peq-controls{grid-template-columns:1fr 1fr}.peq-facts{grid-template-columns:1fr}.peq-list .peq-card{grid-template-columns:1fr}.peq-list .peq-card-bottom{align-items:flex-start}.peq-tab-content{padding:12px}.peq-detail-head{padding:13px}.peq-span{grid-column:auto}}
+
+
+/* Equipment workspace readability pass: meaningful status colour and stronger grouping */
+.premium-equipment{gap:22px;line-height:1.55}
+.peq-head{padding-bottom:5px}
+.peq-head .eyebrow{letter-spacing:.13em}
+.peq-head h2{font-weight:700;letter-spacing:-.035em}
+.peq-head p{font-size:13px;max-width:60ch}
+.peq-stats>div{background:var(--paper);border:1px solid var(--line);border-left:4px solid #64748b;gap:7px}
+.peq-stats .peq-stat-priced{border-left-color:#16816d;background:color-mix(in srgb,#16816d 6%,var(--paper))}
+.peq-stats .peq-stat-review{border-left-color:#c0782f;background:color-mix(in srgb,#c0782f 7%,var(--paper))}
+.peq-stats strong{font-weight:740;letter-spacing:-.04em}
+.peq-section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:13px;border-top:1px solid var(--line)}
+.peq-section-title h3{font-size:16px;letter-spacing:-.02em;margin:0 0 3px}
+.peq-section-title small{font-size:11px;color:var(--muted)}
+.peq-legend{display:flex;flex-wrap:wrap;gap:9px;font-size:10px}
+.peq-legend span{padding:5px 8px;border-radius:5px;font-weight:650}
+.peq-legend-ready{color:#136b50;background:#e7f6ee}
+.peq-legend-attention{color:#945116;background:#fff0da}
+.peq-card{position:relative;gap:10px;padding:18px;border-radius:12px;transition:border-color .12s,box-shadow .12s,background .12s}
+.peq-card[data-tone=ready]{border-left:3px solid #16816d}
+.peq-card[data-tone=attention]{border-left:3px solid #c0782f}
+.peq-card[aria-pressed=true]{background:color-mix(in srgb,var(--accent) 7%,var(--paper));box-shadow:0 0 0 1px var(--accent);border-color:var(--accent)}
+.peq-card[aria-pressed=true]::after{content:"Selected";position:absolute;bottom:14px;right:16px;color:var(--accent);font-size:10px;font-weight:700}
+.peq-card[aria-pressed=true] .peq-card-open{visibility:hidden}
+.peq-name{font-size:16px;font-weight:700;line-height:1.35}
+.peq-tag{font-size:11px;letter-spacing:.07em;color:var(--ink)}
+.peq-status{font-weight:650;font-size:10px;line-height:1.2}
+.peq-status[data-tone=ready]{background:#e7f6ee;color:#136b50;border-color:#b9e5d1}
+.peq-status[data-tone=attention]{background:#fff0da;color:#945116;border-color:#f5d3a5}
+.peq-card-bottom{border-top:1px solid var(--line);padding-top:11px;align-items:flex-end}
+.peq-card-bottom>span{display:grid;gap:4px;min-width:0;overflow-wrap:anywhere}
+.peq-card-bottom small{font-size:10px;color:var(--muted)}
+.peq-card-bottom b{font-size:17px;font-weight:740}
+.peq-detail{border-radius:13px;box-shadow:0 4px 24px #00000006}
+.peq-detail-head{background:color-mix(in srgb,var(--accent) 5%,var(--paper));border-bottom:1px solid var(--line);padding:20px}
+.peq-detail-head small{font-weight:700;letter-spacing:.09em}
+.peq-detail-head h3{font-size:19px;font-weight:720;letter-spacing:-.02em}
+.peq-tabs{background:var(--soft)}
+.peq-tabs button{font-size:13px;font-weight:550}
+.peq-tabs button[aria-selected=true]{background:var(--paper);color:var(--ink)}
+.peq-facts>div{background:var(--paper);gap:7px}
+.peq-facts strong{font-size:14px}
+.peq-edit-heading{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;padding:12px 14px;border-radius:8px;background:var(--soft)}
+.peq-edit-heading>span{font-size:11px;color:var(--muted)}
+.peq-edit .field{max-width:100%}
+.peq-edit input,.peq-edit select{font-size:13px}
+.dark .peq-status[data-tone=ready],.dark .peq-legend-ready{background:#133b30;color:#9be2c4;border-color:#255848}
+.dark .peq-status[data-tone=attention],.dark .peq-legend-attention{background:#43321c;color:#f5d2a2;border-color:#77572d}
+@media(max-width:550px){.peq-head h2{font-size:21px}.peq-stat-total small,.peq-stats small{font-size:10px}.peq-card[aria-pressed=true]::after{display:none}.peq-card[aria-pressed=true] .peq-card-open{visibility:visible}.peq-detail-head h3{font-size:17px}}
