@@ -354,3 +354,35 @@ a{text-decoration:none}a:hover{text-decoration:underline}aside{width:258px;paddi
 @media(max-width:1100px){.tea-bi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:720px){.tea-bi-grid{grid-template-columns:minmax(0,1fr)}.tea-bi-chart{padding:16px}.tea-bi-donut-layout{grid-template-columns:130px minmax(0,1fr);align-items:center;justify-items:stretch}.tea-bi-donut{width:130px}}
 @media(max-width:390px){.tea-bi-donut-layout{grid-template-columns:minmax(0,1fr);justify-items:center}.tea-bi-donut{width:150px}}
+
+/* Premium BI layout — spacious economics dashboard and progressive disclosure */
+.tea-premium-overview .tea-bi-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px}
+.tea-premium-overview .tea-bi-grid>.tea-bi-chart:first-child{grid-row:span 2;min-height:580px}
+.tea-premium-overview .tea-bi-grid>.tea-bi-chart:not(:first-child){min-height:350px}
+.tea-premium-overview .tea-bi-chart{padding:clamp(22px,2.6vw,34px);border-radius:17px;box-shadow:0 8px 28px rgba(17,46,39,.045)}
+.tea-premium-overview .tea-bi-donut-layout.tea-bi-spacious{display:grid;grid-template-columns:minmax(145px,230px) minmax(0,1fr);align-items:center;gap:25px;justify-items:stretch;flex:1}
+.tea-premium-overview .tea-bi-donut{width:min(100%,230px)}
+.tea-premium-overview .tea-bi-legend{max-height:300px;overflow-y:auto}
+.tea-premium-overview .tea-bi-legend button{padding:10px 7px}
+.tea-premium-overview .tea-bi-chart-head h3{font-size:20px}
+.tea-premium-overview .tea-bi-chart-head{margin-bottom:7px}
+.tea-premium-overview .tea-bi-cashflow{min-height:330px}
+.tea-premium-overview .tea-overview-metrics{gap:17px}
+.tea-premium-overview .tea-metric-card{min-height:165px}
+.tea-assumptions-hub{border:1px solid var(--line);border-radius:16px;background:var(--paper);overflow:hidden}
+.tea-assumptions-trigger{width:100%;display:flex;gap:18px;align-items:center;justify-content:space-between;padding:23px 26px;border:0;background:transparent;color:var(--ink);text-align:left;cursor:pointer}
+.tea-assumptions-trigger>span:first-child{display:grid;gap:7px}
+.tea-assumptions-trigger strong{font-size:22px;letter-spacing:-.025em}
+.tea-assumptions-trigger small{font-size:12px;color:var(--muted)}
+.tea-assumptions-chevron{color:var(--accent);font-size:12px;font-weight:750;white-space:nowrap}
+.tea-assumptions-trigger:focus-visible,.tea-assumptions-cards button:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.tea-assumptions-body{border-top:1px solid var(--line);padding:24px;display:grid;gap:18px}
+.tea-assumptions-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.tea-assumptions-cards button{background:var(--soft);border:1px solid var(--line);border-radius:12px;color:var(--ink);padding:21px;display:grid;gap:10px;text-align:left;cursor:pointer;transition:transform .2s ease,border-color .2s ease}
+.tea-assumptions-cards button:hover{transform:translateY(-2px);border-color:var(--accent)}
+.tea-assumptions-cards strong{font-size:17px}
+.tea-assumptions-cards small{font-size:12px;color:var(--muted)}
+.tea-assumptions-cards button>span:last-child{color:var(--accent);font-size:12px;font-weight:750}
+@media(max-width:1100px){.tea-premium-overview .tea-bi-grid{grid-template-columns:minmax(0,1fr)}.tea-premium-overview .tea-bi-grid>.tea-bi-chart:first-child{grid-row:auto;min-height:360px}}
+@media(max-width:630px){.tea-premium-overview .tea-bi-donut-layout.tea-bi-spacious{grid-template-columns:minmax(0,1fr);justify-items:center}.tea-premium-overview .tea-bi-legend{width:100%}.tea-assumptions-cards{grid-template-columns:minmax(0,1fr)}.tea-assumptions-trigger,.tea-assumptions-body{padding:17px}}
+@media(prefers-reduced-motion:reduce){.tea-assumptions-cards button{transition:none}.tea-assumptions-cards button:hover{transform:none}}
