@@ -12,7 +12,7 @@ def derive_size(proposal, report):
             from backend.equipment_costing.registry import list_equipment_models
 
             model = next(
-                (m for m in list_equipment_models() if m["id"] == proposal["curve_id"]),
+                (m for m in list_equipment_models(source="all") if m["id"] == proposal["curve_id"]),
                 None,
             )
             if model:
