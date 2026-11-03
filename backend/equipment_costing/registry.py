@@ -5,6 +5,7 @@ from dataclasses import asdict, replace
 from functools import lru_cache
 from math import isclose
 
+from .indexes.nottingham.model import estimate_cost as _nottingham_cost, list_models as _nottingham_models
 from .indexes.garrett.input_requirements import input_requirements
 from .indexes.garrett.integrated import estimate_cost as _garrett_cost
 from .indexes.garrett.integrated import list_factors, list_models
@@ -29,22 +30,36 @@ def _model_index():
     return {m["id"]: m for m in models}
 
 
+def _not_found(curve_id):
+    raise ValueError("Unknown Nottingham model: " + curve_id)
+
+
 def _model(curve_id, source):
+    if source == "nottingham":
+        return next((m for m in _nottingham_models() if m["id"] == curve_id), _not_found(curve_id))
     if source != "garrett":
-        raise ValueError("Only Garrett is implemented in this rebuild")
+        raise ValueError("Unsupported equipment costing source")
     if curve_id not in _model_index():
         raise ValueError("Unknown Garrett curve ID")
     return _model_index()[curve_id]
 
 
 def list_equipment_models(source="garrett"):
+    if source == "nottingham":
+        return copy.deepcopy(_nottingham_models())
+    if source == "all":
+        return copy.deepcopy(list(_model_index().values()) + _nottingham_models())
     if source != "garrett":
-        raise ValueError("Only Garrett is implemented in this rebuild")
+        raise ValueError("Unsupported equipment costing source")
     return copy.deepcopy(list(_model_index().values()))
 
 
 def resolve_equipment_inputs(curve_id, measurements, *, context=None, source="garrett"):
     model = _model(curve_id, source)
+    if source == "nottingham":
+        if "size" not in measurements:
+            raise UnitResolutionError("Nottingham method requires explicit size")
+        return resolve_inputs((), measurements, context=context)
     return resolve_inputs(input_requirements(model), measurements, context=context)
 
 
@@ -115,6 +130,10 @@ def estimate_cost(
     input_provenance=None,
     **options,
 ):
+    if source == "nottingham":
+        if unit_context is not None:
+            raise ValueError("Nottingham requires explicit native size units; unit_context is not implemented")
+        return _nottingham_cost(curve_id, size, size_unit=options["size_unit"], **{k:v for k,v in options.items() if k != "size_unit"})
     if source != "garrett":
         raise ValueError("Unknown or unimplemented costing source")
     # Preserve the existing explicit source-coordinate API. Non-native units and
