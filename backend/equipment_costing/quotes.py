@@ -43,9 +43,19 @@ def comparable_cost(
     reference, *, target_size, target_unit, exponent=None, rationale=""
 ):
     """Scale a documented comparable; never execute a paper's arbitrary formula."""
-    required = {"source_url", "same_configuration_confirmed", "size", "size_unit", "amount", "currency", "price_period"}
+    required = {
+        "source_url",
+        "same_configuration_confirmed",
+        "size",
+        "size_unit",
+        "amount",
+        "currency",
+        "price_period",
+    }
     if not isinstance(reference, dict) or not required <= reference.keys():
-        raise ValueError("Comparable reference needs source, configuration, size, amount and dated currency basis")
+        raise ValueError(
+            "Comparable reference needs source, configuration, size, amount and dated currency basis"
+        )
     safe_source(reference["source_url"])
     if reference.get("same_configuration_confirmed") is not True:
         raise ValueError(
@@ -85,6 +95,9 @@ def comparable_cost(
 
 
 def quote_result(quote, target_size, target_unit):
+    from .manual import validate_price_source
+
+    validate_price_source(quote)
     # One shared comparable-price implementation; no generated formula execution.
     if quote.get("cost_scope") != "purchased_equipment":
         raise ValueError(

@@ -406,6 +406,14 @@ def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges
         return calculate_capex(model, prepared)
 
     stage("capex", capex)
+    capital_result = outputs.get("capex", {}).get("result")
+    if capital_result:
+        capital_result["complete"] = not exclusions and capital_result.get("total_capex") is not None
+        capital_result["equipment_scope"] = "partial" if exclusions else "registered_equipment_scope"
+        capital_result["unpriced_equipment"] = copy.deepcopy(exclusions)
+        if exclusions:
+            capital_result["subtotal_notice"] = "Known CAPEX subtotal only; unpriced equipment costs are unknown, not zero."
+
 
     if plan.get("operating_economics"):
         from .operating_economics import calculate_operating_study

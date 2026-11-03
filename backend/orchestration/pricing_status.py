@@ -100,7 +100,7 @@ def annotate(result, report, plan):
         if not row.get("parsed_source", {}).get("confirmed_alias"):
             continue
         target = by_key.get(proposal.get("alias_of"), {})
-        if target.get("equipment_cost") is None:
+        if not target:
             continue
         estimate = (target.get("calculation") or {}).get("estimate") or {}
         row.update(
@@ -110,7 +110,7 @@ def annotate(result, report, plan):
             reference_cost={
                 "equipment_key": proposal["alias_of"],
                 "equipment_tag": target["equipment_tag"],
-                "purchase_cost": target["equipment_cost"],
+                "purchase_cost": target.get("equipment_cost"),
                 "installed_cost": target.get("equipment_and_installation_cost"),
                 "currency": estimate.get("currency"),
                 "price_period": estimate.get("period"),
@@ -155,3 +155,63 @@ def annotate(result, report, plan):
             result["alias_notice"] = (
                 "Confirmed scenario aliases reference priced assets and contribute no additional purchased cost. Installation completeness remains separate."
             )
+    for row in result["equipment"]:
+        key = row.get("parsed_source", {}).get("equipment_key")
+        proposal = proposals.get(key, {})
+        calculation = row.get("calculation") or {}
+        estimate = calculation.get("estimate") or {}
+        evidence = calculation.get("evidence") or {}
+        escalation = evidence.get("cost_translation") or {}
+        priced = row.get("equipment_cost") is not None
+        if row.get("parsed_source", {}).get("confirmed_alias"):
+            label = "ALIAS — NO ADDITIONAL PURCHASE"
+        elif not priced:
+            label = "UNPRICED — SOURCE REQUIRED"
+        elif proposal.get("manual_price"):
+            label = "USER-PRICED"
+        elif proposal.get("external_quote"):
+            label = "ESTIMATED — INDEPENDENT ANALOGY"
+        elif (
+            proposal.get("sizing")
+            or estimate.get("extrapolated")
+            or any("UNVERIFIED" in issue for issue in row.get("issues", []))
+        ):
+            label = "ESTIMATED — ENGINEERING ASSUMPTION"
+        else:
+            label = "CALCULATED — CORRELATION"
+        row["pricing_status"] = label
+        row["pricing_provenance"] = {
+            "equipment_tag": row["equipment_tag"],
+            "classification": row.get("parsed_source", {}).get("classification") or estimate.get("equipment"),
+            "sizing": row.get("parsed_source", {}).get("sizing"),
+            "sizing_parameters": (proposal.get("sizing") or {}).get("parameters", {}),
+            "model_id": row.get("curve_id"),
+            "source": {
+                k: estimate.get(k)
+                for k in (
+                    "source_title",
+                    "source_filename",
+                    "source_sha256",
+                    "printed_page",
+                    "pdf_page",
+                )
+            },
+            "source_record": evidence.get("reference"),
+            "formula": estimate.get("formula"),
+            "original_cost": escalation.get(
+                "original_amount", calculation.get("historical_amount")
+            ),
+            "original_period": escalation.get("source_period", estimate.get("period")),
+            "currency": estimate.get("currency"),
+            "purchase_cost": row.get("equipment_cost"),
+            "installation_cost": row.get("installation_cost"),
+            "installed_cost": row.get("equipment_and_installation_cost"),
+            "installation_basis": calculation.get("installation"),
+            "escalation": escalation,
+            "target_period": estimate.get("period"),
+            "reference_cost": row.get("reference_cost"),
+            "status": label,
+            "unpriced_message": "UNPRICED — SUPPLIER QUOTE OR USER PRICE REQUIRED" if not priced and not label.startswith("ALIAS") else None,
+            "notice": "Escalation adjusts an existing estimate; it does not establish an independent equipment cost. CPI is purchasing-power proxy only.",
+        }
+        row["decision"]["cost_method"] = label

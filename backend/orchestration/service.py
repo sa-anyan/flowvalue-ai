@@ -385,6 +385,22 @@ def edit(store, key, revision, section, value, rationale):
     if state["revision"] != revision:
         raise ValueError("Assessment changed; reload before editing")
     value = copy.deepcopy(value)
+    if section == "equipment":
+        previous = {r.get("equipment_key"): r for r in state["plan"].get("equipment", [])}
+        def approve(rows, old_rows):
+            old = {r.get("asset_id", r.get("equipment_key")): r for r in old_rows}
+            for row in rows:
+                prior = old.get(row.get("asset_id", row.get("equipment_key")), {})
+                price = row.get("manual_price")
+                requested = bool(price.pop("approval_requested", False)) if price else False
+                prior_price = prior.get("manual_price") or {}
+                changed_price = bool(price) and any(price.get(k) != prior_price.get(k) for k in ("amount", "currency", "price_period", "source", "cost_scope", "purchased_component", "installation_factor"))
+                if price and price.get("approved") is True and (requested or prior_price.get("approved") is not True or changed_price):
+                    price["approval_origin"] = "explicit_user_edit"
+                    price["approval_rationale"] = rationale
+                if row.get("physical_assets"):
+                    approve(row["physical_assets"], prior.get("physical_assets", []))
+        approve(value, list(previous.values()))
     if section == "operating_economics":
         from backend.revenue.commercial_intent import capture_manual_methods
 
