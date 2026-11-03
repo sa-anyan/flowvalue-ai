@@ -1,0 +1,19 @@
+{
+  "title": "Founder-selected Charlie human-study pricing basis",
+  "source_sheet": "Task 2 equipments",
+  "price_period_assumption": "1987",
+  "basis_note": "Provisional 1987 USD base inferred from the workbook's separate Equipments sheet labelling its graph basis 1987 to 2023. Task 2 column C mixes project-derived estimates; retain alternative price years for review. Existing configured escalation applies; workbook FX/inflation multipliers are not copied.",
+  "benchmarks": {
+    "T-104": {"type": "NaOH storage tank", "amount": 14212.80, "cell": "C8", "factor_model": "G303-144"},
+    "R-101": {"type": "Electrolyser package", "amount": 805523.59, "cell": "C13"},
+    "T-105": {"type": "Liquid CO2 storage tank", "amount": 11000, "cell": "C9"},
+    "S-201": {"type": "Centrifuge", "amount": 77000, "cell": "C21", "factor_model": "G265-023"},
+    "PD-201AB": {"type": "Product-slurry positive-displacement pump pair", "amount": 8000, "cell": "C36", "record_total": true, "factor_model": "G295-121"},
+    "C-201": {"type": "Spray dryer", "amount": 247500, "cell": "C22", "factor_model": "G277-062"},
+    "R-201": {"type": "Bioreactor", "amount": 495894.25, "cell": "C14", "proxy_of": "R-102", "factor_model": "G258-007"},
+    "T-101AB": {"type": "Cation exchange tank pair", "amount": 162.21267370038325, "cell": "C3:C4", "quantity": 2},
+    "FT-201AB": {"type": "Filter pair", "amount": 22500, "sheet": "Equipments", "cell": "B5:F5", "quantity": 2, "note": "Row explicitly lists FT-101AB and FT-201AB, four units at aggregate USD 90000; allocate USD 22500 per unit. Retain Task 2 primary-filter USD 14280/unit as a distinct alternative, not the same filter service."}
+  },
+  "aliases": {"T-101": "T-101AB", "FT-201": "FT-201AB", "PD-201": "PD-201AB"},
+  "retained_alternative": {"tag": "T-103", "type": "HCl storage tank", "amount": 12182.40, "cell": "C7", "note": "T-104 is selected as NaOH storage. HCl mentions are treated as provisional tagging conflicts. Separate HCl tank benchmark retained; not an additional purchased asset in this focused demonstration without scope confirmation."}
+}

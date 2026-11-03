@@ -80,3 +80,78 @@ def annotate(result, report, plan):
         "complete": counts["unpriced"] == 0,
         "review_queue": queue,
     }
+    # A reference is visible numerically but never changes the canonical cost lines.
+    by_key = {
+        r.get("parsed_source", {}).get("equipment_key"): r
+        for r in result.get("equipment", [])
+    }
+    resolved_aliases = set()
+    for row in result.get("equipment", []):
+        key = row.get("parsed_source", {}).get("equipment_key")
+        proposal = proposals.get(key, {})
+        price = proposal.get("manual_price") or {}
+        row["cost_status"] = (
+            price.get("cost_status", "catalogue_estimate")
+            if row.get("equipment_cost") is not None
+            else "unresolved"
+        )
+        if row.get("equipment_cost") is not None and price.get("cost_status"):
+            row["status"] = price["cost_status"]
+        if not row.get("parsed_source", {}).get("confirmed_alias"):
+            continue
+        target = by_key.get(proposal.get("alias_of"), {})
+        if target.get("equipment_cost") is None:
+            continue
+        estimate = (target.get("calculation") or {}).get("estimate") or {}
+        row.update(
+            status="alias_reference",
+            cost_status="alias_reference",
+            additional_purchase_cost=0,
+            reference_cost={
+                "equipment_key": proposal["alias_of"],
+                "equipment_tag": target["equipment_tag"],
+                "purchase_cost": target["equipment_cost"],
+                "installed_cost": target.get("equipment_and_installation_cost"),
+                "currency": estimate.get("currency"),
+                "price_period": estimate.get("period"),
+                "additional_cost": 0,
+            },
+        )
+        row["decision"].update(
+            pricing="alias_reference",
+            cost_method="alias_reference",
+            matching="canonical_reference",
+            blockers=[],
+            next_action="review_provisional_alias",
+        )
+        resolved_aliases.add(row["equipment_tag"])
+    coverage = result["pricing_coverage"]
+    coverage["alias_references"] = len(resolved_aliases)
+    coverage["unpriced"] -= len(resolved_aliases)
+    coverage["resolved_records"] = coverage["priced"] + len(resolved_aliases)
+    coverage["complete"] = coverage["unpriced"] == 0
+    coverage["review_queue"] = [
+        r
+        for r in coverage["review_queue"]
+        if r["equipment_tag"] not in resolved_aliases
+    ]
+    if resolved_aliases and coverage["complete"]:
+        from math import fsum
+
+        purchased = [
+            r for r in result["equipment"] if r.get("equipment_cost") is not None
+        ]
+        bases = {
+            ((r.get("calculation") or {}).get("estimate") or {}).get("currency", "")
+            + ":"
+            + ((r.get("calculation") or {}).get("estimate") or {}).get("period", "")
+            for r in purchased
+        }
+        if len(bases) == 1:
+            result["equipment_cost_total"] = fsum(
+                r["equipment_cost"] for r in purchased
+            )
+            result["status"] = "calculated_preliminary"
+            result["alias_notice"] = (
+                "Confirmed scenario aliases reference priced assets and contribute no additional purchased cost. Installation completeness remains separate."
+            )
