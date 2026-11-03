@@ -203,7 +203,7 @@ def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges
             rows.append(
                 {
                     "equipment_tag": entity["identifier"] or key,
-                    "source": proposal.get("source") or ("nottingham" if str(proposal.get("curve_id", "")).startswith("N501-") else "garrett"),
+                    "source": "nottingham" if str(proposal.get("curve_id", "")).startswith("N501-") else (proposal.get("source") or "garrett"),
                     "curve_id": "manual:user-price"
                     if proposal.get("manual_price")
                     else "external:reviewed-comparable"
