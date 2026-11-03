@@ -68,6 +68,13 @@ def estimate_from_parsed_inputs(
     curve_id, measurements, *, unit_context=None, source="garrett", **options
 ):
     """Explicit parser/context adapter. No fuzzy field or equipment inference."""
+    if source == "nottingham":
+        item = measurements.get("size")
+        if not isinstance(item, Measurement):
+            raise UnitResolutionError("Nottingham requires an explicit size Measurement")
+        if unit_context is not None:
+            raise UnitResolutionError("Nottingham requires source-native size units")
+        return estimate_cost(curve_id, item.value, source=source, size_unit=item.unit, **options)
     resolved = resolve_equipment_inputs(
         curve_id, measurements, context=unit_context, source=source
     )
