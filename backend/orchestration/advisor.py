@@ -11,7 +11,7 @@ from backend.revenue.advisor import TEXT, obj, validate_shape
 from .codec import plain
 from .pipeline import SECTIONS, contracts, source_streams
 
-PROMPT_VERSION = "engineering-orchestrator-2"
+PROMPT_VERSION = "engineering-orchestrator-4-canonical-references"
 SCHEMA = obj(
     {
         "sections": {
@@ -130,7 +130,7 @@ def propose(
     context = {
         "prompt_version": PROMPT_VERSION,
         "requested_sections": list(requested_sections),
-        "equipment_schema_version": "typed-equipment-capex-1",
+        "equipment_schema_version": "typed-equipment-capex-3-sizing-registry",
         "operating_schema_version": "coupled-garrett-user-intent-4",
         "analyst_reviews": analyst_reviews or [],
         "calculation_scope": report.get("calculation_scope", {}),
@@ -198,10 +198,20 @@ def propose(
             "financial": "{project_id,assumptions:FinancialAssumptions,capital_spend:[Spend],depreciation_policies:{direct:DepreciationPolicy,indirect:...,offsite:...,startup:...},disposal_proceeds:{same keys:Money},year_map:{revenueYear:financialYear},price_year,startup_treatment,working_capital_funding_year,selling_cost_reconciliation}",
         },
     }
-    if len(json.dumps(context, default=str)) > 240000:
+    from .planning_context import compact_context, compact_transport
+
+    context = compact_context(context)
+    if len(
+        json.dumps(compact_transport(context), default=str)
+    ) > 240000 and requested_sections != (
+        "equipment",
+        "capex",
+    ):
         raise ValueError(
             "AI context exceeds bounded review size; deterministic parsing remains available"
         )
+
+    batch_outcomes = []
 
     def call():
         if requested_sections == ("revenue", "opex"):
@@ -210,10 +220,121 @@ def propose(
             return generate(provider, PROMPT, context)
         if requested_sections == ("equipment", "capex"):
             from .equipment_advisor import generate
+            from .planning_context import equipment_batches
 
-            return generate(provider, PROMPT, context)
+            merged = {"sections": [], "source_review": [], "questions": []}
+            equipment_rows, capital_section = [], None
+            for batch in equipment_batches(context):
+                if len(json.dumps(compact_transport(batch), default=str)) > 240000:
+                    raise ValueError(
+                        "One equipment planning region exceeds safe context size; source evidence retained"
+                    )
+
+                def plan_batch(batch=batch):
+                    part = generate(provider, PROMPT, batch)
+                    allowed = set(batch["equipment_batch"]["keys"])
+                    rows = json.loads(
+                        next(
+                            s["value_json"]
+                            for s in part["sections"]
+                            if s["section"] == "equipment"
+                        )
+                    )
+                    keys = [r["equipment_key"] for r in rows]
+                    if set(keys) - allowed or len(keys) != len(set(keys)):
+                        raise ValueError(
+                            "Equipment planner returned duplicate or unrelated equipment keys"
+                        )
+                    return part
+
+                try:
+                    part, batch_cached = store.cached(
+                        {"stage": "equipment-planning-batch-1", "context": batch},
+                        plan_batch,
+                    )
+                    batch_outcomes.append(
+                        {
+                            "index": batch["equipment_batch"]["index"],
+                            "status": "planned",
+                            "cached": batch_cached,
+                            "equipment_count": len(batch["equipment_batch"]["keys"]),
+                        }
+                    )
+                except Exception as exc:  # noqa: BLE001 -- independent units continue; no fabricated costs
+                    batch_outcomes.append(
+                        {
+                            "index": batch["equipment_batch"]["index"],
+                            "status": "unavailable",
+                            "reason": type(exc).__name__,
+                        }
+                    )
+                    part = {
+                        "sections": [],
+                        "questions": [
+                            f"Equipment planning batch {batch['equipment_batch']['index']} unavailable ({type(exc).__name__}); retry this batch. Original extraction retained."
+                        ],
+                    }
+                present = set()
+                for section in part["sections"]:
+                    if section["section"] == "equipment":
+                        present.update(
+                            r["equipment_key"]
+                            for r in json.loads(section["value_json"])
+                        )
+                for key in set(batch["equipment_batch"]["keys"]) - present:
+                    equipment_rows.append(
+                        {
+                            "equipment_key": key,
+                            "curve_id": None,
+                            "size": None,
+                            "size_unit": None,
+                            "quantity": 1,
+                            "rationale": "No applicable returned engineering selection; review/retry required",
+                            "costing_options": {},
+                        }
+                    )
+                for section in part["sections"]:
+                    if section["section"] == "equipment":
+                        rows = json.loads(section["value_json"])
+                        allowed = set(batch["equipment_batch"]["keys"])
+                        if any(r["equipment_key"] not in allowed for r in rows):
+                            raise ValueError(
+                                "Equipment planner returned an unrelated equipment key"
+                            )
+                        equipment_rows.extend(rows)
+                    elif capital_section is None and section["section"] == "capex":
+                        capital_section = section
+                merged["questions"].extend(part["questions"])
+            if context.get("calculated_stage_summary", {}).get("engineering_errors"):
+                # A bounded correction patches failed units only; retain every
+                # already valid selection and the approved CAPEX assumptions.
+                prior = context["plan"].get("equipment", [])
+                updates = {
+                    r["equipment_key"]: r
+                    for r in equipment_rows
+                    if r.get("rationale")
+                    != "No applicable returned engineering selection; review/retry required"
+                }
+                equipment_rows = [
+                    updates.pop(r["equipment_key"], r) for r in prior
+                ] + list(updates.values())
+                capital_section = None
+            if equipment_rows:
+                merged["sections"].append(
+                    {
+                        "section": "equipment",
+                        "value_json": json.dumps(equipment_rows),
+                        "rationale": "Batched process-aware selection; each unit retains its assumptions and source-linked sizing",
+                        "units": "Explicit model units / canonical Python sizing",
+                        "evidence_ids": [],
+                        "uncertainty": "Preliminary engineering scenarios; missing designs remain unresolved",
+                    }
+                )
+            if capital_section:
+                merged["sections"].append(capital_section)
+            return merged
         response = provider.generate(
-            instructions=PROMPT, context=context, schema=SCHEMA
+            instructions=PROMPT, context=compact_transport(context), schema=SCHEMA
         )
         # Stage JSON carries canonical nested annual contracts; retain tighter bounds for narrative text.
         import copy
@@ -229,7 +350,11 @@ def propose(
         validate_shape(checked, SCHEMA)
         return response
 
-    response, cached = store.cached(context, call)
+    response, cached = (
+        (call(), False)
+        if requested_sections == ("equipment", "capex")
+        else store.cached(context, call)
+    )
     # Validate references against the actual supplied source, not plausible-looking citations.
     ids = {
         v["id"] for e in report["entities"] for v in [e["id_evidence"], *e["values"]]
@@ -263,9 +388,12 @@ def propose(
         "model": provider.model,
         "prompt_version": PROMPT_VERSION,
         "requested_sections": list(requested_sections),
-        "equipment_schema_version": "typed-equipment-capex-1",
+        "equipment_schema_version": "typed-equipment-capex-3-sizing-registry",
         "operating_schema_version": "coupled-garrett-user-intent-4",
         "calculated_stage_summary": stage_results or {},
-        "cached": cached,
+        "cached": all(b.get("cached", False) for b in batch_outcomes)
+        if batch_outcomes
+        else cached,
+        "planning_batches": batch_outcomes,
         "research": "not requested; no external research tools invoked",
     }

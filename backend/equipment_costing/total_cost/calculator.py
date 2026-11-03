@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from math import fsum, isfinite
 
 from .. import registry
+from ..cost_to_future.cost_translation import aggregation_basis
 from ..indexes.garrett.integrated import CostingResult
 from ..models import positive
 from ..unit_conversion import ConversionResult, convert
@@ -54,6 +55,7 @@ class CostSubtotal:
     cost_scope: str
     amount: float
     equipment_tags: tuple[str, ...]
+    index_series: str = "CEPCI"
 
 
 @dataclass(frozen=True)
@@ -68,6 +70,7 @@ class EquipmentInstallationSubtotal:
     missing_equipment_tags: tuple[str, ...]
     missing_installation_tags: tuple[str, ...]
     missing_combined_tags: tuple[str, ...]
+    index_series: str = "CEPCI"
 
 
 def _complete_sum(lines, attribute):
@@ -91,7 +94,7 @@ class EquipmentCostTotal:
     installation_issues: tuple[str, ...] = ()
 
 
-def calculate_total_cost(equipment):
+def calculate_total_cost(equipment, *, translation_policy=None, indices=None):
     """Accept an iterable of parsed/mapped equipment dictionaries.
 
     Required per item: equipment_tag, curve_id, size, size_unit.
@@ -101,6 +104,10 @@ def calculate_total_cost(equipment):
     Unresolved items preserve partial subtotals but suppress the complete total.
     """
     items = list(equipment)
+    if translation_policy and indices is None:
+        from ..cost_to_future.cost_translation import catalogue
+
+        indices = catalogue()
     tags = set()
     for item in items:
         if not isinstance(item, Mapping):
@@ -121,9 +128,17 @@ def calculate_total_cost(equipment):
         scope = None
         quantity_conversion = None
         try:
-            if item.get("external_quote"):
+            if item.get("manual_price"):
+                from ..manual import manual_result
+
+                calculation = manual_result(item["manual_price"])
+                options = {}
+            elif item.get("external_quote"):
                 from ..quotes import quote_result
-                calculation = quote_result(item["external_quote"], item["size"], item["size_unit"])
+
+                calculation = quote_result(
+                    item["external_quote"], item["size"], item["size_unit"]
+                )
                 options = {}
             else:
                 if not item.get("curve_id"):
@@ -136,9 +151,10 @@ def calculate_total_cost(equipment):
                 estimator = registry.estimate_cost
                 if item.get("separate_scope_conflicts") is True:
                     from ..component_scope import estimate_component
+
                     estimator = estimate_component
                 calculation = estimator(
-                    item["curve_id"],
+                    item.get("curve_id") or ("manual:user-price" if item.get("manual_price") else None),
                     item["size"],
                     size_unit=item["size_unit"],
                     source=item.get("source", "garrett"),
@@ -146,6 +162,17 @@ def calculate_total_cost(equipment):
                 )
             if calculation.estimate is None:
                 raise ValueError("; ".join(calculation.issues))
+            from ..cost_to_future.cost_translation import translate_calculation
+
+            calculation = translate_calculation(
+                calculation,
+                method_id=item.get("source", "garrett"),
+                policy=translation_policy,
+                indices=indices,
+            )
+            if item.get("manual_price"):
+                from ..manual import convert_calculation
+                calculation = convert_calculation(calculation, item["manual_price"].get("calculation_currency"))
             estimate = calculation.estimate
             scope = estimate.cost_scope
             if scope in UNIT_SCOPES:
@@ -202,12 +229,13 @@ def calculate_total_cost(equipment):
                 raise ValueError(
                     "Extended equipment/installation cost exceeds numerical limits"
                 )
-            key = (estimate.currency, estimate.cost_index, estimate.period, scope)
+            currency, index, period, series = aggregation_basis(calculation)
+            key = (currency, index, period, scope, series)
             groups.setdefault(key, []).append((item["equipment_tag"], amount))
             lines.append(
                 EquipmentCostLine(
                     item["equipment_tag"],
-                    item["curve_id"],
+                    item.get("curve_id") or ("manual:user-price" if item.get("manual_price") else None),
                     calculation.status,
                     amount,
                     quantity,
@@ -238,9 +266,10 @@ def calculate_total_cost(equipment):
             )
     subtotals = tuple(
         CostSubtotal(
-            *key,
+            *key[:4],
             positive(fsum(v for _, v in rows), "subtotal"),
             tuple(t for t, _ in rows),
+            index_series=key[4],
         )
         for key, rows in sorted(groups.items())
     )
@@ -270,7 +299,7 @@ def calculate_total_cost(equipment):
     for line in lines:
         if line.calculation and line.calculation.estimate and line.amount is not None:
             estimate = line.calculation.estimate
-            key = (estimate.currency, estimate.cost_index, estimate.period)
+            key = aggregation_basis(line.calculation)
             component_groups.setdefault(key, []).append(line)
         if line.installation_cost is None:
             reason = (
@@ -283,7 +312,7 @@ def calculate_total_cost(equipment):
             )
     components = tuple(
         EquipmentInstallationSubtotal(
-            *key,
+            *key[:3],
             _complete_sum(rows, "equipment_cost"),
             _complete_sum(rows, "installation_cost"),
             _complete_sum(rows, "equipment_and_installation_cost"),
@@ -297,6 +326,7 @@ def calculate_total_cost(equipment):
                 for line in rows
                 if line.equipment_and_installation_cost is None
             ),
+            index_series=key[3],
         )
         for key, rows in sorted(component_groups.items())
     )

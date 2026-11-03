@@ -143,3 +143,13 @@ Resolved JavaScript dependencies are recorded in frontend/package-lock.json.
 Original parser source was selectively recovered from FlowValue's own checkpoint,
 with its recovery manifest in backend/ingestion/RECOVERY.json; no third-party
 simulator script was copied or executed. This does not change FlowValue's licence.
+
+### Monte Carlo numerical runtime (resolved 2026-11-03)
+
+The optional Monte Carlo runtime uses NumPy 2.5.4 and SciPy 1.18.1. Their installed
+`*.dist-info` licence files were inspected: both core projects use BSD-3-Clause,
+compatible with using them as dependencies of proprietary FlowValue code. Their
+upstream licences, disclaimers and bundled numerical-library notices remain in
+the installed wheels/container; they are not replaced by FlowValue's licence.
+No upstream source code was copied into the Monte Carlo module. NumPy/SciPy
+sampling is used through their public Python APIs.

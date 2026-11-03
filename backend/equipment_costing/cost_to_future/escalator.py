@@ -1,6 +1,7 @@
 """Explicit same-series cost-index ratio. No index feed or current default."""
 
 from ..models import positive
+from .cost_translation import indexed_amount
 
 
 def adjust_cost(
@@ -20,8 +21,12 @@ def adjust_cost(
     if not isinstance(target_source, str) or not target_source.strip():
         raise ValueError("Target index source is required")
     return positive(
-        positive(amount, "amount")
-        * positive(target_index, "target index")
-        / positive(base_index, "base index"),
+        float(
+            indexed_amount(
+                positive(amount, "amount"),
+                base_index=positive(base_index, "base index"),
+                target_index=positive(target_index, "target index"),
+            )
+        ),
         "adjusted amount",
     )

@@ -88,10 +88,14 @@ def contracts():
     }
 
 
-def run(report, description, plan, *, progress=lambda *x: None):
+def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges=True):
     """Independent stage failures stay visible. Unpriced equipment never becomes zero."""
+    from backend.equipment_resolution.scope import confirmed, expand
+
+    report, plan = expand(report, plan)
     outputs, objects = {}, {}
     exclusions = []
+    translation_policy = plan.get("cost_translation")
 
     def stage(name, calculate):
         progress(name, "running")
@@ -99,6 +103,26 @@ def run(report, description, plan, *, progress=lambda *x: None):
             result = calculate()
             objects[name] = result
             value = plain(result)
+            if name == "capex" and translation_policy:
+                translated_lines = [
+                    line.calculation.evidence.get("cost_translation", {})
+                    for line in objects.get("equipment").equipment
+                    if line.calculation and line.amount is not None
+                ]
+                value["cost_translation"] = plain(
+                    {
+                        "target_period": translation_policy.get("target_period"),
+                        "is_proxy": any(
+                            v.get("status") == "general_inflation_proxy"
+                            for v in translated_lines
+                        ),
+                        "equipment_translations": translated_lines,
+                        "capital_adjustments": objects.get(
+                            "capex_price_translation", []
+                        ),
+                        "notice": "Consumer inflation is purchasing-power estimation, not CEPCI equipment escalation",
+                    }
+                )
             outputs[name] = {
                 "status": value.get("status", "calculated")
                 if isinstance(value, dict)
@@ -148,6 +172,22 @@ def run(report, description, plan, *, progress=lambda *x: None):
                 options["unit_context"] = construct(
                     ConversionContext, options["unit_context"]
                 )
+            if proposal.get("scope_decision") == "alias":
+                target = proposal.get("alias_of")
+                if target not in parsed or target == key:
+                    target = "unresolved alias target"
+                proposal = {
+                    **proposal,
+                    "curve_id": None,
+                    "external_quote": None,
+                    "manual_price": None,
+                    "size": None,
+                    "sizing": None,
+                    "rationale": "Proposed alias of "
+                    + target
+                    + "; not priced twice. "
+                    + proposal.get("rationale", ""),
+                }
             sizing_evidence = None
             sizing_issue = None
             try:
@@ -163,8 +203,13 @@ def run(report, description, plan, *, progress=lambda *x: None):
             rows.append(
                 {
                     "equipment_tag": entity["identifier"] or key,
-                    "curve_id": "external:reviewed-comparable" if proposal.get("external_quote") else proposal.get("curve_id"),
+                    "curve_id": "manual:user-price"
+                    if proposal.get("manual_price")
+                    else "external:reviewed-comparable"
+                    if proposal.get("external_quote")
+                    else proposal.get("curve_id"),
                     "external_quote": proposal.get("external_quote"),
+                    "manual_price": proposal.get("manual_price"),
                     "separate_scope_conflicts": True,
                     "size": size,
                     "size_unit": size_unit,
@@ -172,6 +217,8 @@ def run(report, description, plan, *, progress=lambda *x: None):
                     "costing_options": options,
                     "parsed_source": {
                         "equipment_key": key,
+                        "confirmed_alias": proposal.get("scope_decision") == "alias" and confirmed(proposal),
+                        "parent_equipment_key": entity.get("parent_equipment_key"),
                         "name": next(
                             (
                                 v.get("normalized_value")
@@ -198,16 +245,52 @@ def run(report, description, plan, *, progress=lambda *x: None):
                     },
                 }
             )
-        return calculate_total_cost(rows)
+        objects["equipment_sizing_rows"] = rows
+        return calculate_total_cost(rows, translation_policy=translation_policy)
 
     stage("equipment", equipment)
+    if outputs.get("equipment", {}).get("result"):
+        from .pricing_status import annotate
+
+        annotate(outputs["equipment"]["result"], report, plan)
+        from backend.equipment_resolution.review import review
+
+        outputs["equipment"]["result"]["resolution_register"] = review(report, plan, {"stages": outputs}, expanded=True)
+        for source_row, result_row in zip(
+            objects.get("equipment_sizing_rows", []),
+            outputs["equipment"]["result"]["equipment"],
+        ):
+            interval = (source_row.get("parsed_source", {}).get("sizing") or {}).get(
+                "size_range"
+            )
+            if calculate_ranges and interval and result_row.get("equipment_cost") is not None:
+                costs = []
+                for endpoint in ("low", "high"):
+                    trial = {
+                        **source_row,
+                        "size": interval[endpoint],
+                        "size_unit": interval["unit"],
+                    }
+                    outcome = calculate_total_cost(
+                        [trial], translation_policy=translation_policy
+                    ).equipment[0]
+                    if outcome.equipment_cost is not None:
+                        costs.append(outcome.equipment_cost)
+                if len(costs) == 2:
+                    result_row["equipment_cost_range"] = {
+                        "low_cost": min(costs),
+                        "high_cost": max(costs),
+                        "currency": result_row["calculation"]["estimate"]["currency"],
+                        "basis": "Conditional sizing-assumption envelope only; excludes graph/model error and omitted scope",
+                    }
+
     total = objects.get("equipment")
     priced = []
     if total:
         for line in total.equipment:
             if line.equipment_cost is not None and line.amount is not None:
                 priced.append(line)
-            else:
+            elif not (line.parsed_source or {}).get("confirmed_alias"):
                 exclusions.append(
                     {
                         "equipment_tag": line.equipment_tag,
@@ -226,7 +309,9 @@ def run(report, description, plan, *, progress=lambda *x: None):
         config = copy.deepcopy(plan.get("capex", {}))
         model = config.pop("model_id", "garrett")
         if model == "nottingham_lang":
-            raise ValueError("Lang is a screening comparison only; select a detailed CAPEX methodology")
+            raise ValueError(
+                "Lang is a screening comparison only; select a detailed CAPEX methodology"
+            )
         delivery = config.pop("delivery_basis")
         config.pop("equipment", None)
         subset = dataclasses.replace(total, equipment=tuple(priced))
@@ -237,16 +322,87 @@ def run(report, description, plan, *, progress=lambda *x: None):
             process_description=description,
         )
         config.pop("process_description", None)
+        if translation_policy and translation_policy.get("enabled") is not False:
+            from backend.equipment_costing.cost_to_future.cost_translation import (
+                translate_cost,
+            )
+
+            for key, override in config.get("overrides", {}).items():
+                if override.get("amount") is not None:
+                    basis = override.get("price_basis")
+                    if not basis:
+                        raise ValueError(
+                            "CAPEX monetary override requires price_basis for translation: "
+                            + key
+                        )
+                    adjusted = translate_cost(
+                        override["amount"],
+                        currency=basis["currency"],
+                        source_period=basis["price_period"],
+                        policy=translation_policy,
+                    )
+                    objects.setdefault("capex_price_translation", []).append(
+                        {"path": "overrides." + key, **dataclasses.asdict(adjusted)}
+                    )
+                    override["amount"] = str(adjusted.amount)
+                    override.pop("price_basis")
+            working = config.get("working_capital", {})
+            if any(
+                working.get(k) is not None
+                for k in ("amount", "annual_opex", "installed_equipment_cost")
+            ):
+                basis = working.pop("price_basis", None)
+                if not basis:
+                    raise ValueError(
+                        "Monetary working-capital assumptions require price_basis for translation"
+                    )
+                for key in ("amount", "annual_opex", "installed_equipment_cost"):
+                    if working.get(key) is not None:
+                        adjusted = translate_cost(
+                            working[key],
+                            currency=basis["currency"],
+                            source_period=basis["price_period"],
+                            policy=translation_policy,
+                        )
+                        objects.setdefault("capex_price_translation", []).append(
+                            {
+                                "path": "working_capital." + key,
+                                **dataclasses.asdict(adjusted),
+                            }
+                        )
+                        working[key] = str(adjusted.amount)
         prepared = construct(CapexInputs, dict(plain(prepared), **config))
         try:
-            screening = calculate_capex("nottingham_lang", dataclasses.replace(
-                prepared, factor_selection="minimum", selected_factors={}, overrides={}, exclusions={},
-                working_capital=WorkingCapital(excluded=True, rationale="Fixed-capital screening comparison only; working capital is not included")))
-            objects["screening_comparisons"] = [{"method": "nottingham_lang", "result": plain(screening),
-                "included_in_capex": False, "purpose": "Independent whole-plant screening comparison only; never added to detailed CAPEX"}]
+            screening = calculate_capex(
+                "nottingham_lang",
+                dataclasses.replace(
+                    prepared,
+                    factor_selection="minimum",
+                    selected_factors={},
+                    overrides={},
+                    exclusions={},
+                    working_capital=WorkingCapital(
+                        excluded=True,
+                        rationale="Fixed-capital screening comparison only; working capital is not included",
+                    ),
+                ),
+            )
+            objects["screening_comparisons"] = [
+                {
+                    "method": "nottingham_lang",
+                    "result": plain(screening),
+                    "included_in_capex": False,
+                    "purpose": "Independent whole-plant screening comparison only; never added to detailed CAPEX",
+                }
+            ]
         except (ValueError, TypeError):
-            objects["screening_comparisons"] = [{"method": "nottingham_lang", "included_in_capex": False,
-                                                 "status": "unavailable_for_selected_basis"}]
+            objects["screening_comparisons"] = [
+                {
+                    "method": "nottingham_lang",
+                    "included_in_capex": False,
+                    "status": "unavailable_for_selected_basis",
+                }
+            ]
         return calculate_capex(model, prepared)
 
     stage("capex", capex)
@@ -255,9 +411,29 @@ def run(report, description, plan, *, progress=lambda *x: None):
         from .operating_economics import calculate_operating_study
 
         def coupled():
+            config = plan["operating_economics"]
+            translation_audit = []
+            if translation_policy and translation_policy.get("enabled") is not False:
+                from backend.equipment_costing.cost_to_future.operating_prices import (
+                    translate_operating_prices,
+                )
+
+                capital = objects.get("capex")
+                if capital is None:
+                    raise ValueError("Translated capital basis unavailable")
+                config, translation_audit = translate_operating_prices(
+                    config,
+                    target_basis={
+                        "currency": capital.currency,
+                        "price_period": capital.period,
+                    },
+                    policy=translation_policy,
+                )
+            objects["operating_config"] = config
             bundle = calculate_operating_study(
-                report, description, plan["operating_economics"], objects.get("capex")
+                report, description, config, objects.get("capex")
             )
+            bundle["detail"]["cost_translation"] = translation_audit
             objects["joint_study"] = bundle
             return {
                 "status": "calculated_preliminary",
@@ -288,12 +464,33 @@ def run(report, description, plan, *, progress=lambda *x: None):
             )
             stage("financial", lambda: bundle["financial"])
         else:
-            for missing in ("revenue", "opex", "financial"):
-                outputs[missing] = {
-                    "status": "unresolved",
-                    "issues": outputs["operating_economics"].get("issues", []),
-                    "result": None,
-                }
+            from .incremental_economics import calculate as incremental
+
+            try:
+                recovered = incremental(
+                    report,
+                    description,
+                    objects.get("operating_config", plan["operating_economics"]),
+                    objects.get("capex"),
+                    "; ".join(outputs["operating_economics"].get("issues", [])),
+                )
+                outputs.update(recovered)
+                outputs["operating_economics"]["status"] = "partial"
+                for name, value in recovered.items():
+                    progress(name, value["status"])
+            except (
+                ValueError,
+                TypeError,
+                KeyError,
+                ArithmeticError,
+                AttributeError,
+            ) as exc:
+                for missing in ("revenue", "opex", "financial"):
+                    outputs[missing] = {
+                        "status": "pending",
+                        "issues": [str(exc)],
+                        "result": None,
+                    }
         return {
             "stages": outputs,
             "screening_comparisons": objects.get("screening_comparisons", []),
@@ -302,7 +499,13 @@ def run(report, description, plan, *, progress=lambda *x: None):
             if exclusions
             else "parsed equipment scope; completeness not established",
             "financial_inputs": plain(objects.get("financial_inputs")),
-            "notice": "Conditional engineering study; operating plan, quantities, prices and policies are editable. Capital exclusions carry into the complete financial schedule.",
+            "notice": "Conditional engineering study; operating plan, quantities, prices and policies are editable. Capital exclusions carry into the complete financial schedule."
+            + (
+                " Price translation uses explicit index metadata; consumer inflation, when used, is a provisional purchasing-power proxy, not CEPCI."
+                if translation_policy
+                else ""
+            ),
+            "cost_translation_policy": copy.deepcopy(translation_policy),
         }
 
     def revenue():

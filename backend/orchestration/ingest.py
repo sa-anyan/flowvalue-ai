@@ -8,12 +8,14 @@ import tempfile
 from datetime import date
 from pathlib import Path
 
+from backend.ingestion.limits import MAX_WORKBOOK_BYTES
+
 ROOT = Path(__file__).resolve().parents[2]
 
 
 def parse(content, filename):
-    if not 0 < len(content) <= 4 * 1024**2:
-        raise ValueError("Choose a workbook up to 4 MiB")
+    if not 0 < len(content) <= MAX_WORKBOOK_BYTES:
+        raise ValueError("Choose a workbook up to 20 MiB")
     filename = Path(filename).name
     if Path(filename).suffix.lower() not in {".xlsx", ".xls", ".xlsm"}:
         raise ValueError("Only .xlsx, .xls and .xlsm are supported here")

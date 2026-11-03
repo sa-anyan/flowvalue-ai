@@ -8,9 +8,13 @@ from backend.ingestion.balance.models import Connection, Entity, Issue
 from backend.ingestion.balance.units import clean
 from backend.ingestion.inputs.xlsm_parser import TYPES
 
-TAG = re.compile(r"(?<![\w])([A-Za-z]{1,5})\s*[-–_]\s*(\d{1,6}[A-Za-z]?)(?![\w])")
-FROM = re.compile(r"\bfrom\b(.*?)(?=\bto\b|$)", re.IGNORECASE)
-TO = re.compile(r"\bto\b(.*)$", re.IGNORECASE)
+TAG = re.compile(r"(?<![\w])([A-Za-z]{1,5})\s*[-–_]\s*(\d{1,6}[A-Za-z]{0,3})(?![\w])")
+FROM = re.compile(
+    r"\b(?:from|leaving)\b(.*?)(?=\b(?:to|entering|into)\b|$)", re.IGNORECASE
+)
+TO = re.compile(
+    r"\b(?:to|entering|into)\b(.*?)(?=\b(?:from|leaving)\b|$)", re.IGNORECASE
+)
 BOUNDARIES = {
     "outside",
     "external",
@@ -48,6 +52,19 @@ def tags(text):
 TYPE_PATTERNS = [
     (re.compile(expression + r"\s*$", re.IGNORECASE), kind)
     for expression, kind in TYPES
+    + [
+        (r"\bspray\s+dryer\b", "Spray dryer"),
+        (r"\bcyclone\b", "Cyclone"),
+        (r"\bcentrifuge\b", "Centrifuge"),
+        (r"\bmixing\s+tank\b", "Mixing tank"),
+        (r"\bpackaging\s+tank\b", "Packaging tank"),
+        (r"\bfilter\b", "Filter"),
+        (r"\belectroly[sz]er\b", "Electrolyser"),
+        (r"\b(?:cation|anion|ion)\s+exchanger\b", "Ion exchanger"),
+        (r"\bpre[- ]?heater\b", "Heat exchanger"),
+        (r"\bcooler\b", "Heat exchanger"),
+        (r"\bblower\b", "Blower"),
+    ]
 ]
 
 
@@ -303,5 +320,51 @@ def build_register(report):
                 edge(
                     tag, evidence, role, basis, "unresolved" if conflict else "inferred"
                 )
+    # Resolve each type from ALL descriptions in its worksheet/case scope,
+    # not only whichever mention happened to be encountered first.
+    descriptions_by_scope = defaultdict(list)
+    for stream in streams:
+        for value in stream.values:
+            if value.property in {"description", "name"} and value.original_value:
+                descriptions_by_scope[value.sheet, stream.case].append(value)
+    for (sheet_name, case, tag), unit in units.items():
+        descriptions = descriptions_by_scope[sheet_name, case]
+        kind, basis = classify([str(v.original_value) for v in descriptions], tag)
+        type_value = next((v for v in unit.values if v.property == "type"), None)
+        if type_value and not (
+            kind.startswith("Unclassified")
+            and not str(type_value.normalized_value).startswith("Unclassified")
+        ):
+            type_value.normalized_value = kind
+            type_value.note = basis
+            supporting = next(
+                (
+                    v
+                    for v in descriptions
+                    if classify([str(v.original_value)], tag)[0] == kind
+                ),
+                None,
+            )
+            if supporting:
+                for attribute in (
+                    "sheet",
+                    "cell",
+                    "original_value",
+                    "formula",
+                    "cached",
+                ):
+                    setattr(type_value, attribute, getattr(supporting, attribute))
+        base = re.sub(r"[A-Z]+$", "", tag)
+        if base != tag and (sheet_name, case, base) in units:
+            report.issues.append(
+                Issue(
+                    code="equipment_alias_review",
+                    message=f"{tag} and {base} may denote parallel/alias equipment; quantity and identity need confirmation before costing both.",
+                    evidence_ids=[
+                        unit.id_evidence.id,
+                        units[sheet_name, case, base].id_evidence.id,
+                    ],
+                )
+            )
     report.entities = [*streams, *units.values()]
     report.connections = list(edges.values())

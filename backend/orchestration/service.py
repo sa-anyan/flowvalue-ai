@@ -16,6 +16,14 @@ def _diagnostic(exc):
 
     if isinstance(exc, RevenueAIError):
         return str(exc)[:350]
+    if isinstance(exc, ValueError) and str(exc).startswith(
+        (
+            "AI context exceeds",
+            "One equipment planning region",
+            "A source cell/description",
+        )
+    ):
+        return str(exc)[:350]
     if isinstance(exc, (ValueError, TypeError, KeyError)):
         return (
             "Structured interpretation could not be applied ("
@@ -50,6 +58,12 @@ def new_assessment(store, content, filename, description, revenue_description=""
 
 def execute(store, key, *, content=None, use_ai=False, provider=None):
     state = store.get(key)
+    from backend.equipment_costing.cost_to_future.cost_translation import DEFAULT_POLICY
+
+    if state["plan"].get("operating_economics") or not any(
+        state["plan"].get(k) for k in SECTIONS
+    ):
+        state["plan"].setdefault("cost_translation", dict(DEFAULT_POLICY))
     state["running"] = True
     state["progress"] = []
 
@@ -86,7 +100,7 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
                 state["recoveries"] = decisions
                 state["questions"] = interpretation["questions"]
                 state["ai"] = {"review": review_meta, "status": "reviewed"}
-                progress("engineering_review", "reviewed")
+                progress("engineering_review", review_meta.get("status", "reviewed"))
             except Exception as exc:  # noqa: BLE001 -- independent stages continue on provider failure
                 state["ai"] = {
                     "status": "review_unavailable",
@@ -128,6 +142,14 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
                     reviewed["effective_report"] = report
                 except ValueError as exc:
                     state["scope_warning"] = str(exc)
+                    try:
+                        from .scope_recovery import recover
+
+                        report = recover(report)
+                        state["scoped_report"] = report
+                        reviewed["effective_report"] = report
+                    except ValueError:
+                        pass
             state["cost_coverage"] = coverage_register(state["analyst_reviews"])
             ids = {
                 v["id"]
@@ -234,9 +256,11 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
                     for section in response["sections"]:
                         name = section["section"]
                         if name not in state["locked"]:
-                            state["plan"][name] = mark_ai(
-                                json.loads(section["value_json"]), evidence_ids=ids
-                            )
+                            value = mark_ai(json.loads(section["value_json"]), evidence_ids=ids)
+                            if name == "equipment":
+                                from .approved_equipment import retain_approved
+                                value = retain_approved(state["plan"].get("equipment", []), value)
+                            state["plan"][name] = value
                             state["assumptions"][name] = dict(
                                 section,
                                 origin="llm_estimate",
@@ -267,9 +291,11 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
                         )
                         for section in corrected["sections"]:
                             if section["section"] not in state["locked"]:
-                                state["plan"][section["section"]] = mark_ai(
-                                    json.loads(section["value_json"]), evidence_ids=ids
-                                )
+                                value = mark_ai(json.loads(section["value_json"]), evidence_ids=ids)
+                                if section["section"] == "equipment":
+                                    from .approved_equipment import retain_approved
+                                    value = retain_approved(state["plan"].get("equipment", []), value)
+                                state["plan"][section["section"]] = value
                                 state["assumptions"][section["section"]] = dict(
                                     section,
                                     origin="llm_estimate",
@@ -281,6 +307,20 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
                         interim = run(report, state["description"], state["plan"])
                         state["results"] = interim
                         progress("engineering_validation_correction", "applied")
+                    if requested == ("equipment", "capex"):
+                        from .design_handoff import complete
+
+                        state["plan"], state["design_handoffs"] = complete(
+                            report,
+                            state["description"],
+                            state["plan"],
+                            state["locked"],
+                            store,
+                            provider,
+                            progress=progress,
+                        )
+                        interim = run(report, state["description"], state["plan"])
+                        state["results"] = interim
                     progress(stage_name, "proposed")
                 except Exception as exc:  # noqa: BLE001 -- retain independent engineering work
                     state["ai"].setdefault("advisor_errors", {})[
@@ -303,11 +343,22 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
             state["plan"],
             progress=progress,
         )
-        state["status"] = (
-            "calculated_with_disclosures"
-            if state["results"]["stages"].get("financial", {}).get("result")
-            else "incomplete_assessment; review stage issues"
-        )
+        if state.get("edit_baseline"):
+            from backend.equipment_resolution.comparison import compare_results
+            state["recalculation_comparison"] = compare_results(state["edit_baseline"]["results"], state["results"])
+        stages = state["results"]["stages"]
+        if any(
+            (s.get("result") or {}).get("complete") is False for s in stages.values()
+        ):
+            state["status"] = (
+                "partial_assessment; resolved calculations available, dependencies pending"
+            )
+        else:
+            state["status"] = (
+                "calculated_with_disclosures"
+                if stages.get("financial", {}).get("result")
+                else "incomplete_assessment; review stage issues"
+            )
     except Exception as exc:  # noqa: BLE001 -- always release running state at task boundary
         state["status"] = "failed"
         state["error"] = (
@@ -321,7 +372,10 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
 
 
 def edit(store, key, revision, section, value, rationale):
-    if section not in (*SECTIONS, "operating_economics") or not rationale.strip():
+    if (
+        section not in (*SECTIONS, "operating_economics", "cost_translation")
+        or not rationale.strip()
+    ):
         raise ValueError("Known section and edit rationale required")
     if len(json.dumps(value)) > 250000:
         raise ValueError("Input section exceeds safe limit")
@@ -344,6 +398,8 @@ def edit(store, key, revision, section, value, rationale):
 
         if methods(value) != methods(state["plan"].get(section, {})):
             value = capture_manual_methods(value, rationale)
+    if state.get("results") is not None:
+        state["edit_baseline"] = {"revision": state["revision"], "results": copy.deepcopy(state["results"]), "plan": copy.deepcopy(state["plan"])}
     state["plan"][section] = value
     state["locked"] = sorted(set(state["locked"]) | {section})
     state["assumptions"][section] = {

@@ -8,14 +8,19 @@ def equipment_feedback(result):
         {
             "equipment_tag": r["equipment_tag"],
             "curve_id": r["curve_id"],
+            "candidate_curve_ids": r.get("decision", {}).get("candidate_curve_ids", []),
             "issues": r["issues"],
             "sizing": (r.get("parsed_source") or {}).get("sizing"),
             "sizing_issue": (r.get("parsed_source") or {}).get("sizing_issue"),
         }
         for r in lines
-        if r.get("curve_id") and (
+        if (r.get("curve_id") or r.get("decision", {}).get("candidate_curve_ids"))
+        and r.get("decision", {}).get("scope_decision") != "alias"
+        and (
             r.get("equipment_cost") is None
-            or ((r.get("calculation") or {}).get("evidence") or {}).get("deferred_scope_factors")
+            or ((r.get("calculation") or {}).get("evidence") or {}).get(
+                "deferred_scope_factors"
+            )
         )
     ]
     if not failed:

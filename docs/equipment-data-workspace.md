@@ -11,3 +11,11 @@ The existing costing assumptions, source reports, specialist reviews, research p
 ## Verification — 2 November 2026
 
 Read-only browser checks use the founder's saved assessment `2f2c8ed1d44e49dba0d73d965e81659b`. Equipment selection, both registers, all four inspector views, source evidence, associated-record navigation, search/reset, dark mode and absence of horizontal page/inspector overflow at 1440 px and 390 px passed. No paid AI calls or saved-model mutations were made. Screenshots and checks are retained in ignored `outputs/equipment-data-ux/`.
+
+## Readability cleanup
+
+Engineering Data now opens with a compact, expandable activity summary and the equipment/stream workspace. Completed activity, exports, specialist reviews, version controls and supporting assumptions remain available without dominating the initial view. The supporting content is grouped in Evidence & study controls using the shared folder explorer.
+
+Equipment/stream counts act as register shortcuts. Detail tabs show observation/association counts. Property search includes source cells and original values; Evidence includes a dedicated worksheet/cell/property search. Blue identifies navigation and selected records; amber, green and red status badges remain explicitly labelled inferred, source-verified and unresolved, including dark-mode variants. No extraction or calculation logic changed.
+
+Read-only browser checks passed on both /data and /data/equipment: selection, all four views, source evidence, related-record navigation, search/reset, desktop/mobile overflow and dark mode. No paid requests or saved-model mutations.

@@ -316,10 +316,10 @@
   },
   "G277-060": {
     "printed_exponent": 0.48,
-    "blocking_issues": [
-      "Dryer volume plot divisor versus actual volume is unresolved in workbook (+10 label); no silent conversion."
-    ],
-    "warnings": []
+    "blocking_issues": [],
+    "warnings": [
+      "Source chart division-by-10 verified on PDF page27; inputs and graph points now use actual volume. Graph anchors remain unverified visual readings."
+    ]
   },
   "G277-061": {
     "printed_exponent": 0.45,
@@ -328,10 +328,10 @@
   },
   "G277-062": {
     "printed_exponent": 0.29,
-    "blocking_issues": [
-      "Dryer volume plot divisor versus actual volume is unresolved in workbook (+10 label); no silent conversion."
-    ],
-    "warnings": []
+    "blocking_issues": [],
+    "warnings": [
+      "Source chart division-by-10 verified on PDF page27; inputs and graph points now use actual volume. Graph anchors remain unverified visual readings."
+    ]
   },
   "G278-063": {
     "printed_exponent": null,

@@ -1,0 +1,28 @@
+{
+  "source": {
+    "filename": "Chemical Engineering Economics - Appendix 1 - Equipment Cost Estimates (1).pdf",
+    "sha256": "720cca1e5e8927c4dc010812548953e622235dac0185f1d6d1f18eba4412ea51",
+    "printed_page": 277,
+    "pdf_page": 27,
+    "reviewed_on": "2026-11-03"
+  },
+  "models": {
+    "G277-060": {
+      "physical_volume_multiplier": 10,
+      "note": "PDF horizontal label: Volume ft3 (fluid bed, spray dryer) divided by 10. Imported graph x coordinates multiplied by 10 once to use actual chamber volume. Graph readings remain provisional."
+    },
+    "G277-062": {
+      "points": [
+        {
+          "size": 100000,
+          "price": 200000
+        },
+        {
+          "size": 400000,
+          "price": 300000
+        }
+      ],
+      "note": "New approximate visual anchors from distinct labelled Spray Dryer line, printed page277: plotted x10000/cost200 ($1000), x40000/cost300 ($1000). Actual volume=plotted coordinate*10. Visual readings unverified, approximately +/-20%; printed size exponent0.29 retained."
+    }
+  }
+}

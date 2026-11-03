@@ -144,6 +144,9 @@ class StreamLayoutParser(Parser):
             )
 
     def tables(self, sheet, inferred):
+        from backend.ingestion.repeated_stream_blocks import parse_blocks
+
+        block_anchors = parse_blocks(self, sheet, inferred)
         # Sparse indexes avoid re-scanning every cell for every stream.
         row_columns = {}
         anchors = []
@@ -158,6 +161,8 @@ class StreamLayoutParser(Parser):
             by_col.setdefault(col, []).append(row)
             by_row.setdefault(row, []).append(col)
         for row, col in anchors:
+            if (row, col) in block_anchors:
+                continue
             if IDS[clean(sheet.text(row, col)).rstrip(":")] != "material":
                 continue
             next_cols = [cc for cc in by_row[row] if cc > col]

@@ -8,7 +8,15 @@ from pathlib import Path
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from pydantic import BaseModel, ConfigDict, Field
 
+from backend.currency_conversion import convert_currency, rate_snapshot
+from backend.currency_conversion.assessment import currency_view
 from backend.equipment_costing.registry import list_equipment_models
+from backend.ingestion.limits import (
+    MAX_OTHER_REQUEST_BYTES,
+    MAX_UPLOAD_REQUEST_BYTES,
+    MAX_WORKBOOK_BYTES,
+)
+from backend.orchestration.current_prices import current_price_view
 from backend.orchestration.pipeline import contracts
 from backend.orchestration.service import compare, edit, execute, new_assessment
 from backend.orchestration.store import Store
@@ -19,7 +27,7 @@ store = Store(
 )
 CLOUD = os.environ.get("FLOWVALUE_CLOUD", "false").lower() == "true"
 if CLOUD:
-    from backend.cloud.runtime import WorkspaceProxy, ContextExecutor
+    from backend.cloud.runtime import ContextExecutor, WorkspaceProxy
 
     store = WorkspaceProxy()
     executor = ContextExecutor(max_workers=1)
@@ -215,9 +223,9 @@ async def upload(
     revenue_description: str = Form(""),
     use_ai: bool = Form(False),
 ):
-    content = await file.read(4 * 1024**2 + 1)
-    if not content or len(content) > 4 * 1024**2:
-        raise HTTPException(413, "Choose a workbook up to 4 MiB")
+    content = await file.read(MAX_WORKBOOK_BYTES + 1)
+    if not content or len(content) > MAX_WORKBOOK_BYTES:
+        raise HTTPException(413, "Choose a workbook up to 20 MiB")
     if len(description) + len(revenue_description) > 12000:
         raise HTTPException(422, "Description exceeds 12,000 characters")
     name = Path(file.filename or "workbook").name
@@ -230,9 +238,33 @@ async def upload(
     return {"id": state["id"]}
 
 
+class CurrencyConversionRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    amount: str
+    source_currency: str
+    target_currency: str
+    rate_date: str | None = None
+
+
+@app.get("/api/currency/rates")
+def currency_rates():
+    return rate_snapshot()
+
+
+@app.post("/api/currency/convert")
+def currency_convert(request: CurrencyConversionRequest):
+    return convert_currency(
+        request.amount,
+        request.source_currency,
+        request.target_currency,
+        rate_date=request.rate_date,
+    )
+
+
 @app.get("/api/assessments/{key}")
-def get(key: str):
-    return store.get(key)
+def get(key: str, historical: bool = False, currency: str | None = None):
+    saved = store.get(key)
+    return currency_view(saved if historical else current_price_view(saved), currency)
 
 
 @app.patch("/api/assessments/{key}")
@@ -282,7 +314,12 @@ def comparison(key: str, other: str):
 
 @app.get("/api/catalogue")
 def catalogue():
+    from backend.engineering_sizing import list_methods
+    from backend.engineering_sizing.registry import PARAMETER_UNITS
+
     return {
+        "engineering_sizing_methods": list_methods(),
+        "sizing_parameter_units": PARAMETER_UNITS,
         "equipment": [
             {k: m[k] for k in ("id", "equipment", "configuration", "size_unit")}
             for m in list_equipment_models()
@@ -306,9 +343,14 @@ async def local_request_guard(request: Request, call_next):
                 return JSONResponse(
                     status_code=411, content={"detail": "Content length required"}
                 )
-            if int(length) > 5 * 1024**2:
+            if int(length) > (
+                MAX_UPLOAD_REQUEST_BYTES
+                if request.method == "POST" and request.url.path == "/api/assessments"
+                else MAX_OTHER_REQUEST_BYTES
+            ):
                 return JSONResponse(
-                    status_code=413, content={"detail": "Request exceeds 5 MiB"}
+                    status_code=413,
+                    content={"detail": "Request exceeds upload or request size limit"},
                 )
         if request.url.path in {"/health", "/api/health"}:
             return await call_next(request)
@@ -346,9 +388,14 @@ async def local_request_guard(request: Request, call_next):
             return JSONResponse(
                 status_code=411, content={"detail": "Content length required"}
             )
-        if int(length) > 5 * 1024**2:
+        if int(length) > (
+            MAX_UPLOAD_REQUEST_BYTES
+            if request.method == "POST" and request.url.path == "/api/assessments"
+            else MAX_OTHER_REQUEST_BYTES
+        ):
             return JSONResponse(
-                status_code=413, content={"detail": "Request exceeds 5 MiB"}
+                status_code=413,
+                content={"detail": "Request exceeds upload or request size limit"},
             )
     return await call_next(request)
 
@@ -359,7 +406,7 @@ def all_versions():
 
 
 @app.get("/api/assessments/{key}/report")
-def study_report(key: str):
+def study_report(key: str, currency: str | None = None):
     from fastapi.responses import HTMLResponse
 
     from backend.dashboard_reporting.study_report import render_study
@@ -367,11 +414,12 @@ def study_report(key: str):
     state = store.get(key)
     if state.get("running"):
         raise HTTPException(409, "Wait for this study calculation to finish")
+    state = currency_view(current_price_view(state), currency)
     return HTMLResponse(render_study(state), headers={"Cache-Control": "no-store"})
 
 
 @app.get("/api/assessments/{key}/snapshot")
-def study_snapshot(key: str):
+def study_snapshot(key: str, currency: str | None = None):
     import json
 
     from fastapi.responses import Response
@@ -379,6 +427,7 @@ def study_snapshot(key: str):
     state = store.get(key)
     if state.get("running"):
         raise HTTPException(409, "Wait for this study calculation to finish")
+    state = currency_view(current_price_view(state), currency)
     return Response(
         json.dumps(state, indent=2, allow_nan=False),
         media_type="application/json",
@@ -401,6 +450,7 @@ class CommercialStrategyRequest(BaseModel):
 @app.post("/api/assessments/{key}/commercial-strategy", status_code=202)
 def commercial_strategy(key: str, options: CommercialStrategyRequest):
     import copy
+
     from backend.revenue.llm.commercial_strategy_analyst import execute_strategy
 
     baseline = store.get(key)
@@ -457,3 +507,220 @@ def commercial_strategy(key: str, options: CommercialStrategyRequest):
         lock.release()
         raise
     return {"id": created["id"]}
+
+
+# Monte Carlo uses the existing owner-scoped assessment store and background executor.
+from backend.scenarios_and_uncertainty.monte_carlo.models import (
+    Settings as MonteCarloSettings,
+)
+
+
+@app.get("/api/assessments/{key}/monte-carlo/discover")
+def monte_discover(key: str):
+    from backend.scenarios_and_uncertainty.monte_carlo.discovery import discover
+
+    return discover(store.get(key))
+
+
+@app.post("/api/assessments/{key}/monte-carlo/run", status_code=202)
+def monte_run(key: str, settings: MonteCarloSettings):
+    from backend.scenarios_and_uncertainty.monte_carlo.service import start, work
+
+    if not lock.acquire(blocking=False):
+        raise HTTPException(409, "Another calculation is running")
+    try:
+        job = start(store, key, settings)
+    except Exception:
+        lock.release()
+        raise
+
+    def task():
+        try:
+            work(store, job["id"])
+        finally:
+            lock.release()
+
+    try:
+        executor.submit(task)
+    except Exception:
+        lock.release()
+        raise
+    return job
+
+
+@app.get("/api/assessments/{key}/monte-carlo/jobs")
+def monte_jobs(key: str):
+    store.get(key)
+    return [
+        {
+            k: j.get(k)
+            for k in (
+                "id",
+                "status",
+                "completed",
+                "total",
+                "settings",
+                "summary",
+                "baseline_revision",
+            )
+        }
+        for j in store.related_states(key)
+        if j.get("kind") == "monte_carlo_job"
+    ]
+
+
+@app.get("/api/assessments/{key}/monte-carlo/jobs/{job_id}")
+def monte_job(key: str, job_id: str):
+    from backend.scenarios_and_uncertainty.monte_carlo.service import get_job
+
+    return get_job(store, key, job_id)
+
+
+@app.get("/api/assessments/{key}/monte-carlo/jobs/{job_id}/runs/{index}")
+def monte_sample(key: str, job_id: str, index: int):
+    from backend.scenarios_and_uncertainty.monte_carlo.service import get_results
+
+    result = get_results(store, key, job_id)
+    if not 0 <= index < len(result["runs"]):
+        raise HTTPException(404, "Run not found")
+    return result["runs"][index]
+
+
+@app.get("/api/assessments/{key}/monte-carlo/jobs/{job_id}/export")
+def monte_export(key: str, job_id: str, format: str = "csv"):
+    from fastapi.responses import Response
+
+    from backend.scenarios_and_uncertainty.monte_carlo.exports import export
+    from backend.scenarios_and_uncertainty.monte_carlo.service import get_results
+
+    if format not in {"csv", "xlsx"}:
+        raise HTTPException(422, "Choose csv or xlsx")
+    data, mime = export(get_results(store, key, job_id), format)
+    return Response(
+        data,
+        media_type=mime,
+        headers={
+            "Content-Disposition": f'attachment; filename="FlowValue-Monte-Carlo.{format}"',
+            "Cache-Control": "no-store",
+        },
+    )
+
+
+@app.post("/api/assessments/{key}/monte-carlo/jobs/{job_id}/cancel")
+def monte_cancel(key: str, job_id: str):
+    from backend.scenarios_and_uncertainty.monte_carlo.service import (
+        get_job,
+        update_job,
+    )
+
+    job = get_job(store, key, job_id)
+    if job["status"] in {"queued", "running"}:
+        job = update_job(store, job_id, {"cancel_requested": True})
+    return job
+
+
+@app.post("/api/assessments/{key}/monte-carlo/prepare", status_code=202)
+def monte_prepare(key: str, request: Rerun):
+    if not request.use_ai:
+        raise HTTPException(422, "Explicit AI preparation request required")
+    from backend.orchestration.design_handoff import complete
+    from backend.orchestration.pipeline import run
+    from backend.orchestration.provider import EngineeringProvider
+    from backend.orchestration.register import register
+
+    state = store.get(key)
+    if state.get("running") or not lock.acquire(blocking=False):
+        raise HTTPException(409, "Another calculation is running")
+    try:
+        draft = store.create(
+            {
+                **state,
+                "parent_assessment": key,
+                "running": True,
+                "status": "Preparing Monte Carlo engineering assumptions",
+            },
+            store.workbook(key),
+        )
+
+    except Exception:
+        lock.release()
+        raise
+
+    def task():
+        current = store.get(draft["id"])
+        try:
+            report = (
+                current.get("scoped_report")
+                or current.get("effective_report")
+                or current["parsed"]["report"]
+            )
+            current["plan"], current["design_handoffs"] = complete(
+                report,
+                current["description"],
+                current["plan"],
+                current["locked"],
+                store,
+                EngineeringProvider(),
+            )
+            from backend.scenarios_and_uncertainty.monte_carlo.advisor import recommend
+
+            current["mc_assumption_proposals"], current["mc_range_review"] = recommend(
+                current, store, EngineeringProvider()
+            )
+            current["results"] = run(report, current["description"], current["plan"])
+            current["assumption_register"] = register(
+                current["plan"], current["assumptions"]
+            )
+            current["status"] = (
+                "Engineering draft prepared; review ranges before simulation"
+            )
+        except Exception as exc:  # noqa: BLE001 -- persist independent draft failure
+            current["error"] = str(exc)[:1000]
+        finally:
+            current["running"] = False
+            store.put(current, current["revision"])
+            lock.release()
+
+    try:
+        executor.submit(task)
+    except Exception:
+        lock.release()
+        raise
+    return {
+        "id": draft["id"],
+        "notice": "Independent engineering draft; approved baseline untouched. No external research is invoked.",
+    }
+
+
+@app.get("/api/assessments/{key}/monte-carlo/jobs/{job_id}/audit")
+def monte_audit(key: str, job_id: str):
+    from backend.scenarios_and_uncertainty.monte_carlo.service import get_results
+
+    result = get_results(store, key, job_id)
+    return {
+        "audit": result["audit"],
+        "input_hash": result["input_hash"],
+        "baseline_revision": result["baseline_revision"],
+        "baseline_id": result["baseline_id"],
+    }
+
+
+@app.post("/api/assessments/{key}/monte-carlo/preflight")
+def monte_preflight(key: str, settings: MonteCarloSettings):
+    from backend.scenarios_and_uncertainty.monte_carlo.service import preflight
+
+    return preflight(store.get(key), settings)
+
+
+@app.get("/api/catalogue/equipment-knowledge")
+def equipment_knowledge():
+    from backend.equipment_resolution.knowledge import library
+    return library()
+
+
+@app.get("/api/assessments/{key}/equipment-resolution")
+def equipment_resolution(key: str):
+    from backend.equipment_resolution.review import review
+    state = store.get(key)
+    report = state.get("scoped_report") or state.get("effective_report") or state["parsed"]["report"]
+    return review(report, state["plan"], state.get("results"))

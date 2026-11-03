@@ -272,6 +272,9 @@ class IntentTests(unittest.TestCase):
         config["commercial_intent"] = intent(
             [("sale", "product_sales", "sells treated water")]
         )
+        for group in ("sales", "materials"):
+            for item in config.get(group, []):
+                item["unit_price_currency"] = None
         wrong = copy.deepcopy(config)
         wrong["commercial_intent"]["mechanisms"][0]["category"] = "processing_services"
         provider = Mock()

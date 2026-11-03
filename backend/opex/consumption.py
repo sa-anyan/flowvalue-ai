@@ -1,6 +1,6 @@
 """Canonical source-observation selection and annual consumption; no inferred prices."""
 
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 from backend.equipment_costing.unit_conversion import convert
 
@@ -8,7 +8,10 @@ from backend.equipment_costing.unit_conversion import convert
 def decimal(value, *, minimum=0, maximum=None):
     if isinstance(value, bool):
         raise TypeError("Boolean is not an engineering quantity")
-    result = Decimal(str(value))
+    try:
+        result = Decimal(str(value))
+    except (InvalidOperation, ValueError) as exc:
+        raise ValueError("Missing or invalid numerical engineering assumption") from exc
     if (
         not result.is_finite()
         or minimum is not None

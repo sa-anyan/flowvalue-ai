@@ -138,8 +138,6 @@ class GarrettIntegrationTests(unittest.TestCase):
 
     def test_conflicting_units_missing_points_and_branch_gap_are_explicit(self):
         for identifier, size in [
-            ("G277-060", 100),
-            ("G277-062", 100),
             ("G297-125", 10),
             ("G297-126", 10),
             ("G306-153", 1),

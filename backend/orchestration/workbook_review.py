@@ -22,7 +22,7 @@ from backend.revenue.advisor import TEXT, obj
 from .codec import plain
 from .equipment_advisor import validate
 
-VERSION = "workbook-engineer-2"
+VERSION = "workbook-engineer-3.1-batched"
 REF = obj({"sheet": TEXT, "cell": TEXT})
 OBSERVATION = obj(
     {
@@ -93,7 +93,7 @@ For an existing record use its key; new records use a unique temporary key of yo
 A new identifier/name must have workbook identity_sources. Normalise tag punctuation
 and interpret abbreviations using process context. A bioreactor may use an agitated
 vessel costing proxy; a pH adjustment unit is not automatically a pump because of P.
-Record classification/name/rationale for ALL equipment even if no numeric changes needed.
+Record classification/name/rationale for ALL equipment supported in this review region even if no numeric changes needed. Check register_keys and its reviewed names/types before adding a new identity. A supporting worksheet mentioning an already identified unit is NOT evidence of an additional physical unit. Reuse an existing key when identity is supported; flag uncertain aliases rather than assuming extra installed equipment. A/B/AB suffixes can indicate parallel/duty/standby units; do not equate spellings with equipment counts or silently cost a base tag and its AB variant twice. Flag aliases for confirmation.
 Observations cite the value cell; Python reads the actual value and calculates unit
 conversions. Do not output a numerical replacement. Cite unit and label cells even if
 on separate rows/columns/worksheets. For unknown units retain the property and explain
@@ -157,32 +157,299 @@ def context_for(parsed, description):
         "workbook": report["filename"],
         "worksheets": cells,
         "python_records": records,
+        "register_keys": [
+            {
+                "key": e["key"],
+                "kind": e["kind"],
+                "identifier": e["identifier"],
+                "classification": next(
+                    (
+                        v.get("normalized_value")
+                        for v in reversed(e["values"])
+                        if v["property"] == "type"
+                    ),
+                    "",
+                ),
+                "name": next(
+                    (
+                        v.get("normalized_value")
+                        for v in reversed(e["values"])
+                        if v["property"] == "name"
+                    ),
+                    "",
+                ),
+                "sheet": e["id_evidence"]["sheet"],
+                "cell": e["id_evidence"]["cell"],
+            }
+            for e in parsed["report"]["entities"]
+        ],
         "python_connections": report["connections"],
         "source_cells_truncated": parsed["source_cells_truncated"],
     }
 
 
+def review_contexts(parsed, description, budget=90000):
+    """Partition complete row groups, then attach compact relevant Python records.
+
+    Every supplied source cell appears in at least one context. Equipment/identity
+    keys remain global so per-region interpretations can be reconciled. Large
+    rows split safely with coverage disclosed; no summary substitutes for cells.
+    """
+    from collections import defaultdict
+
+    from openpyxl.utils import coordinate_to_tuple
+
+    grouped = defaultdict(list)
+    for cell in parsed["source_cells"]:
+        grouped[cell["sheet"], coordinate_to_tuple(cell["cell"])[0]].append(cell)
+    batches, current, size = [], [], 0
+    for cells in grouped.values():
+        for cell in cells:
+            length = len(json.dumps(cell, default=str))
+            if current and size + length > budget:
+                batches.append(current)
+                current, size = [], 0
+            current.append(cell)
+            size += length
+    if current:
+        batches.append(current)
+    contexts = []
+    for batch in batches:
+        positions = {(c["sheet"], c["cell"]) for c in batch}
+        records = []
+        for entity in parsed["report"]["entities"]:
+            observations = [
+                v for v in entity["values"] if (v["sheet"], v["cell"]) in positions
+            ]
+            identity = entity["id_evidence"]
+            if (
+                not observations
+                and (identity["sheet"], identity["cell"]) not in positions
+            ):
+                continue
+            records.append(
+                {
+                    "key": entity["key"],
+                    "kind": entity["kind"],
+                    "identifier": entity["identifier"],
+                    "identity": {
+                        k: identity.get(k) for k in ("sheet", "cell", "original_value")
+                    },
+                    "observations": [
+                        {
+                            k: v.get(k)
+                            for k in (
+                                "id",
+                                "property",
+                                "component",
+                                "sheet",
+                                "cell",
+                                "original_unit",
+                                "normalized_value",
+                                "normalized_unit",
+                            )
+                        }
+                        for v in observations
+                    ],
+                }
+            )
+        # Supply the exact identity/header cells needed to check mid-table
+        # chunks independently; repeated references are not duplicated streams.
+        lookup = {(c["sheet"], c["cell"]): c for c in parsed["source_cells"]}
+        dependency_positions = set(positions)
+        for entity in parsed["report"]["entities"]:
+            relevant = [
+                v for v in entity["values"] if (v["sheet"], v["cell"]) in positions
+            ]
+            if relevant:
+                dependency_positions.add(
+                    (entity["id_evidence"]["sheet"], entity["id_evidence"]["cell"])
+                )
+                for value in relevant:
+                    dependency_positions.update(
+                        (value["sheet"], cell) for cell in value.get("header_cells", [])
+                    )
+        expanded_batch = [
+            *batch,
+            *[
+                lookup[p]
+                for p in sorted(dependency_positions - positions)
+                if p in lookup
+            ],
+        ]
+        cells_by_sheet = defaultdict(list)
+        for cell in expanded_batch:
+            cells_by_sheet[cell["sheet"]].append([cell["cell"], cell["value"]])
+        context = {
+            "version": VERSION,
+            "description": description,
+            "workbook": parsed["report"]["filename"],
+            "worksheets": dict(cells_by_sheet),
+            "python_records": records,
+            "register_keys": [
+                {
+                    "key": e["key"],
+                    "kind": e["kind"],
+                    "identifier": e["identifier"],
+                    "classification": next(
+                        (
+                            v.get("normalized_value")
+                            for v in reversed(e["values"])
+                            if v["property"] == "type"
+                        ),
+                        "",
+                    ),
+                    "name": next(
+                        (
+                            v.get("normalized_value")
+                            for v in reversed(e["values"])
+                            if v["property"] == "name"
+                        ),
+                        "",
+                    ),
+                    "sheet": e["id_evidence"]["sheet"],
+                    "cell": e["id_evidence"]["cell"],
+                }
+                for e in parsed["report"]["entities"]
+            ],
+            "source_cells_truncated": parsed.get("source_cells_truncated", False),
+            "review_scope": "Review this source region, including missed records and misassociated headers. Other regions are reviewed separately. Do not infer absence from this partial view.",
+        }
+        # Compact unusually dense observation inventories without dropping source
+        # cells; identity and key remain available for source-backed corrections.
+        if len(json.dumps(context, default=str)) > 240000:
+            for record in context["python_records"]:
+                record["observations"] = []
+            context["review_scope"] += (
+                " Dense Python observations omitted; independently inspect every supplied source cell."
+            )
+        if len(json.dumps(context, default=str)) > 300000:
+            raise ValueError(
+                "A source cell/description exceeds safe review context; source retained for manual review"
+            )
+        contexts.append(context)
+    return contexts
+
+
 def review(parsed, description, store, provider):
-    context = context_for(parsed, description)
-    if len(json.dumps(context, default=str)) > 300000:
-        raise ValueError(
-            "Workbook review exceeds the bounded context; select a smaller workbook"
+    contexts = review_contexts(parsed, description)
+    combined = {
+        "summary": "",
+        "scope_notes": [],
+        "records": [],
+        "connections": [],
+        "products": [],
+        "questions": [],
+    }
+    decisions, summaries, coverage = [], [], []
+    working = copy.deepcopy(parsed)
+    cached_count = 0
+    reviewed_cells = set()
+    for index, context in enumerate(contexts):
+        context["register_keys"] = [
+            {
+                "key": e["key"],
+                "kind": e["kind"],
+                "identifier": e["identifier"],
+                "classification": next(
+                    (
+                        v.get("normalized_value")
+                        for v in reversed(e["values"])
+                        if v["property"] == "type"
+                    ),
+                    "",
+                ),
+                "name": next(
+                    (
+                        v.get("normalized_value")
+                        for v in reversed(e["values"])
+                        if v["property"] == "name"
+                    ),
+                    "",
+                ),
+                "sheet": e["id_evidence"]["sheet"],
+                "cell": e["id_evidence"]["cell"],
+            }
+            for e in working["report"]["entities"]
+        ]
+
+        def call(context=context):
+            value = provider.generate(
+                instructions=PROMPT, context=context, schema=SCHEMA
+            )
+            validate(value, SCHEMA)
+            return value
+
+        try:
+            response, cached = store.cached(
+                {"stage": VERSION, "model": provider.model, "context": context}, call
+            )
+            effective, applied = apply_review(working, response)
+            working["report"] = effective
+            decisions.extend(applied)
+            cached_count += int(cached)
+            reviewed_cells.update(
+                (sheet, cell[0])
+                for sheet, cells in context["worksheets"].items()
+                for cell in cells
+            )
+            summaries.append(response["summary"])
+            for key in (
+                "scope_notes",
+                "records",
+                "connections",
+                "products",
+                "questions",
+            ):
+                combined[key].extend(response.get(key, []))
+            coverage.append(
+                {
+                    "batch": index + 1,
+                    "status": "reviewed",
+                    "source_cells": sum(map(len, context["worksheets"].values())),
+                }
+            )
+        except Exception as exc:  # noqa: BLE001 -- retain successful regions, disclose failure
+            coverage.append(
+                {
+                    "batch": index + 1,
+                    "status": "unreviewed",
+                    "reason": type(exc).__name__,
+                    "source_cells": sum(map(len, context["worksheets"].values())),
+                }
+            )
+            combined["scope_notes"].append(
+                f"AI review region {index + 1} failed ({type(exc).__name__}); Python extraction retained. Region requires review."
+            )
+    failed = sum(item["status"] != "reviewed" for item in coverage)
+    combined["summary"] = "\n".join(summaries)
+    if parsed.get("source_cells_truncated"):
+        combined["scope_notes"].append(
+            "Source inventory was truncated: AI has NOT checked the whole workbook."
         )
-
-    def call():
-        value = provider.generate(instructions=PROMPT, context=context, schema=SCHEMA)
-        validate(value, SCHEMA)
-        return value
-
-    response, cached = store.cached(
-        {"stage": VERSION, "model": provider.model, "context": context}, call
-    )
-    effective, decisions = apply_review(parsed, response)
+    if not contexts:
+        combined["scope_notes"].append("No source cells available for AI review.")
+    result = working["report"]
+    result["review_summary"] = combined["summary"]
+    result["scope_notes"] = combined["scope_notes"]
+    result["product_candidates"] = combined["products"]
     return (
-        effective,
-        response,
+        result,
+        combined,
         decisions,
-        {"model": provider.model, "prompt_version": VERSION, "cached": cached},
+        {
+            "model": provider.model,
+            "prompt_version": VERSION,
+            "cached": cached_count == len(contexts),
+            "batches": coverage,
+            "status": "partial"
+            if failed or parsed.get("source_cells_truncated") or not contexts
+            else "reviewed",
+            "source_cells_checked": len(reviewed_cells),
+            "rejected_proposals": sum(
+                "not_applied" in d.get("status", "") for d in decisions
+            ),
+        },
     )
 
 
@@ -256,6 +523,18 @@ def apply_review(parsed, response):
                 source(ref)
             entity = entities.get(item["key"])
             if entity is None:
+                identities = {(r["sheet"], r["cell"]) for r in refs}
+                entity = next(
+                    (
+                        e
+                        for e in entities.values()
+                        if e.kind == item["kind"]
+                        and e.identifier == item["identifier"]
+                        and (e.id_evidence.sheet, e.id_evidence.cell) in identities
+                    ),
+                    None,
+                )
+            if entity is None:
                 tableid = _key("ai-table", report.sha256, refs[0]["sheet"])
                 if not any(t.id == tableid for t in report.tables):
                     report.tables.append(
@@ -298,9 +577,11 @@ def apply_review(parsed, response):
                     v = evidence(refs[0], prop, interpretation=item["rationale"])
                     v.id = _key("ai-classification", entity.key, prop)
                     v.normalized_value = value
-                    entity.values = [old for old in entity.values if old.id != v.id] + [
-                        v
-                    ]
+                    entity.values = [
+                        old
+                        for old in entity.values
+                        if old.id != v.id and old.property != prop
+                    ] + [v]
             for observation in item["observations"]:
                 try:
                     prop = observation["property"]
@@ -432,9 +713,20 @@ def apply_review(parsed, response):
     from backend.ingestion.workbook_pipeline import review_registers
 
     report.checks = []
-    report.issues = []
+    report.issues = [
+        i
+        for i in report.issues
+        if i.code
+        in {
+            "equipment_alias_review",
+            "workbook_warning",
+            "unclassified_sheet",
+            "unmapped_property",
+            "unresolved_formula",
+        }
+    ]
     review_registers(report)
-    report.parser_version += " + " + VERSION
+    report.parser_version = report.parser_version.split(" + ")[0] + " + " + VERSION
     effective = plain(report.model_dump(mode="json"))
     effective["extracted_on"] = extracted
     effective["review_summary"] = response.get("summary", "")

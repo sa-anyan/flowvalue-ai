@@ -8,6 +8,7 @@ from ...unit_conversion.models import InputRequirement
 
 # Source label -> (physical quantity, canonical chart-coordinate unit).
 SIZE_INPUTS = {
+    "actual chamber volume, ft3": ("volume", "ft3"),
     "1,000 lb carbon": ("mass", "1000 lb"),
     "1,000 scfm flue gas": ("standard_volume_flow", "1000 scfm"),
     "HP": ("power", "hp"),

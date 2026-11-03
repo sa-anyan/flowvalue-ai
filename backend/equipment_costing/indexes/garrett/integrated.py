@@ -28,7 +28,22 @@ DATA = Path(__file__).with_name("data")
 
 @lru_cache(maxsize=8)
 def _read(name):
-    return json.loads((DATA / name).read_text())
+    data = json.loads((DATA / name).read_text())
+    if name == "review_curves.json":
+        corrections = json.loads((DATA / "source_corrections.json").read_text())
+        for curve in data["curves"]:
+            correction = corrections["models"].get(curve["id"])
+            if not correction:continue
+            curve["source_correction"] = {**correction,"source":corrections["source"]}
+            curve["size_unit"] = "actual chamber volume, ft3"
+            if "points" in correction:
+                template=copy.deepcopy(curve["points"][0])
+                curve["points"]=[{**template,"size":p["size"],"source_price":p["price"]/1000,"cached_usd":p["price"],"source_correction":correction["note"],"purpose":"Graph anchor (unverified)","status":"Pending","confidence":"Low","size_unit":curve["size_unit"]} for p in correction["points"]]
+            else:
+                for point in curve["points"]:
+                    if point["size"] is not None:point["size"]*=correction["physical_volume_multiplier"]
+                    point["size_unit"]=curve["size_unit"]
+    return data
 
 
 def list_models():
@@ -248,6 +263,7 @@ def estimate_cost(
     source = _read("review_curves.json")
     evidence = {
         "curve_id": curve_id,
+        "source_correction":curve.get("source_correction"),
         "configuration": curve["configuration"],
         "printed_page": curve["printed_page"],
         "pdf_page": curve["pdf_page"],

@@ -98,3 +98,4 @@ class CostEstimate:
     anchor_cost: float | None = None
     exponent_basis: str = "printed size exponent"
     notes: tuple[str, ...] = ()
+    index_series: str = "CEPCI"

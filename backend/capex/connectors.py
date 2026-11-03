@@ -2,6 +2,8 @@
 
 import copy
 
+from backend.equipment_costing.cost_to_future.cost_translation import aggregation_basis
+
 from .models import CapexInputs, EquipmentCost
 
 
@@ -28,15 +30,15 @@ def prepare_capex_inputs(
                 line.equipment_tag
                 + ": canonical purchased-equipment component is unresolved"
             )
-        estimate = line.calculation.estimate
+        currency, index, period, series = aggregation_basis(line.calculation)
         records.append(
             EquipmentCost(
                 tag=line.equipment_tag,
                 purchased_cost=line.equipment_cost,
-                currency=estimate.currency,
-                period=estimate.period,
-                index_series="CEPCI",
-                index_value=estimate.cost_index,
+                currency=currency,
+                period=period,
+                index_series=series,
+                index_value=index,
                 quantity=1,
                 cost_scope="purchased_equipment",
                 delivery_basis=delivery_basis,

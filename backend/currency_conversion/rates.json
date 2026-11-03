@@ -1,0 +1,8 @@
+{
+  "date": "2026-11-02",
+  "base": "EUR",
+  "source": "European Central Bank euro foreign exchange reference rates",
+  "url": "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html",
+  "retrieved": "2026-11-02",
+  "rates": {"EUR":"1", "USD":"1.1216", "GBP":"0.83580", "JPY":"177.10", "CHF":"0.9193", "AUD":"1.6004", "CAD":"1.5673", "CNY":"7.4567", "INR":"106.4505", "ZAR":"18.6619"}
+}

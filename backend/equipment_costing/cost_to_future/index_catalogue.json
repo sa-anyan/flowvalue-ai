@@ -1,0 +1,17 @@
+{
+  "version": "2026-11-02",
+  "series": {
+    "US_CPI_U_NSA_1982_84": {
+      "currency": "USD",
+      "kind": "general_inflation_proxy",
+      "description": "BLS CUUR0000SA0, US city average all items, not seasonally adjusted, 1982-84=100; not a chemical equipment cost index",
+      "observations": {
+        "1987": {"value": "113.6", "frequency": "annual_average", "source": "https://www.bls.gov/cpi/tables/historical-cpi-u-201708.pdf", "location": "Table 24, annual average 1987, PDF page 4"},
+        "2018": {"value": "251.107", "frequency": "annual_average", "source": "https://www.bls.gov/regions/mid-atlantic/data/consumerpriceindexannualandsemiannual_table.htm", "location": "US city average, annual 2018"},
+        "2026-09": {"value": "336.940", "frequency": "monthly", "source": "https://www.bls.gov/news.release/archives/cpi_10142026.htm", "location": "Table 1, All items, September 2026; released 2026-10-14"}
+      }
+    }
+  },
+  "currency_proxy_series": {"USD": "US_CPI_U_NSA_1982_84"},
+  "note": "Pinned official observations, retrieved 2026-11-02. September is a monthly 2026 basis, not a full-year 2026 average. Add licensed equipment indices or currency-specific inflation series independently. No exchange-rate conversion."
+}

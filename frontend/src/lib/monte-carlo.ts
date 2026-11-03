@@ -1,0 +1,6 @@
+export type Parameter={id:string;label:string;enabled:boolean;targets:(string|number)[][];unit:string;distribution:string;minimum:number|null;mode:number|null;maximum:number|null;stddev:number|null;choices:(number|string)[];probabilities:number[];source:string;rationale:string;uncertainty:string;confidence:string;kind:string;hard_min:number|null;hard_max:number|null;strictly_positive:boolean};
+export type Settings={parameters:Parameter[];iterations:number;seed:number;operating_years:number;target_irr:number;label:string;baseline_revision:number|null;distinct:{equipment_key:string;rationale:string}[];correlations:{a:string;b:string;rho:number;rationale:string}[];aliases:{equipment_key:string;target_key:string;rationale:string}[]};
+export type Row=Record<string,unknown>;
+export type Job={id:string;status:string;completed:number;total:number;summary:Row|null;settings:Settings;preflight?:Row;error?:string};
+
+export async function mcApi(path:string,options?:RequestInit){const r=await fetch('/api/'+path,{cache:'no-store',...options});const v=await r.json();if(!r.ok)throw new Error(typeof v.detail==='string'?v.detail:Array.isArray(v.detail)?v.detail.map((d:{loc?:unknown[];msg?:string})=>`${d.loc?.join(' › ')}: ${d.msg}`).join('; '):'Monte Carlo request failed');return v;}

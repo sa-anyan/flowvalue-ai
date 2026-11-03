@@ -139,7 +139,8 @@ def property_info(label):
     if "vapour fraction" in t or "vapor fraction" in t:
         return "vapor_fraction", "fraction", None
     if (
-        "enthalpy flow" in t
+        ("enthalpy" in t and unit_key(u) in ("kw", "kj/h", "w", "mw"))
+        or "enthalpy flow" in t
         or "enthalpy rate" in t
         or "total enthalpy" in t
         and unit_key(u) in ("kw", "kj/h", "w", "mw")

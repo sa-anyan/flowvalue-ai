@@ -427,7 +427,7 @@ class ApiTests(unittest.TestCase):
                 client.post(
                     "/api/assessments",
                     content=b"x",
-                    headers={"content-length": str(6 * 1024**2)},
+                    headers={"content-length": str(22 * 1024**2)},
                 ).status_code,
                 413,
             )

@@ -13,7 +13,9 @@ from openpyxl.styles.numbers import is_date_format
 from openpyxl.utils import coordinate_to_tuple, get_column_letter, range_boundaries
 from openpyxl.utils.datetime import from_excel
 
-MAX_FILE = 4 * 1024 * 1024
+from backend.ingestion.limits import MAX_WORKBOOK_BYTES
+
+MAX_FILE = MAX_WORKBOOK_BYTES
 MAX_CELLS = 150_000
 MAX_ROWS = 10_000
 MAX_COLS = 256
@@ -63,7 +65,7 @@ def safe_filename(name):
 
 def read_book(content: bytes, name: str):
     if not content or len(content) > MAX_FILE:
-        raise ValueError("Workbook must be non-empty and at most 4 MiB.")
+        raise ValueError("Workbook must be non-empty and at most 20 MiB.")
     ext = PurePath(name.lower()).suffix
     warnings = []
     if ext in (".xlsx", ".xlsm"):

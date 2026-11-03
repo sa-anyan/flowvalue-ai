@@ -1,0 +1,39 @@
+"""Read-only current-price calculation view; saved inputs and evidence stay intact."""
+
+import copy
+import json
+from functools import lru_cache
+
+from backend.equipment_costing.cost_to_future.cost_translation import DEFAULT_POLICY
+from .pipeline import run
+
+
+@lru_cache(maxsize=8)
+def _calculate(payload):
+    report, description, plan = json.loads(payload)
+    return run(report, description, plan)
+
+
+def current_price_view(saved):
+    state = copy.deepcopy(saved)
+    if state.get('running') or not state.get('results'):
+        return state
+    policy = state.get('plan', {}).get('cost_translation', {})
+    if policy.get('enabled') is False:
+        state['price_view'] = {'status': 'historical', 'notice': 'Historical price basis explicitly selected.'}
+        return state
+    report = state.get('scoped_report') or state.get('effective_report') or state.get('parsed', {}).get('report')
+    if not report:
+        state['price_view'] = {'status': 'unavailable', 'notice': 'Current-price recalculation requires the saved engineering report.'}
+        return state
+    plan = copy.deepcopy(state['plan'])
+    plan['cost_translation'] = {**DEFAULT_POLICY, **policy}
+    # No provider calls, source edits, baseline writes or display-only multipliers.
+    results = _calculate(json.dumps([report, state.get('description', ''), plan], sort_keys=True))
+    state['results'] = copy.deepcopy(results)
+    state['price_view'] = {
+        'status': 'recalculated',
+        'target_period': plan['cost_translation']['target_period'],
+        'notice': 'Current-price calculation view. Original saved assumptions and historical source prices are retained. CPI purchasing-power proxy where a native equipment index is unavailable; not a vendor quotation.',
+    }
+    return state
