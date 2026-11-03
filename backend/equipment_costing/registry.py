@@ -36,7 +36,8 @@ def _not_found(curve_id):
 
 def _model(curve_id, source):
     if source == "nottingham":
-        return next((m for m in _nottingham_models() if m["id"] == curve_id), _not_found(curve_id))
+        models = [m for m in _nottingham_models() if m["id"] == curve_id]
+        return models[0] if models else _not_found(curve_id)
     if source != "garrett":
         raise ValueError("Unsupported equipment costing source")
     if curve_id not in _model_index():
