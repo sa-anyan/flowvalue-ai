@@ -321,8 +321,15 @@ def catalogue():
         "engineering_sizing_methods": list_methods(),
         "sizing_parameter_units": PARAMETER_UNITS,
         "equipment": [
-            {k: m[k] for k in ("id", "equipment", "configuration", "size_unit")}
-            for m in list_equipment_models()
+            {
+                "id": m["id"],
+                "equipment": m.get("equipment", m.get("category", "Equipment")),
+                "configuration": m["configuration"],
+                "size_unit": m["size_unit"],
+                "source": m.get("source", "garrett"),
+                "limitations": m.get("limitation"),
+            }
+            for m in list_equipment_models(source="all")
         ],
         "contracts": contracts(),
     }
