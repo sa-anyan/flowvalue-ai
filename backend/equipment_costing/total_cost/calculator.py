@@ -170,6 +170,11 @@ def calculate_total_cost(equipment, *, translation_policy=None, indices=None):
                 policy=translation_policy,
                 indices=indices,
             )
+            if item.get("source") == "nottingham":
+                # Convert dated GBP estimates to the study USD basis only after inflation translation.
+                # Pinned FX provenance is preserved in calculation.evidence.
+                from ..manual import convert_calculation
+                calculation = convert_calculation(calculation, item.get("calculation_currency", "USD"))
             if item.get("manual_price"):
                 from ..manual import convert_calculation
                 calculation = convert_calculation(calculation, item["manual_price"].get("calculation_currency"))
