@@ -12,6 +12,10 @@ Source: University of Nottingham, CEE Design Consultants, *Cost Estimation – C
 
 Model parameters use exact declared units; input conversion and engineering suitability remain separate. These estimates are provisional historical amounts. Installation is **not** supplied by these correlations. A full vessel or pressure-rated liquid CO2 package **is not priced solely by fabricated metal weight**.
 
+### Additional selectable graph candidates (section 4.4, PDF page 12)
+
+Two-stage ion-exchange and packaged reverse-osmosis **water-treatment packages** are exposed as `N501-WATER-ION_EXCHANGE_TWO_STAGE` and `N501-WATER-PACKAGED_RO` using approximate manual graph anchor readings for flows 25–200 m3/h, 2012 GBP. These are **low-confidence, visually interpolated**, require `allow_unverified=True`, and are not standalone tank prices. No extrapolation is allowed. They remain optional; users may select another index.
+
 ## Index switching in the existing workflow
 
 1. GET `/api/catalogue`: both Garrett and Nottingham models are returned with `source`, `id`, `size_unit` and limitations.
@@ -28,7 +32,7 @@ Manual prices and documented external comparables remain available through their
 - Section 3.2, page 5: plant-level Lang factors, already implemented under `backend/capex/indexes/nottingham`; solids 3.1, mixed 3.6, fluids 4.7, bio-processing 7.8, water treatment 3.5. Never apply as an additional equipment purchase price.
 - Section 3.3, page 6: `C2=C1*(S2/S1)^n`, generic size exponent approximately 0.6 only when an independent comparable `C1` exists; not an independent base price.
 - Section 3.4, page 7: Bridgewater whole-plant step-count capital formula, 2000 USD: `C=3200*N*(Q/s)^0.675` if Q >= 60,000 t/y; else `C=280000*N*(Q/s)^0.3`. Never allocate automatically to individual assets or stack on equipment-factor CAPEX.
-- Section 4.4, page 12: two graph-only curves, **two-stage ion exchange** and **packaged RO**, cost in 2012 GBP thousands vs water flow (0–250 m3/h). No printed coefficient/anchor table; **not coded or silently graph-digitised**. They price treatment packages, not individual IX vessels. Polishing adds 50% to mixed-bed IX or doubles RO for EDI (scope-specific).
+- Section 4.4, page 12: two graph-only curves, **two-stage ion exchange** and **packaged RO**, cost in 2012 GBP thousands vs water flow (axis 0–250 m3/h). No printed coefficients/anchor table; optional **approximate manual visual anchors** are coded and marked unverified. They price water-treatment packages, not individual IX vessels. Polishing notes: mixed-bed adds 50% to IX cost; EDI doubles RO plant cost, but these optional allowances are not added automatically.
 - Section 4.5, page 12: approximately GBP 10,000/m2 for pharmaceutical/bioprocessing **facility floor area** on a 2015 basis; do not use as reactor equipment purchase cost.
 - Section 4.6, page 12: external 2002 US DOE plant-unit cost curves at https://www.osti.gov/scitech/servlets/purl/797810; not inspected or imported.
 
