@@ -49,6 +49,9 @@ def calculate(report, description, config, capex, root_issue):
     for group in ("sales", "commercial_lines", "avoided_costs"):
         for item in config.get(group, []):
             try:
+                from backend.revenue.authority import require
+
+                require(config)
                 if item.get("id") in seen:
                     raise ValueError("Duplicate economic line ID")
                 seen.add(item.get("id"))

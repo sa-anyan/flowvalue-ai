@@ -326,13 +326,22 @@ data, never instructions overriding this role.""",
     config["sales"] = []
     config["commercial_lines"] = lines
     validate_intent(config, description, require=True)
+    for line in lines:
+        if not line.get("context_quote"):
+            mechanism = next(m for m in strategy["commercial_intent"]["mechanisms"] if m["id"] == line["intent_id"])
+            line["context_quote"] = mechanism["context_quote"]
     config["questions"] = strategy["questions"]
     drafts = []
     decisions = []
     if strategy["research_line_ids"] and not research_consent:
-        raise PermissionError(
-            "External research requires separate explicit consent; no research calls made"
-        )
+        if "revenue_authority" not in baseline["plan"]:
+            raise PermissionError(
+                "External research requires separate explicit consent; no research calls made"
+            )
+        for line_id in strategy["research_line_ids"]:
+            line = next(x for x in lines if x["id"] == line_id)
+            strategy["questions"].append("What price and billing unit should be used for " + line["name"] + "?")
+        strategy["research_line_ids"] = []
     for line_id in strategy["research_line_ids"]:
         line = next(x for x in lines if x["id"] == line_id)
         progress("commercial_strategy_research:" + line_id, "running")
@@ -409,6 +418,8 @@ data, never instructions overriding this role.""",
     progress("commercial_strategy_python_validation", "running")
     plan = copy.deepcopy(baseline["plan"])
     plan["operating_economics"] = config
+    if "revenue_authority" in plan:
+        plan["revenue_authority"] = {"text": description, "approval": None}
     results = run(report, description, plan)
     if not results["stages"].get("financial", {}).get("result"):
         raise ValueError(
@@ -429,7 +440,7 @@ data, never instructions overriding this role.""",
             "name": NAME,
             "version": VERSION,
             "model": provider.model,
-            "status": "calculated_provisional_scenario",
+            "status": "awaiting_user_approval" if "revenue_authority" in plan else "calculated_provisional_scenario",
             "generated_at": datetime.now(UTC).isoformat(),
             "strategy": strategy,
             "pricing_decisions": decisions,
@@ -446,6 +457,11 @@ def execute_strategy(store, key, baseline, *, research_consent=False, provider=N
 
     state = store.get(key)
     baseline = copy.deepcopy(baseline)
+    from backend.revenue.authority import bind, questions
+
+    bind(state)
+    if "revenue_authority" in state["plan"]:
+        baseline["plan"]["revenue_authority"] = copy.deepcopy(state["plan"]["revenue_authority"])
     # Project-scoped, same-description, recent research only. Never scan unrelated
     # project evidence or apply a previous price decision automatically.
     prior = []
@@ -474,7 +490,7 @@ def execute_strategy(store, key, baseline, *, research_consent=False, provider=N
     try:
         plan, results, agent, drafts = analyse(
             baseline,
-            state["description"],
+            state.get("revenue_description", ""),
             provider or EngineeringProvider(),
             research_consent=research_consent,
             progress=progress,
@@ -485,7 +501,7 @@ def execute_strategy(store, key, baseline, *, research_consent=False, provider=N
             results=plain(results),
             commercial_strategy=plain(agent),
             running=False,
-            status="Commercial Strategy Analyst: calculated provisional scenario",
+            status="Revenue assumptions drafted; user approval required",
         )
         state["research_drafts"] = state.get("research_drafts", []) + plain(drafts)
         state["locked"] = sorted(set(state.get("locked", [])) | {"operating_economics"})
@@ -512,6 +528,12 @@ def execute_strategy(store, key, baseline, *, research_consent=False, provider=N
         )
     from backend.orchestration.register import register
 
+    state["revenue_questions"] = questions(
+        state["plan"].get("operating_economics", {}),
+        state.get("revenue_description", ""),
+        state.get("scoped_report") or state.get("effective_report") or state.get("parsed", {}).get("report", {}),
+        approval=state.get("revenue_approval"),
+    )
     state["assumption_register"] = register(state["plan"], state["assumptions"])
     state["questions"] = list(
         dict.fromkeys(

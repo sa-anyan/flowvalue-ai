@@ -1,1 +1,15 @@
-{"$schema":"https://openapi.vercel.sh/vercel.json","framework":"nextjs","buildCommand":"npm run build","functions":{"src/app/api/[...path]/route.ts":{"maxDuration":60}}}
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "functions": {
+    "src/app/api/[...path]/route.ts": {
+      "maxDuration": 60
+    }
+  },
+  "git": {
+    "deploymentEnabled": {
+      "codex/charlie-human-study-pricing": false
+    }
+  }
+}

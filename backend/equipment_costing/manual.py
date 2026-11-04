@@ -13,6 +13,35 @@ from .indexes.garrett.integrated import CostingResult
 from .models import CostEstimate, positive
 
 
+def validate_price_source(price):
+    """Imported project answers need a separate explicit user edit, not a seeded flag."""
+    serialized = json.dumps(
+        {
+            k: price.get(k)
+            for k in (
+                "source",
+                "source_url",
+                "source_record",
+                "cost_origin",
+                "cost_status",
+                "origin",
+            )
+        },
+        sort_keys=True,
+    ).lower()
+    token = re.sub(r"[^a-z0-9]", "", serialized)
+    circular = (
+        "task2charlieeconomics" in token
+        or price.get("cost_status") in {"project_benchmark", "provisional_proxy"}
+        or price.get("cost_origin")
+        in {"previous_capex", "project_total", "auto_project_benchmark"}
+    )
+    if circular and price.get("approval_origin") != "explicit_user_edit":
+        raise ValueError(
+            "Historical project/workbook or previous CAPEX price is reference-only; explicit user price approval is required"
+        )
+
+
 def manual_result(price):
     if not isinstance(price, dict):
         raise TypeError("Manual price must be a structured record")
@@ -25,6 +54,7 @@ def manual_result(price):
         raise ValueError("Manual cost year must be YYYY or YYYY-MM")
     if price.get("approved") is not True:
         raise ValueError("Manual price requires explicit user approval")
+    validate_price_source(price)
     amount = positive(price.get("amount"), "manual per-unit price")
     scope = price.get("cost_scope")
     factor = price.get("installation_factor")
