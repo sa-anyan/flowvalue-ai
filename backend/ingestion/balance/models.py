@@ -1,5 +1,6 @@
 """Layout-independent evidence records. Verified means source-supported, not plant certification."""
 
+from datetime import date
 from typing import Literal
 
 from pydantic import Field
@@ -81,6 +82,7 @@ class Connection(Model):
 class BalanceReport(Model):
     schema_version: Literal["flowvalue-balance-v1"] = "flowvalue-balance-v1"
     parser_version: str = "1.0.0"
+    extracted_on: date | None = None
     filename: str = Field(max_length=255)
     sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     sheets: list[dict[str, str | int | bool]] = Field(max_length=40)

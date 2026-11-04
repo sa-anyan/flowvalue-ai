@@ -63,7 +63,8 @@ def derive_size(proposal, report):
     parameters = sizing.get("parameters", {})
     for name in ("density_kg_m3", "residence_time_h", "working_fraction"):
         if name in parameters:
-            sizing[name] = parameters[name]["value"]
+            record = parameters[name]
+            sizing[name] = record["value"] if isinstance(record, dict) else record
     from backend.engineering_sizing.registry import METHODS
 
     if sizing.get("method") in METHODS:

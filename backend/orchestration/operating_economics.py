@@ -541,6 +541,8 @@ def _costs_for_year(report, config, basis, hours, ramp, year, *, partial=False):
                     (definition.id,),
                     rate=choice["fraction"],
                     base=definition.base,
+                    override=choice.get("override", False),
+                    override_reason=choice.get("override_reason", ""),
                 )
             )
     return tuple(costs), detail

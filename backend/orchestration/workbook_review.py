@@ -22,7 +22,7 @@ from backend.revenue.advisor import TEXT, obj
 from .codec import plain
 from .equipment_advisor import validate
 
-VERSION = "workbook-engineer-3.1-batched"
+VERSION = "workbook-engineer-3.2-stable-source-ids"
 REF = obj({"sheet": TEXT, "cell": TEXT})
 OBSERVATION = obj(
     {
@@ -116,7 +116,15 @@ physical quantities, no fabricated citations, no financial arithmetic, no code.
 
 
 def _key(kind, *parts):
-    return kind + ":" + hashlib.sha256(repr(parts).encode()).hexdigest()[:32]
+    # Saved JSON sorts object keys; source identity must survive that round trip.
+    payload = json.dumps(
+        parts,
+        sort_keys=True,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        allow_nan=False,
+    )
+    return kind + ":" + hashlib.sha256(payload.encode()).hexdigest()[:32]
 
 
 def context_for(parsed, description):
@@ -604,7 +612,8 @@ def apply_review(parsed, response):
                     )
                     # Preserve each source location used to interpret split units/headers.
                     v.note += "; interpretation sources: " + json.dumps(
-                        observation["unit_sources"] + observation["label_sources"]
+                        observation["unit_sources"] + observation["label_sources"],
+                        sort_keys=True,
                     )
                     replacements = set(observation["replaces_evidence_ids"])
                     known = {old.id: old for old in entity.values}
