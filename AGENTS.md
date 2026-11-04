@@ -2,6 +2,7 @@
 
 ## Source-of-truth reading order
 
+0. [Engineering onboarding, architecture memory and collaborator brief](docs/FLOWVALUE_ENGINEER_ONBOARDING.md): read this first when joining the project or handing work to another engineer/Codex. It records founder intent, tested versus planned functions, data-flow boundaries, recent architecture diagnostic and agreed task ownership. It supplements, but does not override, the canonical product specification or current code.
 1. [Canonical founder product specification](docs/analyst-workflow-specification.md): full unchanged product vision, scope and acceptance requirements.
 2. [Complete A–I build roadmap](docs/product-build-roadmap.md): phases, dependencies, test gates and status. Read the **R39 cross-phase roadmap** before implementing natural-language opportunities.
 3. For relevant implementation work: [AI/research](docs/phase-3-ai.md), [calculation basis](docs/calculation_basis.md), [process/engineering integration](docs/phase-4-engineering.md), [unit analyst](docs/phase-b-engineering-analyst.md), and [future release gate](docs/phase-5-release.md).
