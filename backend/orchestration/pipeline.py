@@ -419,7 +419,14 @@ def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges
         from .operating_economics import calculate_operating_study
 
         def coupled():
-            config = plan["operating_economics"]
+            config = copy.deepcopy(plan["operating_economics"])
+            # Client/AI-editable assumptions cannot supply their own approval.
+            config.pop("_revenue_authority", None)
+            if "revenue_authority" in plan:
+                from backend.revenue.authority import runtime
+
+                config["_revenue_authority"] = runtime(config, plan["revenue_authority"], report)
+            objects["operating_config"] = config
             translation_audit = []
             if translation_policy and translation_policy.get("enabled") is not False:
                 from backend.equipment_costing.cost_to_future.operating_prices import (
@@ -517,6 +524,8 @@ def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges
         }
 
     def revenue():
+        if "revenue_authority" in plan:
+            raise ValueError("Use the Revenue Box and approve its shared commercial assumptions before calculating income")
         config = copy.deepcopy(plan.get("revenue", {}))
         # Physical quantities cannot be authored by an LLM or copied from an unrelated stream.
         source = {s["id"]: s for s in source_streams(report)}
@@ -611,6 +620,8 @@ def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges
     stage("opex", opex)
 
     def financial():
+        if "revenue_authority" in plan:
+            raise ValueError("Review Revenue Box assumptions through the shared operating study before financial calculation")
         config = copy.deepcopy(plan.get("financial", {}))
         assumptions = construct(FinancialAssumptions, config.pop("assumptions"))
         if not (

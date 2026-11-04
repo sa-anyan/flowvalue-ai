@@ -111,7 +111,7 @@ def require_resolved_intent(config, description):
         )
 
 
-def capture_manual_methods(config, reason):
+def capture_manual_methods(config, reason, *, revenue_box=None):
     """An explicit saved user edit may revise the interpreted commercial strategy."""
     if "commercial_intent" not in config:
         return config
@@ -121,11 +121,13 @@ def capture_manual_methods(config, reason):
     mechanisms = []
     for line, category in rows:
         line["intent_id"] = line["id"]
+        if revenue_box is not None and not line.get("context_quote"):
+            line["context_quote"] = revenue_box
         mechanisms.append(
             {
                 "id": line["id"],
                 "category": category,
-                "context_quote": reason,
+                "context_quote": reason if revenue_box is None else revenue_box,
                 "interpretation": "Explicit user-edited revenue line: "
                 + line.get("name", line["id"]),
             }

@@ -55,6 +55,19 @@ def plan_for(report):
     }
     tank = next(e for e in report["entities"] if e["kind"] == "equipment")
     config["origin"] = MARK
+    config["sales"][0]["intent_id"] = "sale"
+    config["commercial_intent"] = {
+        "status": "explicit",
+        "mechanisms": [
+            {
+                "id": "sale",
+                "category": "product_sales",
+                "context_quote": "sells treated water",
+                "interpretation": MARK,
+            }
+        ],
+        "questions": [],
+    }
     config["financial"].update(
         operating_years=20, production_ramp=[1] * 20, depreciation_years=20
     )
@@ -164,7 +177,13 @@ class StageConnectionTests(unittest.TestCase):
             "backend.orchestration.service.propose", side_effect=AssertionError("No AI")
         ):
             store = Store(Path(folder) / "test.db")
-            state = new_assessment(store, data, "synthetic-balance.xlsx", DESCRIPTION)
+            state = new_assessment(
+                store,
+                data,
+                "synthetic-balance.xlsx",
+                DESCRIPTION,
+                "sells treated water",
+            )
             parsed = parse(data, state["filename"])
             # No extra-field workaround: the parser output is the canonical contract.
             BalanceReport.model_validate(parsed["report"])
@@ -173,6 +192,9 @@ class StageConnectionTests(unittest.TestCase):
             )
             state.update(parsed=parsed, plan=plan_for(parsed["report"]), running=False)
             state = store.put(state, state["revision"])
+            from backend.revenue.authority import update
+
+            state = update(store, state["id"], state["revision"], approve=True)
             a = execute(store, state["id"], use_ai=False)
             self.check_connected(a)
             baseline = store.version(state["id"], "Baseline")
@@ -189,6 +211,8 @@ class StageConnectionTests(unittest.TestCase):
             config = copy.deepcopy(b["plan"]["operating_economics"])
             config["operating"]["days_per_year"] /= 2
             edit(store, state["id"], b["revision"], "operating_economics", config, MARK)
+            edited = store.get(state["id"])
+            update(store, state["id"], edited["revision"], approve=True)
             c = execute(store, state["id"], use_ai=False)
             self.check_connected(c)
             self.assertEqual(self.capex(c), self.capex(b))

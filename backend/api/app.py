@@ -48,6 +48,13 @@ class Rerun(BaseModel):
     use_ai: bool = False
 
 
+class RevenueAuthorityRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    revision: int
+    revenue_description: str | None = Field(default=None, max_length=6000)
+    approve: bool = False
+
+
 class NamedVersion(BaseModel):
     name: str = Field(min_length=1, max_length=120)
 
@@ -274,6 +281,13 @@ def patch(key: str, change: Edit):
     )
 
 
+@app.post("/api/assessments/{key}/revenue-authority")
+def revenue_authority(key: str, options: RevenueAuthorityRequest):
+    from backend.revenue.authority import update
+
+    return update(store, key, options.revision, text=options.revenue_description, approve=options.approve)
+
+
 @app.post("/api/assessments/{key}/run", status_code=202)
 def rerun(key: str, options: Rerun):
     state = store.get(key)
@@ -458,15 +472,10 @@ def commercial_strategy(key: str, options: CommercialStrategyRequest):
         raise HTTPException(
             409, "Wait for assessment completion or reload current revision"
         )
-    if (
-        not (baseline.get("results") or {})
-        .get("stages", {})
-        .get("financial", {})
-        .get("result")
-    ):
+    if not baseline.get("plan", {}).get("operating_economics"):
         raise HTTPException(
             422,
-            "A calculated baseline is required for this commercial strategy scenario",
+            "An operating-study draft is required before interpreting a new commercial scenario",
         )
     if not lock.acquire(blocking=False):
         raise HTTPException(409, "Another assessment is running")
@@ -489,6 +498,10 @@ def commercial_strategy(key: str, options: CommercialStrategyRequest):
                 "status": "queued",
             },
         )
+        from backend.revenue.authority import bind
+
+        draft.pop("revenue_approval", None)
+        bind(draft)
         created = store.create(draft, content)
 
         def work():

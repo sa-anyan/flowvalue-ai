@@ -58,6 +58,9 @@ def new_assessment(store, content, filename, description, revenue_description=""
 
 def execute(store, key, *, content=None, use_ai=False, provider=None):
     state = store.get(key)
+    from backend.revenue.authority import bind
+
+    bind(state)
     from backend.equipment_costing.cost_to_future.cost_translation import DEFAULT_POLICY
 
     if state["plan"].get("operating_economics") or not any(
@@ -109,6 +112,7 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
                 progress("engineering_review", "unavailable")
             reviewed = dict(
                 state["parsed"],
+                revenue_box=state.get("revenue_description", ""),
                 effective_report=state.get(
                     "effective_report", state["parsed"]["report"]
                 ),
@@ -366,6 +370,14 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
             if isinstance(exc, ValueError)
             else "Assessment failed; source retained for review"
         )
+    from backend.revenue.authority import questions
+
+    state["revenue_questions"] = questions(
+        state["plan"].get("operating_economics", {}),
+        state.get("revenue_description", ""),
+        state.get("scoped_report") or state.get("effective_report") or state.get("parsed", {}).get("report", {}),
+        approval=state.get("revenue_approval"),
+    )
     state["running"] = False
     save()
     return state
@@ -413,7 +425,7 @@ def edit(store, key, revision, section, value, rationale):
             ]
 
         if methods(value) != methods(state["plan"].get(section, {})):
-            value = capture_manual_methods(value, rationale)
+            value = capture_manual_methods(value, rationale, revenue_box=state.get("revenue_description", ""))
     if state.get("results") is not None:
         state["edit_baseline"] = {"revision": state["revision"], "results": copy.deepcopy(state["results"]), "plan": copy.deepcopy(state["plan"])}
     state["plan"][section] = value

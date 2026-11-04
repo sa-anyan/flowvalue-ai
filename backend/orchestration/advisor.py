@@ -137,6 +137,7 @@ def propose(
         "calculated_stage_summary": stage_results or {},
         "model": provider.model,
         "description": description,
+        "revenue_box": parsed.get("revenue_box", ""),
         "report": {
             "entities": [
                 {
