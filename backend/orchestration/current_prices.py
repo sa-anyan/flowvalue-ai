@@ -16,7 +16,19 @@ def _calculate(payload):
 
 def current_price_view(saved):
     state = copy.deepcopy(saved)
+    from backend.revenue.authority import bind, questions
+
+    bind(state)
+    report = state.get('scoped_report') or state.get('effective_report') or state.get('parsed', {}).get('report')
+    if 'revenue_description' in state:
+        state['revenue_questions'] = questions(state.get('plan', {}).get('operating_economics', {}), state.get('revenue_description', ''), report or {}, approval=state.get('revenue_approval'))
+        if state.get('results') and state['revenue_questions']:
+            for name in (('revenue',) if state.get('workflow') == 'revenue' else ('revenue', 'financial')):
+                state['results'].setdefault('stages', {})[name] = {'status': 'pending_user_input', 'result': None, 'issues': state['revenue_questions']}
     if state.get('running') or not state.get('results'):
+        return state
+    if state.get('workflow') == 'revenue':
+        state['price_view'] = {'status': 'saved_revenue_basis', 'notice': 'Revenue uses its saved currency and price period. Equipment price escalation is outside this run.'}
         return state
     policy = state.get('plan', {}).get('cost_translation', {})
     if policy.get('enabled') is False:

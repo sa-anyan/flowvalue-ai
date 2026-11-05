@@ -1,15 +1,25 @@
 """Resource-bounded workbook worker; never evaluates formulas, VBA or external links."""
 
 import json
-import resource
 import sys
 from pathlib import Path
 
-if __name__ == "__main__":
+
+def apply_resource_limits():
+    # Windows has no resource module. The parent still isolates the process
+    # and enforces its wall-clock timeout and workbook/output bounds.
+    if sys.platform == "win32":
+        return
+    import resource
+
     resource.setrlimit(resource.RLIMIT_CPU, (20, 20))
     if sys.platform.startswith("linux"):
         resource.setrlimit(resource.RLIMIT_AS, (768 * 1024**2, 768 * 1024**2))
+
+
+if __name__ == "__main__":
     try:
+        apply_resource_limits()
         from backend.ingestion.balance.workbook import read_book, address
         from backend.ingestion.workbook_pipeline import parse_workbook
 

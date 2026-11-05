@@ -75,6 +75,11 @@ def production_schedule(config):
 
 
 def _revenue_project(report, description, config, basis, hours, ramp, prices):
+    from backend.revenue.authority import require
+
+    require(config)
+    if config.get("_revenue_authority"):
+        description = config["_revenue_authority"]["text"]
     from .commercial_pricing import adjusted_price
 
     streams = {}

@@ -284,6 +284,7 @@ class IntentTests(unittest.TestCase):
             "",
             {
                 "description": DESCRIPTION,
+                "revenue_box": DESCRIPTION,
                 "calculated_stage_summary": {
                     "capex": {"result": {"currency": "USD", "period": "early 1987"}}
                 },

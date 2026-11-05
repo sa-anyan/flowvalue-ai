@@ -5,6 +5,7 @@ import json
 import os
 import sqlite3
 import uuid
+from contextlib import contextmanager
 from pathlib import Path
 
 
@@ -24,8 +25,14 @@ class Store:
                 CREATE TABLE IF NOT EXISTS ai_cache (key TEXT PRIMARY KEY, value TEXT);""")
         os.chmod(self.path, 0o600)
 
+    @contextmanager
     def db(self):
-        return sqlite3.connect(self.path, timeout=10)
+        connection = sqlite3.connect(self.path, timeout=10)
+        try:
+            with connection:
+                yield connection
+        finally:
+            connection.close()
 
     def create(self, state, workbook):
         key = uuid.uuid4().hex

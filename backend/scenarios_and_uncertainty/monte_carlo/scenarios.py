@@ -8,6 +8,9 @@ from .discovery import get, set_value
 
 
 def prepare(state, settings):
+    from backend.revenue.authority import bind
+
+    state = bind(copy.deepcopy(state))
     plan = copy.deepcopy(state["plan"])
     from backend.equipment_costing.cost_to_future.cost_translation import DEFAULT_POLICY
 
