@@ -1,2 +1,2 @@
-import {MonteCarloWorkspace} from '@/components/monte-carlo-workspace';
+import {MonteCarloWorkspace} from '@/blocks/uncertainty/workspace';
 export default function Page(){return <MonteCarloWorkspace page="overview"/>;}

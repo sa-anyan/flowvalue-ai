@@ -293,7 +293,7 @@ class OperatingStudyLifecycleTests(unittest.TestCase):
         from unittest.mock import patch
 
         from backend.orchestration.codec import plain
-        from backend.orchestration.service import compare, edit, execute, new_assessment
+        from backend.orchestration.service import compare, edit, _execute_connected_reference as execute, new_assessment
         from backend.orchestration.store import Store
 
         report, config, capex = fixture()

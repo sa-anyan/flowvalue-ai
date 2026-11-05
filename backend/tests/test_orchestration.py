@@ -13,7 +13,7 @@ from backend.orchestration.advisor import propose
 from backend.orchestration.codec import construct, plain
 from backend.orchestration.ingest import parse
 from backend.orchestration.pipeline import empty_plan, run, source_streams
-from backend.orchestration.service import compare, edit, execute, new_assessment
+from backend.orchestration.service import compare, edit, _execute_connected_reference as execute, new_assessment
 from backend.orchestration.store import Store
 from backend.tests.test_financial_modelling import fixture as financial_fixture
 from backend.tests.test_opex import complete
@@ -180,7 +180,10 @@ class OrchestrationTests(unittest.TestCase):
         self.assertEqual(numeric["stages"]["capex"], textual["stages"]["capex"])
         self.assertIsNotNone(textual["stages"]["financial"]["result"]["ledger"])
 
-    def test_rerun_user_lock_persistence_and_comparison(self):
+    @patch("backend.revenue.authority.bind", side_effect=lambda state: state)
+    def test_rerun_user_lock_persistence_and_comparison(self, _historical_authority):
+        # Frozen connected-coordinator test predates Revenue Box binding. Current
+        # approval policy is tested independently; no live route uses this reference.
         with tempfile.TemporaryDirectory() as folder:
             store = Store(Path(folder) / "models.db")
             state = new_assessment(

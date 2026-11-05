@@ -1,26 +1,3 @@
 'use client';
-
-type Json=null|string|number|boolean|Json[]|{[key:string]:Json};
-type Row=Record<string,Json>;
-export type SizingMethod={id:string;parameters:string[];input:string;unit:string};
-const object=(v:Json|undefined):Row=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
-const label=(s:string)=>s.replaceAll('_',' ');
-export function EquipmentSizingEditor({value,methods,units,streams,onChange}:{value:Row;methods:SizingMethod[];units:Record<string,string[]>;streams:{key:string;identifier:string}[];onChange:(patch:Row)=>void}){
- const sizing=object(value.sizing),parameters={...object(sizing.parameters)};
- for(const name of ['residence_time_h','density_kg_m3','working_fraction'])if(!parameters[name]&&sizing[name]!==null&&sizing[name]!==undefined)parameters[name]={value:sizing[name],unit:units[name]?.[0]||'',status:'assumption',rationale:'Existing explicit sizing parameter'};
- const method=String(sizing.method||'direct');
- const definition=methods.find(m=>m.id===method);
- const names=Array.from(new Set([...(definition?.parameters||[]),...Object.keys(parameters),...(definition?.input==='volume_flow'?['density_kg_m3']:[])]));
- function setSizing(patch:Row){onChange({size:null,sizing:{...sizing,...patch}});}
- function parameter(name:string,patch:Row){const existing=object(parameters[name]);if(patch.value===null){const next={...parameters};delete next[name];setSizing({parameters:next,[name]:null});return;}setSizing({parameters:{...parameters,[name]:{unit:units[name]?.[0]||'',...existing,...patch,status:'user_override'}}});}
- return <div className="sizing-editor" aria-label="Engineering sizing assumptions">
-  <div className="sizing-editor-title"><h3>Design basis</h3><span className="badge">Editable scenario</span></div>
-  <p>Workbook observations stay unchanged. These inputs drive Python sizing and dependent economics.</p>
-  <div className="sizing-fields"><label className="field">Installed quantity<input type="number" min="1" step="1" value={String(value.quantity??1)} onChange={e=>onChange({quantity:e.target.value===''?null:Number(e.target.value)})}/></label><label className="field">Quantity / duty–standby basis<input value={String(value.quantity_rationale||'')} onChange={e=>onChange({quantity_rationale:e.target.value})}/></label>
-  <label className="field">Sizing calculation<select value={method} onChange={e=>{const selected=e.target.value;if(selected==='direct')onChange({sizing:null});else setSizing({method:selected,parameters:{},residence_time_h:null,density_kg_m3:null,working_fraction:null});}}><option value="direct">Supplied size / direct design input</option>{!methods.some(m=>m.id===method)&&method!=='direct'&&<option value={method}>{label(method)} · legacy method</option>}{methods.map(m=><option value={m.id} key={m.id}>{label(m.id)}</option>)}</select></label>
-  {method!=='direct'&&<><label className="field">Sizing stream<select value={String(sizing.stream_key||'')} onChange={e=>setSizing({stream_key:e.target.value||null})}><option value="">Select source stream</option>{streams.map(s=><option key={s.key} value={s.key}>{s.identifier}</option>)}</select></label>{method==='exchanger_area'&&<label className="field">Same-side outlet stream (enthalpy-difference method)<select value={String(sizing.outlet_stream_key||'')} onChange={e=>setSizing({outlet_stream_key:e.target.value||null})}><option value="">Not used</option>{streams.map(s=><option key={s.key} value={s.key}>{s.identifier}</option>)}</select></label>}</>}
-  </div>
-  {method!=='direct'&&names.map(name=>{const p=object(parameters[name]);return <details className="sizing-parameter" key={name}><summary>{label(name)} <span>{p.value===null||p.value===undefined?'Not specified':String(p.value)} {String(p.unit||units[name]?.[0]||'')} · {String(p.status||'assumption')}</span></summary><div className="sizing-fields">{['value','low','high'].map(field=><label className="field" key={field}>{label(field)}<input type="number" step="any" value={p[field]===null||p[field]===undefined?'':String(p[field])} onChange={e=>parameter(name,{[field]:e.target.value===''?null:Number(e.target.value)})}/></label>)}<label className="field">Unit<select value={String(p.unit||units[name]?.[0]||'')} onChange={e=>parameter(name,{unit:e.target.value})}>{(units[name]||[String(p.unit||'')]).map(u=><option value={u} key={u}>{u}</option>)}</select></label><label className="field">Engineering rationale<input value={String(p.rationale||'')} onChange={e=>parameter(name,{rationale:e.target.value})}/></label><label className="field">Source / design assumption<input value={String(p.source||'')} onChange={e=>parameter(name,{source:e.target.value})}/></label></div></details>})}
-  {method!=='direct'&&<small>Density is needed only when converting a liquid mass rate to volume. Residence time and EBCT are design assumptions unless supported by supplied design data. Clearing an optional parameter removes it when saving.</small>}
- </div>;
-}
+// Compatibility import; implementation belongs to its isolated block.
+export * from '@/blocks/equipment/sizing-editor';

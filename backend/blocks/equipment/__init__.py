@@ -1,0 +1,1 @@
+"""Independently executed equipment block."""

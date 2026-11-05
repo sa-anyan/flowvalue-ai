@@ -85,78 +85,40 @@ def test_mass_residence_and_volume_throughput_use_explicit_density():
             derive_size({"sizing": sizing}, report)
 
 
-def test_partial_equipment_batch_failure_preserves_other_selections():
-    from backend.orchestration.advisor import propose
+def test_partial_equipment_batch_failure_preserves_other_selections(tmp_path):
+    from backend.equipment_matching.service import match_report
+    from backend.orchestration.store import Store
+    from backend.tests.test_equipment_matching import Provider, MODEL, REPORT
+    import copy
 
-    entities = [
-        {
-            "key": f"u{i}",
-            "kind": "equipment",
-            "identifier": f"T-{i}",
-            "id_evidence": {"id": f"id{i}", "sheet": "Process", "cell": f"A{i + 1}"},
-            "stream_keys": [],
-            "values": [],
-        }
-        for i in range(7)
-    ]
-    parsed = {
-        "report": {"entities": entities, "connections": [], "coverage": "Test"},
-        "source_cells": [],
-        "source_cells_truncated": False,
-    }
+    report = copy.deepcopy(REPORT)
+    for i in range(1, 3):
+        entity = copy.deepcopy(REPORT["entities"][0])
+        entity["key"] = f"e{i+1}"
+        report["entities"].append(entity)
 
-    class Provider:
-        model = "fake-no-network"
+    class Partial(Provider):
+        def generate(self, **kw):
+            key = kw["context"]["equipment_register"][0]["equipment_key"]
+            if key == "e2":
+                raise TimeoutError("Independent failed batch")
+            result = super().generate(**kw)
+            result["matches"][0]["equipment_key"] = key
+            return result
 
-    class Cache:
-        def cached(self, key, call):
-            return call(), False
-
-    def generate(provider, instructions, context):
-        if context["equipment_batch"]["index"] == 2:
-            raise ValueError("Fake failure")
-        rows = [
-            {"equipment_key": e["key"], "curve_id": None, "size": 2, "size_unit": "m3"}
-            for e in context["report"]["entities"]
-            if e["kind"] == "equipment"
-        ]
-        return {
-            "sections": [
-                {
-                    "section": "equipment",
-                    "value_json": json.dumps(rows),
-                    "evidence_ids": [],
-                    "uncertainty": "Test",
-                },
-                {
-                    "section": "capex",
-                    "value_json": "{}",
-                    "evidence_ids": [],
-                    "uncertainty": "Test",
-                },
-            ],
-            "questions": [],
-        }
-
-    with patch(
-        "backend.orchestration.equipment_advisor.generate", side_effect=generate
+    with patch("backend.equipment_matching.service.BATCH_SIZE", 1), patch(
+        "backend.equipment_matching.service.catalogue", return_value=[MODEL]
     ):
-        result, _ = propose(
-            parsed,
-            "Synthetic process",
-            {},
-            [],
-            Cache(),
-            Provider(),
-            requested_sections=("equipment", "capex"),
+        result = match_report(
+            report, "Water transfer", Store(tmp_path / "partial.sqlite"), Partial()
         )
-    rows = json.loads(
-        next(s["value_json"] for s in result["sections"] if s["section"] == "equipment")
-    )
-    assert len(rows) == 7 and len({r["equipment_key"] for r in rows}) == 7
-    assert sum(r["size"] == 2 for r in rows) == 6
-    assert next(r for r in rows if r["equipment_key"] == "u6")["size"] is None
-    assert len([s for s in result["sections"] if s["section"] == "capex"]) == 1
+    assert result["summary"]["matched"] == 2
+    assert len(result["matches"]) == 3
+    assert [b["status"] for b in result["batches"]] == [
+        "matched",
+        "unavailable",
+        "matched",
+    ]
 
 
 def test_correction_batches_only_target_failed_equipment():

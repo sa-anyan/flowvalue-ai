@@ -19,6 +19,8 @@ class Evidence(Model):
     header_cells: list[str] = Field(default_factory=list, max_length=8)
     original_value: Scalar = None
     original_unit: str | None = None
+    number_format: str | None = None
+    display_value: str | None = None
     formula: str | None = None
     cached: bool = False
     property: str

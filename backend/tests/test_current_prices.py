@@ -1,6 +1,6 @@
 """Current-price views never rewrite a saved source or call an AI provider."""
 from unittest.mock import patch
-from backend.orchestration.current_prices import current_price_view, _calculate
+from backend.orchestration.current_prices import _legacy_current_price_view_for_reference as current_price_view, _calculate
 
 
 def test_current_view_recalculates_once_and_preserves_inputs():

@@ -182,13 +182,15 @@ for symbol, factor in [
         factor,
         aliases=("HP",) if symbol == "hp" else (),
         words=(
-            "refrigeration ton",
-            "refrigeration tons",
-            "ton of refrigeration",
-            "tons of refrigeration",
-        )
-        if symbol == "refrigeration_ton"
-        else (),
+            (
+                "refrigeration ton",
+                "refrigeration tons",
+                "ton of refrigeration",
+                "tons of refrigeration",
+            )
+            if symbol == "refrigeration_ton"
+            else ()
+        ),
     )
 # Boiler-horsepower identity only: ambiguous source footnote must not silently
 # make it mechanical horsepower or a standardized thermal watt rating.
@@ -232,3 +234,15 @@ add("kg/h/mmHg_abs", "vacuum_capacity", 1 / 3600 / 133.322387415)
 add("lb/h/mmHg_abs", "vacuum_capacity", POUND / 3600 / 133.322387415)
 
 ALIASES["ft_height"] = "ft"
+
+# Canonical ingestion pressure labels retain their gauge/absolute basis across
+# the parser -> conversion -> costing boundary. These are aliases, not new units.
+for _label, _symbol in {
+    "bar_gauge": "barg",
+    "bar_abs": "bara",
+    "bar_absolute": "bara",
+    "psi_gauge": "psig",
+    "psi_abs": "psia",
+    "psi_absolute": "psia",
+}.items():
+    ALIASES[key(_label)] = _symbol

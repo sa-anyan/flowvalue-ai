@@ -23,7 +23,7 @@ def plain(value):
 
 def construct(cls, value):
     """Only instantiate caller-selected types; reject extra fields and coercion surprises."""
-    if cls is typing.Any:
+    if cls is typing.Any or cls is object:
         return value
     origin, args = typing.get_origin(cls), typing.get_args(cls)
     if origin in (typing.Union, types.UnionType):

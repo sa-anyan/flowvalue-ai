@@ -1,5 +1,7 @@
 # FlowValue AI
 
+Current development checkpoint: [whole-build engineer handover](docs/handover/equipment-pipeline-checkpoint.md) on `codex/stage-isolation`. Includes known test failures and the pinned matching investigation.
+
 Current controlled rebuild: modular chemical-engineering techno-economic assessment,
 with a Python backend and Next.js frontend. The original application remains in the
 recovery checkpoint below. Historical acceptance documents describe their respective
@@ -7,7 +9,7 @@ versions; they are not certification of this rebuild.
 
 ## Current workspace
 
-Canonical local directory: `/Users/user/Documents/ChatGPT/Chemical Engineering Automation`.
+Use the root of your checked-out repository; historical absolute local paths are not portable.
 The current build includes equipment costing/unit conversion, CAPEX, OPEX, six-category
 Revenue, financial modelling, workbook ingestion, saved local assessments and the
 Commercial Strategy Analyst. Research and commercial assumptions remain reviewable;

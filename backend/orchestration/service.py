@@ -57,7 +57,52 @@ def new_assessment(store, content, filename, description, revenue_description=""
 
 
 def execute(store, key, *, content=None, use_ai=False, provider=None):
+    """Public compatibility entry: every workbook uses the shared stage workflow.
+
+    Saved inputs may be reused, but saved result numbers are never supplied to
+    the calculators. The Entry engineering action still stops after Equipment.
+    """
+    from backend.blocks.engineering_workflow import queue, run as run_engineering
+
     state = store.get(key)
+    if content is not None and content != store.workbook(key):
+        original = state
+        state = new_assessment(
+            store,
+            content,
+            original["filename"],
+            original.get("process_description", original.get("description", "")),
+            original.get("revenue_description", ""),
+        )
+        state.update(
+            plan=copy.deepcopy(original.get("plan", empty_plan())),
+            locked=copy.deepcopy(original.get("locked", [])),
+        )
+        state = store.put(state, state["revision"])
+        key = state["id"]
+    # Legacy new_assessment marked a not-yet-started source as running.
+    if (
+        state.get("execution_mode") is None
+        and state.get("running")
+        and state.get("results") is None
+        and state.get("progress") == [{"stage": "parse", "status": "queued"}]
+    ):
+        state["running"] = False
+        store.put(state, state["revision"])
+    queue(store, key)
+    return run_engineering(store, key, use_ai=use_ai, provider=provider)
+
+
+def _execute_connected_reference(
+    store, key, *, content=None, use_ai=False, provider=None
+):
+    """Retired connected coordinator, retained only by historical regression tests.
+
+    No API, UI, current view or public execute() action dispatches here.
+    """
+    state = store.get(key)
+    if state.get("execution_mode") == "isolated_stages_v1":
+        raise ValueError("Stages are disconnected. Select an individual stage to run.")
     from backend.revenue.authority import bind
 
     bind(state)
@@ -91,7 +136,9 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
             if provider is None:
                 try:
                     provider = EngineeringProvider()
-                except Exception:  # noqa: BLE001 -- deterministic path remains available
+                except (
+                    Exception
+                ):  # noqa: BLE001 -- deterministic path remains available
                     provider = None
             progress("engineering_review", "running")
             try:
@@ -104,7 +151,9 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
                 state["questions"] = interpretation["questions"]
                 state["ai"] = {"review": review_meta, "status": "reviewed"}
                 progress("engineering_review", review_meta.get("status", "reviewed"))
-            except Exception as exc:  # noqa: BLE001 -- independent stages continue on provider failure
+            except (
+                Exception
+            ) as exc:  # noqa: BLE001 -- independent stages continue on provider failure
                 state["ai"] = {
                     "status": "review_unavailable",
                     "notice": _diagnostic(exc),
@@ -260,10 +309,15 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
                     for section in response["sections"]:
                         name = section["section"]
                         if name not in state["locked"]:
-                            value = mark_ai(json.loads(section["value_json"]), evidence_ids=ids)
+                            value = mark_ai(
+                                json.loads(section["value_json"]), evidence_ids=ids
+                            )
                             if name == "equipment":
                                 from .approved_equipment import retain_approved
-                                value = retain_approved(state["plan"].get("equipment", []), value)
+
+                                value = retain_approved(
+                                    state["plan"].get("equipment", []), value
+                                )
                             state["plan"][name] = value
                             state["assumptions"][name] = dict(
                                 section,
@@ -290,15 +344,20 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
                             stage_results=feedback,
                             analyst_reviews=state["analyst_reviews"],
                         )
-                        state["ai"]["advisors"]["equipment_correction"] = (
-                            correction_meta
-                        )
+                        state["ai"]["advisors"][
+                            "equipment_correction"
+                        ] = correction_meta
                         for section in corrected["sections"]:
                             if section["section"] not in state["locked"]:
-                                value = mark_ai(json.loads(section["value_json"]), evidence_ids=ids)
+                                value = mark_ai(
+                                    json.loads(section["value_json"]), evidence_ids=ids
+                                )
                                 if section["section"] == "equipment":
                                     from .approved_equipment import retain_approved
-                                    value = retain_approved(state["plan"].get("equipment", []), value)
+
+                                    value = retain_approved(
+                                        state["plan"].get("equipment", []), value
+                                    )
                                 state["plan"][section["section"]] = value
                                 state["assumptions"][section["section"]] = dict(
                                     section,
@@ -326,7 +385,9 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
                         interim = run(report, state["description"], state["plan"])
                         state["results"] = interim
                     progress(stage_name, "proposed")
-                except Exception as exc:  # noqa: BLE001 -- retain independent engineering work
+                except (
+                    Exception
+                ) as exc:  # noqa: BLE001 -- retain independent engineering work
                     state["ai"].setdefault("advisor_errors", {})[
                         "+".join(requested)
                     ] = _diagnostic(exc)
@@ -349,7 +410,10 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
         )
         if state.get("edit_baseline"):
             from backend.equipment_resolution.comparison import compare_results
-            state["recalculation_comparison"] = compare_results(state["edit_baseline"]["results"], state["results"])
+
+            state["recalculation_comparison"] = compare_results(
+                state["edit_baseline"]["results"], state["results"]
+            )
         stages = state["results"]["stages"]
         if any(
             (s.get("result") or {}).get("complete") is False for s in stages.values()
@@ -363,7 +427,9 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
                 if stages.get("financial", {}).get("result")
                 else "incomplete_assessment; review stage issues"
             )
-    except Exception as exc:  # noqa: BLE001 -- always release running state at task boundary
+    except (
+        Exception
+    ) as exc:  # noqa: BLE001 -- always release running state at task boundary
         state["status"] = "failed"
         state["error"] = (
             str(exc)[:500]
@@ -375,7 +441,9 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
     state["revenue_questions"] = questions(
         state["plan"].get("operating_economics", {}),
         state.get("revenue_description", ""),
-        state.get("scoped_report") or state.get("effective_report") or state.get("parsed", {}).get("report", {}),
+        state.get("scoped_report")
+        or state.get("effective_report")
+        or state.get("parsed", {}).get("report", {}),
         approval=state.get("revenue_approval"),
     )
     state["running"] = False
@@ -398,20 +466,45 @@ def edit(store, key, revision, section, value, rationale):
         raise ValueError("Assessment changed; reload before editing")
     value = copy.deepcopy(value)
     if section == "equipment":
-        previous = {r.get("equipment_key"): r for r in state["plan"].get("equipment", [])}
+        previous = {
+            r.get("equipment_key"): r for r in state["plan"].get("equipment", [])
+        }
+
         def approve(rows, old_rows):
             old = {r.get("asset_id", r.get("equipment_key")): r for r in old_rows}
             for row in rows:
                 prior = old.get(row.get("asset_id", row.get("equipment_key")), {})
                 price = row.get("manual_price")
-                requested = bool(price.pop("approval_requested", False)) if price else False
+                requested = (
+                    bool(price.pop("approval_requested", False)) if price else False
+                )
                 prior_price = prior.get("manual_price") or {}
-                changed_price = bool(price) and any(price.get(k) != prior_price.get(k) for k in ("amount", "currency", "price_period", "source", "cost_scope", "purchased_component", "installation_factor"))
-                if price and price.get("approved") is True and (requested or prior_price.get("approved") is not True or changed_price):
+                changed_price = bool(price) and any(
+                    price.get(k) != prior_price.get(k)
+                    for k in (
+                        "amount",
+                        "currency",
+                        "price_period",
+                        "source",
+                        "cost_scope",
+                        "purchased_component",
+                        "installation_factor",
+                    )
+                )
+                if (
+                    price
+                    and price.get("approved") is True
+                    and (
+                        requested
+                        or prior_price.get("approved") is not True
+                        or changed_price
+                    )
+                ):
                     price["approval_origin"] = "explicit_user_edit"
                     price["approval_rationale"] = rationale
                 if row.get("physical_assets"):
                     approve(row["physical_assets"], prior.get("physical_assets", []))
+
         approve(value, list(previous.values()))
     if section == "operating_economics":
         from backend.revenue.commercial_intent import capture_manual_methods
@@ -425,9 +518,15 @@ def edit(store, key, revision, section, value, rationale):
             ]
 
         if methods(value) != methods(state["plan"].get(section, {})):
-            value = capture_manual_methods(value, rationale, revenue_box=state.get("revenue_description", ""))
+            value = capture_manual_methods(
+                value, rationale, revenue_box=state.get("revenue_description", "")
+            )
     if state.get("results") is not None:
-        state["edit_baseline"] = {"revision": state["revision"], "results": copy.deepcopy(state["results"]), "plan": copy.deepcopy(state["plan"])}
+        state["edit_baseline"] = {
+            "revision": state["revision"],
+            "results": copy.deepcopy(state["results"]),
+            "plan": copy.deepcopy(state["plan"]),
+        }
     state["plan"][section] = value
     state["locked"] = sorted(set(state["locked"]) | {section})
     state["assumptions"][section] = {
@@ -438,7 +537,12 @@ def edit(store, key, revision, section, value, rationale):
     }
     state["assumption_register"] = register(state["plan"], state["assumptions"])
     state["status"] = "stale; Run Again required"
-    state["results"] = None
+    if state.get("execution_mode") == "isolated_stages_v1":
+        from backend.blocks.execution import refresh
+
+        refresh(state)
+    else:
+        state["results"] = None
     return store.put(state, revision)
 
 

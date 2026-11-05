@@ -24,47 +24,68 @@ def annotate(result, report, plan):
         sizing = row.get("parsed_source", {}).get("sizing")
         status = {
             "identification": "registered",
-            "cost_method": "PRICED — USER"
-            if priced and p.get("manual_price")
-            else "PRICED — ANALOGY"
-            if priced
-            and (p.get("external_quote") or {}).get("method") == "engineering_analogy"
-            else "PRICED — BENCHMARK"
-            if priced and p.get("external_quote")
-            else "PRICED — MODEL"
-            if priced
-            else "UNRESOLVED",
-            "matching": "selected"
-            if row.get("curve_id")
-            else "candidate_available"
-            if candidates
-            else "unresolved",
+            "cost_method": (
+                "PRICED — USER"
+                if priced and p.get("manual_price")
+                else (
+                    "PRICED — ANALOGY"
+                    if priced
+                    and (p.get("external_quote") or {}).get("method")
+                    == "engineering_analogy"
+                    else (
+                        "PRICED — BENCHMARK"
+                        if priced and p.get("external_quote")
+                        else "PRICED — MODEL" if priced else "UNRESOLVED"
+                    )
+                )
+            ),
+            "matching": (
+                "selected"
+                if row.get("curve_id")
+                else "candidate_available" if candidates else "unresolved"
+            ),
             "candidate_curve_ids": candidates,
             "selected_curve_id": row.get("curve_id"),
-            "sizing": "calculated"
-            if sizing
-            else "direct_input"
-            if p.get("size") is not None
-            else "needs_review",
-            "pricing": "assumption_based_estimate"
-            if priced
-            else "alias_review"
-            if alias
-            else "unpriced",
+            "sizing": (
+                "calculated"
+                if sizing
+                else "direct_input" if p.get("size") is not None else "needs_review"
+            ),
+            "pricing": (
+                "assumption_based_estimate"
+                if priced
+                else "alias_review" if alias else "unpriced"
+            ),
             "scope_decision": p.get("scope_decision", "include"),
             "alias_of": p.get("alias_of"),
             "rationale": p.get("rationale", "No engineering selection returned"),
             "blockers": issues if not priced else [],
             "sizing_evidence": sizing,
-            "next_action": "review_assumptions"
-            if priced
-            else "confirm_alias"
-            if alias
-            else "review_sizing"
-            if candidates
-            else "offer_opt_in_model_research",
+            "next_action": (
+                "review_assumptions"
+                if priced
+                else (
+                    "confirm_alias"
+                    if alias
+                    else (
+                        "review_sizing" if candidates else "offer_opt_in_model_research"
+                    )
+                )
+            ),
         }
         row["decision"] = status
+        match = p.get("matching")
+        if match:
+            status["conceptual_matching"] = match
+            status["matching"] = match["match_status"] + " · " + match["match_method"]
+            status["rationale"] = match["reason"]
+            status["candidate_curve_ids"] = match["candidate_model_ids"]
+            if match["match_status"] != "matched":
+                status.update(
+                    next_action="review_conceptual_match", blockers=[match["reason"]]
+                )
+            elif not priced:
+                status["next_action"] = "supply_sizing_or_select_configuration"
         if not priced:
             queue.append(
                 {
@@ -182,7 +203,8 @@ def annotate(result, report, plan):
         row["pricing_status"] = label
         row["pricing_provenance"] = {
             "equipment_tag": row["equipment_tag"],
-            "classification": row.get("parsed_source", {}).get("classification") or estimate.get("equipment"),
+            "classification": row.get("parsed_source", {}).get("classification")
+            or estimate.get("equipment"),
             "sizing": row.get("parsed_source", {}).get("sizing"),
             "sizing_parameters": (proposal.get("sizing") or {}).get("parameters", {}),
             "model_id": row.get("curve_id"),
@@ -211,7 +233,11 @@ def annotate(result, report, plan):
             "target_period": estimate.get("period"),
             "reference_cost": row.get("reference_cost"),
             "status": label,
-            "unpriced_message": "UNPRICED — SUPPLIER QUOTE OR USER PRICE REQUIRED" if not priced and not label.startswith("ALIAS") else None,
+            "unpriced_message": (
+                "UNPRICED — SUPPLIER QUOTE OR USER PRICE REQUIRED"
+                if not priced and not label.startswith("ALIAS")
+                else None
+            ),
             "notice": "Escalation adjusts an existing estimate; it does not establish an independent equipment cost. CPI is purchasing-power proxy only.",
         }
         row["decision"]["cost_method"] = label

@@ -91,6 +91,9 @@ SOURCE_RECORDS = {
 
 
 def currency_view(saved, target_currency=None):
+    if saved.get('execution_mode') == 'isolated_stages_v1':
+        # Stage outputs keep the basis they were explicitly run in. No read-triggered engine calls.
+        return saved
     if not target_currency or saved.get("running") or not saved.get("results"):
         return saved
     state = copy.deepcopy(saved)

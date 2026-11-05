@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 from backend.ingestion.balance.models import BalanceReport
 from backend.orchestration.register import mark_ai
-from backend.orchestration.service import execute, new_assessment
+from backend.orchestration.service import _execute_connected_reference as execute, new_assessment
 from backend.orchestration.sizing import derive_size
 from backend.orchestration.store import Store
 from backend.orchestration.workbook_review import apply_review

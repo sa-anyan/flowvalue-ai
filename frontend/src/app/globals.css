@@ -451,3 +451,10 @@ a{text-decoration:none}a:hover{text-decoration:underline}aside{width:258px;paddi
 .mc-driver-track{position:relative;height:23px;overflow:visible}.mc-driver-track i{position:absolute;height:7px;border-radius:3px}.mc-driver-center{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--muted);opacity:.5}.mc-cash-fan{width:100%;max-height:280px;display:block;margin:15px 0}
 .mc-driver-track{overflow:hidden}
 .mc-methods{padding:10px 13px!important;margin:12px 0!important;box-shadow:none!important}.mc-methods summary{font-size:11px}
+
+/* Independent blocks: controls convey dependencies without implying an automatic pipeline. */
+.stage-control-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:1rem;margin-top:1rem}
+.stage-control-card{min-width:0;padding:1rem;border:1px solid var(--border,#dce4dc);border-radius:12px;background:var(--surface,#fff)}
+.stage-control-card .toolbar{flex-wrap:wrap;gap:.65rem}
+.stage-control-card small{display:block;margin:.5rem 0;overflow-wrap:anywhere}
+.stage-control-card p{overflow-wrap:anywhere}

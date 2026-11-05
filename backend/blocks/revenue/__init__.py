@@ -1,0 +1,1 @@
+"""Independently executed revenue block."""

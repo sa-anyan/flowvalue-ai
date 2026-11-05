@@ -5,6 +5,7 @@ from hashlib import sha256
 from math import isfinite
 
 from .models import BalanceReport, Entity, Evidence, Issue, Table
+from .display import source_display
 from .units import clean, convert, find_unit, number, unit_key
 from .workbook import address, read_book, safe_filename
 
@@ -325,6 +326,8 @@ class Parser:
             header_cells=list(dict.fromkeys(headers)),
             original_value=raw,
             original_unit=u,
+            number_format=cell.number_format or None,
+            display_value=source_display(raw, cell.number_format),
             formula=cell.formula,
             cached=cell.cached,
             property=prop,

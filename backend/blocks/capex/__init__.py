@@ -1,0 +1,1 @@
+"""Independently executed capex block."""

@@ -52,23 +52,10 @@ SCHEMA = obj(
         "questions": {"type": "array", "items": TEXT},
     }
 )
-PROMPT = """You are FlowValue's chemical engineer and techno-economic analyst, accompanying
-engineering interpretation, equipment model selection, CAPEX, OPEX, revenue and finance.
-The workbook has already been reviewed by an engineering LLM and normalised in Python.
-Use semantic process understanding, not exact equipment-name matching. Interpret
-abbreviations, service, connected streams, materials and pressure. A bioreactor can
-use an appropriate agitated-vessel proxy with additions/exclusions explained; a pH
-adjustment unit may be a stirred neutralisation tank, not a pump based on tag P alone.
-Choose actual available curve IDs/configurations. Explain proxy suitability, omitted
-features, size/design assumptions and uncertainty. No suitable physical basis means
-an unpriced item, but do not abandon independent equipment/stages. Select a plausible
-PRELIMINARY engineering scenario where justified; discrepancies become local notes,
-not a reason to return no useful model or demand every input be pre-approved.
-For sizing use direct workbook dimensions when present; otherwise propose explicit
-residence-time/working-volume or other supported sizing input assumptions with units
-and engineering basis. Python derives size using supported sizing methods. Never
-present an assumed size as extracted or independently validated. Graph-based models
-may set allow_unverified=true as a disclosed provisional estimate, not certification.
+PROMPT = """You are FlowValue's chemical-engineering economic analyst for CAPEX,
+OPEX, Revenue and Finance. Equipment matching is exclusively handled by
+backend.equipment_matching; never propose new equipment matches in these sections.
+Follow the authoritative Revenue Box; do not invent revenue streams.
 Use engineering judgement to choose factors inside the supplied published ranges;
 preserve bases and avoid double counting installation or module costs. Infer a
 process classification where justified rather than demanding an exact label.
@@ -107,6 +94,53 @@ def propose(
 
     provider = provider or EngineeringProvider()
     requested_sections = tuple(requested_sections or SECTIONS)
+    if "equipment" in requested_sections:
+        from backend.equipment_matching.service import match_report, apply_matches
+
+        matching = match_report(
+            parsed.get("effective_report", parsed["report"]),
+            description,
+            store,
+            provider,
+        )
+        rows = apply_matches(plan.get("equipment", []), matching)
+        result = {
+            "sections": [
+                {
+                    "section": "equipment",
+                    "value_json": json.dumps(rows),
+                    "rationale": "Canonical seven-step conceptual equipment matching",
+                    "units": "No sizes, prices or factors generated",
+                    "evidence_ids": [],
+                    "uncertainty": matching["notice"],
+                }
+            ],
+            "source_review": [],
+            "questions": [],
+        }
+        remaining = tuple(s for s in requested_sections if s != "equipment")
+        if remaining:
+            other, _ = propose(
+                parsed,
+                description,
+                plan,
+                locked,
+                store,
+                provider,
+                requested_sections=remaining,
+                stage_results=stage_results,
+                analyst_reviews=analyst_reviews,
+            )
+            result["sections"].extend(other["sections"])
+            result["source_review"].extend(other["source_review"])
+            result["questions"].extend(other["questions"])
+        return result, {
+            "model": matching["model"],
+            "prompt_version": matching["version"],
+            "requested_sections": list(requested_sections),
+            "cached": all(b.get("cached", False) for b in matching["batches"]),
+            "matching_summary": matching["summary"],
+        }
     models = [
         {
             k: m[k]
@@ -151,9 +185,11 @@ def propose(
                             "id": v["id"],
                             "property": v["property"],
                             "component": v.get("component"),
-                            "value": v.get("normalized_value")
-                            if v.get("normalized_value") is not None
-                            else v.get("original_value"),
+                            "value": (
+                                v.get("normalized_value")
+                                if v.get("normalized_value") is not None
+                                else v.get("original_value")
+                            ),
                             "unit": v.get("normalized_unit") or v.get("original_unit"),
                             "source": v["sheet"] + "!" + v["cell"],
                         }
@@ -175,9 +211,9 @@ def propose(
         "plan": plan,
         "locked_sections": locked,
         "available_models": models if "equipment" in requested_sections else [],
-        "available_factor_options": list(factor_options.values())
-        if "equipment" in requested_sections
-        else [],
+        "available_factor_options": (
+            list(factor_options.values()) if "equipment" in requested_sections else []
+        ),
         "capex_factors": plain(get_factor_ranges("garrett", "mixed")),
         "opex_factors": plain(opex_ranges()) if "opex" in requested_sections else [],
         "canonical_contracts": {
@@ -219,121 +255,6 @@ def propose(
             from .operating_advisor import generate
 
             return generate(provider, PROMPT, context)
-        if requested_sections == ("equipment", "capex"):
-            from .equipment_advisor import generate
-            from .planning_context import equipment_batches
-
-            merged = {"sections": [], "source_review": [], "questions": []}
-            equipment_rows, capital_section = [], None
-            for batch in equipment_batches(context):
-                if len(json.dumps(compact_transport(batch), default=str)) > 240000:
-                    raise ValueError(
-                        "One equipment planning region exceeds safe context size; source evidence retained"
-                    )
-
-                def plan_batch(batch=batch):
-                    part = generate(provider, PROMPT, batch)
-                    allowed = set(batch["equipment_batch"]["keys"])
-                    rows = json.loads(
-                        next(
-                            s["value_json"]
-                            for s in part["sections"]
-                            if s["section"] == "equipment"
-                        )
-                    )
-                    keys = [r["equipment_key"] for r in rows]
-                    if set(keys) - allowed or len(keys) != len(set(keys)):
-                        raise ValueError(
-                            "Equipment planner returned duplicate or unrelated equipment keys"
-                        )
-                    return part
-
-                try:
-                    part, batch_cached = store.cached(
-                        {"stage": "equipment-planning-batch-1", "context": batch},
-                        plan_batch,
-                    )
-                    batch_outcomes.append(
-                        {
-                            "index": batch["equipment_batch"]["index"],
-                            "status": "planned",
-                            "cached": batch_cached,
-                            "equipment_count": len(batch["equipment_batch"]["keys"]),
-                        }
-                    )
-                except Exception as exc:  # noqa: BLE001 -- independent units continue; no fabricated costs
-                    batch_outcomes.append(
-                        {
-                            "index": batch["equipment_batch"]["index"],
-                            "status": "unavailable",
-                            "reason": type(exc).__name__,
-                        }
-                    )
-                    part = {
-                        "sections": [],
-                        "questions": [
-                            f"Equipment planning batch {batch['equipment_batch']['index']} unavailable ({type(exc).__name__}); retry this batch. Original extraction retained."
-                        ],
-                    }
-                present = set()
-                for section in part["sections"]:
-                    if section["section"] == "equipment":
-                        present.update(
-                            r["equipment_key"]
-                            for r in json.loads(section["value_json"])
-                        )
-                for key in set(batch["equipment_batch"]["keys"]) - present:
-                    equipment_rows.append(
-                        {
-                            "equipment_key": key,
-                            "curve_id": None,
-                            "size": None,
-                            "size_unit": None,
-                            "quantity": 1,
-                            "rationale": "No applicable returned engineering selection; review/retry required",
-                            "costing_options": {},
-                        }
-                    )
-                for section in part["sections"]:
-                    if section["section"] == "equipment":
-                        rows = json.loads(section["value_json"])
-                        allowed = set(batch["equipment_batch"]["keys"])
-                        if any(r["equipment_key"] not in allowed for r in rows):
-                            raise ValueError(
-                                "Equipment planner returned an unrelated equipment key"
-                            )
-                        equipment_rows.extend(rows)
-                    elif capital_section is None and section["section"] == "capex":
-                        capital_section = section
-                merged["questions"].extend(part["questions"])
-            if context.get("calculated_stage_summary", {}).get("engineering_errors"):
-                # A bounded correction patches failed units only; retain every
-                # already valid selection and the approved CAPEX assumptions.
-                prior = context["plan"].get("equipment", [])
-                updates = {
-                    r["equipment_key"]: r
-                    for r in equipment_rows
-                    if r.get("rationale")
-                    != "No applicable returned engineering selection; review/retry required"
-                }
-                equipment_rows = [
-                    updates.pop(r["equipment_key"], r) for r in prior
-                ] + list(updates.values())
-                capital_section = None
-            if equipment_rows:
-                merged["sections"].append(
-                    {
-                        "section": "equipment",
-                        "value_json": json.dumps(equipment_rows),
-                        "rationale": "Batched process-aware selection; each unit retains its assumptions and source-linked sizing",
-                        "units": "Explicit model units / canonical Python sizing",
-                        "evidence_ids": [],
-                        "uncertainty": "Preliminary engineering scenarios; missing designs remain unresolved",
-                    }
-                )
-            if capital_section:
-                merged["sections"].append(capital_section)
-            return merged
         response = provider.generate(
             instructions=PROMPT, context=compact_transport(context), schema=SCHEMA
         )
@@ -351,11 +272,7 @@ def propose(
         validate_shape(checked, SCHEMA)
         return response
 
-    response, cached = (
-        (call(), False)
-        if requested_sections == ("equipment", "capex")
-        else store.cached(context, call)
-    )
+    response, cached = store.cached(context, call)
     # Validate references against the actual supplied source, not plausible-looking citations.
     ids = {
         v["id"] for e in report["entities"] for v in [e["id_evidence"], *e["values"]]
@@ -392,9 +309,11 @@ def propose(
         "equipment_schema_version": "typed-equipment-capex-3-sizing-registry",
         "operating_schema_version": "coupled-garrett-user-intent-4",
         "calculated_stage_summary": stage_results or {},
-        "cached": all(b.get("cached", False) for b in batch_outcomes)
-        if batch_outcomes
-        else cached,
+        "cached": (
+            all(b.get("cached", False) for b in batch_outcomes)
+            if batch_outcomes
+            else cached
+        ),
         "planning_batches": batch_outcomes,
         "research": "not requested; no external research tools invoked",
     }

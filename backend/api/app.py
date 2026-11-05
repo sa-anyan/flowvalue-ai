@@ -16,9 +16,8 @@ from backend.ingestion.limits import (
     MAX_UPLOAD_REQUEST_BYTES,
     MAX_WORKBOOK_BYTES,
 )
-from backend.orchestration.current_prices import current_price_view
 from backend.orchestration.pipeline import contracts
-from backend.orchestration.service import compare, edit, execute, new_assessment
+from backend.orchestration.service import compare, edit, new_assessment
 from backend.orchestration.store import Store
 
 app = FastAPI(title="FlowValue Assessment Orchestration")
@@ -46,6 +45,13 @@ class Edit(BaseModel):
 
 class Rerun(BaseModel):
     use_ai: bool = False
+
+
+class EngineeringRun(Rerun):
+    # Entry includes automatic assumption population unless explicitly opted out.
+    use_ai: bool = True
+    process_description: str | None = Field(default=None, max_length=12000)
+    revenue_description: str | None = Field(default=None, max_length=6000)
 
 
 class RevenueAuthorityRequest(BaseModel):
@@ -100,19 +106,6 @@ async def invalid(request: Request, exc):
     return JSONResponse(status_code=422, content={"detail": str(exc)[:500]})
 
 
-def submit(key, **kwargs):
-    if not lock.acquire(blocking=False):
-        raise HTTPException(
-            409, "Another assessment is running; try again when it finishes"
-        )
-
-    def work():
-        try:
-            execute(store, key, **kwargs)
-        finally:
-            lock.release()
-
-    executor.submit(work)
 
 
 @app.get("/health")
@@ -241,7 +234,12 @@ async def upload(
     if lock.locked():
         raise HTTPException(409, "Another assessment is running")
     state = new_assessment(store, content, name, description, revenue_description)
-    submit(state["id"], content=content, use_ai=use_ai)
+    from backend.blocks.execution import initialize
+    import hashlib
+    state['source_sha256'] = hashlib.sha256(content).hexdigest()
+    state = initialize(state)
+    state.update(running=False, status='Source loaded. Run a stage explicitly.', progress=[])
+    store.put(state, state['revision'])
     return {"id": state["id"]}
 
 
@@ -271,7 +269,10 @@ def currency_convert(request: CurrencyConversionRequest):
 @app.get("/api/assessments/{key}")
 def get(key: str, historical: bool = False, currency: str | None = None):
     saved = store.get(key)
-    return currency_view(saved if historical else current_price_view(saved), currency)
+    from backend.blocks.execution import view
+    if historical:
+        return saved  # Explicit history is a snapshot, never a calculation route.
+    return currency_view(view(saved), currency)
 
 
 @app.patch("/api/assessments/{key}")
@@ -290,19 +291,78 @@ def revenue_authority(key: str, options: RevenueAuthorityRequest):
 
 @app.post("/api/assessments/{key}/run", status_code=202)
 def rerun(key: str, options: Rerun):
-    state = store.get(key)
-    if state.get("running"):
-        raise HTTPException(409, "Assessment already running")
-    state["running"] = True
-    store.put(state, state["revision"])
+    # Older clients and saved Team 8 projects enter the exact same workflow.
+    return run_engineering_workflow(key, EngineeringRun(use_ai=options.use_ai))
+
+
+@app.post("/api/assessments/{key}/stages/{stage}/run", status_code=202)
+def run_individual_stage(key: str, stage: str, options: Rerun):
+    from backend.blocks.execution import queue_stage, run_stage
+    if not lock.acquire(blocking=False):
+        raise HTTPException(409, "Another stage is running")
     try:
-        submit(key, use_ai=options.use_ai)
+        queued = queue_stage(store, key, stage)
+    except Exception:
+        lock.release()
+        raise
+    def work():
+        try:
+            run_stage(store, key, stage, use_ai=options.use_ai)
+        finally:
+            lock.release()
+    try:
+        executor.submit(work)
     except Exception:
         state = store.get(key)
-        state["running"] = False
-        store.put(state, state["revision"])
+        state['running'] = False
+        store.put(state, state['revision'])
+        lock.release()
         raise
-    return {"id": key}
+    return {"id": key, "stage": stage}
+
+
+@app.post("/api/assessments/{key}/engineering/run", status_code=202)
+def run_engineering_workflow(key: str, options: EngineeringRun):
+    from backend.blocks.engineering_workflow import queue, run
+
+    if not lock.acquire(blocking=False):
+        raise HTTPException(409, "Another stage is running")
+    try:
+        state = store.get(key)
+        if state.get("running"):
+            raise HTTPException(409, "Another stage is running")
+        changed_process = options.process_description is not None and options.process_description != state.get("process_description", state.get("description", ""))
+        changed_revenue = options.revenue_description is not None and options.revenue_description != state.get("revenue_description", "")
+        if changed_process or changed_revenue:
+            store.version(key, "Before Entry engineering context update")
+        if changed_revenue:
+            from backend.revenue.authority import update
+            state = update(store, key, state["revision"], text=options.revenue_description)
+        if changed_process:
+            state.update(description=options.process_description, process_description=options.process_description)
+            store.put(state, state["revision"])
+        queue(store, key)
+    except Exception:
+        lock.release()
+        raise
+
+    def work():
+        try:
+            run(store, key, use_ai=options.use_ai)
+        finally:
+            lock.release()
+
+    try:
+        executor.submit(work)
+    except Exception:
+        state = store.get(key)
+        state.update(running=False, engineering_workflow={"status": "failed"})
+        state.pop("queued_stage", None)
+        store.put(state, state["revision"])
+        lock.release()
+        raise
+    from backend.blocks.execution import PIPELINE_ID
+    return {"id": key, "workflow": "engineering_data_to_equipment", "pipeline_id": PIPELINE_ID}
 
 
 @app.post("/api/assessments/{key}/versions")
@@ -435,7 +495,8 @@ def study_report(key: str, currency: str | None = None):
     state = store.get(key)
     if state.get("running"):
         raise HTTPException(409, "Wait for this study calculation to finish")
-    state = currency_view(current_price_view(state), currency)
+    from backend.blocks.execution import view
+    state = currency_view(view(state), currency)
     return HTMLResponse(render_study(state), headers={"Cache-Control": "no-store"})
 
 
@@ -448,7 +509,8 @@ def study_snapshot(key: str, currency: str | None = None):
     state = store.get(key)
     if state.get("running"):
         raise HTTPException(409, "Wait for this study calculation to finish")
-    state = currency_view(current_price_view(state), currency)
+    from backend.blocks.execution import view
+    state = currency_view(view(state), currency)
     return Response(
         json.dumps(state, indent=2, allow_nan=False),
         media_type="application/json",
@@ -470,63 +532,8 @@ class CommercialStrategyRequest(BaseModel):
 
 @app.post("/api/assessments/{key}/commercial-strategy", status_code=202)
 def commercial_strategy(key: str, options: CommercialStrategyRequest):
-    import copy
-
-    from backend.revenue.llm.commercial_strategy_analyst import execute_strategy
-
-    baseline = store.get(key)
-    if baseline.get("running") or baseline["revision"] != options.revision:
-        raise HTTPException(
-            409, "Wait for assessment completion or reload current revision"
-        )
-    if not baseline.get("plan", {}).get("operating_economics"):
-        raise HTTPException(
-            422,
-            "An operating-study draft is required before interpreting a new commercial scenario",
-        )
-    if not lock.acquire(blocking=False):
-        raise HTTPException(409, "Another assessment is running")
-    try:
-        content = store.workbook(key)
-        draft = copy.deepcopy(baseline)
-        draft.update(
-            description=options.description,
-            process_description=options.process_description
-            if options.process_description is not None
-            else options.description,
-            revenue_description=options.revenue_description or "",
-            results=None,
-            running=True,
-            parent_assessment=key,
-            status="Commercial Strategy Analyst: queued",
-            progress=[],
-            commercial_strategy={
-                "name": "Commercial Strategy Analyst",
-                "status": "queued",
-            },
-        )
-        from backend.revenue.authority import bind
-
-        draft.pop("revenue_approval", None)
-        bind(draft)
-        created = store.create(draft, content)
-
-        def work():
-            try:
-                execute_strategy(
-                    store,
-                    created["id"],
-                    baseline,
-                    research_consent=options.research_consent,
-                )
-            finally:
-                lock.release()
-
-        executor.submit(work)
-    except Exception:
-        lock.release()
-        raise
-    return {"id": created["id"]}
+    store.get(key)
+    raise HTTPException(422, "Automatic commercial chains are disabled. Use the Revenue stage and approve its assumptions.")
 
 
 # Monte Carlo uses the existing owner-scoped assessment store and background executor.
@@ -535,15 +542,24 @@ from backend.scenarios_and_uncertainty.monte_carlo.models import (
 )
 
 
+def require_stage_output(key, stage):
+    from backend.blocks.execution import view, fresh
+    state = view(store.get(key))
+    if not fresh(state, stage):
+        raise HTTPException(422, "Data required: run " + stage.replace('_', ' ') + " first.")
+    return state
+
+
 @app.get("/api/assessments/{key}/monte-carlo/discover")
 def monte_discover(key: str):
     from backend.scenarios_and_uncertainty.monte_carlo.discovery import discover
 
-    return discover(store.get(key))
+    return discover(require_stage_output(key, 'engineering_data'))
 
 
 @app.post("/api/assessments/{key}/monte-carlo/run", status_code=202)
 def monte_run(key: str, settings: MonteCarloSettings):
+    require_stage_output(key, 'financial')
     from backend.scenarios_and_uncertainty.monte_carlo.service import start, work
 
     if not lock.acquire(blocking=False):
@@ -729,7 +745,7 @@ def monte_audit(key: str, job_id: str):
 def monte_preflight(key: str, settings: MonteCarloSettings):
     from backend.scenarios_and_uncertainty.monte_carlo.service import preflight
 
-    return preflight(store.get(key), settings)
+    return preflight(require_stage_output(key, 'financial'), settings)
 
 
 @app.get("/api/catalogue/equipment-knowledge")
@@ -744,3 +760,30 @@ def equipment_resolution(key: str):
     state = store.get(key)
     report = state.get("scoped_report") or state.get("effective_report") or state["parsed"]["report"]
     return review(report, state["plan"], state.get("results"))
+
+
+@app.get("/api/assessments/{key}/equipment-conversion")
+def equipment_conversion_context(key: str, equipment_key: str, model_id: str | None = None):
+    from backend.equipment_costing.unit_conversion.bridges.service import describe
+    state = store.get(key)
+    report = state.get("effective_report") or state.get("parsed", {}).get("report", {})
+    try:
+        return describe(report, equipment_key, model_id)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
+class ConversionPreview(BaseModel):
+    equipment_key: str
+    specification: dict
+
+
+@app.post("/api/assessments/{key}/equipment-conversion/preview")
+def equipment_conversion_preview(key: str, request: ConversionPreview):
+    from backend.equipment_costing.unit_conversion.bridges.service import evaluate
+    state = store.get(key)
+    report = state.get("effective_report") or state.get("parsed", {}).get("report", {})
+    try:
+        return evaluate(report, request.equipment_key, request.specification)
+    except (ValueError, TypeError, KeyError) as exc:
+        raise HTTPException(422, str(exc)) from exc

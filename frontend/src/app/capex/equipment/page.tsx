@@ -1,2 +1,1 @@
-import AssessmentWorkspace from "@/components/assessment-workspace";
-export default function Page(){return <AssessmentWorkspace page="equipment"/>;}
+export {default} from '@/blocks/equipment/page';

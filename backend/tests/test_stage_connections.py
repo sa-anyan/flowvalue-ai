@@ -17,7 +17,7 @@ import openpyxl
 
 from backend.ingestion.balance.models import BalanceReport
 from backend.orchestration.ingest import parse
-from backend.orchestration.service import edit, execute, new_assessment
+from backend.orchestration.service import edit, _execute_connected_reference as execute, new_assessment
 from backend.orchestration.sizing import derive_size
 from backend.orchestration.store import Store
 from backend.orchestration.workbook_review import apply_review
