@@ -42,10 +42,19 @@ class Edit(BaseModel):
     section: str
     value: object
     rationale: str = Field(min_length=1, max_length=2000)
+    manual_revenue: bool = False
 
 
 class Rerun(BaseModel):
     use_ai: bool = False
+
+
+class RevenueAuthorityRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    revision: int
+    revenue_description: str | None = Field(default=None, max_length=6000)
+    approve: bool = False
+    reinterpret: bool = False
 
 
 class NamedVersion(BaseModel):
@@ -222,6 +231,7 @@ async def upload(
     description: str = Form(""),
     revenue_description: str = Form(""),
     use_ai: bool = Form(False),
+    workflow: str = Form("full"),
 ):
     content = await file.read(MAX_WORKBOOK_BYTES + 1)
     if not content or len(content) > MAX_WORKBOOK_BYTES:
@@ -233,7 +243,7 @@ async def upload(
         raise HTTPException(422, "Choose .xlsx, .xls or .xlsm")
     if lock.locked():
         raise HTTPException(409, "Another assessment is running")
-    state = new_assessment(store, content, name, description, revenue_description)
+    state = new_assessment(store, content, name, description, revenue_description, workflow=workflow)
     submit(state["id"], content=content, use_ai=use_ai)
     return {"id": state["id"]}
 
@@ -270,8 +280,72 @@ def get(key: str, historical: bool = False, currency: str | None = None):
 @app.patch("/api/assessments/{key}")
 def patch(key: str, change: Edit):
     return edit(
-        store, key, change.revision, change.section, change.value, change.rationale
+        store, key, change.revision, change.section, change.value, change.rationale, manual_revenue=change.manual_revenue
     )
+
+
+@app.post("/api/assessments/{key}/revenue-authority")
+def revenue_authority(key: str, options: RevenueAuthorityRequest):
+    from backend.revenue.authority import update
+
+    if options.reinterpret and options.approve:
+        raise HTTPException(422, "Review the AI interpretation before approving it")
+    if options.reinterpret and lock.locked():
+        raise HTTPException(409, "Wait for the current assessment to finish")
+    state = update(store, key, options.revision, text=options.revenue_description, approve=options.approve)
+    if options.reinterpret:
+        state["running"] = True
+        state["status"] = "interpreting_revenue_box"
+        state["progress"] = [{"stage": "revenue_planning", "status": "queued"}]
+        state = store.put(state, state["revision"])
+        try:
+            submit(key, use_ai=True, refresh_revenue=True)
+        except Exception:
+            state = store.get(key)
+            state["running"] = False
+            state["status"] = "Revenue Box saved; AI interpretation could not start"
+            store.put(state, state["revision"])
+            raise
+    return state
+
+
+class RevenueLinePreview(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    revision: int
+    method: str
+    subtype: str
+    inputs: dict
+    identity: str | None = None
+
+
+@app.post("/api/assessments/{key}/revenue-line-preview")
+def preview_revenue_line(key: str, options: RevenueLinePreview):
+    from backend.revenue.method_forms import build_line
+    state = store.get(key)
+    if state.get("running") or state["revision"] != options.revision:
+        raise HTTPException(409, "Wait for completion and reload the current revision")
+    years = state.get("plan", {}).get("operating_economics", {}).get("financial", {}).get("operating_years")
+    config = state.get("plan", {}).get("operating_economics", {})
+    old = next((line for line in config.get("commercial_lines", []) if line.get("id") == options.identity), None)
+    if old and not old.get("method_form"):
+        terms = old.get("years", [])
+        fields = ("quantity", "rate", "fixed_payment", "minimum_quantity", "minimum_payment", "availability", "escalation")
+        if any(y.get("minimum_quantity") or y.get("minimum_payment") for y in terms) or any(
+            any(y.get(field) != terms[0].get(field) for field in fields) for y in terms[1:]
+        ):
+            raise HTTPException(422, "This line has annual variations or minimum-payment terms. Use the advanced annual editor to preserve them.")
+        if options.method != "capacity_availability" and any(y.get("availability", 1) != 1 for y in terms):
+            raise HTTPException(422, "This line has a separate availability adjustment. Use its advanced annual editor to preserve it.")
+    line = build_line(options.method, options.subtype, options.inputs, years, identity=options.identity)
+    if old and not old.get("method_form"):
+        line["method_form"]["previous_inputs"] = old
+    return line
+
+
+@app.get("/api/catalogue/revenue-forms")
+def revenue_form_catalogue():
+    from backend.revenue.method_forms import catalogue
+    return catalogue()
 
 
 @app.post("/api/assessments/{key}/run", status_code=202)
@@ -465,15 +539,10 @@ def commercial_strategy(key: str, options: CommercialStrategyRequest):
         raise HTTPException(
             409, "Wait for assessment completion or reload current revision"
         )
-    if (
-        not (baseline.get("results") or {})
-        .get("stages", {})
-        .get("financial", {})
-        .get("result")
-    ):
+    if not baseline.get("plan", {}).get("operating_economics"):
         raise HTTPException(
             422,
-            "A calculated baseline is required for this commercial strategy scenario",
+            "An operating-study draft is required before interpreting a new commercial scenario",
         )
     if not lock.acquire(blocking=False):
         raise HTTPException(409, "Another assessment is running")
@@ -496,6 +565,10 @@ def commercial_strategy(key: str, options: CommercialStrategyRequest):
                 "status": "queued",
             },
         )
+        from backend.revenue.authority import bind
+
+        draft.pop("revenue_approval", None)
+        bind(draft)
         created = store.create(draft, content)
 
         def work():

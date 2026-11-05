@@ -1,6 +1,7 @@
 """Isolate untrusted Excel decoding from API and secret-bearing AI process."""
 
 import json
+import logging
 import os
 import subprocess
 import sys
@@ -11,6 +12,7 @@ from pathlib import Path
 from backend.ingestion.limits import MAX_WORKBOOK_BYTES
 
 ROOT = Path(__file__).resolve().parents[2]
+logger = logging.getLogger(__name__)
 
 
 def parse(content, filename):
@@ -28,7 +30,7 @@ def parse(content, filename):
             env={
                 k: v
                 for k, v in os.environ.items()
-                if k in {"PATH", "SYSTEMROOT", "LANG"}
+                if k.upper() in {"PATH", "SYSTEMROOT", "LANG"}
             },
             capture_output=True,
             timeout=30,
@@ -39,7 +41,9 @@ def parse(content, filename):
         try:
             result = json.loads(process.stdout)
         except (ValueError, UnicodeError) as exc:
-            raise ValueError("Workbook worker could not decode this file") from exc
+            logger.error("Workbook worker returned invalid output (exit %s): %s",
+                         process.returncode, process.stderr.decode("utf-8", errors="replace")[-2000:])
+            raise ValueError("Workbook parser process failed; check the backend logs for details") from exc
         if process.returncode or "error" in result:
             raise ValueError(result.get("error", "Workbook worker failed"))
         result["report"]["extracted_on"] = date.today().isoformat()

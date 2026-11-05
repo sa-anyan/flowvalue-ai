@@ -37,6 +37,17 @@ can leave a running assessment marked busy; reopen a previously saved version.
 
 ## Workflow and calculation ownership
 
+The Entry page now starts a **revenue-only** assessment. It requires an uploaded
+M&E workbook and a non-blank process description. The separate Revenue Box still
+defines permitted income; missing prices and terms stay unresolved until reviewed.
+The upload sends `workflow=revenue`, which persists through saved versions and
+reruns. Parsing and optional source interpretation feed revenue-only planning and
+the existing deterministic revenue engine. Equipment costing, CAPEX, OPEX and
+financial engines do not run, including when viewing results. The revenue schedule
+reuses the canonical operating-year/ramp inputs; it does not calculate finance.
+The API's existing `workflow=full` default preserves other assessment integrations.
+Previously saved full assessments keep their original workflow.
+
 1. Upload .xlsx/.xls/.xlsm and a process description. Workbook decoding uses a
    separate subprocess (30-second timeout, 20-second CPU limit, Linux address-space
    cap, bounded sheets/cells and upload bytes). VBA, formulas and external links

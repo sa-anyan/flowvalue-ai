@@ -102,6 +102,7 @@ def propose(
     requested_sections=None,
     stage_results=None,
     analyst_reviews=None,
+    force_refresh=False,
 ):
     from .provider import EngineeringProvider
 
@@ -131,12 +132,14 @@ def propose(
         "prompt_version": PROMPT_VERSION,
         "requested_sections": list(requested_sections),
         "equipment_schema_version": "typed-equipment-capex-3-sizing-registry",
-        "operating_schema_version": "coupled-garrett-user-intent-4",
+        "operating_schema_version": "revenue-only-2-pending-inputs" if requested_sections == ("revenue",) else "coupled-garrett-user-intent-4",
         "analyst_reviews": analyst_reviews or [],
         "calculation_scope": report.get("calculation_scope", {}),
         "calculated_stage_summary": stage_results or {},
         "model": provider.model,
         "description": description,
+        "revenue_box": parsed.get("revenue_box", ""),
+        "revenue_edit": parsed.get("revenue_edit", False),
         "report": {
             "entities": [
                 {
@@ -214,10 +217,10 @@ def propose(
     batch_outcomes = []
 
     def call():
-        if requested_sections == ("revenue", "opex"):
+        if requested_sections in {("revenue", "opex"), ("revenue",)}:
             from .operating_advisor import generate
 
-            return generate(provider, PROMPT, context)
+            return generate(provider, PROMPT, context, revenue_only=requested_sections == ("revenue",))
         if requested_sections == ("equipment", "capex"):
             from .equipment_advisor import generate
             from .planning_context import equipment_batches
@@ -352,7 +355,7 @@ def propose(
 
     response, cached = (
         (call(), False)
-        if requested_sections == ("equipment", "capex")
+        if force_refresh or requested_sections == ("equipment", "capex")
         else store.cached(context, call)
     )
     # Validate references against the actual supplied source, not plausible-looking citations.
@@ -369,7 +372,7 @@ def propose(
         if s["section"] in requested_sections
         or (
             s["section"] == "operating_economics"
-            and requested_sections == ("revenue", "opex")
+            and requested_sections in {("revenue", "opex"), ("revenue",)}
         )
     ]
     seen = set()
@@ -389,7 +392,7 @@ def propose(
         "prompt_version": PROMPT_VERSION,
         "requested_sections": list(requested_sections),
         "equipment_schema_version": "typed-equipment-capex-3-sizing-registry",
-        "operating_schema_version": "coupled-garrett-user-intent-4",
+        "operating_schema_version": "revenue-only-2-pending-inputs" if requested_sections == ("revenue",) else "coupled-garrett-user-intent-4",
         "calculated_stage_summary": stage_results or {},
         "cached": all(b.get("cached", False) for b in batch_outcomes)
         if batch_outcomes

@@ -33,10 +33,15 @@ def _diagnostic(exc):
     return "Engineering service unavailable; previous results and inputs retained."
 
 
-def new_assessment(store, content, filename, description, revenue_description=""):
+def new_assessment(store, content, filename, description, revenue_description="", *, workflow="full"):
+    if workflow not in {"full", "revenue"}:
+        raise ValueError("Unknown assessment workflow")
+    if workflow == "revenue" and (not content or not description.strip()):
+        raise ValueError("Upload a mass and energy balance and describe your process before running revenue")
     return store.create(
         {
             "filename": filename,
+            "workflow": workflow,
             "process_description": description,
             "revenue_description": revenue_description,
             "description": description
@@ -56,8 +61,17 @@ def new_assessment(store, content, filename, description, revenue_description=""
     )
 
 
-def execute(store, key, *, content=None, use_ai=False, provider=None):
+def execute(store, key, *, content=None, use_ai=False, provider=None, refresh_revenue=False):
     state = store.get(key)
+    if refresh_revenue:
+        from .revenue_workflow import reinterpret_revenue
+        return reinterpret_revenue(store, state, provider=provider)
+    if state.get("workflow") == "revenue":
+        from .revenue_workflow import execute_revenue
+        return execute_revenue(store, state, content=content, use_ai=use_ai, provider=provider)
+    from backend.revenue.authority import bind
+
+    bind(state)
     from backend.equipment_costing.cost_to_future.cost_translation import DEFAULT_POLICY
 
     if state["plan"].get("operating_economics") or not any(
@@ -109,6 +123,7 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
                 progress("engineering_review", "unavailable")
             reviewed = dict(
                 state["parsed"],
+                revenue_box=state.get("revenue_description", ""),
                 effective_report=state.get(
                     "effective_report", state["parsed"]["report"]
                 ),
@@ -366,12 +381,20 @@ def execute(store, key, *, content=None, use_ai=False, provider=None):
             if isinstance(exc, ValueError)
             else "Assessment failed; source retained for review"
         )
+    from backend.revenue.authority import questions
+
+    state["revenue_questions"] = questions(
+        state["plan"].get("operating_economics", {}),
+        state.get("revenue_description", ""),
+        state.get("scoped_report") or state.get("effective_report") or state.get("parsed", {}).get("report", {}),
+        approval=state.get("revenue_approval"),
+    )
     state["running"] = False
     save()
     return state
 
 
-def edit(store, key, revision, section, value, rationale):
+def edit(store, key, revision, section, value, rationale, *, manual_revenue=False):
     if (
         section not in (*SECTIONS, "operating_economics", "cost_translation")
         or not rationale.strip()
@@ -396,8 +419,11 @@ def edit(store, key, revision, section, value, rationale):
                 for row in config.get("commercial_lines", [])
             ]
 
-        if methods(value) != methods(state["plan"].get(section, {})):
-            value = capture_manual_methods(value, rationale)
+        if manual_revenue:
+            from backend.revenue.manual_routing import bind_manual_lines
+            value = bind_manual_lines(state, value)
+        elif methods(value) != methods(state["plan"].get(section, {})):
+            value = capture_manual_methods(value, rationale, revenue_box=state.get("revenue_description", ""))
     if state.get("results") is not None:
         state["edit_baseline"] = {"revision": state["revision"], "results": copy.deepcopy(state["results"]), "plan": copy.deepcopy(state["plan"])}
     state["plan"][section] = value

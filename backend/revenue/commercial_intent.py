@@ -96,6 +96,18 @@ def validate_intent(config, description, *, require=False):
                 "Revenue category contradicts user method: " + line.get("name", "")
             )
         covered.add(identifier)
+    pending_ids = set()
+    for pending in config.get("pending_inputs", []):
+        identifier = pending.get("id")
+        quote = pending.get("context_quote", "")
+        if not identifier or identifier in pending_ids or not quote.strip() or quote.casefold() not in description.casefold():
+            raise ValueError("Pending opportunities need unique IDs and exact user-context evidence")
+        pending_ids.add(identifier)
+        if pending.get("category") == "avoided_cost":
+            continue
+        if identifier in covered or identifier not in mechanisms or pending.get("category") != mechanisms[identifier]["category"]:
+            raise ValueError("Pending revenue must match one stated mechanism and cannot also be calculated income")
+        covered.add(identifier)
     if covered != set(mechanisms):
         raise ValueError(
             "Some user-stated revenue methods were omitted from the proposal"
@@ -111,7 +123,7 @@ def require_resolved_intent(config, description):
         )
 
 
-def capture_manual_methods(config, reason):
+def capture_manual_methods(config, reason, *, revenue_box=None):
     """An explicit saved user edit may revise the interpreted commercial strategy."""
     if "commercial_intent" not in config:
         return config
@@ -121,11 +133,13 @@ def capture_manual_methods(config, reason):
     mechanisms = []
     for line, category in rows:
         line["intent_id"] = line["id"]
+        if revenue_box is not None and not line.get("context_quote"):
+            line["context_quote"] = revenue_box
         mechanisms.append(
             {
                 "id": line["id"],
                 "category": category,
-                "context_quote": reason,
+                "context_quote": reason if revenue_box is None else revenue_box,
                 "interpretation": "Explicit user-edited revenue line: "
                 + line.get("name", line["id"]),
             }
