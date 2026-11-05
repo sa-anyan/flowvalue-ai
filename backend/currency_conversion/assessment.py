@@ -98,7 +98,8 @@ def currency_view(saved, target_currency=None):
     stages = results.get("stages", {})
     capex = stages.get("capex", {}).get("result") or {}
     financial = stages.get("financial", {}).get("result") or {}
-    source = capex.get("currency") or financial.get("currency")
+    revenue = stages.get("revenue", {}).get("result") or {}
+    source = capex.get("currency") or financial.get("currency") or revenue.get("basis", {}).get("currency")
     if not source:
         return state  # incomplete studies must remain pollable while a currency is selected
     snapshot = rate_snapshot()

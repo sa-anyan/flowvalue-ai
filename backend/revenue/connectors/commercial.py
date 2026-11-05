@@ -94,7 +94,10 @@ def commercial_inputs(report, description, config, basis, hours, ramp, assumptio
                     a(row["minimum_payment"], basis.currency + "/year"),
                     a(row["availability"], "fraction"),
                     a(row["escalation"], "fraction/year"),
-                    row["periods"],
+                    # Billing frequency owns the period count. Per-unit annual
+                    # quantities already include operating time; multiplying by
+                    # an independently proposed 12 would count them again.
+                    12 if item["rate_period"] == "monthly" else 1,
                 )
             )
         lines.append(

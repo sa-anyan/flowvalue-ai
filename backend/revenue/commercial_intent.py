@@ -96,6 +96,18 @@ def validate_intent(config, description, *, require=False):
                 "Revenue category contradicts user method: " + line.get("name", "")
             )
         covered.add(identifier)
+    pending_ids = set()
+    for pending in config.get("pending_inputs", []):
+        identifier = pending.get("id")
+        quote = pending.get("context_quote", "")
+        if not identifier or identifier in pending_ids or not quote.strip() or quote.casefold() not in description.casefold():
+            raise ValueError("Pending opportunities need unique IDs and exact user-context evidence")
+        pending_ids.add(identifier)
+        if pending.get("category") == "avoided_cost":
+            continue
+        if identifier in covered or identifier not in mechanisms or pending.get("category") != mechanisms[identifier]["category"]:
+            raise ValueError("Pending revenue must match one stated mechanism and cannot also be calculated income")
+        covered.add(identifier)
     if covered != set(mechanisms):
         raise ValueError(
             "Some user-stated revenue methods were omitted from the proposal"

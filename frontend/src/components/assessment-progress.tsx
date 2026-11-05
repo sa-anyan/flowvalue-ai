@@ -6,12 +6,12 @@ const readable=(key:string)=>labels[key]||key.replaceAll('_',' ').replace(/\b\w/
 const failed=(s:string)=>/fail|error|unresolved|rejected/.test(s.toLowerCase());
 const finished=(s:string)=>/complete|success|done|resolved|parsed|calculated|skipped|unavailable|fail|error/.test(s.toLowerCase());
 const pending=(s:string)=>/pending|queued|waiting|not_started/.test(s.toLowerCase());
-export function AssessmentProgress({steps,running,hasResults,error}:{steps:Step[];running:boolean;hasResults:boolean;error?:string}){
+export function AssessmentProgress({steps,running,hasResults,error,workflow}:{steps:Step[];running:boolean;hasResults:boolean;error?:string;workflow?:'full'|'revenue'}){
  const current=steps.at(-1);
- const issues=Boolean(error)||steps.some(s=>failed(s.status)||/unavailable|skipped/.test(s.status.toLowerCase()));
+ const issues=Boolean(error)||steps.some(s=>failed(s.status)||/unavailable|skipped|pending_user_input/.test(s.status.toLowerCase()));
  const done=!running&&hasResults;
  const halted=!running&&!hasResults&&Boolean(error);
- const milestones=['parse','engineering_review','engineering_advisor','equipment','capex','opex','revenue','financial'];
+ const milestones=workflow==='revenue'?['parse','engineering_review','revenue_planning','revenue']:['parse','engineering_review','engineering_advisor','equipment','capex','opex','revenue','financial'];
  const reached=milestones.reduce((max,key,i)=>steps.some(step=>step.stage===key)?Math.max(max,i+1):max,0);
  const progressRef=useRef(0);
  const estimated=done?100:running?Math.min(95,Math.max(5,Math.round(reached/milestones.length*95))):progressRef.current;
