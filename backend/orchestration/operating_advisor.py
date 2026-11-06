@@ -67,7 +67,7 @@ def generate(provider, instructions, context, *, revenue_only=False):
                         },
                         "quantity_unit": {
                             "type": "string",
-                            "enum": ["kg", "t", "m3", "L"],
+                            "enum": ["kg", "tonne", "m3", "L"],
                         },
                         "allocation_fraction": fraction,
                         "saleable_fraction": fraction,

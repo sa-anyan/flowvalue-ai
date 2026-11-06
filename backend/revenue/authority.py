@@ -120,12 +120,8 @@ def questions(config, text, report, *, approval=None, require_approval=True):
                 "What selling price and price unit should be used for " + name + "?"
             )
         try:
-            prop = (
-                "volume_flow"
-                if sale.get("quantity_unit") in {"m3", "L"}
-                else "mass_flow"
-            )
-            source = observation(report, sale.get("stream_key"), prop)
+            from .product_basis import product_observation
+            source = product_observation(report, sale)
             if not source.get("sheet") or not source.get("cell"):
                 raise ValueError("No workbook cell")
         except (ValueError, KeyError, TypeError):
