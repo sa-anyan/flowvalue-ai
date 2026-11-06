@@ -91,6 +91,9 @@ class RevenueWorkflowTests(unittest.TestCase):
                 result = execute(store, state["id"], use_ai=True, provider=object())
             self.assertNotIn("error", result)
             self.assertEqual(proposal.call_args.kwargs["requested_sections"], ("revenue",))
+            self.assertTrue(proposal.call_args.kwargs["force_refresh"])
+            self.assertTrue(proposal.call_args.args[0]["revenue_edit"])
+            self.assertEqual(proposal.call_args.args[0]["revenue_box"], "sells treated water")
             self.assertEqual(result["status"], "revenue_pending_user_input")
             self.assertEqual(set(result["results"]["stages"]), {"revenue"})
 

@@ -1,4 +1,5 @@
 'use client';
+import {RevenueBox} from './revenue-box';
 
 type Row = Record<string, unknown>;
 function row(value: unknown): Row { return value && typeof value === 'object' && !Array.isArray(value) ? value as Row : {}; }
@@ -13,11 +14,8 @@ export function RevenueApproval({text,onText,config,questions,approved,busy,dirt
   const payments=[...rows(c.sales).map(s=>({name:s.name,stream:s.stream_key,unit:s.quantity_unit,price:s.price_mode==='assumed_price'?s.unit_price:'Price required'})),
     ...rows(c.commercial_lines).map(s=>({name:s.name,stream:s.stream_key||'Contract quantity',unit:s.quantity_unit,price:row(rows(s.years)[0]).rate}))];
   return <section aria-label="Revenue Box and approval">
-    <h2>Revenue Box</h2>
-    <p>Only the payment sources you state here can feed revenue. Process outputs do not automatically become sales.</p>
-    <label className="field"><span>How will this project earn revenue?</span><textarea value={text} maxLength={6000} onChange={e=>onText(e.target.value)} placeholder="For example: lignin sales at an agreed price, wastewater treatment fees, or both. Include prices and units if known."/></label>
+    <RevenueBox text={text} onText={onText} busy={busy}/>
     <button className="secondary" disabled={busy||!text.trim()} onClick={onSave}>{busy?'Interpreting revenue…':'Save & interpret with AI'}</button>
-    <p className="muted">Each save requests a fresh AI interpretation of this box. API usage charges apply. Review and approve the new assumptions before calculating.</p>
     {questions.length>0&&<ul aria-label="Revenue clarification questions">{questions.map(q=><li key={q}>{q}</li>)}</ul>}
     {pending.length>0&&<details open><summary>Pending commercial inputs</summary>{pending.map((p,i)=><div key={i}><h3>{String(p.name??'Pending opportunity')}</h3><p>{String(p.category??'').replaceAll('_',' ')} · {String(p.rate??'Rate needed')} {String(p.rate_unit??'')}</p><p>{String(p.quantity_basis??'')}</p><blockquote>{String(p.context_quote??'')}</blockquote><small>Not included in calculated income or savings until the missing inputs are resolved.</small></div>)}</details>}
     <details open><summary>Review saved commercial assumptions</summary>

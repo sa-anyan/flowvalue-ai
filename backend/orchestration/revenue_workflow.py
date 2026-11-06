@@ -15,6 +15,25 @@ from .register import mark_ai, register
 from .workbook_review import review
 
 
+def _interpret_box(store, state, report, provider):
+    """Identical fresh commercial interpretation for Entry and saved Box edits."""
+    parsed = dict(state["parsed"], effective_report=report,
+                  revenue_box=state.get("revenue_description", ""), revenue_edit=True)
+    locked = [name for name in state.get("locked", []) if name != "operating_economics"]
+    response, metadata = propose(parsed, state["description"], state["plan"], locked,
+                                 store, provider, requested_sections=("revenue",), force_refresh=True)
+    if len(response["sections"]) != 1 or response["sections"][0]["section"] != "operating_economics":
+        raise ValueError("AI must return one revenue interpretation")
+    response = copy.deepcopy(response)
+    section = response["sections"][0]
+    config = json.loads(section["value_json"])
+    for field in ("sales", "commercial_lines", "avoided_costs", "pending_inputs", "scope_notes", "questions"):
+        config.setdefault(field, [])
+    config.setdefault("commercial_intent", {})
+    section["value_json"] = json.dumps(config)
+    return response, metadata
+
+
 def reinterpret_revenue(store, state, *, provider=None):
     """Fresh AI interpretation of a saved Box; no workbook or other engine rerun."""
     state["running"] = True
@@ -29,17 +48,8 @@ def reinterpret_revenue(store, state, *, provider=None):
             from .provider import EngineeringProvider
             provider = EngineeringProvider()
         report = state.get("scoped_report") or state.get("effective_report") or state["parsed"]["report"]
-        parsed = dict(state["parsed"], effective_report=report,
-                      revenue_box=state["revenue_description"], revenue_edit=True)
-        # A saved Box edit explicitly requests fresh commercial interpretation.
-        # Locks on engineering and cost assumptions are retained.
-        locked = [name for name in state.get("locked", []) if name != "operating_economics"]
-        response, metadata = propose(parsed, state["description"], state["plan"], locked,
-                                     store, provider, requested_sections=("revenue",), force_refresh=True)
-        sections = response["sections"]
-        if len(sections) != 1 or sections[0]["section"] != "operating_economics":
-            raise ValueError("AI must return one revenue interpretation")
-        section = sections[0]
+        response, metadata = _interpret_box(store, state, report, provider)
+        section = response["sections"][0]
         fresh = mark_ai(json.loads(section["value_json"]))
         old = state["plan"].get("operating_economics", {})
         if old.get("price_basis") and fresh.get("price_basis") != old["price_basis"]:
@@ -125,9 +135,7 @@ def execute_revenue(store, state, *, content=None, use_ai=False, provider=None):
             progress("engineering_review", metadata.get("status", "reviewed"))
             if "operating_economics" not in state["locked"]:
                 progress("revenue_planning", "running")
-                parsed = dict(state["parsed"], effective_report=report, revenue_box=state.get("revenue_description", ""))
-                response, metadata = propose(parsed, state["description"], state["plan"], state["locked"],
-                                             store, provider, requested_sections=("revenue",))
+                response, metadata = _interpret_box(store, state, report, provider)
                 for section in response["sections"]:
                     if section["section"] != "operating_economics":
                         raise ValueError("Revenue-only planning returned an unrelated section")

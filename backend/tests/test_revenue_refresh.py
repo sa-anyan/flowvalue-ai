@@ -14,6 +14,29 @@ from backend.revenue.advisor import RevenueAIError
 from backend.tests.test_revenue_authority import ready, BOX
 
 
+def test_entry_and_saved_box_produce_the_same_commercial_draft():
+    from backend.orchestration.revenue_workflow import execute_revenue
+    report, config, _ = ready()
+    response = {"sections": [{"section": "operating_economics", "value_json": json.dumps(config)}], "questions": []}
+    with tempfile.TemporaryDirectory() as folder:
+        store = Store(Path(folder) / "test.db")
+        state = new_assessment(store, b"fixture", "fixture.xlsx", "Process context", BOX, workflow="revenue")
+        state.update(parsed={"report": report, "source_cells": []}, running=False)
+        state = store.put(state, state["revision"])
+        with patch("backend.orchestration.revenue_workflow.review", return_value=(report, {"questions": []}, [], {"status": "reviewed"})), patch("backend.orchestration.revenue_workflow.propose", return_value=(response, {"model": "fake"})) as proposal:
+            initial = execute_revenue(store, state, use_ai=True, provider=object())
+            edited = reinterpret_revenue(store, copy.deepcopy(initial), provider=object())
+        assert not initial.get("error")
+        assert not edited.get("error")
+        assert initial["plan"]["operating_economics"] == edited["plan"]["operating_economics"]
+        assert initial["revenue_questions"] == edited["revenue_questions"]
+        assert not initial.get("revenue_approval") and not edited.get("revenue_approval")
+        for call in proposal.call_args_list:
+            assert call.kwargs["force_refresh"] is True
+            assert call.args[0]["revenue_box"] == BOX
+            assert call.args[0]["revenue_edit"] is True
+
+
 def state_for(store):
     report, config, _ = ready()
     state = new_assessment(store, b"fixture", "fixture.xlsx", "Process context", BOX, workflow="revenue")
