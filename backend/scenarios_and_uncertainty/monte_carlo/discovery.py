@@ -1,5 +1,8 @@
 """Discover stored engineering ranges; never manufacture missing source measurements."""
 
+from backend.equipment_costing.models import priced_record
+
+
 from backend.engineering_sizing.registry import PARAMETER_UNITS
 
 from .models import Parameter, Settings
@@ -164,9 +167,11 @@ def discover(state):
             add(
                 ["operating_economics", group, i, field],
                 f"{row.get('name', row.get('role', row.get('id', group)))} · {field.replace('_', ' ')}",
-                currency + "/" + row.get("quantity_unit", "unit")
-                if group in {"sales", "materials"}
-                else unit,
+                (
+                    currency + "/" + row.get("quantity_unit", "unit")
+                    if group in {"sales", "materials"}
+                    else unit
+                ),
                 row.get(field),
                 source="Saved commercial/operating assumption; no new market research",
                 kind="economic",
@@ -323,14 +328,18 @@ def discover(state):
             "alias_of": r.get("decision", {}).get("alias_of"),
             "reason": r.get("decision", {}).get("rationale")
             or "; ".join(r.get("issues", [])),
-            "status": "alias_confirmation"
-            if r.get("decision", {}).get("scope_decision") == "alias"
-            else "unsupported_model"
-            if not r.get("decision", {}).get("candidate_curve_ids")
-            else "engineering_input_or_configuration",
+            "status": (
+                "alias_confirmation"
+                if r.get("decision", {}).get("scope_decision") == "alias"
+                else (
+                    "unsupported_model"
+                    if not r.get("decision", {}).get("candidate_curve_ids")
+                    else "engineering_input_or_configuration"
+                )
+            ),
         }
         for r in lines
-        if r.get("equipment_cost") is None
+        if not priced_record(r)
         and not r.get("parsed_source", {}).get("confirmed_alias")
     ]
     return {

@@ -328,9 +328,9 @@ def review_contexts(parsed, description, budget=90000):
         if len(json.dumps(context, default=str)) > 240000:
             for record in context["python_records"]:
                 record["observations"] = []
-            context["review_scope"] += (
-                " Dense Python observations omitted; independently inspect every supplied source cell."
-            )
+            context[
+                "review_scope"
+            ] += " Dense Python observations omitted; independently inspect every supplied source cell."
         if len(json.dumps(context, default=str)) > 300000:
             raise ValueError(
                 "A source cell/description exceeds safe review context; source retained for manual review"
@@ -382,11 +382,21 @@ def review(parsed, description, store, provider):
         ]
 
         def call(context=context):
-            value = provider.generate(
-                instructions=PROMPT, context=context, schema=SCHEMA
-            )
-            validate(value, SCHEMA)
-            return value
+            # One transient retry for this source region; successful regions are
+            # never regenerated because an unrelated region timed out.
+            for attempt in range(2):
+                try:
+                    value = provider.generate(
+                        instructions=PROMPT, context=context, schema=SCHEMA
+                    )
+                    validate(value, SCHEMA)
+                    return value
+                except Exception as exc:
+                    transient = (
+                        isinstance(exc, TimeoutError) or "timed out" in str(exc).lower()
+                    )
+                    if attempt or not transient:
+                        raise
 
         try:
             response, cached = store.cached(
@@ -417,7 +427,9 @@ def review(parsed, description, store, provider):
                     "source_cells": sum(map(len, context["worksheets"].values())),
                 }
             )
-        except Exception as exc:  # noqa: BLE001 -- retain successful regions, disclose failure
+        except (
+            Exception
+        ) as exc:  # noqa: BLE001 -- retain successful regions, disclose failure
             coverage.append(
                 {
                     "batch": index + 1,
@@ -450,9 +462,11 @@ def review(parsed, description, store, provider):
             "prompt_version": VERSION,
             "cached": cached_count == len(contexts),
             "batches": coverage,
-            "status": "partial"
-            if failed or parsed.get("source_cells_truncated") or not contexts
-            else "reviewed",
+            "status": (
+                "partial"
+                if failed or parsed.get("source_cells_truncated") or not contexts
+                else "reviewed"
+            ),
             "source_cells_checked": len(reviewed_cells),
             "rejected_proposals": sum(
                 "not_applied" in d.get("status", "") for d in decisions
@@ -706,9 +720,9 @@ def apply_review(parsed, response):
                     stream_key=sk,
                     equipment_key=ek,
                     role=link["role"],
-                    basis="mention"
-                    if link["role"] == "mention"
-                    else "directional_text",
+                    basis=(
+                        "mention" if link["role"] == "mention" else "directional_text"
+                    ),
                     evidence_ids=[v.id],
                     status="inferred",
                     note=link["rationale"],

@@ -1,5 +1,8 @@
 """Monte Carlo calls canonical TEA; no LLM, alternate DCF or imputed missing costs."""
 
+from backend.equipment_costing.models import priced_record
+
+
 import copy
 import hashlib
 import json
@@ -33,11 +36,19 @@ def evaluate(report, description, plan, confirmed_aliases):
     excluded = [
         r
         for r in equipment
-        if r.get("parsed_source", {}).get("equipment_key") in confirmed or r.get("parsed_source", {}).get("confirmed_alias")
+        if r.get("parsed_source", {}).get("equipment_key") in confirmed
+        or r.get("parsed_source", {}).get("confirmed_alias")
     ]
     counted = [r for r in equipment if r not in excluded]
-    priced = [r for r in counted if r.get("equipment_cost") is not None]
-    costs = {r["equipment_tag"]: number(r["equipment_cost"]) for r in priced}
+    priced = [r for r in counted if priced_record(r)]
+    costs = {
+        r["equipment_tag"]: number(
+            r.get("equipment_cost")
+            if r.get("equipment_cost") is not None
+            else r["amount"]
+        )
+        for r in priced
+    }
     missing = [
         {
             "tag": r["equipment_tag"],
@@ -45,7 +56,7 @@ def evaluate(report, description, plan, confirmed_aliases):
             "rationale": r.get("decision", {}).get("rationale", ""),
         }
         for r in counted
-        if r.get("equipment_cost") is None
+        if not priced_record(r)
     ]
     financial = stages.get("financial", {}).get("result") or {}
     metrics = dict(financial.get("metrics") or [])
@@ -84,6 +95,9 @@ def evaluate(report, description, plan, confirmed_aliases):
         "status": "complete" if complete else "partial",
         "metrics": vals,
         "equipment_costs": costs,
+        "equipment_cost_scopes": {
+            r["equipment_tag"]: r.get("cost_scope") for r in priced
+        },
         "equipment_installation_costs": {
             r["equipment_tag"]: number(r.get("installation_cost")) for r in priced
         },
@@ -109,7 +123,7 @@ def evaluate(report, description, plan, confirmed_aliases):
             }
             for r in counted
             if r.get("curve_id")
-            and r.get("equipment_cost") is None
+            and not priced_record(r)
             and r.get("decision", {}).get("scope_decision") != "alias"
         ],
         "issues": issues,
@@ -296,13 +310,12 @@ def summarize(rows, parameters, settings):
         "metrics": metrics,
         "equipment": equipment,
         "cash_flow": cash,
-        "probability_negative_npv": sum(n < 0 for n in npvs) / len(npvs)
-        if npvs
-        else None,
-        "probability_below_target_irr": sum(v < settings.target_irr for v in irrs)
-        / len(irrs)
-        if irrs
-        else None,
+        "probability_negative_npv": (
+            sum(n < 0 for n in npvs) / len(npvs) if npvs else None
+        ),
+        "probability_below_target_irr": (
+            sum(v < settings.target_irr for v in irrs) / len(irrs) if irrs else None
+        ),
         "irr_probability_denominator": len(irrs),
         "undefined_irr_runs": len(good) - len(irrs),
         "drivers": drivers,

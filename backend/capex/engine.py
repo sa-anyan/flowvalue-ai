@@ -8,6 +8,7 @@ from .models import (
     CapexResult,
     CostLine,
     EquipmentCost,
+    UnitCapitalCost,
     Override,
     WorkingCapital,
     number,
@@ -199,10 +200,12 @@ def _line(factor, inputs, bases, issues, assumptions):
         factor.id,
         amount,
         fraction,
-        "absolute_user_amount"
-        if factor.id in inputs.overrides
-        and inputs.overrides[factor.id].amount is not None
-        else factor.base,
+        (
+            "absolute_user_amount"
+            if factor.id in inputs.overrides
+            and inputs.overrides[factor.id].amount is not None
+            else factor.base
+        ),
         base,
         factor.formula if status != "user_override" else "explicit user override",
         status,
@@ -498,7 +501,68 @@ def calculate(spec, factors, inputs):
         inputs.exclusions
     ) & (set(inputs.selected_factors) | set(inputs.overrides)):
         issues.append("Factor cannot be both selected, overridden or excluded")
-    purchase, basis = _basis(inputs, spec.requires_delivered_equipment, issues)
+    purchase, basis = (
+        _basis(inputs, spec.requires_delivered_equipment, issues)
+        if inputs.equipment or not inputs.pre_costed_capital
+        else (Decimal(0), None)
+    )
+    capital_amount = Decimal(0)
+    capital_tags = {e.tag.strip().casefold() for e in inputs.equipment}
+    for e in inputs.pre_costed_capital:
+        if not isinstance(e, UnitCapitalCost):
+            raise TypeError("pre_costed_capital must contain UnitCapitalCost records")
+        if e.cost_scope not in {
+            "unit_capital",
+            "installed_equipment",
+            "module_estimate",
+        }:
+            issues.append(
+                e.tag
+                + ": only scoped unit/installed/module capital supported here; whole-project TOTAL_CAPITAL cannot be combined without a decomposition"
+            )
+            continue
+        if not e.tag.strip() or e.tag.strip().casefold() in capital_tags:
+            issues.append("Duplicate purchased/capital equipment tag: " + e.tag)
+            continue
+        capital_tags.add(e.tag.strip().casefold())
+        try:
+            key = (e.currency, e.period, e.index_series, number(e.index_value))
+            quantity = number(e.quantity)
+            if (
+                not all(isinstance(x, str) and x.strip() for x in key[:3])
+                or key[3] <= 0
+                or quantity <= 0
+                or quantity != quantity.to_integral_value()
+            ):
+                raise ValueError(
+                    "Capital records require currency, date, index and integer quantity"
+                )
+            if basis is not None and key != basis:
+                raise ValueError(
+                    "Capital/purchased date, currency or index bases differ; reconcile upstream"
+                )
+            basis = key
+            amount = number(e.amount) * quantity
+            capital_amount += amount
+            lines.append(
+                CostLine(
+                    "unit_capital:" + e.tag,
+                    amount,
+                    None,
+                    "pre_costed_unit_capital",
+                    amount,
+                    "source capital amount × quantity; no equipment factors",
+                    "provisional",
+                    "Source-defined capital scope; included allowances not charged twice",
+                    spec.source,
+                )
+            )
+        except (ValueError, TypeError) as exc:
+            issues.append(e.tag + ": " + str(exc))
+    if inputs.pre_costed_capital:
+        assumptions.append(
+            "Pre-costed unit capital is excluded from all purchased-equipment/direct factorial bases and added once to plant cost. Source auxiliary scope requires review."
+        )
     for e in inputs.equipment:
         for category in e.included_categories:
             if category in ids and category not in inputs.exclusions:
@@ -552,6 +616,8 @@ def calculate(spec, factors, inputs):
             direct_total = bases["direct_costs"]
             indirect_total = _sum(indirect + fees)
             plant = _sum([direct_total, indirect_total])
+        direct_total = _sum([direct_total, capital_amount])
+        plant = _sum([plant, capital_amount])
         bases["plant_cost"] = plant
         offsite = Decimal(0)
         startup = Decimal(0)
@@ -609,6 +675,8 @@ def calculate(spec, factors, inputs):
         "process_description": inputs.process_description,
         "equipment_information": inputs.equipment_information,
         "equipment": inputs.equipment,
+        "pre_costed_capital": inputs.pre_costed_capital,
+        "pre_costed_capital_total": capital_amount,
         "fixed_capital_definition": "core plant plus offsite facilities; excludes startup and working capital",
         "total_capex_definition": "fixed_capital + startup_expenses + working_capital",
         "inactive": True,

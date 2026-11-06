@@ -458,3 +458,19 @@ a{text-decoration:none}a:hover{text-decoration:underline}aside{width:258px;paddi
 .stage-control-card .toolbar{flex-wrap:wrap;gap:.65rem}
 .stage-control-card small{display:block;margin:.5rem 0;overflow-wrap:anywhere}
 .stage-control-card p{overflow-wrap:anywhere}
+
+/* User-supplied purchase prices have their own provenance colour. */
+.shell[data-page=equipment] .peq-stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+.peq-status[data-tone=user],.peq-legend-user{background:#f0eafa;color:#6940a0;border-color:#d7c4ef}
+.shell[data-page=equipment] .peq-card[data-tone=user]{border-top-color:#8960b8}
+.shell[data-page=equipment] .peq-card[data-tone=user] .peq-card-bottom b{color:#6940a0}
+.shell[data-page=equipment] .peq-stat-user{border-left-color:#8960b8}
+.shell[data-page=equipment] .peq-stat-user strong{color:#6940a0}
+.peq-user-section{display:grid;gap:12px;border-top:1px solid var(--line);padding-top:18px}
+.peq-user-section h3{margin:0;font-size:14px;color:#6940a0}
+.dark .peq-status[data-tone=user],.dark .peq-legend-user{background:#332447;color:#d7b9fa;border-color:#72548f}
+.shell.dark[data-page=equipment] .peq-card[data-tone=user] .peq-card-bottom b,.shell.dark[data-page=equipment] .peq-stat-user strong,.dark .peq-user-section h3{color:#d7b9fa}
+@media(max-width:650px){.shell[data-page=equipment] .peq-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.peq-cost-summary{display:grid;gap:8px;padding:19px;border:1px solid var(--line);border-left:3px solid var(--equipment-accent);border-radius:8px;background:var(--paper)}
+.peq-cost-summary>strong{font-size:26px;font-weight:650;overflow-wrap:anywhere;color:var(--ink)}
+.peq-cost-summary>small{color:var(--muted)}

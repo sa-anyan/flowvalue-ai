@@ -4,6 +4,9 @@ A bounded preliminary design proposal per failed equipment, never a fabricated
 source observation. Existing priced selections and locked user inputs survive.
 """
 
+from backend.equipment_costing.models import priced_record
+
+
 import copy
 import json
 
@@ -74,7 +77,7 @@ def complete(
     failed = {
         r.get("parsed_source", {}).get("equipment_key")
         for r in lines
-        if r.get("equipment_cost") is None
+        if not priced_record(r)
         and r.get("decision", {}).get("scope_decision") != "alias"
         and not next(
             (

@@ -153,3 +153,34 @@ upstream licences, disclaimers and bundled numerical-library notices remain in
 the installed wheels/container; they are not replaced by FlowValue's licence.
 No upstream source code was copied into the Monte Carlo module. NumPy/SciPy
 sampling is used through their public Python APIs.
+
+### Additional equipment correlation parameters (6 November 2026)
+
+Own deterministic implementations use the EPA public document Equation 3-16,
+a small Turton parameter record from OpenPyTEA's published dataset (MIT,
+Copyright (c) 2025 Panji Tamarona), and the Sharma clarifier parameters documented
+in WaterTAP 1.8.0 (BSD-style licence with additional voluntary-contribution terms).
+Actual upstream licence texts were inspected and are retained under
+`backend/equipment_costing/indexes/additional_models/metadata/`. No upstream
+implementation, complete dataset or textbook tables are vendored; no new runtime
+dependency was added. Dataset URL/hash and limitations are recorded there.
+Original FlowValue source remains under the repository owner's existing licence.
+
+### Pinned OpenPyTEA correlation catalogue (6 November 2026)
+
+`backend/equipment_costing/indexes/openpytea/` includes the original correlation
+CSV, reference-only CEPCI CSV and structured factor dictionaries from
+pbtamarona/OpenPyTEA commit `9d769ad1583794401e4c441272ba7cccc46aff75`, under MIT,
+Copyright (c) 2025 Panji Tamarona. The full upstream notice is retained as
+`LICENSE_NOTICE.md`; `sources.json` records exact upstream file hashes and pin.
+A test-only exact AST extraction of `CostCorrelationDB` is in
+`backend/tests/openpytea_reference/pinned.py`, with attribution; it is not used
+by the production engine. FlowValue evaluators/adapters are original code.
+
+The dataset references third-party textbooks/papers; original references, notes,
+units, boundaries and qualifications are retained per row. Upstream licensing
+and numerical parity do not independently validate those publications' data,
+engineering applicability, or grant rights to reproduce their full tables,
+graphs or text. No original textbook pages/graphs or upstream TEA financial
+runtime are copied. The upstream CEPCI snapshot is reference-only, not automatic
+2026/verified-index data. This import does not change FlowValue's source licence.

@@ -246,3 +246,12 @@ for _label, _symbol in {
     "psi_absolute": "psia",
 }.items():
     ALIASES[key(_label)] = _symbol
+
+# Explicit US million gallons/day; ambiguous MGD is deliberately not an alias.
+add("US_MGD", "volume_flow", 1e6 * US_GALLON / 86400, aliases=("US MGD", "MGD_US"))
+
+add("Sm3/s", "standard_volume_flow", 1)
+
+add("US_gpm_sqrt_ft", "flow_sqrt_head", US_GALLON/60 * FOOT**0.5)
+add("Imp_gpm_sqrt_ft", "flow_sqrt_head", IMP_GALLON/60 * FOOT**0.5)
+add("m3/h_sqrt_m", "flow_sqrt_head", 1/3600)

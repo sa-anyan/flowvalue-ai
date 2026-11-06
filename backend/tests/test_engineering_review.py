@@ -8,7 +8,10 @@ from unittest.mock import patch
 
 from backend.ingestion.balance.models import BalanceReport
 from backend.orchestration.register import mark_ai
-from backend.orchestration.service import _execute_connected_reference as execute, new_assessment
+from backend.orchestration.service import (
+    _execute_connected_reference as execute,
+    new_assessment,
+)
 from backend.orchestration.sizing import derive_size
 from backend.orchestration.store import Store
 from backend.orchestration.workbook_review import apply_review
@@ -327,9 +330,11 @@ class EngineeringFeedbackTests(unittest.TestCase):
                     "input_gallon_basis": "US",
                     "target_gallon_basis": "US",
                 },
-                "factors": ["258.installation.open_tank"]
-                if corrected
-                else ["258.module.standard", "258.installation.open_tank"],
+                "factors": (
+                    ["258.installation.open_tank"]
+                    if corrected
+                    else ["258.module.standard", "258.installation.open_tank"]
+                ),
                 "factor_basis_confirmation": "Explicit synthetic scope test",
             }
             rows = [
@@ -395,3 +400,27 @@ class EngineeringFeedbackTests(unittest.TestCase):
             self.assertIsNotNone(line["equipment_cost"])
             self.assertIsNone(equipment_feedback(final["results"]))
             self.assertIn("equipment_correction", final["ai"]["advisors"])
+
+
+def test_timeout_retries_only_source_region_once(tmp_path):
+    from backend.orchestration.workbook_review import review
+
+    class Uncached:
+        def cached(self, context, compute):
+            return compute(), False
+
+    class Flaky:
+        model = "test"
+        calls = 0
+
+        def generate(self, **kwargs):
+            self.calls += 1
+            if self.calls == 1:
+                raise TimeoutError("Synthetic timeout")
+            return response()
+
+    provider = Flaky()
+    result, _, _, meta = review(fixture(), "", Uncached(), provider)
+    assert provider.calls == 2
+    assert result["entities"]
+    assert meta["batches"][0]["status"] == "reviewed"

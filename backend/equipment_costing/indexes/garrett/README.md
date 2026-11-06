@@ -170,3 +170,22 @@ Source-basis units must be respected, especially miscellaneous-pump flow coordin
 ## Provisional workbook integration (30 October 2026)
 
 The shared registry now includes graph-based estimates alongside these formula methods. See [INTEGRATION.md](INTEGRATION.md) for usage, all 154 configurations, scoped factors, source traceability, index adjustment and blocked cases. Earlier formula-only coverage counts remain historical; they do not describe the new provisional graph-fitting path.
+
+
+## Provisional graph boundary scaling — November 2026
+
+The canonical integrated graph path now applies the existing Garrett cost–size
+relationship below or above the observed interval when provisional graph use is
+explicitly enabled (`allow_unverified=True`). When no printed exponent exists, it
+uses the log-space fitted exponent and the actual nearest non-holdout boundary
+point's cost: `C2 = C_boundary * (S2/S_boundary)**n`. The exponent is labelled a
+provisional estimate from unverified points, never a printed Garrett exponent.
+The result retains anchor size/cost, source row/cells, exponent basis, size ratio
+and warnings, including a warning for extrapolation of ten-fold or more.
+
+An explicitly supplied exponent still requires a rationale and takes precedence.
+Set `allow_fitted_extrapolation=False` for the prior strict policy. Within-range
+calculations remain unchanged. Existing formula branches, configuration/source
+conflicts and incomplete graph data are not bypassed. A missing model/reference
+price or missing physical size cannot be created by cost–size scaling. Historical
+price bases, escalation, material factors and installation handling are unchanged.

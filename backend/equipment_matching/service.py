@@ -9,9 +9,39 @@ from backend.equipment_costing.registry import list_equipment_models
 from backend.revenue.advisor import TEXT, obj
 from backend.orchestration.equipment_advisor import validate as validate_shape
 
-VERSION = "equipment-concept-matcher-1"
-BATCH_SIZE = 32
-PROMPT = """You are FlowValue's chemical-engineering equipment matching specialist.
+VERSION = "equipment-concept-matcher-7-tag-name-continuity"
+# Bound request/response size so one unavailable review cannot erase the plant.
+BATCH_SIZE = 8
+PROMPT = """Search all registered libraries without preferring Garrett or OpenPyTEA. Rank physical function, configuration, required measurements, valid domain, cost scope, source and assumptions; price year does not determine suitability. P-001 may mean pH adjustment, NOT a pump: function and target-bound process evidence take precedence over tag prefixes. Fermenter correlation range is strict; clarifier geometry/mechanical scope must be justified.
+Prefer explicit raw workbook equipment nouns over earlier AI-normalised labels.
+A name explicitly attached to an equipment tag in any source stream applies across
+all occurrences of that same tag; absence of the name elsewhere is not ambiguity.
+Explicit different names for the same tag remain conflicts. A separately tagged
+bioreactor is separate equipment, not an assumed typo or alias of another reactor.
+Keep reported operating conditions unchanged. Propose alternatives with caveats
+rather than rewriting M&E measurements.
+Raw wording is source evidence; normalised names are interpretations. source_name_hints bind a noun phrase to the target tag. Equipment mentioned elsewhere in the same stream sentence belongs to that other tag: never match the target to its upstream centrifuge, downstream tank, or other named neighbor merely by word occurrence. If no target-bound noun exists, use contextual hypotheses rather than claiming exact-word identification. For example,
+Packaging Tank supports the tank family, not automatically an entire packaging line.
+Price a defensible holding-tank scope separately from filling/packing machinery.
+Evaluate user-supplied equipment hypotheses against the service and linked streams;
+do not force them. Distinguish gas blowers, liquid pumps and solids dryers by the
+actual handled material and operation, retaining contradictory evidence in caveats.
+You are FlowValue's chemical-engineering equipment matching specialist.
+Use combined evidence, not isolated spelling alone. Conventional engineering tags
+plus explicit liquid-transfer service may support a provisional pump hypothesis;
+state that it is inferred rather than demanding a literal pump noun. A PD tag in
+wet-product transfer may support a positive-displacement pump hypothesis when
+consistent with the surrounding process; never assign it a neighboring operation.
+For gas-moving/pressurising equipment include conceptually relevant compressor
+alternatives as well as blower models when appropriate. The sizing specialist must
+check pressure applicability and disclose any alternative to the source label.
+Do not infer a technology from a tag alone or override incompatible process evidence.
+Catalogue size_inputs and coordinate_issues describe current calculation capability,
+not just equipment vocabulary. An exact family name with an unresolved required
+coordinate is not a working standalone pricing route. Where defensible, include a
+compatible generic core-equipment cost proxy with explicit limitations as an
+alternative; do not call it an exact or vendor-verified configuration. Otherwise
+report the model gap rather than choosing an unrelated correlation.
 Follow these seven steps, in order:
 1. Receive ONLY equipment names/tags in equipment_register. Material streams,
 products and chemicals are not equipment entries. Do not add or drop entries.
@@ -110,7 +140,30 @@ def catalogue():
             "source": m.get("source", "garrett"),
             "equipment_name": m.get("equipment", m.get("category", "")),
             "configuration": m.get("configuration", ""),
+            "aliases": m.get("aliases", []),
+            "availability": m.get("status", "available"),
+            "disabled_reasons": m.get("disabled_reasons", []),
+            "raw_sizing_description": m.get("raw", {}).get("units"),
+            "material": m.get("default_material"),
+            "cost_scope": m.get("cost_scope"),
+            "capacity_limits": m.get("capacity_limits"),
+            "source_reference": m.get("reference"),
+            "source_url": m.get("source_url"),
             "source_page": m.get("printed_page", m.get("source_page")),
+            "size_inputs": [
+                {
+                    "quantity": r.get("quantity"),
+                    "unit": r.get("target_unit", r.get("unit")),
+                }
+                for r in m.get("input_requirements", [])
+                if r.get("required", True)
+            ],
+            "coordinate_issues": [
+                r["issue"]
+                for r in m.get("input_requirements", [])
+                if r.get("required", True) and r.get("issue")
+            ],
+            "limitation": str(m.get("limitation") or "")[:300],
         }
         for m in list_equipment_models("all")
     ]
@@ -130,15 +183,44 @@ def words(text):
     )
 
 
+def source_name_hints(row):
+    """Noun phrases immediately attached to this tag, not another stream endpoint."""
+    tag = "".join(c for c in row.get("tag", "").casefold() if c.isalnum())
+    if not tag:
+        return []
+    pattern = (
+        r"(?<![a-z0-9])" + r"[\s/\-]*".join(re.escape(c) for c in tag) + r"(?![a-z0-9])"
+    )
+    names = []
+    for raw in row.get("raw_names", []):
+        text = str(raw).casefold()
+        matches = list(re.finditer(pattern, text))
+        if not matches and not re.search(
+            r"\b(?:entering|leaving|into|from|to)\b|\b[a-z]{1,5}\s*-\s*\d", text
+        ):
+            # A dedicated name cell can be separate from its tag cell.
+            names.append(text.strip())
+        for match in matches:
+            prefix = text[: match.start()]
+            phrase = re.split(r"\b(?:entering|leaving|into|from|to)\b|[;,]", prefix)[
+                -1
+            ].strip()
+            if phrase:
+                names.append(phrase)
+    return list(dict.fromkeys(names))
+
+
 def lexical_candidates(row, models):
-    names = [words(name) for name in row["names"]]
+    # Raw evidence can name several different pieces of equipment. Only the
+    # target-bound phrase supplies exact-word hints; the rest stays in context.
+    raw = row.get("raw_names", [])
+    names = [words(name) for name in (source_name_hints(row) if raw else row["names"])]
     return [
         m["model_id"]
         for m in models
-        if words(m["equipment_name"])
-        and any(
-            words(m["equipment_name"]) == n
-            or set(words(m["equipment_name"])).issubset(n)
+        if any(
+            words(alias) and (words(alias) == n or set(words(alias)).issubset(n))
+            for alias in [m["equipment_name"], *m.get("aliases", [])]
             for n in names
         )
     ]
@@ -197,9 +279,47 @@ def _schema(keys, ids):
     )
 
 
+def compact_catalogue(models):
+    """All executable candidates, fewer repeated tokens; full records stay canonical."""
+    return [
+        {
+            k: (str(v)[:200] if k == "limitation" else v)
+            for k, v in m.items()
+            if k
+            not in {
+                "source_url",
+                "source_page",
+                "availability",
+                "disabled_reasons",
+                "aliases",
+            }
+            and v is not None
+            and v != []
+            and v != ""
+        }
+        for m in models
+    ]
+
+
 def match_report(report, description, store, provider=None):
-    register, models = equipment_register(report), catalogue()
+    register, models = equipment_register(report), [
+        m for m in catalogue() if m.get("availability") != "disabled"
+    ]
     contexts = contextual_descriptions(report)
+    for row in register:
+        entity = next(
+            e for e in report["entities"] if e.get("key") == row["equipment_key"]
+        )
+        row["raw_names"] = list(
+            dict.fromkeys(
+                str(v["original_value"])
+                for v in entity.get("values", [])
+                if v.get("property") in {"name", "type", "description"}
+                and v.get("original_value")
+            )
+        )
+    for row in register:
+        row["source_name_hints"] = source_name_hints(row)
     model_by_id = {m["model_id"]: m for m in models}
     from backend.orchestration.provider import EngineeringProvider
 
@@ -221,7 +341,7 @@ def match_report(report, description, store, provider=None):
             "task": VERSION,
             "model": getattr(provider, "model", None),
             "equipment_register": batch,
-            "costing_catalogue": models,
+            "costing_catalogue": compact_catalogue(models),
             "lexical_candidates": {
                 e["equipment_key"]: lexical_candidates(e, models) for e in batch
             },
@@ -335,6 +455,13 @@ def match_report(report, description, store, provider=None):
                     **decision,
                     "review_available": len(decisions) == 1,
                     "selected_model_name": chosen.get("equipment_name"),
+                    "required_inputs": chosen.get("size_inputs", []),
+                    "confidence_classification": (
+                        "conceptually_supported"
+                        if decision["match_status"] == "matched"
+                        and decision["conceptual_validation"] == "suitable"
+                        else "requires_review"
+                    ),
                     "selected_configuration": chosen.get("configuration"),
                     "source": chosen.get("source"),
                     "candidate_models": [
@@ -387,11 +514,37 @@ def apply_matches(previous, matching):
         new_id = (
             match["selected_model_id"] if match["match_status"] == "matched" else None
         )
+        # A fresh family-only proposal is not an instruction to erase an existing
+        # sizing recipe for a still-compatible model. Retain the alternative for review.
+        if (
+            old_id
+            and new_id is None
+            and old_id in match.get("candidate_model_ids", [])
+            and match.get("conceptual_validation") != "unsuitable"
+            and match.get("match_status") != "no_suitable_model"
+            and (
+                row.get("unit_conversion", {}).get("enabled")
+                or row.get("sizing")
+                or row.get("size") is not None
+            )
+        ):
+            row["matching_attempt"] = copy.deepcopy(match)
+            row["matching_preservation_reason"] = (
+                "Saved configuration and inputs retained; new family-only review "
+                "still includes this model. Alternative requires explicit selection."
+            )
+            rows.append(row)
+            continue
         if old_id != new_id:
             row = (
                 {
                     "equipment_key": match["equipment_key"],
-                    "quantity": row.get("quantity", 1),
+                    **(
+                        {"duplicate_action": row["duplicate_action"]}
+                        if "duplicate_action" in row
+                        else {}
+                    ),
+                    **({"quantity": row["quantity"]} if "quantity" in row else {}),
                     "previous_costing_inputs": {
                         k: v for k, v in row.items() if k != "previous_costing_inputs"
                     },

@@ -1,5 +1,7 @@
 """Separate equipment identity, candidate matching, sizing and price coverage."""
 
+from backend.equipment_costing.models import priced_record
+
 
 def annotate(result, report, plan):
     proposals = {p["equipment_key"]: p for p in plan.get("equipment", [])}
@@ -16,7 +18,7 @@ def annotate(result, report, plan):
                 ]
             )
         )
-        priced = row.get("equipment_cost") is not None
+        priced = priced_record(row)
         alias = p.get("scope_decision") == "alias"
         counts["priced" if priced else "unpriced"] += 1
         counts["alias_proposals"] += int(alias)
@@ -113,7 +115,7 @@ def annotate(result, report, plan):
         price = proposal.get("manual_price") or {}
         row["cost_status"] = (
             price.get("cost_status", "catalogue_estimate")
-            if row.get("equipment_cost") is not None
+            if priced_record(row)
             else "unresolved"
         )
         if row.get("equipment_cost") is not None and price.get("cost_status"):
@@ -183,11 +185,13 @@ def annotate(result, report, plan):
         estimate = calculation.get("estimate") or {}
         evidence = calculation.get("evidence") or {}
         escalation = evidence.get("cost_translation") or {}
-        priced = row.get("equipment_cost") is not None
+        priced = priced_record(row)
         if row.get("parsed_source", {}).get("confirmed_alias"):
             label = "ALIAS — NO ADDITIONAL PURCHASE"
         elif not priced:
             label = "UNPRICED — SOURCE REQUIRED"
+        elif evidence.get("applicability_status") == "provisional":
+            label = "ESTIMATED — PROVISIONAL MODEL SCOPE"
         elif proposal.get("manual_price"):
             label = "USER-PRICED"
         elif proposal.get("external_quote"):

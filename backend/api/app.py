@@ -402,6 +402,10 @@ def catalogue():
                 "size_unit": m["size_unit"],
                 "source": m.get("source", "garrett"),
                 "limitations": m.get("limitation"),
+                "availability": m.get("status", "available"),
+                "input_requirements": m.get("input_requirements", []),
+                "cost_scope": m.get("cost_scope"),
+                "source_year": m.get("source_year"),
             }
             for m in list_equipment_models(source="all")
         ],

@@ -17,6 +17,7 @@ TARGETS = {
     "density_kg_m3": "kg/m3",
     "temperature_k": "K",
     "absolute_pressure_bar": "bar_abs",
+    "discharge_pressure_bar": "bar_abs",
     "differential_pressure_bar": "bar",
 }
 
@@ -91,7 +92,7 @@ def derive(bindings, observations, inputs, unit_context):
             formula = "source temperature -> kelvin"
         elif method == "absolute_pressure":
             if (
-                name != "absolute_pressure_bar"
+                name not in {"absolute_pressure_bar", "discharge_pressure_bar"}
                 or len(values) != 1
                 or values[0]["property"] != "pressure"
             ):
@@ -174,7 +175,7 @@ def discover(observations, measurement_id, method, unit_context):
 
     found = []
     mass, molar, volume = one("mass_flow"), one("molar_flow"), one("volume_flow")
-    if method in {"gas_flow", "dryer_volume"}:
+    if method in {"gas_flow", "dryer_volume", "gas_compression", "standard_gas_flow"}:
         if mass and molar:
             found.append(
                 binding(

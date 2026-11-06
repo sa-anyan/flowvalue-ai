@@ -1,0 +1,16 @@
+{
+  "repository": "https://github.com/pbtamarona/OpenPyTEA",
+  "commit": "9d769ad1583794401e4c441272ba7cccc46aff75",
+  "imported_at": "2026-11-06T16:15:55.399235+00:00",
+  "licence": "MIT; Copyright (c) 2025 Panji Tamarona",
+  "documented_count": 417,
+  "documented_categories": 34,
+  "files": {
+    "LICENSE": "e4252e829e112c0b576dd0ba42d260392100c7392997245b0a6d92bac2d55dfa",
+    "cost_correlations.csv": "911d8bdc9291376710cd37b218f21e8cc339122291302021457f7f27f863674f",
+    "cepci_values.csv": "fd8fce9ea749e50bb19887809a70acacd651fe85b82bc5021a0a5c0462a6c5d0",
+    "equipment.py": "1e8928a76d868f474706835caba267cf83db816e9c52f2974f71e6c8de9aa31b"
+  },
+  "underlying_provenance": "Published textbook/paper references preserved per row. Upstream MIT does not establish independent accuracy or blanket rights to original source publications.",
+  "index_policy": "Upstream CEPCI retained reference-only, not automatically trusted or applied; no 2026 index fabricated."
+}

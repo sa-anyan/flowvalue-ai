@@ -17,11 +17,13 @@ class Store:
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self.db() as db:
-            db.executescript("""CREATE TABLE IF NOT EXISTS assessments
+            db.executescript(
+                """CREATE TABLE IF NOT EXISTS assessments
                 (id TEXT PRIMARY KEY, revision INTEGER, state TEXT, workbook BLOB);
                 CREATE TABLE IF NOT EXISTS versions
                 (id TEXT PRIMARY KEY, assessment_id TEXT, name TEXT, state TEXT);
-                CREATE TABLE IF NOT EXISTS ai_cache (key TEXT PRIMARY KEY, value TEXT);""")
+                CREATE TABLE IF NOT EXISTS ai_cache (key TEXT PRIMARY KEY, value TEXT);"""
+            )
         os.chmod(self.path, 0o600)
 
     def db(self):
@@ -97,6 +99,14 @@ class Store:
         return self.create(state, content)
 
     def cached(self, context, compute):
+        # Response caching is separate from accepted project assumptions/results.
+        # Disable both reads and writes for genuinely fresh local/manual runs.
+        if os.environ.get("FLOWVALUE_AI_RESPONSE_CACHE", "true").strip().lower() in {
+            "false",
+            "0",
+            "off",
+        }:
+            return compute(), False
         key = hashlib.sha256(dump(context).encode()).hexdigest()
         with self.db() as db:
             row = db.execute(

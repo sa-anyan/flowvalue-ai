@@ -1,5 +1,7 @@
 """Canonical equipment handoff; no other stage is executed here."""
 
+from backend.equipment_costing.registry import model_source
+
 import copy
 from decimal import Decimal, InvalidOperation
 from backend.equipment_costing.total_cost.calculator import calculate_total_cost
@@ -7,6 +9,7 @@ from backend.equipment_costing.unit_conversion import ConversionContext
 from backend.orchestration.codec import construct, plain
 from backend.orchestration.sizing import derive_size
 from backend.equipment_resolution.scope import confirmed
+from .quantity import equipment_quantity
 
 
 def calculate_equipment(report, plan, translation_policy=None):
@@ -77,8 +80,53 @@ def calculate_equipment(report, plan, translation_policy=None):
                     )
                 sizing_evidence = evaluate(report, key, conversion)
                 size, size_unit = sizing_evidence["size"], sizing_evidence["size_unit"]
+                if sizing_evidence.get("second_size") is not None:
+                    options.update(
+                        second_size=sizing_evidence["second_size"],
+                        second_size_unit=sizing_evidence["second_size_unit"],
+                        second_input_provenance=sizing_evidence.get(
+                            "second_input_provenance"
+                        ),
+                    )
+                # Carry an explicitly computed gas-reference basis through the
+                # canonical registry; do not lose it after the sizing conversion.
+                if sizing_evidence.get("unit_context"):
+                    options["unit_context"] = construct(
+                        ConversionContext, sizing_evidence["unit_context"]
+                    )
             else:
                 size, size_unit, sizing_evidence = derive_size(proposal, report)
+            if (
+                str(proposal.get("curve_id", "")).startswith("N501-")
+                and size is not None
+                and not proposal.get("manual_price")
+                and not proposal.get("external_quote")
+            ):
+                from backend.equipment_costing.unit_conversion.bridges.service import (
+                    model_contract,
+                )
+                from backend.equipment_costing.unit_conversion import convert
+
+                _, _, native_unit = model_contract(proposal["curve_id"])
+                handoff = {"source": "nottingham", "native_unit": native_unit}
+                if size_unit != native_unit:
+                    converted = convert(
+                        size,
+                        size_unit,
+                        native_unit,
+                        context=options.get("unit_context"),
+                    )
+                    if converted.value is None:
+                        raise ValueError("; ".join(converted.issues))
+                    size, size_unit = converted.value, native_unit
+                    handoff["unit_conversion"] = plain(converted)
+                # Context belongs to conversion, not the native correlation API.
+                # It remains in the saved recipe and this source audit.
+                handoff["conversion_context"] = plain(options.pop("unit_context", None))
+                sizing_evidence = {
+                    **(sizing_evidence or {}),
+                    "native_costing_handoff": handoff,
+                }
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             options = options if isinstance(options, dict) else {}
             options.pop("unit_context", None)
@@ -89,13 +137,35 @@ def calculate_equipment(report, plan, translation_policy=None):
                 size = float(Decimal(size))
             except (InvalidOperation, ValueError, OverflowError):
                 pass  # Canonical unit validator retains the unsupported value as an issue.
+        if str(proposal.get("curve_id", "")).startswith("openpytea:"):
+            options.setdefault(
+                "input_provenance",
+                {
+                    "status": (
+                        "DERIVED"
+                        if (sizing_evidence or {}).get("equation")
+                        else (
+                            "EXTRACTED"
+                            if (sizing_evidence or {}).get("source_measurements")
+                            else "ASSUMED"
+                        )
+                    ),
+                    "sizing": sizing_evidence,
+                    "rationale": proposal.get(
+                        "rationale", "Explicit supplied sizing coordinate"
+                    ),
+                },
+            )
+        count, count_basis = equipment_quantity(proposal, entity["identifier"])
         rows.append(
             {
                 "equipment_tag": entity["identifier"] or key,
                 "source": (
                     "nottingham"
                     if str(proposal.get("curve_id", "")).startswith("N501-")
-                    else (proposal.get("source") or "garrett")
+                    else model_source(
+                        proposal.get("curve_id"), proposal.get("source") or "garrett"
+                    )
                 ),
                 "curve_id": (
                     "manual:user-price"
@@ -111,10 +181,13 @@ def calculate_equipment(report, plan, translation_policy=None):
                 "separate_scope_conflicts": True,
                 "size": size,
                 "size_unit": size_unit,
-                "quantity": proposal.get("quantity", 1),
+                "quantity": count,
+                "quantity_unit": proposal.get("quantity_unit", "item"),
                 "costing_options": options,
                 "parsed_source": {
                     "equipment_key": key,
+                    "quantity_basis": count_basis,
+                    "equipment_count": count,
                     "conceptual_matching": proposal.get("matching"),
                     "confirmed_alias": proposal.get("scope_decision") == "alias"
                     and confirmed(proposal),

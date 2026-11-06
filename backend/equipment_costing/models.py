@@ -99,3 +99,19 @@ class CostEstimate:
     exponent_basis: str = "printed size exponent"
     notes: tuple[str, ...] = ()
     index_series: str = "CEPCI"
+
+
+def is_scoped_capital(scope, evidence=None):
+    """Only explicit unit capital or imported source-native installed/module totals."""
+    return scope == "unit_capital" or (
+        scope in {"installed_equipment", "module_estimate"}
+        and (evidence or {}).get("source") == "openpytea"
+    )
+
+
+def priced_record(row):
+    calculation = row.get("calculation") or {}
+    return row.get("equipment_cost") is not None or (
+        row.get("amount") is not None
+        and is_scoped_capital(row.get("cost_scope"), calculation.get("evidence"))
+    )

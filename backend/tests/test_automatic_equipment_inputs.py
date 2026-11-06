@@ -30,6 +30,7 @@ def decision(key="e"):
         "measurement_id": "m",
         "outlet_measurement_id": None,
         "same_side_reference_confirmed": False,
+        "thermal_basis": None,
         "assumptions": [
             {
                 "name": n,
@@ -454,6 +455,14 @@ def test_one_bounded_repair_pass_for_missing_source(tmp_path):
 
         def generate(self, **kw):
             self.calls += 1
+            assert kw["context"]["review_role"] == (
+                "independent_assumption_review"
+                if self.calls > 1
+                else "initial_input_resolution"
+            )
+            assert (
+                "Independent preliminary-estimate review:" in kw["instructions"]
+            ) == (self.calls > 1)
             d = decision()
             if not kw["context"].get("repair_feedback"):
                 d["measurement_id"] = "unknown-id"
@@ -675,3 +684,318 @@ def test_stream_descriptions_and_required_conventions_reach_planner(tmp_path):
         True,
     )
     assert plan["equipment"][0]["unit_conversion"]["enabled"]
+
+
+def test_bound_schema_has_independent_identifier_fields_and_valid_source_ids():
+    from backend.equipment_costing.unit_conversion.bridges.automatic import (
+        decision_schema,
+    )
+    from backend.equipment_costing.unit_conversion.bridges.service import (
+        describe,
+        PARAMETERS,
+    )
+
+    c = describe(REPORT, "e", "G258-004")
+    schema = decision_schema(
+        [
+            {
+                "equipment_key": "e",
+                "candidate_inputs": [c],
+                "measurements": c["measurements"],
+            }
+        ]
+    )
+    fields = schema["properties"]["decisions"]["items"]["properties"]
+    assert fields["equipment_key"]["enum"] == ["e"]
+    assert "enum" not in fields["rationale"]
+    source_choices = fields["thermal_basis"]["properties"]["source_choices"]
+    assert "source_choices" in fields["thermal_basis"]["required"]
+    assert set(source_choices["items"]["properties"]["measurement_id"]["enum"]) == {
+        v["id"] for v in c["measurements"]
+    }
+    assert "enum" not in source_choices["items"]["properties"]["rationale"]
+    assert set(fields["assumptions"]["items"]["properties"]["name"]["enum"]) == set(
+        PARAMETERS
+    )
+    assert set(fields["measurement_id"]["enum"]) == {
+        v["id"] for v in c["measurements"]
+    } | {None}
+    assert set(
+        fields["thermal_basis"]["properties"]["hot_inlet_stream_key"]["enum"]
+    ) == {v["entity_key"] for v in c["measurements"]} | {None}
+
+
+def test_invalid_source_on_one_equipment_does_not_clear_good_neighbor(tmp_path):
+    report = copy.deepcopy(REPORT)
+    second = copy.deepcopy(report["entities"][0])
+    second.update(key="e2", identifier="TK-2")
+    report["entities"].append(second)
+
+    class Mixed(Provider):
+        def generate(self, **kw):
+            result = []
+            for item in kw["context"]["equipment"]:
+                d = decision(item["equipment_key"])
+                if item["equipment_key"] == "e2":
+                    d["measurement_id"] = "invented"
+                result.append(d)
+            return {"decisions": result}
+
+    result, audit = resolve(
+        report,
+        {"equipment": [selected(), selected("e2")]},
+        "",
+        Store(tmp_path / "db"),
+        Mixed(),
+        True,
+    )
+    bykey = {r["equipment_key"]: r for r in result["equipment"]}
+    assert bykey["e"]["unit_conversion"]["enabled"]
+    assert not bykey["e2"].get("unit_conversion")
+    assert any(
+        a["equipment_key"] == "e2" and a["status"] == "input_resolution_unresolved"
+        for a in audit
+    )
+
+
+def test_failed_batch_retries_individually_without_losing_neighbor(tmp_path):
+    report = copy.deepcopy(REPORT)
+    second = copy.deepcopy(report["entities"][0])
+    second.update(key="e2", identifier="TK-2")
+    report["entities"].append(second)
+
+    class Flaky(Provider):
+        calls = []
+
+        def generate(self, **kw):
+            keys = [e["equipment_key"] for e in kw["context"]["equipment"]]
+            self.calls.append(keys)
+            if len(keys) > 1 or keys == ["e2"]:
+                raise TimeoutError("Synthetic transport failure")
+            return {"decisions": [decision(keys[0])]}
+
+    provider = Flaky()
+    result, audit = resolve(
+        report,
+        {"equipment": [selected(), selected("e2")]},
+        "",
+        Store(tmp_path / "db"),
+        provider,
+        True,
+    )
+    bykey = {r["equipment_key"]: r for r in result["equipment"]}
+    assert bykey["e"]["unit_conversion"]["enabled"]
+    assert not bykey["e2"].get("unit_conversion")
+    assert provider.calls == [["e", "e2"], ["e"], ["e2"]]
+    assert any(a.get("transport_retry") and a["equipment_key"] == "e" for a in audit)
+
+
+def test_no_measurements_produces_valid_schema_not_empty_enum():
+    from backend.equipment_costing.unit_conversion.bridges.automatic import (
+        decision_schema,
+    )
+
+    schema = decision_schema(
+        [
+            {
+                "equipment_key": "e",
+                "candidate_inputs": [{"model_id": "m"}],
+                "measurements": [],
+            }
+        ]
+    )
+
+    def visit(value):
+        if isinstance(value, dict):
+            assert value.get("enum") != []
+            for child in value.values():
+                visit(child)
+        elif isinstance(value, list):
+            for child in value:
+                visit(child)
+
+    visit(schema)
+    fields = schema["properties"]["decisions"]["items"]["properties"]
+    assert fields["derivations"]["maxItems"] == 0
+    assert fields["measurement_id"]["enum"] == [None]
+
+
+def test_thermal_adapter_owns_lmtd_and_retains_redundant_ai_binding_audit(tmp_path):
+    from backend.tests.test_heat_exchanger_basis import fixture
+
+    observations, basis, inputs = fixture()
+    report = {
+        "entities": [
+            {
+                "kind": "equipment",
+                "key": "e",
+                "identifier": "HE-9",
+                "values": [],
+                "stream_keys": ["hot_inlet", "hot_outlet", "cold_inlet", "cold_outlet"],
+            }
+        ]
+    }
+    for role in ["hot_inlet", "hot_outlet", "cold_inlet", "cold_outlet"]:
+        report["entities"].append(
+            {
+                "kind": "material",
+                "key": role,
+                "identifier": role,
+                "values": [
+                    {
+                        "id": v["id"],
+                        "property": v["property"],
+                        "normalized_value": v["value"],
+                        "normalized_unit": v["unit"],
+                        "status": "verified",
+                        "sheet": "Balance",
+                        "cell": "A1",
+                    }
+                    for v in observations
+                    if v["entity_key"] == role
+                ],
+            }
+        )
+
+    class Thermal(Provider):
+        def generate(self, **kw):
+            d = decision()
+            d.update(
+                model_id="G286-091",
+                method="exchanger_area",
+                measurement_id=None,
+                thermal_basis=basis,
+                assumptions=[
+                    {
+                        "name": n,
+                        "value": v,
+                        "unit": u,
+                        "rationale": "Synthetic thermal scenario",
+                        "limitations": "Preliminary",
+                    }
+                    for n, v, u in [
+                        ("overall_u_w_m2_k", 500, "W/m2/K"),
+                        ("lmtd_correction", 1, "fraction"),
+                    ]
+                ],
+                derivations=[
+                    {
+                        "name": "lmtd_k",
+                        "method": "lmtd_countercurrent",
+                        "measurement_ids": [
+                            "hot_inlettemperature",
+                            "cold_inlettemperature",
+                            "cold_outlettemperature",
+                        ],
+                    }
+                ],
+            )
+            return {"decisions": [d]}
+
+    result, audit = resolve(
+        report,
+        {"equipment": [{"equipment_key": "e", "curve_id": "G286-091"}]},
+        "",
+        Store(tmp_path / "db"),
+        Thermal(),
+        True,
+    )
+    spec = result["equipment"][0]["unit_conversion"]
+    assert audit[-1]["status"] == "converted_with_explicit_basis"
+    assert len(spec["omitted_redundant_derivations"]) == 1
+    assert not any(b["method"].startswith("lmtd_") for b in spec["derivations"])
+    assert evaluate(report, "e", spec)["size"] > 0
+
+
+def test_stream_composition_reaches_engineer_with_component_identity_and_lineage(
+    tmp_path,
+):
+    report = copy.deepcopy(REPORT)
+    report["entities"][1]["values"].append(
+        {
+            "id": "water-component",
+            "property": "component_mass_flow",
+            "component": "water",
+            "normalized_value": 950,
+            "normalized_unit": "kg/h",
+            "status": "verified",
+            "sheet": "Balance",
+            "cell": "C9",
+        }
+    )
+
+    class Context(Provider):
+        def generate(self, **kw):
+            composition = kw["context"]["equipment"][0]["stream_context"][0][
+                "composition"
+            ]
+            assert composition[0]["component"] == "water"
+            assert composition[0]["value"] == 950
+            assert composition[0]["cell"] == "C9"
+            # It is context, not a replacement for total-stream hydraulic flow.
+            assert "water-component" not in [
+                v["id"] for v in kw["context"]["equipment"][0]["measurements"]
+            ]
+            return super().generate(**kw)
+
+    result, _ = resolve(
+        report, {"equipment": [selected()]}, "", Store(tmp_path / "db"), Context(), True
+    )
+    assert result["equipment"][0]["unit_conversion"]["enabled"]
+
+
+def test_binding_repairs_preserve_failed_proposal_and_stop_at_three_attempts(tmp_path):
+    class BadBinding(Provider):
+        calls = 0
+
+        def generate(self, **kw):
+            self.calls += 1
+            assert kw["context"]["repair_depth"] == self.calls - 1
+            if self.calls > 1:
+                feedback = kw["context"]["repair_feedback"]
+                assert (
+                    feedback[-1]["failed_proposal"]["measurement_id"] == "not-a-source"
+                )
+            proposal = decision()
+            proposal["measurement_id"] = "not-a-source"
+            return {"decisions": [proposal]}
+
+    provider = BadBinding()
+    plan, audit = resolve(
+        REPORT,
+        {"equipment": [selected()]},
+        "",
+        Store(tmp_path / "bounded.db"),
+        provider,
+        True,
+    )
+    assert provider.calls == 3
+    assert not plan["equipment"][0].get("unit_conversion")
+    assert [
+        a["attempt"] for a in audit if a["status"] == "input_resolution_unresolved"
+    ] == [1, 2, 3]
+
+
+def test_third_binding_attempt_can_recover_without_restarting_the_register(tmp_path):
+    class Recover(Provider):
+        calls = 0
+
+        def generate(self, **kw):
+            self.calls += 1
+            proposal = decision()
+            if self.calls < 3:
+                proposal["measurement_id"] = "not-a-source"
+            return {"decisions": [proposal]}
+
+    provider = Recover()
+    plan, audit = resolve(
+        REPORT,
+        {"equipment": [selected()]},
+        "",
+        Store(tmp_path / "recover.db"),
+        provider,
+        True,
+    )
+    assert provider.calls == 3
+    assert plan["equipment"][0]["unit_conversion"]["enabled"]
+    assert audit[-1]["status"] == "converted_with_explicit_basis"

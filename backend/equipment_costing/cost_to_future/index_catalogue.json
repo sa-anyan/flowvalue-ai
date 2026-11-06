@@ -23,6 +23,78 @@
           "frequency": "monthly",
           "source": "https://www.bls.gov/news.release/archives/cpi_10142026.htm",
           "location": "Table 1, All items, September 2026; released 2026-10-14"
+        },
+        "1989": {
+          "value": "124.0",
+          "frequency": "annual_average",
+          "source": "https://www.bls.gov/cpi/tables/historical-cpi-u-201708.pdf",
+          "location": "Table 24, annual average 1989, PDF page 4; retrieved 2026-11-06"
+        },
+        "2001": {
+          "value": "177.1",
+          "frequency": "annual_average",
+          "source": "https://www.bls.gov/cpi/tables/historical-cpi-u-201708.pdf",
+          "location": "Table 24, annual average 2001, PDF page 4; retrieved 2026-11-06"
+        },
+        "2011": {
+          "value": "224.939",
+          "frequency": "annual_average",
+          "source": "https://www.bls.gov/cpi/tables/historical-cpi-u-201708.pdf",
+          "location": "Table 24, annual average 2011, PDF page 4; retrieved 2026-11-06"
+        },
+        "1996": {
+          "value": "156.9",
+          "frequency": "annual_average",
+          "source": "https://www.bls.gov/cpi/tables/historical-cpi-u-201708.pdf",
+          "location": "Table 24, annual average 1996, PDF page 4; retrieved 2026-11-06"
+        },
+        "1997": {
+          "value": "160.5",
+          "frequency": "annual_average",
+          "source": "https://www.bls.gov/cpi/tables/historical-cpi-u-201708.pdf",
+          "location": "Table 24, annual average 1997, PDF page 4; retrieved 2026-11-06"
+        },
+        "2002": {
+          "value": "179.9",
+          "frequency": "annual_average",
+          "source": "https://www.bls.gov/cpi/tables/historical-cpi-u-201708.pdf",
+          "location": "Table 24, annual average 2002, PDF page 4; retrieved 2026-11-06"
+        },
+        "2003": {
+          "value": "184.0",
+          "frequency": "annual_average",
+          "source": "https://www.bls.gov/cpi/tables/historical-cpi-u-201708.pdf",
+          "location": "Table 24, annual average 2003, PDF page 4; retrieved 2026-11-06"
+        },
+        "2006": {
+          "value": "201.6",
+          "frequency": "annual_average",
+          "source": "https://www.bls.gov/cpi/tables/historical-cpi-u-201708.pdf",
+          "location": "Table 24, annual average 2006, PDF page 4; retrieved 2026-11-06"
+        },
+        "2008": {
+          "value": "215.303",
+          "frequency": "annual_average",
+          "source": "https://www.bls.gov/cpi/tables/historical-cpi-u-201708.pdf",
+          "location": "Table 24, annual average 2008, PDF page 4; retrieved 2026-11-06"
+        },
+        "2010": {
+          "value": "218.056",
+          "frequency": "annual_average",
+          "source": "https://www.bls.gov/cpi/tables/historical-cpi-u-201708.pdf",
+          "location": "Table 24, annual average 2010, PDF page 4; retrieved 2026-11-06"
+        },
+        "2013": {
+          "value": "232.957",
+          "frequency": "annual_average",
+          "source": "https://www.bls.gov/cpi/tables/historical-cpi-u-201708.pdf",
+          "location": "Table 24, annual average 2013, PDF page 4; retrieved 2026-11-06"
+        },
+        "2016": {
+          "value": "240.007",
+          "frequency": "annual_average",
+          "source": "https://www.bls.gov/cpi/tables/historical-cpi-u-201708.pdf",
+          "location": "Table 24, annual average 2016, PDF page 4; retrieved 2026-11-06"
         }
       }
     },

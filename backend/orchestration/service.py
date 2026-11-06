@@ -470,6 +470,10 @@ def edit(store, key, revision, section, value, rationale):
             r.get("equipment_key"): r for r in state["plan"].get("equipment", [])
         }
 
+        from .equipment_edits import merge_equipment_edits
+
+        value = merge_equipment_edits(list(previous.values()), value)
+
         def approve(rows, old_rows):
             old = {r.get("asset_id", r.get("equipment_key")): r for r in old_rows}
             for row in rows:
@@ -541,6 +545,10 @@ def edit(store, key, revision, section, value, rationale):
         from backend.blocks.execution import refresh
 
         refresh(state)
+        if section == "equipment":
+            from backend.blocks.equipment.edit_preview import update_saved_prices
+
+            update_saved_prices(state, previous)
     else:
         state["results"] = None
     return store.put(state, revision)

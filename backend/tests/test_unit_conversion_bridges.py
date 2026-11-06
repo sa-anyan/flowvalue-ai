@@ -256,3 +256,25 @@ def test_saved_equation_flows_into_canonical_equipment_calculation():
 def test_standalone_enthalpy_is_not_equipment_power():
     with pytest.raises(ValueError, match="standalone stream enthalpy"):
         run("direct", "power", "kW", measurement_id="h1")
+
+
+def test_conditional_dryer_volume_preserves_explicit_reported_pressure_scenario():
+    inputs = {
+        "temperature_k": 450,
+        "absolute_pressure_bar": 20,
+        "compressibility_z": 1,
+        "gas_residence_time_s": 12,
+    }
+    before = copy.deepcopy(inputs)
+    high_pressure = run("dryer_volume", "volume", "m3", inputs, measurement_id="n")
+    low_pressure = run(
+        "dryer_volume",
+        "volume",
+        "m3",
+        {**inputs, "absolute_pressure_bar": 2},
+        measurement_id="n",
+    )
+    assert high_pressure["size"] == pytest.approx(low_pressure["size"] / 10)
+    assert high_pressure["validation"]["engineering_design_validated"] is False
+    assert inputs == before
+    assert high_pressure["user_inputs"]["absolute_pressure_bar"] == 20

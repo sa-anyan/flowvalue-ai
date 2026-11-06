@@ -1,6 +1,9 @@
 """Workbook-independent input ladder after canonical equipment matching."""
 
+from backend.equipment_costing.registry import model_source
+
 import copy
+import json
 import math
 from backend.equipment_costing.registry import list_equipment_models
 from backend.orchestration.equipment_advisor import validate
@@ -9,8 +12,10 @@ from .. import convert, ConversionContext
 from .service import describe, evaluate, model_contract, PARAMETERS, RECIPES
 from .derivations import METHODS, derive, discover
 
-VERSION = "equipment-input-resolution-4"
-PROMPT = """You are the chemical-engineering input-resolution specialist AFTER equipment matching.
+VERSION = "equipment-input-resolution-21-bounded-binding-repair"
+PROMPT = """For OpenPyTEA power coordinates use electrical_to_shaft_power / shaft_to_electrical_power with explicit motor_efficiency, or pump_hydraulic_power, when the power role differs. Shaft power is not electrical input power. For OpenPyTEA correlations, preserve exact required parameter roles (shaft/fluid/electrical power, actual/standard flow, composite design coordinates). Never substitute an uncalculated feed rate for a composite coordinate. Two-variable models require secondary_input: choose its measurement_id independently, or provide an explicit assumed value/unit/rationale; Python converts it. Missing second input remains MISSING_SIZING_INPUT. Disabled models cannot be selected. No automatic size clamping or parallelisation.
+For the Turton fermenter, specify operating_mode from process evidence, or an explicit provisional operating assumption. Flow-to-volume sizing requires continuous mode, residence time and working fraction. Batch/unknown requires directly documented per-vessel volume. Never extrapolate beyond 35 m3. For mechanically equipped clarifiers use clarifier_area (hydraulic_loading_m_h is surface overflow rate); do not assume a generic settler is mechanically equipped.
+You are the chemical-engineering input-resolution specialist AFTER equipment matching.
 Apply these five skills in order for every conversion-matching decision:
 1. Exact unit and parameter matching: prefer an existing measurement of the required
 quantity, including recognized unit equivalents. kg/h -> kg/h needs no engineering
@@ -32,7 +37,14 @@ In rationale explain the matching strategy, physical source selection and equati
 assumptions and limitations separate. Never claim a fully validated design from conversion.
 Only select provided candidate model IDs and allowlisted conversion/sizing equations.
 Use existing conceptual matches, equipment names/service, linked streams, measurements
-and project context. Do not invent equipment matches or correlations. A supplied ambiguous candidate family
+and project context. Identity names are raw source wording where present. Earlier
+normalised placeholder labels such as unclassified are not evidence against a
+supported contextual hypothesis. Do not re-reject a compatible pumping function
+solely because the raw sentence omits the literal noun pump; distinguish an
+explicitly inferred preliminary operation from a verified design. Catalogue notes
+that suitability is not established require disclosed uncertainty and a conceptual
+compatibility check, not vendor certification. Explicit incompatibility or an
+unresolved coordinate still blocks that model. Do not invent correlations. A supplied ambiguous candidate family
 may proceed to a clearly labelled provisional configuration when the operation is known;
 configuration uncertainty alone is not a missing model. Reject candidates whose function
 is incompatible. Do not require exact material/pressure/construction specifications before
@@ -40,6 +52,18 @@ proposing a reasonable preliminary configuration and explicitly disclosing the a
 Choose a
 configuration as a provisional engineering assumption when appropriate; explain its
 scope/material/pressure applicability. Never substitute an unrelated model to obtain a price.
+Explicit equipment names anywhere attached to the same tag apply to all that tag's
+linked streams; an omitted name on another stream is not contradictory identity.
+A separately tagged explicit bioreactor stays separate; never silently merge it
+with another reactor or dismiss it as a typo. If broth flow is absent, do not use
+an oxygen/hydrogen reactant as liquid throughput. For a volume-based reactor model,
+vessel_productivity can instead use an explicitly disclosed production/productivity
+scenario: product_rate_kg_h from project context (or clearly estimated scenario),
+production_allocation_fraction for this vessel's role, volumetric_productivity_kg_m3_h
+and working_fraction with process-specific rationale and limitations. Do not copy
+another reactor's size or imply this scenario establishes its actual output/kinetics.
+This route needs no measurement_id; every supplied parameter retains assumption
+provenance, even a project target not present in worksheet cells.
 Use supplied design dimensions/duties first. Otherwise choose relevant duty sources;
 never sum inlet and outlet or assume every linked stream has the same phase.
 Identify inputs derivable from M&E using derivation bindings: return evidence IDs and
@@ -50,13 +74,50 @@ stream. Pressure difference takes ordered inlet/outlet pressures. Gauge-to-absol
 needs an explicit atmospheric-pressure assumption in unit_context. LMTD takes four
 ordered hot-in/hot-out/cold-in/cold-out temperatures, with specified arrangement.
 This run explicitly authorises preliminary engineering scenarios, not only verified designs.
+For an identified gas-contact dryer with a volume costing coordinate, dryer_volume
+uses gas throughput at the REPORTED operating state and an explicit proposed gas
+residence time. Missing measured residence time is expected: propose a preliminary
+process-specific assumption with limitations. Unusually high positive reported
+pressure does not by itself make gas-state conversion mathematically unavailable.
+Do not rewrite that pressure to atmospheric. A conditional pressurised-gas volume
+scenario can proceed using the recorded state plus explicit Z/MW/atmospheric-reference
+assumptions as needed. Disclose that this does not validate drying feasibility,
+pressure-rated construction, evaporation/heat balance, droplet kinetics or chart
+applicability. If the catalogue only prices a generic dryer core, describe the
+pressure-rated package/additions as unresolved scope, not included or verified.
+Use an explicitly compatible existing cost model only; this permission does not
+create a missing model. Never use a wet feed mass rate as chamber volume, or
+ignore negative/zero pressure or contradictory units to manufacture a size.
+For compressor cost models requiring standard_volume_flow, select standard_gas_flow,
+not gas_compression power. Supply explicit reference temperature, absolute pressure,
+Z and a rationale for the selected reference convention; if the chart's reference
+is unknown, label it a provisional assumption rather than a source fact.
+For gas pressurisation, a reported rise beyond blower applicability can require a
+compressor alternative. Use the gas_compression recipe with absolute inlet/outlet
+pressures and explicit k, Z and efficiency if a supplied compressor candidate is
+functionally suitable. Preserve the source blower label and contradictory evidence;
+this is an alternative screening scenario, not correction of the workbook. Never
+use liquid hydraulic pump power for gas compression. A single-stage calculation
+does not validate the actual stage arrangement or package specification.
 A missing measured pump head does NOT prevent a clearly labelled preliminary pressure-rise
 assumption with rationale/limitations. Do not describe such a justified screening assumption
 as an unusable placeholder solely because it is unmeasured. Reject physically unsupported
 models, not ordinary disclosed design assumptions. The user permits rough digitised-graph
 estimates: set allow_unverified_graph_points=true for graph-derived cost estimates, clearly
 labelling them provisional. This permission does not validate graph readings or source gaps.
-Always select measurement_id for a non-geometry recipe, even when density is derived.
+For exchanger_area use thermal_basis with linked stream entity keys and no primary measurement_id required. Do not also return an LMTD derivation: the thermal adapter calculates it from the selected roles and assumptions. Missing outlet stream must be null plus an explicit outlet-temperature assumption; never repeat the inlet stream as the outlet. For other non-geometry recipes select measurement_id even when density is derived.
+Thermal source conflicts have an explicit structured route: thermal_basis.source_choices
+contains role, property, measurement_id and rationale for a provisional source
+basis. If multiple observations within a stream disagree, choose the actual supplied
+measurement ID for each disputed temperature/enthalpy/mass-flow role; do not put
+that source choice only into prose or copy the selected reading as an assumed
+number. Python validates membership and retains alternatives. A source choice does
+not change a workbook reading or establish the balance. Return [] when unnecessary.
+Where a directly read worksheet observation (status verified, source cell) conflicts with an added inferred AI interpretation, the thermal adapter selects the direct observation for calculation and retains the alternative in source_selections. This is source precedence, not proof of an engineering balance. Conflicting direct readings still require an explicit source choice; do not change them. Do not abandon a valid direct-cell basis solely because an inferred competing interpretation exists.
+Use thermal_enthalpy_facts for signed arithmetic instead of mentally subtracting negative enthalpies. Hot release is H_in minus H_out; cold absorption is H_out minus H_in. Positive arithmetic is not proof of a common reference or correct fluid pairing. If enthalpy reference, signs or shared utility allocation do not support a duty, consider a physically compatible sensible-heat or latent-heat calculation with explicit Cp/latent/phase assumptions. An explicitly assumed duty is a disclosed last-resort screening scenario, not a corrected workbook balance. Retain conflicting enthalpy observations. Never insist a measured enthalpy difference is the only permitted basis when an independent preliminary thermal method is available.
+Thermal workflow: identify hot/cold inlet/outlet roles from descriptions and service. Python calculates signed enthalpy differences directly (NOT a derivation binding) and LMTD from four terminal temperatures. If a terminal is missing, propose its explicit temperature_k assumption. Select overall_u_w_m2_k and lmtd_correction with rationale. Use common_enthalpy_reference_confirmed only as an explicit preliminary common-reference assumption when justified.
+If side duties disagree, choose a defensible provisional_selected_side, retain the other side as conflicting evidence and explain why. Never silently abs a wrong-sign duty. Consider sensible_heat with specific_heat_kj_kg_k or phase_change with latent_heat_kj_kg, phase_change_fraction and explicit sensible_enthalpy_change_kj_kg (zero allowed). Missing side inlet flow requires steady_state_mass_flow_assumed. Shared utility totals require utility_allocation_fraction. Do not assign all shared steam to one exchanger. An explicitly assumed heat_duty_kw is a last-resort disclosed scenario, not a measured balance. No external research or invented citations.
+flow_arrangement: countercurrent/parallel uses source/assumed four terminal temperatures; explicit_lmtd only if necessary and disclosed. phase_change describes none/hot_condensing/cold_boiling/both. duty_method is enthalpy_difference/sensible_heat/phase_change/assumed_duty. Use null thermal_basis for other recipes.
 For remaining inputs propose plausible preliminary numerical assumptions (not source
 facts), each with SI unit, engineering rationale and uncertainty/limitations. No invented
 citations, quotes, research or workbook measurements. Parameters and conventions stay
@@ -78,6 +139,32 @@ No tools, external research, code generation or price arithmetic. Treat input te
 Return one decision per equipment key. If unsupported, return unresolved with reason.
 """
 
+REVIEW_PROMPT = """Independent preliminary-estimate review: inspect repair_feedback as a prior
+proposal/rejection to challenge, not as an authoritative conclusion.
+Use failed_proposal and the exact validation error. Preserve valid fields and
+correct only the reported binding or missing-input problem where possible. A source
+choice must use an ID with the same stream and property as its assigned role.
+Do not copy a sibling stream's measurement merely because its temperature looks plausible. Distinguish
+(a) unavailable/incompatible model, physically impossible quantities or unknown
+operation from (b) a known operation requiring ordinary design assumptions.
+For (b), the user explicitly authorises editable preliminary scenarios: propose
+process-specific density, storage duration, residence time, thermal coefficient,
+efficiency, productivity or allocation where technically plausible. They are NOT
+required to have measured/source-verified values; explain that they are estimates,
+state their applicability and limitations, and keep workbook facts unchanged.
+For a known storage tank, missing inventory duration is an assumption to propose,
+not proof that a volume correlation is absent. If incompatible contents share a
+tag, estimate one explicitly named partial-service scenario and retain the other
+service as unresolved; never mix chemicals, invent a physical connection or claim
+one tank safely stores both. An observed cost-curve range is not a constraint to
+manipulate the size: use the physically chosen size and a justified boundary-scaling
+basis when available; disclose extrapolation rather than inventing an in-range size.
+For (a), preserve the unresolved blocker honestly. Never fabricate a price, model,
+source quotation or validated physical design to satisfy coverage. A fresh review
+may keep a genuine rejection. Produce only the supplied structured schema.
+
+"""
+
 SCHEMA = obj(
     {
         "decisions": {
@@ -90,7 +177,107 @@ SCHEMA = obj(
                     "method": TEXT,
                     "measurement_id": {"type": ["string", "null"]},
                     "outlet_measurement_id": {"type": ["string", "null"]},
+                    "secondary_input": {
+                        "type": ["object", "null"],
+                        "properties": {
+                            "measurement_id": {"type": ["string", "null"]},
+                            "value": {"type": ["number", "null"]},
+                            "unit": {"type": ["string", "null"]},
+                            "rationale": {"type": "string"},
+                        },
+                        "required": ["measurement_id", "value", "unit", "rationale"],
+                        "additionalProperties": False,
+                    },
+                    "operating_mode": {
+                        "type": ["string", "null"],
+                        "enum": ["continuous", "batch", "unknown", None],
+                    },
                     "same_side_reference_confirmed": {"type": "boolean"},
+                    "thermal_basis": {
+                        "type": ["object", "null"],
+                        "properties": {
+                            "source_choices": {
+                                "type": "array",
+                                "items": obj(
+                                    {
+                                        "role": {
+                                            "type": "string",
+                                            "enum": [
+                                                "hot_inlet",
+                                                "hot_outlet",
+                                                "cold_inlet",
+                                                "cold_outlet",
+                                            ],
+                                        },
+                                        "property": {
+                                            "type": "string",
+                                            "enum": [
+                                                "temperature",
+                                                "enthalpy_flow",
+                                                "mass_flow",
+                                            ],
+                                        },
+                                        "measurement_id": TEXT,
+                                        "rationale": TEXT,
+                                    }
+                                ),
+                            },
+                            "hot_inlet_stream_key": {"type": ["string", "null"]},
+                            "hot_outlet_stream_key": {"type": ["string", "null"]},
+                            "cold_inlet_stream_key": {"type": ["string", "null"]},
+                            "cold_outlet_stream_key": {"type": ["string", "null"]},
+                            "duty_side": {"type": "string", "enum": ["hot", "cold"]},
+                            "duty_method": {
+                                "type": "string",
+                                "enum": [
+                                    "enthalpy_difference",
+                                    "sensible_heat",
+                                    "phase_change",
+                                    "assumed_duty",
+                                ],
+                            },
+                            "flow_arrangement": {
+                                "type": "string",
+                                "enum": ["countercurrent", "parallel", "explicit_lmtd"],
+                            },
+                            "phase_change": {
+                                "type": "string",
+                                "enum": [
+                                    "none",
+                                    "hot_condensing",
+                                    "cold_boiling",
+                                    "both",
+                                ],
+                            },
+                            "duty_conflict_policy": {
+                                "type": "string",
+                                "enum": [
+                                    "provisional_selected_side",
+                                    "require_consistency",
+                                ],
+                            },
+                            "common_enthalpy_reference_confirmed": {"type": "boolean"},
+                            "steady_state_mass_flow_assumed": {"type": "boolean"},
+                            "rationale": {"type": "string"},
+                            "limitations": {"type": "string"},
+                        },
+                        "required": [
+                            "hot_inlet_stream_key",
+                            "hot_outlet_stream_key",
+                            "cold_inlet_stream_key",
+                            "cold_outlet_stream_key",
+                            "duty_side",
+                            "duty_method",
+                            "flow_arrangement",
+                            "phase_change",
+                            "duty_conflict_policy",
+                            "common_enthalpy_reference_confirmed",
+                            "steady_state_mass_flow_assumed",
+                            "rationale",
+                            "limitations",
+                        ],
+                        "additionalProperties": False,
+                    },
                     "assumptions": {
                         "type": "array",
                         "items": obj(
@@ -137,6 +324,7 @@ SCHEMA = obj(
     }
 )
 
+
 PROPERTIES = {
     "volume": {"volume", "capacity", "design_volume"},
     "area": {"area", "heat_transfer_area", "filter_area"},
@@ -151,6 +339,55 @@ PROPERTIES = {
     },
     "mass": {"equipment_mass", "weight", "mass"},
 }
+
+
+def decision_schema(transport):
+    """Constrain AI identifiers to the actual current request, never prior runs."""
+    schema = json.loads(json.dumps(SCHEMA))
+    fields = schema["properties"]["decisions"]["items"]["properties"]
+    fields["equipment_key"]["enum"] = [e["equipment_key"] for e in transport]
+    fields["model_id"]["enum"] = sorted(
+        {c["model_id"] for e in transport for c in e["candidate_inputs"]}
+    ) + [None]
+    fields["method"]["enum"] = sorted(RECIPES) + ["unresolved"]
+    ids = sorted({v["id"] for e in transport for v in e["measurements"]})
+    for name in ("measurement_id", "outlet_measurement_id"):
+        fields[name]["enum"] = ids + [None]
+    fields["secondary_input"]["properties"]["measurement_id"]["enum"] = ids + [None]
+    fields["assumptions"]["items"]["properties"]["name"]["enum"] = sorted(PARAMETERS)
+    derivations = fields["derivations"]["items"]["properties"]
+    derivations["name"]["enum"] = sorted(PARAMETERS)
+    derivations["method"]["enum"] = sorted(METHODS)
+    if ids:
+        derivations["measurement_ids"]["items"]["enum"] = ids
+    else:
+        fields["derivations"]["maxItems"] = 0
+    streams = sorted({v["entity_key"] for e in transport for v in e["measurements"]})
+    thermal = fields["thermal_basis"]["properties"]
+    fields["thermal_basis"]["required"].append("source_choices")
+    choice_ids = thermal["source_choices"]["items"]["properties"]["measurement_id"]
+    if ids:
+        choice_ids["enum"] = ids
+    else:
+        thermal["source_choices"]["maxItems"] = 0
+    for role in ("hot_inlet", "hot_outlet", "cold_inlet", "cold_outlet"):
+        thermal[role + "_stream_key"]["enum"] = streams + [None]
+    return schema
+
+
+def normalize_response(response):
+    """Backwards-compatible empty source-choice list; never invent a source choice."""
+    response = copy.deepcopy(response)
+    if isinstance(response, dict) and isinstance(response.get("decisions"), list):
+        for decision in response["decisions"]:
+            if isinstance(decision, dict):
+                decision.setdefault("operating_mode", None)
+                decision.setdefault("secondary_input", None)
+            if isinstance(decision, dict) and isinstance(
+                decision.get("thermal_basis"), dict
+            ):
+                decision["thermal_basis"].setdefault("source_choices", [])
+    return response
 
 
 def normalize_assumption(assumption):
@@ -237,6 +474,7 @@ def resolve(
     use_ai=False,
     locked=False,
     repair_feedback=None,
+    repair_depth=0,
 ):
     plan = copy.deepcopy(plan)
     audits = []
@@ -260,8 +498,9 @@ def resolve(
         ):
             audits.append({"equipment_key": key, "status": "preserved_price_or_scope"})
             continue
-        if row.get("unit_conversion", {}).get("enabled") and row["unit_conversion"].get(
-            "derivations"
+        if row.get("unit_conversion", {}).get("enabled") and (
+            row["unit_conversion"].get("derivations")
+            or row["unit_conversion"].get("thermal_basis")
         ):
             try:
                 refreshed = evaluate(report, key, row["unit_conversion"])
@@ -351,9 +590,16 @@ def resolve(
                     "identity": {
                         "source": entities[key].get("id_evidence"),
                         "names": [
-                            v.get("normalized_value") or v.get("original_value")
+                            v.get("original_value") or v.get("normalized_value")
                             for v in entities[key].get("values", [])
                             if v.get("property") in {"name", "type", "description"}
+                            and not str(
+                                v.get("original_value")
+                                or v.get("normalized_value")
+                                or ""
+                            )
+                            .casefold()
+                            .startswith("unclassified")
                         ],
                     },
                     "candidate_inputs": contexts,
@@ -405,6 +651,8 @@ def resolve(
                 and v["property"] not in {"mole_fraction", "mass_fraction"}
             ][:300]
             item["visible_measurement_ids"] = {v["id"] for v in visible}
+            from .thermal_screening import temperature_arrangements, enthalpy_pairings
+
             transport.append(
                 {
                     "equipment_key": item["equipment_key"],
@@ -422,6 +670,30 @@ def resolve(
                         )
                     },
                     "measurements": visible,
+                    "thermal_enthalpy_facts": (
+                        enthalpy_pairings(
+                            visible,
+                            item["candidate_inputs"][0].get("stream_context", []),
+                        )
+                        if any(
+                            r["id"] == "exchanger_area"
+                            for c in item["candidate_inputs"]
+                            for r in c["recipes"]
+                        )
+                        else None
+                    ),
+                    "thermal_temperature_facts": (
+                        temperature_arrangements(
+                            visible,
+                            item["candidate_inputs"][0].get("stream_context", []),
+                        )
+                        if any(
+                            r["id"] == "exchanger_area"
+                            for c in item["candidate_inputs"]
+                            for r in c["recipes"]
+                        )
+                        else None
+                    ),
                     "stream_context": item["candidate_inputs"][0].get(
                         "stream_context", []
                     ),
@@ -439,24 +711,55 @@ def resolve(
         context = {
             "task": VERSION,
             "repair_feedback": repair_feedback or [],
+            "repair_depth": repair_depth,
+            "maximum_input_attempts": 3,
+            "review_role": (
+                "independent_assumption_review"
+                if repair_feedback is not None
+                else "initial_input_resolution"
+            ),
             "provisional_graph_estimates_authorized": allow_graph,
             "model": provider.model,
+            "selection_policy": {
+                "purpose": "Editable preliminary engineering scenario, not verified final design",
+                "known_function_missing_design": "Propose one compatible configuration and justified design assumptions; uncertainty of material, hold-up, loading or efficiency alone does not mean no model exists.",
+                "multiple_compatible_configurations": "Select a provisional candidate with limitations instead of demanding a unique confirmed configuration.",
+                "conflicting_services": "You may price one explicitly identified service as a provisional partial-scope scenario. Retain the conflicting service as excluded/unresolved scope; never combine incompatible chemicals or claim a complete package.",
+                "unknown_function": "Leave unresolved. A neighboring equipment name or tag prefix is not proof of operation.",
+                "missing_cost_model": "Leave unsupported. Do not invent prices or substitute an unrelated model.",
+                "conflicting_physical_measurements": "Preserve and disclose the conflict; do not silently rewrite measured pressure, temperature or flow.",
+            },
             "process_description": description,
             "equipment": transport,
             "allowed_derivations": sorted(METHODS),
+            "derivation_parameter_contracts": {
+                "mixture_molecular_weight": "molecular_weight_kg_kmol",
+                "density_from_flows": "density_kg_m3",
+                "temperature_kelvin": "temperature_k",
+                "absolute_pressure": "absolute_pressure_bar or discharge_pressure_bar, selected by inlet/outlet source role",
+                "pressure_difference": "differential_pressure_bar",
+                "lmtd_countercurrent": "lmtd_k",
+                "lmtd_parallel": "lmtd_k",
+            },
             "parameter_units": PARAMETERS,
             "notice": "Only supplied canonical models/equations; assumptions are provisional, arithmetic belongs to Python.",
         }
+        request_schema = decision_schema(transport)
         try:
 
             def call():
                 response = provider.generate(
-                    instructions=PROMPT, context=context, schema=SCHEMA
+                    instructions=(REVIEW_PROMPT if repair_feedback is not None else "")
+                    + PROMPT,
+                    context=context,
+                    schema=request_schema,
                 )
+                response = normalize_response(response)
                 validate(response, SCHEMA)
                 return response
 
             response, cached = store.cached(context, call)
+            response = normalize_response(response)
             validate(response, SCHEMA)
         except Exception as exc:
             audits.extend(
@@ -467,16 +770,52 @@ def resolve(
                 }
                 for p in group
             )
+            if repair_feedback is None:
+                # Retry failed transports independently, never discard a neighbor
+                # because another item caused an incomplete batch response.
+                for item in group:
+                    key = item["equipment_key"]
+                    subset = {
+                        **report,
+                        "entities": [
+                            e
+                            for e in report["entities"]
+                            if e.get("kind") != "equipment" or e["key"] == key
+                        ],
+                    }
+                    repaired, retry_audit = resolve(
+                        subset,
+                        {**plan, "equipment": [by_key[key]]},
+                        description,
+                        store,
+                        provider,
+                        use_ai=use_ai,
+                        locked=locked,
+                        repair_depth=repair_depth + 1,
+                        repair_feedback=[
+                            {
+                                "equipment_key": key,
+                                "status": "retry_failed_transport",
+                                "reason": type(exc).__name__,
+                            }
+                        ],
+                    )
+                    by_key[key].update(repaired["equipment"][0])
+                    audits.extend({**a, "transport_retry": True} for a in retry_audit)
             continue
         for item in group:
             key = item["equipment_key"]
             decisions = [d for d in response["decisions"] if d["equipment_key"] == key]
+            d = None
             try:
                 if len(decisions) != 1:
                     raise ValueError(
                         "One input-resolution decision per equipment required"
                     )
                 d = decisions[0]
+                if d.get("thermal_basis"):
+                    d["thermal_basis"].setdefault("source_choices", [])
+                validate(d, request_schema["properties"]["decisions"]["items"])
                 if d["status"] != "proposed":
                     raise ValueError(d["rationale"])
                 allowed = {c["model_id"]: c for c in item["candidate_inputs"]}
@@ -494,6 +833,8 @@ def resolve(
                     "mixing_power",
                     "gas_flow",
                     "dryer_volume",
+                    "gas_compression",
+                    "standard_gas_flow",
                 }:
                     # A single linked service stream needs no guessed topology.
                     totals = [
@@ -526,6 +867,25 @@ def resolve(
                             "Invalid assumption name, units, duplicate or missing basis"
                         )
                     inputs[a["name"]] = a["value"]
+                redundant_bindings = []
+                if (
+                    d["method"] == "exchanger_area"
+                    and d.get("thermal_basis")
+                    and d["thermal_basis"].get("flow_arrangement")
+                    in {"countercurrent", "parallel"}
+                ):
+                    # Preserve the omitted AI operation in the audit, not as a
+                    # second calculation of the same thermal quantity.
+                    redundant_bindings = [
+                        b
+                        for b in d["derivations"]
+                        if b["method"] in {"lmtd_countercurrent", "lmtd_parallel"}
+                    ]
+                    d["derivations"] = [
+                        b
+                        for b in d["derivations"]
+                        if b["method"] not in {"lmtd_countercurrent", "lmtd_parallel"}
+                    ]
                 for b in d["derivations"]:
                     if b["name"] not in PARAMETERS:
                         raise ValueError("Unknown derived parameter")
@@ -548,16 +908,56 @@ def resolve(
                 inputs, derived = derive(
                     d["derivations"], c["measurements"], inputs, d["unit_context"]
                 )
+                if d["method"] == "exchanger_area" and d.get("thermal_basis"):
+                    from .heat_exchanger import required_parameters
+                    from .assumption_completion import complete_missing
+
+                    missing = [
+                        name
+                        for name in required_parameters(d["thermal_basis"])
+                        if inputs.get(name) is None
+                    ]
+                    additions, completion_cached = complete_missing(
+                        missing,
+                        {
+                            "process_description": description,
+                            "equipment": next(
+                                t for t in transport if t["equipment_key"] == key
+                            ),
+                            "proposal": d,
+                            "accepted_inputs": inputs,
+                        },
+                        store,
+                        provider,
+                        normalize_assumption,
+                        PARAMETERS,
+                    )
+                    if additions:
+                        inputs.update({a["name"]: a["value"] for a in additions})
+                        assumptions.extend(additions)
+                        audits.append(
+                            {
+                                "equipment_key": key,
+                                "status": "completed_missing_thermal_assumptions",
+                                "parameters": [a["name"] for a in additions],
+                                "cached": completion_cached,
+                                "notice": "Only absent proposal inputs completed; selected sources and existing inputs preserved.",
+                            }
+                        )
                 spec = {
                     "enabled": True,
                     "origin": "llm_selected_python_equation",
                     "model_id": d["model_id"],
                     "method": d["method"],
+                    "operating_mode": d.get("operating_mode"),
+                    "secondary_input": d.get("secondary_input"),
                     "measurement_id": d["measurement_id"],
                     "outlet_measurement_id": d["outlet_measurement_id"],
                     "same_side_reference_confirmed": d["same_side_reference_confirmed"],
                     "inputs": inputs,
+                    "thermal_basis": d.get("thermal_basis"),
                     "derivations": d["derivations"],
+                    "omitted_redundant_derivations": redundant_bindings,
                     "input_provenance": {
                         a["name"]: {**a, "status": "llm_estimate"} for a in assumptions
                     },
@@ -574,6 +974,17 @@ def resolve(
                         "Source ID was not supplied to this input-resolution call"
                     )
                 preview = evaluate(report, key, spec)
+                spec["inputs"] = preview["user_inputs"]
+                for derived in preview["derived_inputs"]:
+                    previous = spec["input_provenance"].get(derived["name"])
+                    spec["input_provenance"][derived["name"]] = {
+                        **derived,
+                        **(
+                            {"superseded_assumption": previous}
+                            if previous and previous.get("status") == "llm_estimate"
+                            else {}
+                        ),
+                    }
                 row = by_key[key]
                 options = copy.deepcopy(row.get("costing_options") or {})
                 options["unit_context"] = d["unit_context"]
@@ -597,9 +1008,7 @@ def resolve(
                     )
                 row.update(
                     curve_id=d["model_id"],
-                    source=(
-                        "nottingham" if d["model_id"].startswith("N501-") else "garrett"
-                    ),
+                    source=(model_source(d["model_id"])),
                     unit_conversion=spec,
                     costing_options=options,
                 )
@@ -623,9 +1032,11 @@ def resolve(
                         "equipment_key": key,
                         "status": "input_resolution_unresolved",
                         "reason": str(exc),
+                        "failed_proposal": copy.deepcopy(d),
+                        "attempt": repair_depth + 1,
                     }
                 )
-    if repair_feedback is None:
+    if repair_depth < 2:
         failed = {
             a["equipment_key"]
             for a in audits
@@ -654,6 +1065,7 @@ def resolve(
                 use_ai=use_ai,
                 locked=locked,
                 repair_feedback=feedback,
+                repair_depth=repair_depth + 1,
             )
             replacements = {r["equipment_key"]: r for r in repaired["equipment"]}
             plan["equipment"] = [replacements.get(r["equipment_key"], r) for r in rows]

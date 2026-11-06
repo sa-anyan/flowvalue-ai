@@ -69,6 +69,23 @@ class EquipmentCost:
 
 
 @dataclass(frozen=True)
+class UnitCapitalCost:
+    """Source-defined unit capital, never a purchased-equipment factor base."""
+
+    tag: str
+    amount: Any
+    currency: str
+    period: str
+    index_series: str
+    index_value: Any
+    quantity: Any = 1
+    cost_scope: str = "unit_capital"
+    included_categories: tuple[str, ...] = ()
+    provenance: dict = field(default_factory=dict)
+    provisional: bool = True
+
+
+@dataclass(frozen=True)
 class Override:
     fraction: Any = None
     amount: Any = None
@@ -102,6 +119,7 @@ class CapexInputs:
     factor_basis_mode: str = "published_table"
     working_capital: WorkingCapital = field(default_factory=WorkingCapital)
     offsite_scope_confirmation: str | None = None
+    pre_costed_capital: tuple[UnitCapitalCost, ...] = ()
 
 
 @dataclass(frozen=True)

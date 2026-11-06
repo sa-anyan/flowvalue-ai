@@ -233,6 +233,7 @@ def estimate_cost(
     *,
     size_unit,
     allow_unverified=False,
+    allow_fitted_extrapolation=True,
     factors=(),
     factor_basis_confirmation=None,
     extrapolation_exponent=None,
@@ -247,9 +248,11 @@ def estimate_cost(
     """Exact source-coordinate units required. No fuzzy equipment/material matching.
 
     Provisional graph prices and factor transcriptions need allow_unverified=True.
-    Fitted n alone never authorizes extrapolation beyond observed data. Explicit
-    caller exponents require a recorded justification; otherwise only printed n
-    can be extended and the resulting estimate remains flagged as unvalidated.
+    With provisional graph use enabled, graph-only models may use their fitted n
+    and the nearest observed boundary price for explicitly flagged extrapolation.
+    No generic exponent or reference price is invented. Set allow_fitted_extrapolation
+    to False for the previous strict policy requiring a printed/caller-justified n.
+    Explicit caller exponents always require a recorded justification.
     """
     curve = _curve(curve_id)
     size = positive(size, "size")
@@ -259,6 +262,8 @@ def estimate_cost(
         )
     if type(allow_unverified) is not bool:
         raise ValueError("allow_unverified must be a boolean")
+    if type(allow_fitted_extrapolation) is not bool:
+        raise ValueError("allow_fitted_extrapolation must be a boolean")
     meta = _read("interpretations.json")[curve_id]
     source = _read("review_curves.json")
     evidence = {
@@ -297,6 +302,8 @@ def estimate_cost(
             diagnostics = fit.diagnostics
             anchor = min(max(size, fit.lower), fit.upper)
             n = fit.exponent
+            exponent_basis = fit.exponent_basis
+            provisional_boundary = False
             extrapolated = size != anchor
             if extrapolated:
                 if extrapolation_exponent is not None:
@@ -314,10 +321,29 @@ def estimate_cost(
                         "Caller-justified exponent: " + extrapolation_justification
                     )
                 elif meta["printed_exponent"] is None and _band(curve_id, size) is None:
-                    return blocked(
-                        "Unsupported extrapolation: fitted graph exponent alone is not an engineering justification"
+                    if not allow_fitted_extrapolation:
+                        return blocked(
+                            "Unsupported extrapolation: fitted graph exponent alone is not an engineering justification"
+                        )
+                    provisional_boundary = True
+                    exponent_basis = "Provisional log-space fitted exponent from unverified graph points; not a printed Garrett exponent"
+                    issues.append(
+                        "PROVISIONAL BOUNDARY EXTRAPOLATION: fitted graph exponent is an estimation assumption, not validated engineering scaling"
                     )
+                if extrapolation_exponent is not None:
+                    exponent_basis = "Caller-supplied exponent: " + extrapolation_justification
             anchor_cost = fit.evaluate(anchor)
+            if provisional_boundary:
+                boundary_points = [p for p in curve["points"] if p.get("row") in fit.training_rows and p.get("size") == anchor and p.get("source_price") is not None]
+                if not boundary_points:
+                    return blocked("No usable observed boundary price for provisional extrapolation")
+                point = boundary_points[0]
+                anchor_cost = positive(point["source_price"], "boundary source price") * _multiplier(curve)
+                evidence["boundary_reference"] = {"size": anchor, "cost": anchor_cost, "source_row": point["row"], "source_cells": point["cell_range"], "status": "unverified_graph_reading"}
+            if extrapolated:
+                evidence["extrapolation"] = {"formula": "C2 = C1 * (S2/S1)**n", "anchor_size": anchor, "anchor_cost": anchor_cost, "target_size": size, "size_ratio": size / anchor, "distance_factor": max(size / anchor, anchor / size), "exponent": n, "exponent_basis": exponent_basis, "provisional_fitted_exponent": provisional_boundary}
+                if max(size / anchor, anchor / size) >= 10:
+                    issues.append("VERY LARGE EXTRAPOLATION: target and boundary sizes differ by at least 10-fold; accuracy is unvalidated")
             amount = scale_cost(anchor_cost, anchor, size, n)
             issues.append(
                 "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
@@ -353,7 +379,7 @@ def estimate_cost(
                 extrapolated=extrapolated,
                 anchor_size=anchor if extrapolated else None,
                 anchor_cost=anchor_cost if extrapolated else None,
-                exponent_basis=fit.exponent_basis,
+                exponent_basis=exponent_basis,
                 notes=tuple(issues),
             )
             evidence["fit"] = {

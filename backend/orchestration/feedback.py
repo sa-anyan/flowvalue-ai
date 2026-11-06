@@ -1,5 +1,7 @@
 """Compact deterministic validation feedback for one bounded engineering correction."""
 
+from backend.equipment_costing.models import priced_record
+
 
 def equipment_feedback(result):
     stage = result["stages"].get("equipment", {})
@@ -17,7 +19,7 @@ def equipment_feedback(result):
         if (r.get("curve_id") or r.get("decision", {}).get("candidate_curve_ids"))
         and r.get("decision", {}).get("scope_decision") != "alias"
         and (
-            r.get("equipment_cost") is None
+            not priced_record(r)
             or ((r.get("calculation") or {}).get("evidence") or {}).get(
                 "deferred_scope_factors"
             )

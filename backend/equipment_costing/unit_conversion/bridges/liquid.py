@@ -14,6 +14,32 @@ def flow(value, unit, inputs, convert):
 
 def evaluate(method, value, unit, inputs, convert):
     q = flow(value, unit, inputs, convert)
+    if method == "pump_hydraulic_power":
+        _, _, details = calculate("pump_duty", q, inputs)
+        return details["hydraulic_power_kw"], "kW", details
+    if method == "pump_flow_head":
+        head = inputs.get("head_m")
+        formula = "S=Q*sqrt(H); supplied head"
+        if head is None:
+            head = (
+                positive(
+                    inputs.get("differential_pressure_bar"), "differential pressure bar"
+                )
+                * 100000
+                / (positive(inputs.get("density_kg_m3"), "density kg/m3") * 9.80665)
+            )
+            formula = "S=Q*sqrt(H); H=deltaP/(rho*g), g=9.80665 m/s2 standard gravity"
+        head = positive(head, "pump head m")
+        return (
+            q * head**0.5,
+            "m3/h_sqrt_m",
+            {
+                "formula": formula,
+                "head_m": head,
+                "volumetric_flow_m3_h": q,
+                "notice": "Head/pressure service and model constraints require review; no shaft/electrical power substitution",
+            },
+        )
     if method == "liquid_flow":
         return (
             q,

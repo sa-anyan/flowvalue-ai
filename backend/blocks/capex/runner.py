@@ -1,5 +1,8 @@
 """CAPEX-only execution; never runs engineering or equipment costing."""
 
+from backend.equipment_costing.models import is_scoped_capital
+
+
 from backend.blocks.models import Product
 from backend.blocks.shared import canonical, proposal, plain
 from backend.equipment_costing.total_cost.calculator import EquipmentCostTotal
@@ -18,7 +21,13 @@ def calculate(ctx):
     priced = [
         e
         for e in total.equipment
-        if e.equipment_cost is not None and e.amount is not None
+        if e.amount is not None
+        and (
+            e.equipment_cost is not None
+            or is_scoped_capital(
+                e.cost_scope, e.calculation.evidence if e.calculation else None
+            )
+        )
     ]
     capital, artifacts = calculate_capital(
         priced,

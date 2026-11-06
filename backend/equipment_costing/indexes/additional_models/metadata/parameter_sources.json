@@ -1,0 +1,14 @@
+{
+  "retrieved": "2026-11-06",
+  "parameter_source": "https://openpytea.readthedocs.io/en/latest/_downloads/31b5d5c42012f34eb9c85ee1a7322127/cost_correlations.csv",
+  "sha256": "911d8bdc9291376710cd37b218f21e8cc339122291302021457f7f27f863674f",
+  "row": "fermenter_reactor_turton_2001",
+  "verification": "Published documentation/dataset, not a visual check of textbook page",
+  "values": {
+    "K1": 4.1052,
+    "K2": 0.532,
+    "K3": -0.0005,
+    "minimum_m3": 0.1,
+    "maximum_m3": 35
+  }
+}

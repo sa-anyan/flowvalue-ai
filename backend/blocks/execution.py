@@ -138,6 +138,23 @@ def fresh(state, block, trail=()):
     )
 
 
+def previous_equipment_result(state):
+    current = (
+        state.get("results", {}).get("stages", {}).get("equipment", {}).get("result")
+    )
+    baseline = (
+        state.get("edit_baseline", {})
+        .get("results", {})
+        .get("stages", {})
+        .get("equipment", {})
+        .get("result")
+    )
+    saved = state.get("stage_outputs", {}).get("equipment", {}).get("total")
+    return copy.deepcopy(
+        current if current is not None else baseline if baseline is not None else saved
+    )
+
+
 def refresh(state):
     """Invalidate views only; this never calls any engine or changes saved data."""
     for key in BLOCKS:
@@ -146,13 +163,21 @@ def refresh(state):
             receipt["status"] = "stale"
             state.setdefault("results", {}).setdefault("stages", {})[key] = {
                 "status": "stale",
-                "result": None,
+                "result": (
+                    previous_equipment_result(state) if key == "equipment" else None
+                ),
+                "result_is_stale": key == "equipment",
                 "issues": [
                     "Inputs changed. Run "
                     + BLOCKS[key]["label"]
                     + " explicitly to update this result."
                 ],
             }
+    equipment_view = state.get("results", {}).get("stages", {}).get("equipment", {})
+    if equipment_view.get("status") == "stale" and equipment_view.get("result") is None:
+        equipment_view.update(
+            result=previous_equipment_result(state), result_is_stale=True
+        )
     return state
 
 
@@ -358,7 +383,10 @@ def run_stage(store, key, block, *, use_ai=False, provider=None):
         )
         state["results"]["stages"][block] = {
             "status": "data_required",
-            "result": None,
+            "result": (
+                previous_equipment_result(state) if block == "equipment" else None
+            ),
+            "result_is_stale": block == "equipment",
             "issues": [str(error)],
         }
     receipt["elapsed_seconds"] = time.monotonic() - started

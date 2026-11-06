@@ -11,11 +11,13 @@ from math import fsum, isfinite
 from .. import registry
 from ..cost_to_future.cost_translation import aggregation_basis
 from ..indexes.garrett.integrated import CostingResult
-from ..models import positive
+from ..models import positive, is_scoped_capital
 from ..unit_conversion import ConversionResult, convert
 
 # Unit-price scopes require a physical quantity, not an equipment count.
 UNIT_SCOPES = {
+    "unit_price_per_ft": ("ft", "purchased_equipment"),
+    "installed_unit_price_per_tray": ("tray", "installed_equipment"),
     "duct_unit_price_per_ft": ("ft", "purchased_equipment"),
     "unit_price_per_ft3": ("ft3", "purchased_equipment"),
     "packing_unit_price_per_ft3": ("ft3", "purchased_equipment"),
@@ -145,6 +147,10 @@ def calculate_total_cost(equipment, *, translation_policy=None, indices=None):
                     raise ValueError(
                         "Exact equipment configuration/curve mapping is missing"
                     )
+                if item.get("size") is None:
+                    raise ValueError(
+                        "Sizing input missing: choose a supported conversion or supply the model design coordinate"
+                    )
                 options = item.get("costing_options", {})
                 if not isinstance(options, Mapping):
                     raise TypeError("costing_options must be a mapping")
@@ -154,7 +160,8 @@ def calculate_total_cost(equipment, *, translation_policy=None, indices=None):
 
                     estimator = estimate_component
                 calculation = estimator(
-                    item.get("curve_id") or ("manual:user-price" if item.get("manual_price") else None),
+                    item.get("curve_id")
+                    or ("manual:user-price" if item.get("manual_price") else None),
                     item["size"],
                     size_unit=item["size_unit"],
                     source=item.get("source", "garrett"),
@@ -174,10 +181,16 @@ def calculate_total_cost(equipment, *, translation_policy=None, indices=None):
                 # Convert dated GBP estimates to the study USD basis only after inflation translation.
                 # Pinned FX provenance is preserved in calculation.evidence.
                 from ..manual import convert_calculation
-                calculation = convert_calculation(calculation, item.get("calculation_currency", "USD"))
+
+                calculation = convert_calculation(
+                    calculation, item.get("calculation_currency", "USD")
+                )
             if item.get("manual_price"):
                 from ..manual import convert_calculation
-                calculation = convert_calculation(calculation, item["manual_price"].get("calculation_currency"))
+
+                calculation = convert_calculation(
+                    calculation, item["manual_price"].get("calculation_currency")
+                )
             estimate = calculation.estimate
             scope = estimate.cost_scope
             if scope in UNIT_SCOPES:
@@ -208,6 +221,7 @@ def calculate_total_cost(equipment, *, translation_policy=None, indices=None):
                     "installed_equipment",
                     "module_estimate",
                     "building_cost",
+                    "unit_capital",
                 }:
                     raise ValueError("Unsupported cost scope for aggregation: " + scope)
                 quantity = positive(item.get("quantity", 1), "equipment count")
@@ -218,9 +232,11 @@ def calculate_total_cost(equipment, *, translation_policy=None, indices=None):
                     )
             amount = positive(estimate.amount * quantity, "extended line cost")
             component_costs = {
-                name: getattr(calculation, name) * quantity
-                if getattr(calculation, name) is not None
-                else None
+                name: (
+                    getattr(calculation, name) * quantity
+                    if getattr(calculation, name) is not None
+                    else None
+                )
                 for name in (
                     "equipment_cost",
                     "installation_cost",
@@ -240,7 +256,8 @@ def calculate_total_cost(equipment, *, translation_policy=None, indices=None):
             lines.append(
                 EquipmentCostLine(
                     item["equipment_tag"],
-                    item.get("curve_id") or ("manual:user-price" if item.get("manual_price") else None),
+                    item.get("curve_id")
+                    or ("manual:user-price" if item.get("manual_price") else None),
                     calculation.status,
                     amount,
                     quantity,
@@ -306,6 +323,11 @@ def calculate_total_cost(equipment, *, translation_policy=None, indices=None):
             estimate = line.calculation.estimate
             key = aggregation_basis(line.calculation)
             component_groups.setdefault(key, []).append(line)
+        if is_scoped_capital(line.cost_scope, line.calculation.evidence if line.calculation else None):
+            installation_issues.append(
+                f"{line.equipment_tag}: source-defined scoped capital cost; purchase/installation not decomposed, no extra installation factor applied"
+            )
+            continue
         if line.installation_cost is None:
             reason = (
                 line.calculation.installation.status

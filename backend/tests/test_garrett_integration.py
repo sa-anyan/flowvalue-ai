@@ -100,7 +100,9 @@ class GarrettIntegrationTests(unittest.TestCase):
         self.assertAlmostEqual(fit.evaluate(4), 5)
 
     def test_fitted_extrapolation_requires_justification(self):
-        blocked = self.cost("G265-023", 1000, allow_unverified=True)
+        blocked = self.cost(
+            "G265-023", 1000, allow_unverified=True, allow_fitted_extrapolation=False
+        )
         self.assertIsNone(blocked.amount)
         approved = self.cost(
             "G265-023",

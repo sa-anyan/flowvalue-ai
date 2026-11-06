@@ -103,6 +103,20 @@ def translate_cost(
             method_id,
             "Already in target year; no within-year escalation or relabelling applied",
         )
+    override = (
+        policy.get("source_index_overrides", {}).get(method_id, {}).get(source_year)
+    )
+    if override is not None:
+        if (
+            not isinstance(override, dict)
+            or not override.get("source")
+            or not override.get("series")
+        ):
+            raise ValueError(
+                "Source-index override requires series, value and source provenance"
+            )
+        source_series = override["series"]
+        index = numeric(override.get("value"), positive=True)
     series = indices["series"]
     native = series.get(source_series, {})
     target_point = native.get("observations", {}).get(target)
@@ -112,7 +126,11 @@ def translate_cost(
             native,
             {
                 "value": str(index),
-                "source": "Explicit index retained by source cost calculation",
+                "source": (
+                    override["source"]
+                    if override
+                    else "Explicit index retained by source cost calculation"
+                ),
                 "period": source_period,
             },
         )
@@ -162,9 +180,11 @@ def translate_cost(
         multiplier,
         "general_inflation_proxy" if proxy else "same_series_index_ratio",
         method_id,
-        "Consumer purchasing-power proxy, not CEPCI or a vendor quotation; annual source average may approximate a year-only/early-year cost basis. Monthly target is not a full-year average."
-        if proxy
-        else "Source and target use the same named index series; currency unchanged",
+        (
+            "Consumer purchasing-power proxy, not CEPCI or a vendor quotation; annual source average may approximate a year-only/early-year cost basis. Monthly target is not a full-year average."
+            if proxy
+            else "Source and target use the same named index series; currency unchanged"
+        ),
     )
 
 
@@ -231,9 +251,11 @@ def translate_calculation(calculation, *, method_id, policy, indices=None):
             **audit,
         },
         issues=calculation.issues + (translated.notice,),
-        status="provisional"
-        if translated.status == "general_inflation_proxy"
-        else calculation.status,
+        status=(
+            "provisional"
+            if translated.status == "general_inflation_proxy"
+            else calculation.status
+        ),
     )
 
 

@@ -1,12 +1,30 @@
 """Canonical, source-traceable user-input conversion previews and costing handoff."""
 
 import math
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from backend.equipment_costing.registry import list_equipment_models
-from .. import ConversionContext, Measurement, convert, identify_unit
-from . import liquid, gas, thermal, mechanical
+from .. import ConversionContext, ConversionResult, Measurement, convert, identify_unit
+from . import liquid, gas, thermal, mechanical, heat_exchanger, production_sizing
 
 PARAMETERS = {
+    "motor_efficiency": "fraction",
+    "head_m": "m",
+    "product_rate_kg_h": "kg/h",
+    "volumetric_productivity_kg_m3_h": "kg/m3/h",
+    "production_allocation_fraction": "fraction",
+    **{name: "K" for name in heat_exchanger.TEMPERATURES.values()},
+    "heat_duty_kw": "kW",
+    "specific_heat_kj_kg_k": "kJ/kg/K",
+    "latent_heat_kj_kg": "kJ/kg",
+    "phase_change_fraction": "fraction",
+    "sensible_enthalpy_change_kj_kg": "kJ/kg",
+    "utility_allocation_fraction": "fraction",
+    "duty_balance_tolerance_fraction": "fraction",
+    "reference_temperature_k": "K",
+    "reference_pressure_bar": "bar absolute",
+    "reference_compressibility_z": "fraction",
+    "discharge_pressure_bar": "bar absolute",
+    "heat_capacity_ratio": "fraction",
     "density_kg_m3": "kg/m3",
     "residence_time_h": "h",
     "working_fraction": "fraction",
@@ -29,6 +47,72 @@ PARAMETERS = {
     "heads_and_auxiliaries_kg": "kg",
 }
 RECIPES = {
+    "electrical_to_shaft_power": (
+        "Electrical input to shaft output",
+        "power",
+        ["motor_efficiency"],
+        "P_shaft=P_electrical*motor_efficiency; explicit motor efficiency",
+    ),
+    "shaft_to_electrical_power": (
+        "Shaft output to electrical input",
+        "power",
+        ["motor_efficiency"],
+        "P_electrical=P_shaft/motor_efficiency; explicit motor efficiency",
+    ),
+    "pump_hydraulic_power": (
+        "Pump hydraulic power",
+        "power",
+        ["density_kg_m3", "differential_pressure_bar"],
+        "P_hydraulic=Q*deltaP; no shaft/electrical substitution",
+    ),
+    "pump_flow_head": (
+        "Pump flow × square-root head",
+        "flow_sqrt_head",
+        ["density_kg_m3", "head_m", "differential_pressure_bar"],
+        "S = Q * sqrt(H); explicit head, or H = differential_pressure/(rho*9.80665); operating pressure is not differential pressure",
+    ),
+    "clarifier_area": (
+        "Clarifier surface overflow area",
+        "area",
+        ["density_kg_m3", "hydraulic_loading_m_h"],
+        "A = Q_liquid / surface_overflow_rate; explicit hydraulic_loading_m_h; solids-loading/design review separate",
+    ),
+    "vessel_productivity": (
+        "Production/productivity vessel scenario",
+        "volume",
+        [
+            "product_rate_kg_h",
+            "volumetric_productivity_kg_m3_h",
+            "production_allocation_fraction",
+            "working_fraction",
+        ],
+        "V_design = product_rate * allocation / volumetric_productivity / working_fraction; explicit preliminary assumptions, not measured broth flow",
+    ),
+    "standard_gas_flow": (
+        "Gas flow at explicit reference conditions",
+        "standard_volume_flow",
+        [
+            "molecular_weight_kg_kmol",
+            "reference_temperature_k",
+            "reference_pressure_bar",
+            "reference_compressibility_z",
+        ],
+        "Canonical gas relation at explicit reference T/P/Z; actual volumetric inputs additionally require inlet T/P/Z",
+    ),
+    "gas_compression": (
+        "Gas-compression power screening",
+        "power",
+        [
+            "molecular_weight_kg_kmol",
+            "temperature_k",
+            "absolute_pressure_bar",
+            "discharge_pressure_bar",
+            "heat_capacity_ratio",
+            "efficiency",
+            "compressibility_z",
+        ],
+        "Canonical ideal-gas isentropic compression; explicit inlet/outlet absolute pressures, k, Z and efficiency; single-stage screening only",
+    ),
     "direct": (
         "Same-dimension unit conversion",
         None,
@@ -80,7 +164,7 @@ RECIPES = {
         "Thermal transfer area",
         "area",
         ["overall_u_w_m2_k", "lmtd_k", "lmtd_correction"],
-        "A = abs(H_out - H_in or supplied duty)_kW * 1000 / (U * LMTD * F)",
+        "A = selected positive duty_kW * 1000 / (U * LMTD * F)",
     ),
     "pump_coordinate": (
         "Pump flow-pressure coordinate",
@@ -180,6 +264,7 @@ def describe(report, equipment_key, model_id=None):
     issue = None
     requirements = []
     model_info = None
+    model = {}
     if model_id:
         try:
             model, size, target = model_contract(model_id)
@@ -192,6 +277,13 @@ def describe(report, equipment_key, model_id=None):
                     "printed_page",
                     "observed_size_range",
                     "limitation",
+                    "source_year",
+                    "capacity_limits",
+                    "secondary_capacity_limits",
+                    "cost_scope",
+                    "coefficients",
+                    "reference",
+                    "pressure_limits",
                 )
             }
             quantity = size["quantity"]
@@ -215,16 +307,22 @@ def describe(report, equipment_key, model_id=None):
             "equation": v[3],
             "implementation": "backend/equipment_costing/unit_conversion/"
             + (
-                "unit_conversion.py"
-                if key == "direct"
-                else "bridges/"
-                + (
-                    "gas.py"
-                    if key in {"gas_flow", "dryer_volume"}
-                    else (
-                        "thermal.py"
-                        if key == "exchanger_area"
-                        else "mechanical.py" if key == "vessel_mass" else "liquid.py"
+                "bridges/production_sizing.py"
+                if key == "vessel_productivity"
+                else (
+                    "unit_conversion.py"
+                    if key == "direct"
+                    else "bridges/"
+                    + (
+                        "gas.py"
+                        if key in {"gas_flow", "dryer_volume"}
+                        else (
+                            "heat_exchanger.py"
+                            if key == "exchanger_area"
+                            else (
+                                "mechanical.py" if key == "vessel_mass" else "liquid.py"
+                            )
+                        )
                     )
                 )
             ),
@@ -251,6 +349,27 @@ def describe(report, equipment_key, model_id=None):
                     for v in stream.get("values", [])
                     if v.get("property") in {"description", "name", "phase"}
                 ],
+                "composition": [
+                    {
+                        "evidence_id": v.get("id"),
+                        "component": v.get("component"),
+                        "property": v.get("property"),
+                        "value": v.get("normalized_value"),
+                        "unit": v.get("normalized_unit"),
+                        "status": v.get("status"),
+                        "sheet": v.get("sheet"),
+                        "cell": v.get("cell"),
+                    }
+                    for v in stream.get("values", [])
+                    if str(v.get("property", "")).startswith("component_")
+                    or v.get("property") in {"mass_fraction", "mole_fraction"}
+                ][:100],
+                "composition_truncated": sum(
+                    str(v.get("property", "")).startswith("component_")
+                    or v.get("property") in {"mass_fraction", "mole_fraction"}
+                    for v in stream.get("values", [])
+                )
+                > 100,
                 "connections": [
                     c
                     for c in report.get("connections", [])
@@ -269,8 +388,28 @@ def describe(report, equipment_key, model_id=None):
             "target_ton_basis: metric, short or long; must be explicitly selected"
         )
     return {
+        "secondary_requirement": (
+            requirements[1]
+            if model.get("source") == "openpytea" and len(requirements) > 1
+            else None
+        ),
         "required_unit_conventions": conventions,
         "stream_context": stream_context,
+        "thermal_input_requirements": {
+            "all_thermal_cases": ["overall_u_w_m2_k", "lmtd_correction"],
+            "enthalpy_difference": "Selected same-side inlet/outlet roles, explicit common-reference confirmation; shared utilities require allocation",
+            "sensible_heat": ["specific_heat_kj_kg_k"],
+            "phase_change": [
+                "latent_heat_kj_kg",
+                "phase_change_fraction",
+                "sensible_enthalpy_change_kj_kg",
+            ],
+            "assumed_duty": ["heat_duty_kw"],
+            "missing_terminal_stream": "Use null for absent stream and an explicit corresponding *_temperature_k assumption; never repeat inlet as outlet",
+            "explicit_lmtd": ["lmtd_k"],
+            "notice": "These are required model inputs, not supplied values. Proposed assumptions retain units, rationale and limitations. Isothermal boiling/condensation can have nonzero latent duty.",
+        },
+        "thermal_workflow": "For exchanger_area, thermal_basis assigns linked hot/cold inlet/outlet stream keys. Python computes signed same-side enthalpy differences and terminal-temperature LMTD. Sensible/latent heat or explicit duty are alternative disclosed assumptions. Do not use derivation bindings for enthalpy differences; the thermal adapter handles these directly.",
         "model_id": model_id,
         "model": model_info,
         "target_unit": target,
@@ -290,6 +429,15 @@ def evaluate(report, equipment_key, spec):
         raise ValueError("Unsupported conversion equation")
     if RECIPES[method][1] not in (None, size["quantity"]):
         raise ValueError("Equation output dimension does not match this model")
+    if model["id"] == "fermenter_reactor_turton_2001" and method != "direct":
+        if spec.get("operating_mode") != "continuous":
+            raise ValueError(
+                "Fermenter flow-to-volume sizing requires explicit continuous operating_mode; batch/unknown mode needs documented per-vessel volume or a supported batch sizing basis"
+            )
+        if method != "vessel_volume":
+            raise ValueError(
+                "Fermenter preliminary continuous volume uses vessel_volume with explicit residence time and working fraction"
+            )
     inputs = spec.get("inputs") or {}
     if not isinstance(inputs, dict) or set(inputs) - set(PARAMETERS):
         raise ValueError("Unknown user input")
@@ -301,6 +449,25 @@ def evaluate(report, equipment_key, spec):
         ):
             raise ValueError("User inputs must be finite numbers")
     context = ConversionContext(**(spec.get("unit_context") or {}))
+    if method == "standard_gas_flow":
+        required = [
+            "reference_temperature_k",
+            "reference_pressure_bar",
+            "reference_compressibility_z",
+        ]
+        if any(
+            not isinstance(inputs.get(name), (int, float)) or inputs[name] <= 0
+            for name in required
+        ):
+            raise ValueError(
+                "Standard gas flow requires explicit positive reference T, absolute P and Z"
+            )
+        reference = "; ".join(
+            f"{name}={inputs[name]} {PARAMETERS[name]}" for name in required
+        )
+        context = replace(
+            context, input_gas_reference=reference, target_gas_reference=reference
+        )
     sources = {v["id"]: v for v in measurements(report, equipment_key)}
     from .derivations import derive
 
@@ -324,22 +491,94 @@ def evaluate(report, equipment_key, spec):
         return result.value
 
     evidence = []
-    if method == "vessel_mass":
+    if method == "exchanger_area" and spec.get("thermal_basis"):
+        value, unit, details = heat_exchanger.calculate_basis(
+            list(sources.values()),
+            describe(report, equipment_key, spec.get("model_id"))["stream_context"],
+            spec["thermal_basis"],
+            inputs,
+            cv,
+        )
+        inputs = details["resolved_inputs"]
+        derived_inputs.extend(details["derived_inputs"])
+        evidence.extend(details["source_measurements"])
+    elif method == "vessel_productivity":
+        value, unit, details = production_sizing.vessel_productivity(inputs)
+    elif method == "vessel_mass":
         value, unit, details = mechanical.evaluate(inputs)
     else:
         if source is None:
             raise ValueError(
                 "Select a supported measurement from this equipment or its linked streams"
             )
+        from .basis_validation import validate_bulk_liquid_basis
+
+        validate_bulk_liquid_basis(report, equipment_key, source, method)
         evidence.append(source)
         value, unit = source["value"], source["unit"]
-        if method == "direct":
+        if method in {"electrical_to_shaft_power", "shaft_to_electrical_power"}:
+            efficiency = inputs.get("motor_efficiency")
+            if (
+                isinstance(efficiency, bool)
+                or not isinstance(efficiency, (int, float))
+                or not 0 < efficiency <= 1
+            ):
+                raise ValueError("Explicit motor_efficiency must be in (0,1]")
+            value = cv(value, unit, "kW") * (
+                efficiency if method == "electrical_to_shaft_power" else 1 / efficiency
+            )
+            unit = "kW"
+            details = {"formula": RECIPES[method][3], "motor_efficiency": efficiency}
+        elif method == "direct":
+            if model.get("source") == "openpytea":
+                role = size.get("role", "").lower()
+                prop = source["property"]
+                if (
+                    (
+                        any(k in role for k in ("shaft", "brake", "driver"))
+                        and prop
+                        in {"electrical_power", "motor_power", "heat_duty", "duty"}
+                    )
+                    or (
+                        "fluid power" in role
+                        and prop in {"shaft_power", "motor_power", "electrical_power"}
+                    )
+                    or (
+                        any(k in role for k in ("heat", "duty"))
+                        and prop in {"shaft_power", "motor_power", "electrical_power"}
+                    )
+                ):
+                    raise ValueError(
+                        "POWER_ROLE_MISMATCH: select a supported efficiency/hydraulic conversion; electrical, shaft and heat duties are not interchangeable"
+                    )
             if source["property"] == "enthalpy_flow":
                 raise ValueError(
                     "A standalone stream enthalpy flow is not equipment heat duty or motor power"
                 )
             details = {"formula": RECIPES[method][3]}
-        elif method in {"gas_flow", "dryer_volume"}:
+        elif method in {
+            "gas_flow",
+            "dryer_volume",
+            "gas_compression",
+            "standard_gas_flow",
+        }:
+            if method == "gas_compression":
+                phases = [
+                    str(
+                        v.get("normalized_value") or v.get("original_value") or ""
+                    ).casefold()
+                    for e in report["entities"]
+                    if e.get("key") == source["entity_key"]
+                    for v in e.get("values", [])
+                    if v.get("property") == "phase"
+                ]
+                if any(
+                    phase in {"liquid", "solid", "l", "s", "two_phase", "two-phase"}
+                    for phase in phases
+                ):
+                    raise ValueError(
+                        "Ideal-gas compression is incompatible with a source-declared liquid, solid or two-phase stream"
+                    )
             value, unit, details = gas.evaluate(method, value, unit, inputs, cv)
         elif method == "exchanger_area":
             if source["property"] == "enthalpy_flow":
@@ -368,8 +607,35 @@ def evaluate(report, equipment_key, spec):
                 outlet if source["property"] == "enthalpy_flow" else None,
             )
         else:
-            value, unit, details = liquid.evaluate(method, value, unit, inputs, cv)
-    result = convert(value, unit, target, context=context)
+            value, unit, details = liquid.evaluate(
+                "filter_area" if method == "clarifier_area" else method,
+                value,
+                unit,
+                inputs,
+                cv,
+            )
+    if size.get("manual_coordinate"):
+        if method != "direct" or unit != target:
+            raise ValueError(
+                "MISSING_SIZING_INPUT: supply explicit source-native composite coordinate in "
+                + target
+            )
+        result = ConversionResult(
+            "converted",
+            Measurement(value, unit),
+            target,
+            value,
+            "source_coordinate",
+            unit,
+            target,
+            None,
+            issues=(),
+            assumptions=(
+                "Explicit composite coordinate; no unverified dimensional derivation performed",
+            ),
+        )
+    else:
+        result = convert(value, unit, target, context=context)
     if result.value is None:
         raise ValueError("; ".join(result.issues) or "Target unit unresolved")
     if result.value <= 0:
@@ -405,7 +671,38 @@ def evaluate(report, equipment_key, spec):
             if observed[0] <= result.value <= observed[1]
             else "outside_observed_points"
         )
+    second = None
+    if (
+        model.get("source") == "openpytea"
+        and len(model.get("input_requirements", [])) > 1
+    ):
+        from backend.equipment_costing.indexes.openpytea.adapter import native_input
+
+        requirement = model["input_requirements"][1]
+        proposal = spec.get("secondary_input") or {}
+        observation = sources.get(proposal.get("measurement_id"))
+        if observation:
+            v, u = observation["value"], observation["unit"]
+            provenance = {"status": "EXTRACTED", "measurement": observation}
+        else:
+            if (
+                not proposal.get("rationale")
+                or proposal.get("value") is None
+                or not proposal.get("unit")
+            ):
+                raise ValueError(
+                    "MISSING_SIZING_INPUT: independently identify second model coordinate or supply a justified assumption"
+                )
+            v, u = proposal["value"], proposal["unit"]
+            provenance = {"status": "ASSUMED", "rationale": proposal["rationale"]}
+        converted, trace = native_input(v, u, requirement, context, provenance)
+        second = {
+            "second_size": converted,
+            "second_size_unit": requirement["unit"],
+            "second_input_provenance": trace,
+        }
     return {
+        **(second or {}),
         "validation": {
             "dimensional_consistency": "checked_by_python",
             "physical_checks": "basic_equation_constraints_only",

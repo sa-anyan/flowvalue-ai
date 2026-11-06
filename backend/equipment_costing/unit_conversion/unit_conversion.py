@@ -19,6 +19,14 @@ def _definition(unit, context, role, assumptions):
         return UNITS[ALIASES[name]]
     if name.lower() in WORDS:
         return UNITS[WORDS[name.lower()]]
+    if name == "gpm_sqrt_ft":
+        basis = getattr(context, f"{role}_gallon_basis")
+        if basis not in {"US", "Imperial"}:
+            raise UnitResolutionError(
+                "Ambiguous gallon: specify US or Imperial basis for " + role
+            )
+        assumptions.append(f"{role} gallon interpreted as {basis}, explicitly supplied")
+        return UNITS["US_gpm_sqrt_ft" if basis == "US" else "Imp_gpm_sqrt_ft"]
     # Exact bounded scale prefix, never eval/exec or dimensional inference.
     scaled = re.fullmatch(r"(1000|1,000|10|million)\s+(.+)", name)
     if scaled:

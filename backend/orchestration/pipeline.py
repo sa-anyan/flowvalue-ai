@@ -1,5 +1,8 @@
 """End-to-end orchestration around existing canonical engines; no AI arithmetic."""
 
+from backend.equipment_costing.models import is_scoped_capital
+
+
 import copy
 import dataclasses
 from decimal import Decimal, InvalidOperation
@@ -124,9 +127,11 @@ def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges
                     }
                 )
             outputs[name] = {
-                "status": value.get("status", "calculated")
-                if isinstance(value, dict)
-                else "calculated",
+                "status": (
+                    value.get("status", "calculated")
+                    if isinstance(value, dict)
+                    else "calculated"
+                ),
                 "result": value,
             }
         except (
@@ -145,6 +150,7 @@ def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges
 
     def equipment():
         from backend.blocks.equipment.calculation import calculate_equipment
+
         value, rows = calculate_equipment(report, plan, translation_policy)
         objects["equipment_sizing_rows"] = rows
         return value
@@ -156,7 +162,9 @@ def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges
         annotate(outputs["equipment"]["result"], report, plan)
         from backend.equipment_resolution.review import review
 
-        outputs["equipment"]["result"]["resolution_register"] = review(report, plan, {"stages": outputs}, expanded=True)
+        outputs["equipment"]["result"]["resolution_register"] = review(
+            report, plan, {"stages": outputs}, expanded=True
+        )
         for source_row, result_row in zip(
             objects.get("equipment_sizing_rows", []),
             outputs["equipment"]["result"]["equipment"],
@@ -164,7 +172,11 @@ def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges
             interval = (source_row.get("parsed_source", {}).get("sizing") or {}).get(
                 "size_range"
             )
-            if calculate_ranges and interval and result_row.get("equipment_cost") is not None:
+            if (
+                calculate_ranges
+                and interval
+                and result_row.get("equipment_cost") is not None
+            ):
                 costs = []
                 for endpoint in ("low", "high"):
                     trial = {
@@ -189,7 +201,13 @@ def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges
     priced = []
     if total:
         for line in total.equipment:
-            if line.equipment_cost is not None and line.amount is not None:
+            if line.amount is not None and (
+                line.equipment_cost is not None
+                or is_scoped_capital(
+                    line.cost_scope,
+                    line.calculation.evidence if line.calculation else None,
+                )
+            ):
                 priced.append(line)
             elif not (line.parsed_source or {}).get("confirmed_alias"):
                 exclusions.append(
@@ -204,19 +222,27 @@ def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges
 
     def capex():
         from backend.blocks.capex.calculation import calculate_capital
-        value, artifacts = calculate_capital(priced, total, plan, description, translation_policy)
+
+        value, artifacts = calculate_capital(
+            priced, total, plan, description, translation_policy
+        )
         objects.update(artifacts)
         return value
 
     stage("capex", capex)
     capital_result = outputs.get("capex", {}).get("result")
     if capital_result:
-        capital_result["complete"] = not exclusions and capital_result.get("total_capex") is not None
-        capital_result["equipment_scope"] = "partial" if exclusions else "registered_equipment_scope"
+        capital_result["complete"] = (
+            not exclusions and capital_result.get("total_capex") is not None
+        )
+        capital_result["equipment_scope"] = (
+            "partial" if exclusions else "registered_equipment_scope"
+        )
         capital_result["unpriced_equipment"] = copy.deepcopy(exclusions)
         if exclusions:
-            capital_result["subtotal_notice"] = "Known CAPEX subtotal only; unpriced equipment costs are unknown, not zero."
-
+            capital_result["subtotal_notice"] = (
+                "Known CAPEX subtotal only; unpriced equipment costs are unknown, not zero."
+            )
 
     if plan.get("operating_economics"):
         from .operating_economics import calculate_operating_study
@@ -228,7 +254,9 @@ def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges
             if "revenue_authority" in plan:
                 from backend.revenue.authority import runtime
 
-                config["_revenue_authority"] = runtime(config, plan["revenue_authority"], report)
+                config["_revenue_authority"] = runtime(
+                    config, plan["revenue_authority"], report
+                )
             objects["operating_config"] = config
             translation_audit = []
             if translation_policy and translation_policy.get("enabled") is not False:
@@ -313,9 +341,11 @@ def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges
             "stages": outputs,
             "screening_comparisons": objects.get("screening_comparisons", []),
             "exclusions": exclusions,
-            "scope": "partial equipment scope"
-            if exclusions
-            else "parsed equipment scope; completeness not established",
+            "scope": (
+                "partial equipment scope"
+                if exclusions
+                else "parsed equipment scope; completeness not established"
+            ),
             "financial_inputs": plain(objects.get("financial_inputs")),
             "notice": "Conditional engineering study; operating plan, quantities, prices and policies are editable. Capital exclusions carry into the complete financial schedule."
             + (
@@ -328,7 +358,9 @@ def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges
 
     def revenue():
         if "revenue_authority" in plan:
-            raise ValueError("Use the Revenue Box and approve its shared commercial assumptions before calculating income")
+            raise ValueError(
+                "Use the Revenue Box and approve its shared commercial assumptions before calculating income"
+            )
         config = copy.deepcopy(plan.get("revenue", {}))
         # Physical quantities cannot be authored by an LLM or copied from an unrelated stream.
         source = {s["id"]: s for s in source_streams(report)}
@@ -414,9 +446,11 @@ def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges
             )
         objects["opex_years"] = results
         return {
-            "status": "calculated"
-            if all(r.annual_cash_opex is not None for r in results.values())
-            else "needs_review",
+            "status": (
+                "calculated"
+                if all(r.annual_cash_opex is not None for r in results.values())
+                else "needs_review"
+            ),
             "years": {str(k): plain(v) for k, v in results.items()},
         }
 
@@ -424,7 +458,9 @@ def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges
 
     def financial():
         if "revenue_authority" in plan:
-            raise ValueError("Review Revenue Box assumptions through the shared operating study before financial calculation")
+            raise ValueError(
+                "Review Revenue Box assumptions through the shared operating study before financial calculation"
+            )
         config = copy.deepcopy(plan.get("financial", {}))
         assumptions = construct(FinancialAssumptions, config.pop("assumptions"))
         if not (

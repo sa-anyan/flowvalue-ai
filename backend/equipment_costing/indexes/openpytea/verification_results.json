@@ -1,0 +1,38 @@
+{
+  "source_commit": "9d769ad1583794401e4c441272ba7cccc46aff75",
+  "selected_acceptance_tests": {
+    "passed": 1081,
+    "duration_seconds": 79.91,
+    "log_scope": "New OpenPyTEA catalogue suite plus established additional-model, automatic-input, CAPEX, translation, units, matching, Garrett, connected/isolated stages and financial suites"
+  },
+  "post_review_targeted_checks": {
+    "passed": 3,
+    "scope": "Idempotent importer, installed scope CAPEX, mixed capital boundary"
+  },
+  "upstream_numerical_parity_models": 421,
+  "available_adapter_models_tested": 403,
+  "approved_monte_carlo": {
+    "iterations": 1000,
+    "reproducible": true,
+    "ai_calls": 0
+  },
+  "frontend": "Production build, TypeScript and routes passed",
+  "known_baseline_fixture_issue": {
+    "test": "test_monte_carlo.py::test_canonical_financials_and_reproducible_simulation",
+    "reason": "Fixture lacks current approved Revenue Box; zero complete runs also reproduced using original HEAD Monte Carlo engine",
+    "production_revenue_authority_changed": false
+  },
+  "limitations": [
+    "No live LLM selection evaluation",
+    "No original engineering workbook end-to-end acceptance for this import",
+    "No automated browser interaction/visual review completed",
+    "Parity does not validate underlying literature or industrial applicability"
+  ],
+  "local_http_smoke": {
+    "backend_health": 200,
+    "frontend_catalogue_proxy": 200,
+    "equipment_page": 200,
+    "models_advertised": 421,
+    "disabled_advertised": 18
+  }
+}
