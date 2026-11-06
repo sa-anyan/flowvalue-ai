@@ -160,7 +160,7 @@ def test_only_explicit_server_approval_and_current_revision_are_accepted():
 
 
 def test_saved_historical_outputs_do_not_bypass_live_approval_view():
-    from backend.orchestration.current_prices import _legacy_current_price_view_for_reference as current_price_view
+    from backend.orchestration.current_prices import current_price_view
 
     report, config, _ = ready()
     saved = {

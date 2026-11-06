@@ -41,6 +41,7 @@ class Edit(BaseModel):
     section: str
     value: object
     rationale: str = Field(min_length=1, max_length=2000)
+    manual_revenue: bool = False
 
 
 class Rerun(BaseModel):
@@ -59,6 +60,7 @@ class RevenueAuthorityRequest(BaseModel):
     revision: int
     revenue_description: str | None = Field(default=None, max_length=6000)
     approve: bool = False
+    reinterpret: bool = False
 
 
 class NamedVersion(BaseModel):
@@ -106,6 +108,24 @@ async def invalid(request: Request, exc):
     return JSONResponse(status_code=422, content={"detail": str(exc)[:500]})
 
 
+def submit(key, **kwargs):
+    """Explicit background revenue action; no automatic cross-stage calculation."""
+    if not lock.acquire(blocking=False):
+        raise HTTPException(409, "Another assessment is running")
+
+    def work():
+        try:
+            from backend.orchestration.service import execute
+
+            execute(store, key, **kwargs)
+        finally:
+            lock.release()
+
+    try:
+        executor.submit(work)
+    except Exception:
+        lock.release()
+        raise
 
 
 @app.get("/health")
@@ -157,14 +177,18 @@ def research(key: str, request: ResearchRequest):
             current = store.get(key)
             current.setdefault("research_drafts", []).append(result)
             current["research_job"] = dict(current["research_job"], status="completed")
-        except Exception as exc:  # noqa: BLE001 -- retain existing model on research outage
+        except (
+            Exception
+        ) as exc:  # noqa: BLE001 -- retain existing model on research outage
             current = store.get(key)
             current["research_job"] = dict(
                 current["research_job"],
                 status="failed",
-                notice=str(exc)[:300]
-                if isinstance(exc, (ValueError, RevenueAIError))
-                else type(exc).__name__,
+                notice=(
+                    str(exc)[:300]
+                    if isinstance(exc, (ValueError, RevenueAIError))
+                    else type(exc).__name__
+                ),
             )
         finally:
             current["running"] = False
@@ -222,6 +246,7 @@ async def upload(
     description: str = Form(""),
     revenue_description: str = Form(""),
     use_ai: bool = Form(False),
+    workflow: str = Form("full"),
 ):
     content = await file.read(MAX_WORKBOOK_BYTES + 1)
     if not content or len(content) > MAX_WORKBOOK_BYTES:
@@ -233,13 +258,21 @@ async def upload(
         raise HTTPException(422, "Choose .xlsx, .xls or .xlsm")
     if lock.locked():
         raise HTTPException(409, "Another assessment is running")
-    state = new_assessment(store, content, name, description, revenue_description)
+    state = new_assessment(
+        store, content, name, description, revenue_description, workflow=workflow
+    )
+    if workflow == "revenue":
+        submit(state["id"], content=content, use_ai=use_ai)
+        return {"id": state["id"]}
     from backend.blocks.execution import initialize
     import hashlib
-    state['source_sha256'] = hashlib.sha256(content).hexdigest()
+
+    state["source_sha256"] = hashlib.sha256(content).hexdigest()
     state = initialize(state)
-    state.update(running=False, status='Source loaded. Run a stage explicitly.', progress=[])
-    store.put(state, state['revision'])
+    state.update(
+        running=False, status="Source loaded. Run a stage explicitly.", progress=[]
+    )
+    store.put(state, state["revision"])
     return {"id": state["id"]}
 
 
@@ -270,6 +303,7 @@ def currency_convert(request: CurrencyConversionRequest):
 def get(key: str, historical: bool = False, currency: str | None = None):
     saved = store.get(key)
     from backend.blocks.execution import view
+
     if historical:
         return saved  # Explicit history is a snapshot, never a calculation route.
     return currency_view(view(saved), currency)
@@ -278,7 +312,13 @@ def get(key: str, historical: bool = False, currency: str | None = None):
 @app.patch("/api/assessments/{key}")
 def patch(key: str, change: Edit):
     return edit(
-        store, key, change.revision, change.section, change.value, change.rationale
+        store,
+        key,
+        change.revision,
+        change.section,
+        change.value,
+        change.rationale,
+        manual_revenue=change.manual_revenue,
     )
 
 
@@ -286,11 +326,116 @@ def patch(key: str, change: Edit):
 def revenue_authority(key: str, options: RevenueAuthorityRequest):
     from backend.revenue.authority import update
 
-    return update(store, key, options.revision, text=options.revenue_description, approve=options.approve)
+    if options.reinterpret and options.approve:
+        raise HTTPException(422, "Review the AI interpretation before approving it")
+    if options.reinterpret and lock.locked():
+        raise HTTPException(409, "Wait for the current assessment to finish")
+    state = update(
+        store,
+        key,
+        options.revision,
+        text=options.revenue_description,
+        approve=options.approve,
+    )
+    if options.reinterpret:
+        state["running"] = True
+        state["status"] = "interpreting_revenue_box"
+        state["progress"] = [{"stage": "revenue_planning", "status": "queued"}]
+        state = store.put(state, state["revision"])
+        try:
+            submit(key, use_ai=True, refresh_revenue=True)
+        except Exception:
+            state = store.get(key)
+            state["running"] = False
+            state["status"] = "Revenue Box saved; AI interpretation could not start"
+            store.put(state, state["revision"])
+            raise
+    return state
+
+
+class RevenueLinePreview(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    revision: int
+    method: str
+    subtype: str
+    inputs: dict
+    identity: str | None = None
+
+
+@app.post("/api/assessments/{key}/revenue-line-preview")
+def preview_revenue_line(key: str, options: RevenueLinePreview):
+    from backend.revenue.method_forms import build_line
+
+    state = store.get(key)
+    if state.get("running") or state["revision"] != options.revision:
+        raise HTTPException(409, "Wait for completion and reload the current revision")
+    years = (
+        state.get("plan", {})
+        .get("operating_economics", {})
+        .get("financial", {})
+        .get("operating_years")
+    )
+    config = state.get("plan", {}).get("operating_economics", {})
+    old = next(
+        (
+            line
+            for line in config.get("commercial_lines", [])
+            if line.get("id") == options.identity
+        ),
+        None,
+    )
+    if old and not old.get("method_form"):
+        terms = old.get("years", [])
+        fields = (
+            "quantity",
+            "rate",
+            "fixed_payment",
+            "minimum_quantity",
+            "minimum_payment",
+            "availability",
+            "escalation",
+        )
+        if any(
+            y.get("minimum_quantity") or y.get("minimum_payment") for y in terms
+        ) or any(
+            any(y.get(field) != terms[0].get(field) for field in fields)
+            for y in terms[1:]
+        ):
+            raise HTTPException(
+                422,
+                "This line has annual variations or minimum-payment terms. Use the advanced annual editor to preserve them.",
+            )
+        if options.method != "capacity_availability" and any(
+            y.get("availability", 1) != 1 for y in terms
+        ):
+            raise HTTPException(
+                422,
+                "This line has a separate availability adjustment. Use its advanced annual editor to preserve it.",
+            )
+    line = build_line(
+        options.method,
+        options.subtype,
+        options.inputs,
+        years,
+        identity=options.identity,
+    )
+    if old and not old.get("method_form"):
+        line["method_form"]["previous_inputs"] = old
+    return line
+
+
+@app.get("/api/catalogue/revenue-forms")
+def revenue_form_catalogue():
+    from backend.revenue.method_forms import catalogue
+
+    return catalogue()
 
 
 @app.post("/api/assessments/{key}/run", status_code=202)
 def rerun(key: str, options: Rerun):
+    if store.get(key).get("workflow") == "revenue":
+        submit(key, use_ai=options.use_ai)
+        return {"id": key}
     # Older clients and saved Team 8 projects enter the exact same workflow.
     return run_engineering_workflow(key, EngineeringRun(use_ai=options.use_ai))
 
@@ -298,6 +443,7 @@ def rerun(key: str, options: Rerun):
 @app.post("/api/assessments/{key}/stages/{stage}/run", status_code=202)
 def run_individual_stage(key: str, stage: str, options: Rerun):
     from backend.blocks.execution import queue_stage, run_stage
+
     if not lock.acquire(blocking=False):
         raise HTTPException(409, "Another stage is running")
     try:
@@ -305,17 +451,19 @@ def run_individual_stage(key: str, stage: str, options: Rerun):
     except Exception:
         lock.release()
         raise
+
     def work():
         try:
             run_stage(store, key, stage, use_ai=options.use_ai)
         finally:
             lock.release()
+
     try:
         executor.submit(work)
     except Exception:
         state = store.get(key)
-        state['running'] = False
-        store.put(state, state['revision'])
+        state["running"] = False
+        store.put(state, state["revision"])
         lock.release()
         raise
     return {"id": key, "stage": stage}
@@ -331,15 +479,28 @@ def run_engineering_workflow(key: str, options: EngineeringRun):
         state = store.get(key)
         if state.get("running"):
             raise HTTPException(409, "Another stage is running")
-        changed_process = options.process_description is not None and options.process_description != state.get("process_description", state.get("description", ""))
-        changed_revenue = options.revenue_description is not None and options.revenue_description != state.get("revenue_description", "")
+        changed_process = (
+            options.process_description is not None
+            and options.process_description
+            != state.get("process_description", state.get("description", ""))
+        )
+        changed_revenue = (
+            options.revenue_description is not None
+            and options.revenue_description != state.get("revenue_description", "")
+        )
         if changed_process or changed_revenue:
             store.version(key, "Before Entry engineering context update")
         if changed_revenue:
             from backend.revenue.authority import update
-            state = update(store, key, state["revision"], text=options.revenue_description)
+
+            state = update(
+                store, key, state["revision"], text=options.revenue_description
+            )
         if changed_process:
-            state.update(description=options.process_description, process_description=options.process_description)
+            state.update(
+                description=options.process_description,
+                process_description=options.process_description,
+            )
             store.put(state, state["revision"])
         queue(store, key)
     except Exception:
@@ -362,7 +523,12 @@ def run_engineering_workflow(key: str, options: EngineeringRun):
         lock.release()
         raise
     from backend.blocks.execution import PIPELINE_ID
-    return {"id": key, "workflow": "engineering_data_to_equipment", "pipeline_id": PIPELINE_ID}
+
+    return {
+        "id": key,
+        "workflow": "engineering_data_to_equipment",
+        "pipeline_id": PIPELINE_ID,
+    }
 
 
 @app.post("/api/assessments/{key}/versions")
@@ -500,6 +666,7 @@ def study_report(key: str, currency: str | None = None):
     if state.get("running"):
         raise HTTPException(409, "Wait for this study calculation to finish")
     from backend.blocks.execution import view
+
     state = currency_view(view(state), currency)
     return HTMLResponse(render_study(state), headers={"Cache-Control": "no-store"})
 
@@ -514,6 +681,7 @@ def study_snapshot(key: str, currency: str | None = None):
     if state.get("running"):
         raise HTTPException(409, "Wait for this study calculation to finish")
     from backend.blocks.execution import view
+
     state = currency_view(view(state), currency)
     return Response(
         json.dumps(state, indent=2, allow_nan=False),
@@ -536,8 +704,65 @@ class CommercialStrategyRequest(BaseModel):
 
 @app.post("/api/assessments/{key}/commercial-strategy", status_code=202)
 def commercial_strategy(key: str, options: CommercialStrategyRequest):
-    store.get(key)
-    raise HTTPException(422, "Automatic commercial chains are disabled. Use the Revenue stage and approve its assumptions.")
+    import copy
+
+    from backend.revenue.llm.commercial_strategy_analyst import execute_strategy
+
+    baseline = store.get(key)
+    if baseline.get("running") or baseline["revision"] != options.revision:
+        raise HTTPException(
+            409, "Wait for assessment completion or reload current revision"
+        )
+    if not baseline.get("plan", {}).get("operating_economics"):
+        raise HTTPException(
+            422,
+            "An operating-study draft is required before interpreting a new commercial scenario",
+        )
+    if not lock.acquire(blocking=False):
+        raise HTTPException(409, "Another assessment is running")
+    try:
+        content = store.workbook(key)
+        draft = copy.deepcopy(baseline)
+        draft.update(
+            description=options.description,
+            process_description=(
+                options.process_description
+                if options.process_description is not None
+                else options.description
+            ),
+            revenue_description=options.revenue_description or "",
+            results=None,
+            running=True,
+            parent_assessment=key,
+            status="Commercial Strategy Analyst: queued",
+            progress=[],
+            commercial_strategy={
+                "name": "Commercial Strategy Analyst",
+                "status": "queued",
+            },
+        )
+        from backend.revenue.authority import bind
+
+        draft.pop("revenue_approval", None)
+        bind(draft)
+        created = store.create(draft, content)
+
+        def work():
+            try:
+                execute_strategy(
+                    store,
+                    created["id"],
+                    baseline,
+                    research_consent=options.research_consent,
+                )
+            finally:
+                lock.release()
+
+        executor.submit(work)
+    except Exception:
+        lock.release()
+        raise
+    return {"id": created["id"]}
 
 
 # Monte Carlo uses the existing owner-scoped assessment store and background executor.
@@ -548,9 +773,12 @@ from backend.scenarios_and_uncertainty.monte_carlo.models import (
 
 def require_stage_output(key, stage):
     from backend.blocks.execution import view, fresh
+
     state = view(store.get(key))
     if not fresh(state, stage):
-        raise HTTPException(422, "Data required: run " + stage.replace('_', ' ') + " first.")
+        raise HTTPException(
+            422, "Data required: run " + stage.replace("_", " ") + " first."
+        )
     return state
 
 
@@ -558,12 +786,12 @@ def require_stage_output(key, stage):
 def monte_discover(key: str):
     from backend.scenarios_and_uncertainty.monte_carlo.discovery import discover
 
-    return discover(require_stage_output(key, 'engineering_data'))
+    return discover(require_stage_output(key, "engineering_data"))
 
 
 @app.post("/api/assessments/{key}/monte-carlo/run", status_code=202)
 def monte_run(key: str, settings: MonteCarloSettings):
-    require_stage_output(key, 'financial')
+    require_stage_output(key, "financial")
     from backend.scenarios_and_uncertainty.monte_carlo.service import start, work
 
     if not lock.acquire(blocking=False):
@@ -749,26 +977,35 @@ def monte_audit(key: str, job_id: str):
 def monte_preflight(key: str, settings: MonteCarloSettings):
     from backend.scenarios_and_uncertainty.monte_carlo.service import preflight
 
-    return preflight(require_stage_output(key, 'financial'), settings)
+    return preflight(require_stage_output(key, "financial"), settings)
 
 
 @app.get("/api/catalogue/equipment-knowledge")
 def equipment_knowledge():
     from backend.equipment_resolution.knowledge import library
+
     return library()
 
 
 @app.get("/api/assessments/{key}/equipment-resolution")
 def equipment_resolution(key: str):
     from backend.equipment_resolution.review import review
+
     state = store.get(key)
-    report = state.get("scoped_report") or state.get("effective_report") or state["parsed"]["report"]
+    report = (
+        state.get("scoped_report")
+        or state.get("effective_report")
+        or state["parsed"]["report"]
+    )
     return review(report, state["plan"], state.get("results"))
 
 
 @app.get("/api/assessments/{key}/equipment-conversion")
-def equipment_conversion_context(key: str, equipment_key: str, model_id: str | None = None):
+def equipment_conversion_context(
+    key: str, equipment_key: str, model_id: str | None = None
+):
     from backend.equipment_costing.unit_conversion.bridges.service import describe
+
     state = store.get(key)
     report = state.get("effective_report") or state.get("parsed", {}).get("report", {})
     try:
@@ -785,6 +1022,7 @@ class ConversionPreview(BaseModel):
 @app.post("/api/assessments/{key}/equipment-conversion/preview")
 def equipment_conversion_preview(key: str, request: ConversionPreview):
     from backend.equipment_costing.unit_conversion.bridges.service import evaluate
+
     state = store.get(key)
     report = state.get("effective_report") or state.get("parsed", {}).get("report", {})
     try:

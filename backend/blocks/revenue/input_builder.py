@@ -49,9 +49,10 @@ def _revenue_project(report, description, config, basis, hours, ramp, prices):
         if item["id"] in ids:
             raise ValueError("Duplicate sale product ID")
         ids.add(item["id"])
-        unit = item["quantity_unit"]
-        prop = "volume_flow" if unit in {"m3", "L"} else "mass_flow"
-        v = observation(report, item["stream_key"], prop)
+        from backend.revenue.product_basis import quantity_unit, product_observation
+
+        unit = quantity_unit(item)
+        v = product_observation(report, item)
         stream = Stream(
             item["stream_key"],
             item["name"],

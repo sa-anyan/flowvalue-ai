@@ -33,18 +33,6 @@ from backend.revenue.models import (
 from .codec import plain
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 from backend.blocks.shared import _a, operating_schedule, production_schedule
 from backend.blocks.revenue.input_builder import _revenue_project
 from backend.blocks.opex.input_builder import _costs_for_year, _opex
