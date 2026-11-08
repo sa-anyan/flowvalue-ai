@@ -1,0 +1,9 @@
+# CAPEX and OPEX analyst playgrounds
+
+The CAPEX and OPEX pages now explore saved backend outputs rather than provide stage execution or editing forms. CAPEX shows total investment, purchased equipment, fixed/working capital, composition, direct/indirect comparisons and ranked cost/equipment contributions. OPEX shows annual cash costs, fixed/variable composition, depreciation separately, an annual trajectory and year selection.
+
+Both include searchable ranked bars, a visible-driver slider and read-only evidence drawers. Drawer controls support Escape, focus return and a keyboard focus trap. Partial results, missing values, price periods/currencies and stale results remain explicit. Browsing never changes assumptions or triggers AI/calculation. Year selection reads existing annual results; it is not an assumed sensitivity calculation. Equipment is not added twice to fixed capital. OPEX cash rankings exclude financing, non-cash and non-recurring items. Source lines with different calculation bases are not summed into a new total.
+
+Engineering Data owns the central stage selector with Run selected stage and Run all stages. The existing approval and deterministic backend pathways remain unchanged. Equipment's original cards/drawers and Revenue's existing implementation are preserved.
+
+Validation: production build and TypeScript passed; 15 frontend tests passed, including empty/zero/missing/stale outputs, immutable source data, cash/non-cash separation, Revenue series and navigation regressions. Browser checks confirmed both pages have no Run/Recalculate buttons, the CAPEX composition drawer works, OPEX year selection reads saved years, evidence drawers close with Escape, no desktop page overflow, and Engineering Data stage selection works. UI checks used a separate synthetic assessment, with no paid AI or external research calls.

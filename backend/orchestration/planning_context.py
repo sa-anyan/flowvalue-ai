@@ -161,9 +161,11 @@ def compact_context(context):
         result["plan"] = {
             k: v
             for k, v in result.get("plan", {}).items()
-            if k not in {"equipment", "capex"}
+            if k != "equipment"
+            and (k != "capex" or "capex" in result["requested_sections"])
         }
-        result["capex_factors"] = []
+        if "capex" not in result["requested_sections"]:
+            result["capex_factors"] = []
     if "equipment" not in result["requested_sections"]:
         capital = result.get("calculated_stage_summary", {}).get("capex", {})
         if capital.get("result"):
@@ -188,9 +190,71 @@ def compact_context(context):
                     "issues",
                 }
             }
-    result["calculated_stage_summary"] = summary(
-        result.get("calculated_stage_summary", {})
-    )
+    stage_summary = result.get("calculated_stage_summary", {})
+    if "equipment" not in result["requested_sections"]:
+        engineering = stage_summary.get("engineering_data", {})
+        if isinstance(engineering.get("result"), dict):
+            original = engineering["result"]
+            engineering["result"] = {
+                k: original.get(k)
+                for k in (
+                    "status",
+                    "filename",
+                    "equipment_count",
+                    "material_stream_count",
+                    "energy_stream_count",
+                )
+            }
+            engineering["result"]["issue_count"] = len(original.get("issues", []))
+        equipment = stage_summary.get("equipment", {})
+        if isinstance(equipment.get("result"), dict):
+            original = equipment["result"]
+            equipment["result"] = {
+                k: v
+                for k, v in original.items()
+                if k
+                in {
+                    "status",
+                    "complete",
+                    "currency",
+                    "period",
+                    "total_equipment_cost",
+                    "total_installation_cost",
+                    "total_equipment_and_installation_cost",
+                    "subtotal",
+                    "unpriced",
+                    "priced_count",
+                    "unpriced_count",
+                }
+            }
+            equipment["result"]["equipment"] = []
+            for row in original.get("equipment", []):
+                item = {
+                    k: row.get(k)
+                    for k in (
+                        "equipment_tag",
+                        "curve_id",
+                        "equipment_cost",
+                        "installation_cost",
+                        "equipment_and_installation_cost",
+                        "amount",
+                        "cost_scope",
+                        "quantity",
+                        "status",
+                        "pricing_status",
+                    )
+                }
+                estimate = row.get("calculation") or {}
+                estimate = estimate.get("estimate") or {}
+                item["price_basis"] = {
+                    k: estimate.get(k)
+                    for k in ("currency", "period", "index_series", "index_value")
+                }
+                equipment["result"]["equipment"].append(item)
+            equipment["audit_note"] = (
+                "Sizing/matching/audit trees retained in source assessment; economic planner receives costs and bases only."
+            )
+    result["calculated_stage_summary"] = summary(stage_summary)
     # Revenue source_streams is another complete copy of totals. The operating
     # planner needs it; equipment planning already has the same linked streams.
     result["parsed_revenue_streams"] = []

@@ -49,6 +49,8 @@ class Rerun(BaseModel):
 
 
 class EngineeringRun(Rerun):
+    analysis_years: int | None = Field(default=None, ge=1, le=60)
+    construction_years: int | None = Field(default=None, ge=0, le=10)
     prepare_only: bool = True
     # Entry includes automatic assumption population unless explicitly opted out.
     use_ai: bool = True
@@ -274,6 +276,8 @@ async def upload(
     revenue_description: str = Form(""),
     use_ai: bool = Form(False),
     workflow: str = Form("full"),
+    analysis_years: int | None = Form(None),
+    construction_years: int = Form(2),
 ):
     content = await file.read(MAX_WORKBOOK_BYTES + 1)
     if not content or len(content) > MAX_WORKBOOK_BYTES:
@@ -285,9 +289,21 @@ async def upload(
         raise HTTPException(422, "Choose .xlsx, .xls or .xlsm")
     if lock.locked():
         raise HTTPException(409, "Another assessment is running")
+    policy = None
+    if analysis_years is not None:
+        from backend.blocks.cashflow.schedule import make_policy, apply_policy
+
+        policy = make_policy(analysis_years, construction_years)
     state = new_assessment(
         store, content, name, description, revenue_description, workflow=workflow
     )
+    if policy is not None:
+        state["analysis_schedule"] = policy
+        state["plan"].setdefault("operating_economics", {})
+        state["plan"]["operating_economics"] = apply_policy(
+            state["plan"]["operating_economics"], state["analysis_schedule"]
+        )
+        state = store.put(state, state["revision"])
     if workflow == "revenue":
         submit(state["id"], content=content, use_ai=use_ai)
         return {"id": state["id"]}
@@ -323,6 +339,35 @@ def currency_convert(request: CurrencyConversionRequest):
         request.source_currency,
         request.target_currency,
         rate_date=request.rate_date,
+    )
+
+
+class CashflowPolicyEdit(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    revision: int
+    policy: dict
+    approve_revenue: bool = False
+
+
+@app.get("/api/assessments/{key}/cashflow")
+def cashflow_snapshot(key: str):
+    from backend.blocks.cashflow.view import snapshot
+
+    return snapshot(store.get(key))
+
+
+@app.patch("/api/assessments/{key}/cashflow")
+def save_cashflow_policy(key: str, change: CashflowPolicyEdit):
+    from backend.blocks.cashflow.schedule import save
+
+    if lock.locked():
+        raise HTTPException(409, "Wait for the active calculation to finish")
+    return save(
+        store,
+        key,
+        change.revision,
+        change.policy,
+        approve_revenue=change.approve_revenue,
     )
 
 
@@ -496,12 +541,16 @@ def approve_engineering_data(key: str, options: EngineeringApproval):
 
 @app.post("/api/assessments/{key}/run-all-stages", status_code=202)
 def run_all_stages(key: str, options: Rerun):
+    return submit_stage_group(key, options)
+
+
+def submit_stage_group(key: str, options: Rerun, *, economic_only=False):
     from backend.blocks.stage_workflow import queue, run
 
     if not lock.acquire(blocking=False):
         raise HTTPException(409, "Another stage is running")
     try:
-        queue(store, key)
+        queue(store, key, economic_only=economic_only)
     except Exception:
         lock.release()
         raise
@@ -526,6 +575,8 @@ def run_all_stages(key: str, options: Rerun):
 
 @app.post("/api/assessments/{key}/stages/{stage}/run", status_code=202)
 def run_individual_stage(key: str, stage: str, options: Rerun):
+    if stage in {"capex", "opex", "revenue"}:
+        return submit_stage_group(key, options, economic_only=True)
     from backend.blocks.execution import queue_stage, run_stage
 
     if not lock.acquire(blocking=False):
@@ -636,6 +687,28 @@ def run_engineering_workflow(key: str, options: EngineeringRun):
                 process_description=options.process_description,
             )
             store.put(state, state["revision"])
+        if options.analysis_years is not None:
+            from backend.blocks.cashflow.schedule import make_policy, apply_policy
+
+            current = state.get("analysis_schedule")
+            policy = make_policy(
+                options.analysis_years,
+                (
+                    options.construction_years
+                    if options.construction_years is not None
+                    else (current or {}).get("construction_years", 2)
+                ),
+                current,
+            )
+            if policy != current:
+                state = store.get(key)
+                store.version(key, "Before Entry analysis horizon change")
+                state["analysis_schedule"] = policy
+                state["plan"]["operating_economics"] = apply_policy(
+                    state["plan"].get("operating_economics", {}), policy
+                )
+                state.pop("revenue_approval", None)
+                state = store.put(state, state["revision"])
         queue(store, key)
     except Exception:
         lock.release()

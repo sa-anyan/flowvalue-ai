@@ -74,7 +74,9 @@ def proposal(ctx, sections):
 
 
 def operating_proposal(ctx, owner):
-    config = copy.deepcopy(ctx.operating or {})
+    from backend.blocks.cashflow.schedule import apply_policy
+
+    config = apply_policy(ctx.operating or {}, ctx.state.get("analysis_schedule"))
     if not isinstance(config, dict):
         raise DataRequired(
             "Data required: operating assumptions must be a structured object."
@@ -113,29 +115,19 @@ def operating_proposal(ctx, owner):
         "operating",
         "financial",
     ):
-        if not config.get(field) and value.get(field):
+        if field == "financial" and value.get(field):
+            config[field] = {**value[field], **config.get(field, {})}
+        elif not config.get(field) and value.get(field):
             config[field] = value[field]
     if owner == "opex":
-        from backend.blocks.registry import dependencies
         from backend.blocks.execution import fresh
 
-        candidate = copy.deepcopy(ctx.state)
-        candidate["plan"]["operating_economics"] = config
-        missing = [
-            key for key in dependencies("opex", candidate) if not fresh(candidate, key)
-        ]
-        if missing:
-            raise DataRequired(
-                "Data required: run "
-                + ", ".join(missing)
-                + " before these OPEX factors can be used.",
-                missing,
-                {"plan": {"operating_economics": config}},
-            )
-        for key in dependencies("opex", candidate):
-            if key not in ctx.upstream:
-                ctx.upstream[key] = copy.deepcopy(candidate["stage_outputs"][key])
-    return config, meta
+        # Missing revenue/capital bases are pending lines, not a reason to skip
+        # unrelated raw materials, utilities and labour calculations.
+        for key in ("capex", "revenue"):
+            if fresh(ctx.state, key) and key not in ctx.upstream:
+                ctx.upstream[key] = copy.deepcopy(ctx.state["stage_outputs"][key])
+    return apply_policy(config, ctx.state.get("analysis_schedule")), meta
 
 
 from decimal import Decimal

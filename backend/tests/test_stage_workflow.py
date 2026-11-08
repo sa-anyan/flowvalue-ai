@@ -77,3 +77,60 @@ def test_polling_stays_active_between_stages(study):
     state = queue(store, key)
     state["running"] = False
     assert view(state)["running"]
+
+
+def test_economics_group_reuses_fresh_equipment_and_refreshes_finance(study):
+    from backend.blocks.stage_workflow import ECONOMIC_ORDER
+
+    store, key = study
+    state = run_stage(store, key, "engineering_data")
+    state = update(store, key, state["revision"], approve=True)
+    state = run_stage(store, key, "equipment")
+    approve(store, key, state["revision"])
+    before = store.get(key)["stage_runs"]["equipment"]["output_hash"]
+    queue(store, key, economic_only=True)
+    with patch(
+        "backend.blocks.equipment.runner.calculate",
+        side_effect=AssertionError("Do not rerun valid equipment"),
+    ):
+        state = run(store, key)
+    assert state["stage_workflow"]["order"] == list(ECONOMIC_ORDER)
+    assert state["stage_workflow"]["status"] == "complete"
+    assert state["stage_runs"]["equipment"]["output_hash"] == before
+    assert all(fresh(state, s) for s in ECONOMIC_ORDER)
+
+
+def test_all_economic_api_triggers_use_the_same_group():
+    from backend.api.app import run_individual_stage, Rerun
+
+    with patch(
+        "backend.api.app.submit_stage_group", return_value={"id": "test"}
+    ) as submit:
+        for stage in ("capex", "opex", "revenue"):
+            assert run_individual_stage("test", stage, Rerun()) == {"id": "test"}
+            assert submit.call_args.kwargs == {"economic_only": True}
+        assert submit.call_count == 3
+
+
+def test_group_preserves_approved_revenue_when_ai_is_requested(study):
+    store, key = study
+    state = run_stage(store, key, "engineering_data")
+    state = update(store, key, state["revision"], approve=True)
+    state = run_stage(store, key, "equipment")
+    approve(store, key, state["revision"])
+    queue(store, key, economic_only=True)
+    calls = []
+
+    def capture(store, key, stage, *, use_ai, provider=None):
+        calls.append((stage, use_ai))
+        return run_stage(store, key, stage, use_ai=False)
+
+    with patch("backend.blocks.stage_workflow.run_stage", side_effect=capture):
+        result = run(store, key, use_ai=True)
+    assert dict(calls) == {
+        "capex": True,
+        "revenue": False,
+        "opex": True,
+        "financial": True,
+    }
+    assert result["stage_workflow"]["status"] == "complete"

@@ -31,7 +31,15 @@ def commercial_inputs(report, description, config, basis, hours, ramp, assumptio
             raise ValueError(
                 "Commercial annual schedule must match operating years in order"
             )
-        for row in item["years"]:
+        for original_row in item["years"]:
+            from backend.blocks.cashflow.schedule import factor
+            from backend.opex.consumption import decimal
+
+            row = dict(original_row)
+            realization = factor(config, "commercial", item["id"], row["year"])
+            for term in ("rate", "fixed_payment", "minimum_payment"):
+                if row.get(term) is not None:
+                    row[term] = decimal(row[term]) * realization
             quantity = row["quantity"]
             quantity_source = (
                 "Explicit contractual/commercial quantity assumption, not workbook data"
@@ -67,10 +75,17 @@ def commercial_inputs(report, description, config, basis, hours, ramp, assumptio
                         value,
                         units,
                         config,
-                        item["rationale"],
-                        status="llm_estimate"
-                        if item["arrangement"] == "llm_proposed"
-                        else "user_assumption",
+                        item["rationale"]
+                        + (
+                            f"; user annual cashflow realization {realization}"
+                            if config.get("cashflow_schedule")
+                            else ""
+                        ),
+                        status=(
+                            "llm_estimate"
+                            if item["arrangement"] == "llm_proposed"
+                            else "user_assumption"
+                        ),
                         source="; ".join(item.get("source_references", []))
                         or "Saved commercial assumption",
                     ),

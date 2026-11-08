@@ -11,7 +11,7 @@ from backend.revenue.advisor import TEXT, obj, validate_shape
 from .codec import plain
 from .pipeline import SECTIONS, contracts, source_streams
 
-PROMPT_VERSION = "engineering-orchestrator-4-canonical-references"
+PROMPT_VERSION = "engineering-orchestrator-5-typed-capital-summary"
 SCHEMA = obj(
     {
         "sections": {
@@ -257,6 +257,10 @@ def propose(
     batch_outcomes = []
 
     def call():
+        if requested_sections == ("capex",):
+            from .capital_advisor import generate
+
+            return generate(provider, PROMPT, context)
         if requested_sections in {("revenue", "opex"), ("revenue",)}:
             from .operating_advisor import generate
 

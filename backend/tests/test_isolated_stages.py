@@ -84,10 +84,15 @@ def test_manual_stage_order_and_finance_only_consumes_saved_inputs(study):
     state = run_stage(store, key, "capex")
     equipment = copy.deepcopy(state["results"]["stages"]["equipment"])
     state = run_stage(store, key, "opex")
-    assert state["stage_runs"]["opex"]["status"] == "data_required"
-    assert state["stage_runs"]["opex"]["requires"] == ["revenue"]
+    assert state["stage_runs"]["opex"]["status"] == "ready"
+    assert state["stage_runs"]["opex"]["complete"] is False
+    assert (
+        state["results"]["stages"]["opex"]["result"]["known_cash_opex_subtotal"]
+        is not None
+    )
     assert "revenue" not in state["stage_runs"]
     state = run_stage(store, key, "revenue")
+    assert state["stage_runs"]["opex"]["status"] == "stale"
     state = run_stage(store, key, "opex")
     assert state["stage_runs"]["opex"]["status"] == "ready", state["stage_runs"]["opex"]
     upstream = copy.deepcopy(state["stage_outputs"])

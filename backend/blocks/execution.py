@@ -92,9 +92,19 @@ def _inputs(state, block):
                 )
             }
         )
+        if config.get("cashflow_schedule"):
+            shared["cashflow_schedule"] = config["cashflow_schedule"]
         shared["box"] = state.get("revenue_description", "")
         shared["approval"] = (state.get("revenue_approval") or {}).get("fingerprint")
     if block == "opex":
+        shared["optional_cost_bases"] = {
+            key: (
+                state.get("stage_runs", {}).get(key, {}).get("output_hash")
+                if fresh(state, key)
+                else None
+            )
+            for key in ("capex", "revenue")
+        }
         shared.update(
             {
                 k: config.get(k)
@@ -164,9 +174,11 @@ def refresh(state):
             state.setdefault("results", {}).setdefault("stages", {})[key] = {
                 "status": "stale",
                 "result": (
-                    previous_equipment_result(state) if key == "equipment" else None
+                    previous_equipment_result(state)
+                    if key == "equipment"
+                    else state["results"]["stages"].get(key, {}).get("result")
                 ),
-                "result_is_stale": key == "equipment",
+                "result_is_stale": True,
                 "issues": [
                     "Inputs changed. Run "
                     + BLOCKS[key]["label"]
@@ -300,6 +312,12 @@ def run_stage(store, key, block, *, use_ai=False, provider=None):
                 p: copy.deepcopy(state["stage_outputs"][p])
                 for p in dependencies(block, state)
             }
+            if block == "opex":
+                for optional in ("capex", "revenue"):
+                    if fresh(state, optional):
+                        upstream[optional] = copy.deepcopy(
+                            state["stage_outputs"][optional]
+                        )
             report = upstream.get("engineering_data", {}).get("report", {})
             if not report:
                 report = (
@@ -390,9 +408,11 @@ def run_stage(store, key, block, *, use_ai=False, provider=None):
         state["results"]["stages"][block] = {
             "status": "data_required",
             "result": (
-                previous_equipment_result(state) if block == "equipment" else None
+                previous_equipment_result(state)
+                if block == "equipment"
+                else state["results"]["stages"].get(block, {}).get("result")
             ),
-            "result_is_stale": block == "equipment",
+            "result_is_stale": True,
             "issues": [str(error)],
         }
     receipt["elapsed_seconds"] = time.monotonic() - started

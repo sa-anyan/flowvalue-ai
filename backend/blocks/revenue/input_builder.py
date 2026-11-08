@@ -1,5 +1,6 @@
 """Canonical _revenue_project adapter, owned by this block."""
 
+from backend.blocks.cashflow.schedule import factor
 from backend.opex.consumption import annual_consumption, decimal, observation
 from backend.revenue.models import (
     Adjustment,
@@ -102,7 +103,13 @@ def _revenue_project(report, description, config, basis, hours, ramp, prices):
                         item["rationale"],
                     ),
                     "fraction_of_saleable",
-                    _a(item["sold_fraction"], "fraction", config, item["rationale"]),
+                    _a(
+                        decimal(item["sold_fraction"])
+                        * factor(config, "product", item["id"], year),
+                        "fraction",
+                        config,
+                        item["rationale"] + "; explicit annual revenue realization",
+                    ),
                     tuple(adjustments),
                 )
             )

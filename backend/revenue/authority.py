@@ -51,6 +51,8 @@ def fingerprint(config, text, report):
             if e.get("kind") in {"material", "energy"}
         ],
     }
+    if config.get("cashflow_schedule"):
+        inputs["cashflow_schedule"] = config["cashflow_schedule"]
     payload = json.dumps(
         [text, inputs],
         sort_keys=True,
@@ -72,8 +74,15 @@ def questions(config, text, report, *, approval=None, require_approval=True):
         ]
     problems = []
     for pending in config.get("pending_inputs", []):
-        missing = pending.get("missing_inputs") or ["Confirm the missing commercial terms and quantity basis"]
-        problems.append("Pending " + str(pending.get("name", pending.get("id", "opportunity"))) + ": " + "; ".join(missing))
+        missing = pending.get("missing_inputs") or [
+            "Confirm the missing commercial terms and quantity basis"
+        ]
+        problems.append(
+            "Pending "
+            + str(pending.get("name", pending.get("id", "opportunity")))
+            + ": "
+            + "; ".join(missing)
+        )
     try:
         if not config.get("commercial_intent"):
             raise ValueError("Identify the stated payment methods first")
@@ -121,6 +130,7 @@ def questions(config, text, report, *, approval=None, require_approval=True):
             )
         try:
             from .product_basis import product_observation
+
             source = product_observation(report, sale)
             if not source.get("sheet") or not source.get("cell"):
                 raise ValueError("No workbook cell")
@@ -220,12 +230,18 @@ def update(store, key, revision, *, text=None, approve=False):
         revised = reconcile_product_price(config, previous_text, text)
         if revised is not None:
             state["plan"]["operating_economics"] = revised
-            state.setdefault("revenue_price_edits", []).append({
-                "previous_text": previous_text, "text": text,
-                "origin": "explicit_user_revenue_box_edit",
-            })
+            state.setdefault("revenue_price_edits", []).append(
+                {
+                    "previous_text": previous_text,
+                    "text": text,
+                    "origin": "explicit_user_revenue_box_edit",
+                }
+            )
             from backend.orchestration.register import register
-            state["assumption_register"] = register(state["plan"], state.get("assumptions", {}))
+
+            state["assumption_register"] = register(
+                state["plan"], state.get("assumptions", {})
+            )
         state["revenue_description"] = text
         state["description"] = (
             state.get("process_description", state.get("description", ""))
@@ -273,7 +289,11 @@ def update(store, key, revision, *, text=None, approve=False):
     )
     # Do not show stale cash flows while changed commercial inputs await recalculation.
     if state.get("results"):
-        for name in (("revenue",) if state.get("workflow") == "revenue" else ("revenue", "financial")):
+        for name in (
+            ("revenue",)
+            if state.get("workflow") == "revenue"
+            else ("revenue", "financial")
+        ):
             state["results"].setdefault("stages", {})[name] = {
                 "status": "pending_user_input",
                 "result": None,

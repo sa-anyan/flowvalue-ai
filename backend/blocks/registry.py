@@ -56,32 +56,6 @@ def dependencies(block_id, state):
     if block_id not in BLOCKS:
         raise ValueError("Unknown stage: " + block_id)
     result = list(BLOCKS[block_id]["requires"])
-    if block_id == "opex":
-        from backend.opex.indexes.garrett.model import CATEGORIES, PLANT_BASE
-
-        config = state.get("plan", {}).get("operating_economics", {})
-        # Detailed items replace their blanket factor, just as in the canonical OPEX adapter.
-        if config.get("avoided_costs"):
-            result.append("revenue")
-        itemized = {
-            i.get("category")
-            for g in ("materials", "labour", "additional_expenses")
-            for i in config.get(g, [])
-        }
-        if config.get("energy"):
-            itemized.add("utilities")
-        for definition in CATEGORIES:
-            if not definition.base or definition.id in itemized:
-                continue
-            if definition.id not in config.get("garrett_factors", {}):
-                continue
-            # Even a zero percentage has a declared base in the existing input contract.
-            if definition.base == "annual_revenue":
-                result.append("revenue")
-            elif definition.base in {
-                "fixed_capital",
-                "purchased_equipment",
-                PLANT_BASE,
-            }:
-                result.append("capex")
+    # CAPEX/revenue are optional OPEX bases. Their absence leaves affected
+    # factor lines unresolved; independently supported operating costs still run.
     return list(dict.fromkeys(result))
