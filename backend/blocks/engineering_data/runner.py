@@ -40,6 +40,15 @@ def calculate(ctx):
                 + "); Python extraction retained for inspection."
             )
             updates["ai"] = {"status": "review_unavailable", "notice": notes[-1]}
+    from .edits import apply_edit
+
+    for edit in ctx.state.get("engineering_register_edits", []):
+        if edit.get("action") == "remove" and not any(
+            e["key"] == edit["equipment_key"] for e in report["entities"]
+        ):
+            continue
+        report, _ = apply_edit(report, edit)
+    updates["effective_report"] = report
     result = {
         "status": "parsed",
         "filename": report["filename"],

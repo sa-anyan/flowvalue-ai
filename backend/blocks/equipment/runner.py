@@ -11,7 +11,7 @@ from .calculation import calculate_equipment
 from backend.equipment_matching.service import match_report, apply_matches
 
 
-def calculate(ctx):
+def prepare(ctx):
     plan = copy.deepcopy(ctx.plan)
     from .quantity import equipment_quantity
 
@@ -72,6 +72,13 @@ def calculate(ctx):
     )
     if plan.get("equipment") != ctx.plan.get("equipment"):
         updates["plan"] = {"equipment": plan["equipment"]}
+    return report, plan, updates, issues, matching, input_resolution, duplicate_review
+
+
+def calculate(ctx):
+    report, plan, updates, issues, matching, input_resolution, duplicate_review = (
+        prepare(ctx)
+    )
     total, rows = calculate_equipment(report, plan, plan.get("cost_translation"))
     if ctx.use_ai and "equipment" not in ctx.state.get("locked", []):
         from backend.equipment_costing.unit_conversion.bridges.automatic import (

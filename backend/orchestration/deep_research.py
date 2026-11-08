@@ -47,7 +47,7 @@ SCHEMA = obj(
 )
 
 
-def research_draft(state, kind, target_id, provider):
+def research_draft(state, kind, target_id, provider, *, focus=""):
     report = state.get(
         "scoped_report", state.get("effective_report", state["parsed"]["report"])
     )
@@ -73,7 +73,21 @@ def research_draft(state, kind, target_id, provider):
             ),
             {},
         )
+        prepared = next(
+            (
+                r
+                for r in state.get("plan", {}).get("equipment", [])
+                if r.get("equipment_key") == target_id
+            ),
+            {},
+        )
         subject = {
+            "prepared_inputs": prepared,
+            "linked_streams": [
+                e
+                for e in report["entities"]
+                if e["key"] in entity.get("stream_keys", [])
+            ],
             "tag": entity["identifier"],
             "properties": entity["values"][:15],
             "selection": line.get("curve_id"),
@@ -83,8 +97,8 @@ def research_draft(state, kind, target_id, provider):
         from backend.equipment_costing.registry import list_equipment_models
 
         catalogue = [
-            {k: m[k] for k in ("id", "equipment", "configuration", "size_unit")}
-            for m in list_equipment_models()
+            {k: m.get(k) for k in ("id", "equipment", "configuration", "size_unit")}
+            for m in list_equipment_models("all")
         ]
     elif kind == "market":
         sales = state["plan"].get("operating_economics", {}).get("sales", [])
@@ -121,6 +135,8 @@ def research_draft(state, kind, target_id, provider):
         "local_catalogue": catalogue,
         "requested_at": datetime.now(UTC).isoformat(),
     }
+    if focus:
+        query["requested_focus"] = focus
     raw = provider.research(
         instructions=(
             "Perform a focused techno-economic investigation of this equipment/product only. "

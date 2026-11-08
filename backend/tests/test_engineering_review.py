@@ -424,3 +424,132 @@ def test_timeout_retries_only_source_region_once(tmp_path):
     assert provider.calls == 2
     assert result["entities"]
     assert meta["batches"][0]["status"] == "reviewed"
+
+
+def test_all_regions_keep_primary_process_identity_and_source_evidence():
+    from backend.orchestration.workbook_review import review_contexts
+
+    parsed = fixture()
+    parsed["report"], _ = apply_review(parsed, response())
+    parsed["source_cells"].append(
+        {
+            "sheet": "Other example",
+            "cell": "B1",
+            "value": "Mill and ethanol fermentation",
+        }
+    )
+    contexts = review_contexts(parsed, "Neutralisation process", budget=400)
+    assert len(contexts) > 1
+    for context in contexts:
+        evidence = context["primary_equipment_evidence"]
+        assert [e["tag"] for e in evidence] == ["P001"]
+        assert evidence[0]["source"]["sheet"] == "Process"
+        assert evidence[0]["source"]["cell"] == "B20"
+
+
+def test_disconnected_supporting_process_is_retained_for_scope_review():
+    from backend.orchestration.workbook_review import reconcile_review_scope
+
+    parsed = fixture()
+    parsed["report"], _ = apply_review(parsed, response())
+    proposed = response()
+    proposed["records"] = [
+        {
+            **response()["records"][1],
+            "key": "other-unit",
+            "identifier": "Mill",
+            "name": "Mill",
+            "identity_sources": [{"sheet": "Reference", "cell": "A1"}],
+        }
+    ]
+    proposed["connections"] = []
+    accepted, pending = reconcile_review_scope(parsed, proposed, {"Process"})
+    assert not accepted["records"]
+    assert pending[0]["status"] == "pending_process_scope"
+    assert pending[0]["proposal"]["identifier"] == "Mill"
+    assert "Reference!A1" in accepted["scope_notes"][0]
+    assert len(parsed["report"]["entities"]) == 2
+
+
+def test_connected_supporting_equipment_and_primary_sheet_recovery_allowed():
+    from backend.orchestration.workbook_review import reconcile_review_scope
+
+    parsed = fixture()
+    parsed["report"], _ = apply_review(parsed, response())
+    stream = next(
+        e["key"] for e in parsed["report"]["entities"] if e["kind"] == "material"
+    )
+    proposed = response()
+    proposed["records"] = [
+        {
+            **response()["records"][1],
+            "key": "extra-unit",
+            "identifier": "Tank2",
+            "identity_sources": [{"sheet": "Design", "cell": "A1"}],
+        }
+    ]
+    proposed["connections"] = [
+        {
+            "stream_key": stream,
+            "equipment_key": "extra-unit",
+            "sources": [{"sheet": "Process", "cell": "B21"}],
+        }
+    ]
+    accepted, pending = reconcile_review_scope(parsed, proposed, {"Process"})
+    assert len(accepted["records"]) == 1 and not pending
+    proposed["connections"][0]["sources"][0]["cell"] = "DOES_NOT_EXIST"
+    accepted, pending = reconcile_review_scope(parsed, proposed, {"Process"})
+    assert not accepted["records"] and pending
+    proposed["records"][0]["identity_sources"] = [{"sheet": "Process", "cell": "B20"}]
+    accepted, pending = reconcile_review_scope(parsed, proposed, {"Process"})
+    assert len(accepted["records"]) == 1 and not pending
+
+
+def test_placeholder_is_not_a_physical_equipment_identity():
+    proposed = response()
+    proposed["records"][1]["identifier"] = "unassigned"
+    result, decisions = apply_review(fixture(), proposed)
+    assert not any(e["kind"] == "equipment" for e in result["entities"])
+    assert any(
+        d.get("proposal", {}).get("identifier") == "unassigned" for d in decisions
+    )
+    proposed["records"][1]["identifier"] = "Steam supply"
+    result, decisions = apply_review(fixture(), proposed)
+    assert not any(e["kind"] == "equipment" for e in result["entities"])
+    assert any("external supply/boundary" in d.get("reason", "") for d in decisions)
+
+
+def test_raw_secondary_stream_is_not_proof_of_primary_plant_scope():
+    from backend.orchestration.workbook_review import reconcile_review_scope
+
+    parsed = fixture()
+    parsed["report"], _ = apply_review(parsed, response())
+    foreign = copy.deepcopy(
+        next(e for e in parsed["report"]["entities"] if e["kind"] == "material")
+    )
+    foreign.update(key="reference-stream", identifier="9", values=[])
+    foreign["id_evidence"].update(sheet="Reference", cell="A1")
+    parsed["report"]["entities"].append(foreign)
+    parsed["source_cells"].append(
+        {"sheet": "Reference", "cell": "A1", "value": "Steam into jet cooker"}
+    )
+    proposed = response()
+    proposed["records"] = [
+        {
+            **response()["records"][1],
+            "key": "cooker",
+            "identifier": "Jet Cooker",
+            "identity_sources": [{"sheet": "Reference", "cell": "A1"}],
+        }
+    ]
+    proposed["connections"] = [
+        {
+            "stream_key": "reference-stream",
+            "equipment_key": "cooker",
+            "sources": [{"sheet": "Reference", "cell": "A1"}],
+        }
+    ]
+    accepted, pending = reconcile_review_scope(parsed, proposed, {"Process"})
+    assert (
+        not accepted["records"] and pending[0]["proposal"]["identifier"] == "Jet Cooker"
+    )

@@ -12,9 +12,11 @@ from .. import convert, ConversionContext
 from .service import describe, evaluate, model_contract, PARAMETERS, RECIPES
 from .derivations import METHODS, derive, discover
 
-VERSION = "equipment-input-resolution-21-bounded-binding-repair"
-PROMPT = """For OpenPyTEA power coordinates use electrical_to_shaft_power / shaft_to_electrical_power with explicit motor_efficiency, or pump_hydraulic_power, when the power role differs. Shaft power is not electrical input power. For OpenPyTEA correlations, preserve exact required parameter roles (shaft/fluid/electrical power, actual/standard flow, composite design coordinates). Never substitute an uncalculated feed rate for a composite coordinate. Two-variable models require secondary_input: choose its measurement_id independently, or provide an explicit assumed value/unit/rationale; Python converts it. Missing second input remains MISSING_SIZING_INPUT. Disabled models cannot be selected. No automatic size clamping or parallelisation.
-For the Turton fermenter, specify operating_mode from process evidence, or an explicit provisional operating assumption. Flow-to-volume sizing requires continuous mode, residence time and working fraction. Batch/unknown requires directly documented per-vessel volume. Never extrapolate beyond 35 m3. For mechanically equipped clarifiers use clarifier_area (hydraulic_loading_m_h is surface overflow rate); do not assume a generic settler is mechanically equipped.
+VERSION = "equipment-input-resolution-23-physical-duty-bases"
+PROMPT = """For a dryer model requiring evaporation rate, use dryer_evaporation: measurement_id is feed water COMPONENT mass flow and outlet_measurement_id is product water COMPONENT mass flow. Python subtracts and converts them. Confirm the selected drying boundary has no other water paths/reaction; disclose this scope assumption. Never use total wet-feed flow as evaporation. Carrier-gas inlet/outlet water can independently check the calculated evaporation; do not confuse those roles with feed/product.
+For OpenPyTEA power coordinates use electrical_to_shaft_power / shaft_to_electrical_power with explicit motor_efficiency, or pump_hydraulic_power, when the power role differs. Shaft power is not electrical input power. For OpenPyTEA correlations, preserve exact required parameter roles (shaft/fluid/electrical power, actual/standard flow, composite design coordinates). Never substitute an uncalculated feed rate for a composite coordinate. Two-variable models require secondary_input: choose its measurement_id independently, or provide an explicit assumed value/unit/rationale; Python converts it. Missing second input remains MISSING_SIZING_INPUT. Disabled models cannot be selected. No automatic size clamping or parallelisation.
+OpenPyTEA correlations have strict published capacity limits and do not accept Garrett extrapolation options. If the physically calculated size is outside a correlation's domain, choose a conceptually compatible supplied alternative with an applicable domain or a Garrett model supporting disclosed boundary extrapolation. Never change a source quantity or tune residence time, efficiency or density just to fit a cost curve. Keep extrapolation_exponent null for non-Garrett models.
+For the Turton fermenter, specify operating_mode from process evidence, or an explicit provisional operating assumption. Flow-to-volume sizing requires continuous mode, residence time and working fraction. Batch/unknown requires directly documented per-vessel volume. Never extrapolate beyond 35 m3. For a clarifier use clarifier_area (hydraulic_loading_m_h is surface overflow rate). A generic settler does not prove mechanical equipment exists. A mechanically equipped clarifier may be proposed as an explicit preliminary configuration scenario for a compatible settling duty, with geometry, mechanical scope and uncertainty disclosed; never label that configuration as extracted or verified. Likewise a biofilm reactor may use a defensible vessel-core costing proxy with biofilm media/aeration/internals explicitly excluded or unresolved; it is not a complete validated bioreactor package.
 You are the chemical-engineering input-resolution specialist AFTER equipment matching.
 Apply these five skills in order for every conversion-matching decision:
 1. Exact unit and parameter matching: prefer an existing measurement of the required
@@ -567,6 +569,16 @@ def resolve(
             if row.get("curve_id")
             else match.get("candidate_model_ids", [])
         )
+        if (
+            row.get("curve_id") == match.get("selected_model_id")
+            and match.get("review_available") is True
+            and use_ai
+            and not locked
+        ):
+            # A conceptual first choice is not an exclusive design instruction.
+            # Sizing may discover a strict domain/coordinate mismatch before any
+            # price exists; keep reviewed alternatives available at that point.
+            ids = list(dict.fromkeys(ids + match.get("candidate_model_ids", [])))
         if match and (
             match.get("match_status") == "no_suitable_model"
             or match.get("conceptual_validation") == "unsuitable"
@@ -644,11 +656,24 @@ def resolve(
         group = pending[start : start + 4]
         transport = []
         for item in group:
+            water_balance_available = any(
+                r["id"] == "dryer_evaporation"
+                for c in item["candidate_inputs"]
+                for r in c["recipes"]
+            )
             visible = [
                 v
                 for v in item["candidate_inputs"][0]["measurements"]
-                if not v["property"].startswith("component_")
-                and v["property"] not in {"mole_fraction", "mass_fraction"}
+                if (
+                    not v["property"].startswith("component_")
+                    and v["property"] not in {"mole_fraction", "mass_fraction"}
+                )
+                or (
+                    water_balance_available
+                    and v["property"] == "component_mass_flow"
+                    and str(v.get("component", "")).strip().casefold()
+                    in {"water", "h2o", "h₂o"}
+                )
             ][:300]
             item["visible_measurement_ids"] = {v["id"] for v in visible}
             from .thermal_screening import temperature_arrangements, enthalpy_pairings
@@ -973,6 +998,52 @@ def resolve(
                     raise ValueError(
                         "Source ID was not supplied to this input-resolution call"
                     )
+                retained_basis = next(
+                    (
+                        f.get("previous_conversion")
+                        for f in (repair_feedback or [])
+                        if f.get("equipment_key") == key
+                        and f.get("preserve_physical_basis")
+                    ),
+                    None,
+                )
+                if retained_basis and retained_basis.get("enabled"):
+                    _, old_requirement, _ = model_contract(retained_basis["model_id"])
+                    _, new_requirement, _ = model_contract(d["model_id"])
+                    same_quantity = (
+                        old_requirement["quantity"] == new_requirement["quantity"]
+                    )
+                    same_role = old_requirement.get("role") == new_requirement.get(
+                        "role"
+                    )
+                    unambiguous_quantity = old_requirement["quantity"] in {
+                        "volume",
+                        "area",
+                        "mass",
+                        "mass_flow",
+                    }
+                    if (
+                        same_quantity
+                        and (same_role or unambiguous_quantity)
+                        and retained_basis["method"] in {r["id"] for r in c["recipes"]}
+                    ):
+                        # A different correlation is not permission to redraw the
+                        # equipment or resample its valid physical assumptions.
+                        spec = {
+                            **copy.deepcopy(retained_basis),
+                            "model_id": d["model_id"],
+                            "rationale": retained_basis.get("rationale", "")
+                            + " Alternative model: "
+                            + d["rationale"],
+                        }
+                        audits.append(
+                            {
+                                "equipment_key": key,
+                                "status": "retained_physical_basis",
+                                "previous_model_id": retained_basis["model_id"],
+                                "model_id": d["model_id"],
+                            }
+                        )
                 preview = evaluate(report, key, spec)
                 spec["inputs"] = preview["user_inputs"]
                 for derived in preview["derived_inputs"]:
@@ -993,6 +1064,11 @@ def resolve(
                 if not allow_graph:
                     options["allow_unverified"] = False
                 if d["extrapolation_exponent"] is not None:
+                    if model_source(d["model_id"]) != "garrett":
+                        raise ValueError(
+                            "Selected library does not support Garrett extrapolation options; "
+                            "remove them or choose a compatible supplied model, preserving physical sizing."
+                        )
                     exponent = d["extrapolation_exponent"]
                     if (
                         not math.isfinite(exponent)
@@ -1073,8 +1149,10 @@ def resolve(
     return plan, audits
 
 
-def repair_pricing(report, plan, total, description, store, provider=None):
-    """One bounded repair for an AI scenario's unsupported size extrapolation.
+def repair_pricing(
+    report, plan, total, description, store, provider=None, *, attempt=0
+):
+    """Bounded recovery for failed AI model/coordinate handoffs across libraries.
 
     Accepted user overrides and missing cost correlations never enter this path.
     """
@@ -1087,7 +1165,18 @@ def repair_pricing(report, plan, total, description, store, provider=None):
         spec = row.get("unit_conversion") or {}
         if (
             line.equipment_cost is not None
-            or spec.get("origin") != "llm_selected_python_equation"
+            or (getattr(line, "amount", None) is not None)
+            or row.get("manual_price")
+            or row.get("external_quote")
+            or (row.get("size") is not None and not spec.get("enabled"))
+        ):
+            continue
+        match = row.get("matching") or {}
+        if spec.get("origin") != "llm_selected_python_equation" and not (
+            match.get("candidate_model_ids")
+            and match.get("match_status") in {"matched", "ambiguous"}
+            and match.get("conceptual_validation") != "unsuitable"
+            and match.get("model_scope") != "component_only"
         ):
             continue
         if any(
@@ -1095,10 +1184,32 @@ def repair_pricing(report, plan, total, description, store, provider=None):
             for p in spec.get("input_provenance", {}).values()
         ):
             continue
-        if not any("Unsupported extrapolation" in issue for issue in line.issues):
+        range_failure = any("MODEL_OUT_OF_RANGE" in issue for issue in line.issues)
+        option_failure = any(
+            "Unsupported OpenPyTEA correction/options" in issue for issue in line.issues
+        )
+        missing_configuration = not row.get("curve_id") or not spec.get("enabled")
+        if not (
+            range_failure
+            or option_failure
+            or missing_configuration
+            or any("Unsupported extrapolation" in issue for issue in line.issues)
+        ):
             continue
         retry = copy.deepcopy(row)
         retry.pop("unit_conversion", None)
+        if range_failure and match.get("candidate_model_ids"):
+            # The chosen correlation failed, not the physical sizing. Reopen
+            # conceptually reviewed alternatives, never clamp the measured size.
+            retry.pop("curve_id", None)
+            retry["matching"]["candidate_model_ids"] = [
+                model
+                for model in match["candidate_model_ids"]
+                if model != row.get("curve_id")
+            ]
+        if option_failure:
+            for name in ("extrapolation_exponent", "extrapolation_justification"):
+                retry.get("costing_options", {}).pop(name, None)
         attempts.append(retry)
         feedback.append(
             {
@@ -1106,7 +1217,8 @@ def repair_pricing(report, plan, total, description, store, provider=None):
                 "status": "pricing_requires_scaling_basis",
                 "reason": "; ".join(line.issues),
                 "previous_conversion": spec,
-                "instruction": "Preserve the valid conversion/source inputs. Supply an equipment-specific defensible extrapolation exponent and rationale only if justified; a fitted graph slope alone is insufficient. Otherwise leave pricing unsupported.",
+                "preserve_physical_basis": range_failure,
+                "instruction": "Preserve valid physical sizing, source bindings and assumptions. For strict-domain failures select a conceptually compatible alternative from supplied candidates; never alter the size to fit a curve. Non-Garrett libraries do not support Garrett extrapolation options. A known operation may use a disclosed preliminary configuration, not an unrelated operation. Supply a defensible Garrett scaling exponent only where supported. Otherwise retain the genuine exception.",
             }
         )
     if not attempts:
@@ -1138,4 +1250,23 @@ def repair_pricing(report, plan, total, description, store, provider=None):
     plan["equipment"] = [
         candidates.get(r["equipment_key"], r) for r in plan["equipment"]
     ]
-    return plan, [{**a, "pricing_repair": True} for a in audit]
+    audit = [
+        {**a, "pricing_repair": True, "pricing_attempt": attempt + 1} for a in audit
+    ]
+    if attempt < 2 and plan["equipment"] != list(rows.values()):
+        from backend.blocks.equipment.calculation import calculate_equipment
+
+        recalculated, _ = calculate_equipment(
+            report, plan, plan.get("cost_translation")
+        )
+        plan, followup = repair_pricing(
+            report,
+            plan,
+            recalculated,
+            description,
+            store,
+            provider,
+            attempt=attempt + 1,
+        )
+        audit.extend(followup)
+    return plan, audit

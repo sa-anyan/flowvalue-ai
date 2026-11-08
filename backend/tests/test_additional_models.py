@@ -158,6 +158,24 @@ def test_fermenter_mode_and_residence():
         estimate_cost(TURTON, r["size"], size_unit=r["size_unit"])
 
 
+def test_fermenter_explicit_productivity_basis_is_not_rejected_as_missing_broth():
+    s = spec(
+        TURTON,
+        "vessel_productivity",
+        product_rate_kg_h=100,
+        volumetric_productivity_kg_m3_h=10,
+        production_allocation_fraction=1,
+        working_fraction=0.8,
+    )
+    s.update(operating_mode="continuous", measurement_id=None)
+    result = evaluate(report(), "e", s)
+    assert result["size"] == pytest.approx(12.5)
+    assert estimate_cost(TURTON, result["size"], size_unit=result["size_unit"]).estimate
+    s["operating_mode"] = "batch"
+    with pytest.raises(ValueError, match="operating_mode"):
+        evaluate(report(), "e", s)
+
+
 def test_dimensions_pressure_and_parser_adapter():
     assert convert(1, "m3", "ft3").value == pytest.approx(35.3146667215)
     assert convert(1, "m2", "ft2").value == pytest.approx(10.7639104167)

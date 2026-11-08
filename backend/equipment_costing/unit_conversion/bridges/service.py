@@ -47,6 +47,12 @@ PARAMETERS = {
     "heads_and_auxiliaries_kg": "kg",
 }
 RECIPES = {
+    "dryer_evaporation": (
+        "Dryer net water evaporation",
+        "mass_flow",
+        [],
+        "evaporation = selected feed water component mass flow - selected product water component mass flow; assumes no other water paths or reaction",
+    ),
     "electrical_to_shaft_power": (
         "Electrical input to shaft output",
         "power",
@@ -245,6 +251,7 @@ def measurements(report, equipment_key):
                     "entity_key": entity["key"],
                     "tag": entity["identifier"],
                     "property": v["property"],
+                    "component": v.get("component"),
                     "value": number,
                     "unit": unit,
                     "sheet": v.get("sheet"),
@@ -307,20 +314,26 @@ def describe(report, equipment_key, model_id=None):
             "equation": v[3],
             "implementation": "backend/equipment_costing/unit_conversion/"
             + (
-                "bridges/production_sizing.py"
-                if key == "vessel_productivity"
+                "bridges/drying.py"
+                if key == "dryer_evaporation"
                 else (
-                    "unit_conversion.py"
-                    if key == "direct"
-                    else "bridges/"
-                    + (
-                        "gas.py"
-                        if key in {"gas_flow", "dryer_volume"}
-                        else (
-                            "heat_exchanger.py"
-                            if key == "exchanger_area"
+                    "bridges/production_sizing.py"
+                    if key == "vessel_productivity"
+                    else (
+                        "unit_conversion.py"
+                        if key == "direct"
+                        else "bridges/"
+                        + (
+                            "gas.py"
+                            if key in {"gas_flow", "dryer_volume"}
                             else (
-                                "mechanical.py" if key == "vessel_mass" else "liquid.py"
+                                "heat_exchanger.py"
+                                if key == "exchanger_area"
+                                else (
+                                    "mechanical.py"
+                                    if key == "vessel_mass"
+                                    else "liquid.py"
+                                )
                             )
                         )
                     )
@@ -328,7 +341,10 @@ def describe(report, equipment_key, model_id=None):
             ),
         }
         for key, v in RECIPES.items()
-        if v[1] is None or v[1] == quantity
+        if (v[1] is None or v[1] == quantity)
+        and (
+            key != "dryer_evaporation" or "evapor" in str(size.get("role", "")).lower()
+        )
     ]
     by_key = {e["key"]: e for e in report.get("entities", [])}
     equipment = by_key[equipment_key]
@@ -434,9 +450,9 @@ def evaluate(report, equipment_key, spec):
             raise ValueError(
                 "Fermenter flow-to-volume sizing requires explicit continuous operating_mode; batch/unknown mode needs documented per-vessel volume or a supported batch sizing basis"
             )
-        if method != "vessel_volume":
+        if method not in {"vessel_volume", "vessel_productivity"}:
             raise ValueError(
-                "Fermenter preliminary continuous volume uses vessel_volume with explicit residence time and working fraction"
+                "Fermenter preliminary continuous volume needs an explicit hold-up or production/productivity sizing basis"
             )
     inputs = spec.get("inputs") or {}
     if not isinstance(inputs, dict) or set(inputs) - set(PARAMETERS):
@@ -491,7 +507,20 @@ def evaluate(report, equipment_key, spec):
         return result.value
 
     evidence = []
-    if method == "exchanger_area" and spec.get("thermal_basis"):
+    if method == "dryer_evaporation":
+        from .drying import water_evaporation
+
+        if "evapor" not in str(size.get("role", "")).lower():
+            raise ValueError(
+                "Net water evaporation is not this model's sizing coordinate"
+            )
+        if source is None or outlet is None:
+            raise ValueError(
+                "Select both dryer feed and product water component measurements"
+            )
+        value, unit, details = water_evaporation(source, outlet, cv)
+        evidence.extend([source, outlet])
+    elif method == "exchanger_area" and spec.get("thermal_basis"):
         value, unit, details = heat_exchanger.calculate_basis(
             list(sources.values()),
             describe(report, equipment_key, spec.get("model_id"))["stream_context"],
@@ -530,6 +559,12 @@ def evaluate(report, equipment_key, spec):
             unit = "kW"
             details = {"formula": RECIPES[method][3], "motor_efficiency": efficiency}
         elif method == "direct":
+            if "evapor" in str(size.get("role", "")).lower() and source[
+                "property"
+            ] not in {"evaporation_rate", "water_evaporation_rate"}:
+                raise ValueError(
+                    "EVAPORATION_BASIS_REQUIRED: wet-feed mass flow is not evaporation; select dryer_evaporation with feed/product water component measurements"
+                )
             if model.get("source") == "openpytea":
                 role = size.get("role", "").lower()
                 prop = source["property"]

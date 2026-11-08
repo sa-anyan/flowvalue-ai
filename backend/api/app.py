@@ -49,10 +49,31 @@ class Rerun(BaseModel):
 
 
 class EngineeringRun(Rerun):
+    prepare_only: bool = True
     # Entry includes automatic assumption population unless explicitly opted out.
     use_ai: bool = True
     process_description: str | None = Field(default=None, max_length=12000)
     revenue_description: str | None = Field(default=None, max_length=6000)
+
+
+class RegisterEdit(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    revision: int
+    action: str
+    equipment_key: str | None = Field(default=None, max_length=200)
+    tag: str | None = Field(default=None, max_length=128)
+    name: str | None = Field(default=None, max_length=256)
+
+
+@app.patch("/api/assessments/{key}/equipment-register")
+def edit_equipment_register(key: str, options: RegisterEdit):
+    from backend.blocks.engineering_data.edits import save_edit
+
+    if options.action not in {"add", "update", "remove"}:
+        raise HTTPException(422, "Choose add, update or remove")
+    return save_edit(
+        store, key, options.revision, options.model_dump(exclude={"revision"})
+    )
 
 
 class RevenueAuthorityRequest(BaseModel):
@@ -73,6 +94,7 @@ class ResearchRequest(BaseModel):
     kind: str
     target_id: str = Field(min_length=1, max_length=200)
     consent: bool
+    focus: str = Field(default="", max_length=300)
 
 
 class ComparablePreview(BaseModel):
@@ -157,6 +179,7 @@ def research(key: str, request: ResearchRequest):
             "status": "running",
             "kind": request.kind,
             "target_id": request.target_id,
+            "focus": request.focus,
             "consent": "Explicit user-triggered scoped research",
             "plan_changed": False,
         }
@@ -172,7 +195,11 @@ def research(key: str, request: ResearchRequest):
 
         try:
             result = research_draft(
-                state, request.kind, request.target_id, EngineeringProvider()
+                state,
+                request.kind,
+                request.target_id,
+                EngineeringProvider(),
+                focus=request.focus,
             )
             current = store.get(key)
             current.setdefault("research_drafts", []).append(result)
@@ -431,6 +458,21 @@ def revenue_form_catalogue():
     return catalogue()
 
 
+@app.get("/api/catalogue/{stage}-factors")
+def cost_factor_catalogue(
+    stage: str, model_id: str = "garrett", process_type: str = "mixed"
+):
+    if stage == "capex":
+        from backend.capex import get_factor_ranges
+
+        return get_factor_ranges(model_id, process_type)
+    if stage == "opex":
+        from backend.opex import get_factor_ranges
+
+        return get_factor_ranges(model_id)
+    raise HTTPException(404, "Unknown cost catalogue")
+
+
 @app.post("/api/assessments/{key}/run", status_code=202)
 def rerun(key: str, options: Rerun):
     if store.get(key).get("workflow") == "revenue":
@@ -464,6 +506,50 @@ def run_individual_stage(key: str, stage: str, options: Rerun):
         state = store.get(key)
         state["running"] = False
         store.put(state, state["revision"])
+        lock.release()
+        raise
+    return {"id": key, "stage": stage}
+
+
+@app.post("/api/assessments/{key}/stages/{stage}/prepare", status_code=202)
+def prepare_stage_assumptions(key: str, stage: str):
+    if stage not in {"capex", "opex"}:
+        raise HTTPException(422, "Choose CAPEX or OPEX")
+    if not lock.acquire(blocking=False):
+        raise HTTPException(409, "Another stage is running")
+    try:
+        state = store.get(key)
+        if state.get("running"):
+            raise ValueError("Another stage is running")
+        store.version(key, "Before " + stage.upper() + " assumption preparation")
+        state["running"] = True
+        store.put(state, state["revision"])
+    except Exception:
+        lock.release()
+        raise
+
+    def work():
+        try:
+            from backend.blocks.preparation import prepare_stage
+
+            prepare_stage(store, key, stage)
+        except Exception as exc:
+            current = store.get(key)
+            current["running"] = False
+            current.setdefault("stage_preparations", {})[stage] = {
+                "status": "needs_review",
+                "notice": str(exc),
+            }
+            store.put(current, current["revision"])
+        finally:
+            lock.release()
+
+    try:
+        executor.submit(work)
+    except Exception:
+        current = store.get(key)
+        current["running"] = False
+        store.put(current, current["revision"])
         lock.release()
         raise
     return {"id": key, "stage": stage}
@@ -509,7 +595,7 @@ def run_engineering_workflow(key: str, options: EngineeringRun):
 
     def work():
         try:
-            run(store, key, use_ai=options.use_ai)
+            run(store, key, use_ai=options.use_ai, prepare_only=options.prepare_only)
         finally:
             lock.release()
 
@@ -526,7 +612,11 @@ def run_engineering_workflow(key: str, options: EngineeringRun):
 
     return {
         "id": key,
-        "workflow": "engineering_data_to_equipment",
+        "workflow": (
+            "engineering_data_to_equipment_review"
+            if options.prepare_only
+            else "engineering_data_to_equipment"
+        ),
         "pipeline_id": PIPELINE_ID,
     }
 

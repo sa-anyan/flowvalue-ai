@@ -524,6 +524,162 @@ def test_pricing_repair_is_bounded_and_preserves_user_inputs(tmp_path):
     assert preserved == original and not audit
 
 
+def test_strict_domain_failure_reopens_reviewed_models_without_touching_neighbor(
+    tmp_path,
+):
+    from types import SimpleNamespace
+    from backend.equipment_costing.unit_conversion.bridges.automatic import (
+        repair_pricing,
+    )
+
+    failed = selected()
+    failed.update(
+        curve_id="openpytea:vertical_cylinder_perry_1996",
+        matching={
+            "match_status": "matched",
+            "conceptual_validation": "suitable",
+            "candidate_model_ids": [
+                "openpytea:vertical_cylinder_perry_1996",
+                "G258-004",
+            ],
+        },
+        unit_conversion={
+            "origin": "llm_selected_python_equation",
+            "inputs": {"residence_time_h": 2},
+        },
+    )
+    neighbor = {"equipment_key": "neighbor", "manual_price": {"amount": 123}}
+    total = SimpleNamespace(
+        equipment=[
+            SimpleNamespace(
+                equipment_cost=None,
+                amount=None,
+                parsed_source={"equipment_key": "e"},
+                issues=["MODEL_OUT_OF_RANGE: size outside published bounds"],
+            )
+        ]
+    )
+
+    def repair(report, plan, *args, **kwargs):
+        retry = plan["equipment"][0]
+        assert not retry.get("curve_id")
+        assert retry["matching"]["candidate_model_ids"] == ["G258-004"]
+        assert kwargs["repair_feedback"][0]["previous_conversion"]["inputs"] == {
+            "residence_time_h": 2
+        }
+        retry.update(curve_id="G258-004", unit_conversion={"enabled": True})
+        return plan, []
+
+    with patch(
+        "backend.equipment_costing.unit_conversion.bridges.automatic.resolve",
+        side_effect=repair,
+    ):
+        updated, _ = repair_pricing(
+            REPORT,
+            {"equipment": [failed, neighbor]},
+            total,
+            "",
+            Store(tmp_path / "domain.db"),
+            attempt=2,
+        )
+    assert updated["equipment"][0]["curve_id"] == "G258-004"
+    assert updated["equipment"][1] == neighbor
+    assert failed["curve_id"] == "openpytea:vertical_cylinder_perry_1996"
+
+
+def test_non_garrett_extrapolation_options_rejected_before_cost_handoff(tmp_path):
+    class UnsupportedOptions(Provider):
+        def generate(self, **kwargs):
+            d = decision()
+            d.update(
+                model_id="openpytea:vertical_cylinder_perry_1996",
+                extrapolation_exponent=0.6,
+                extrapolation_rationale="Not supported by this library",
+            )
+            return {"decisions": [d]}
+
+    plan = {
+        "equipment": [
+            {"equipment_key": "e", "curve_id": "openpytea:vertical_cylinder_perry_1996"}
+        ]
+    }
+    updated, audit = resolve(
+        REPORT, plan, "", Store(tmp_path / "options.db"), UnsupportedOptions(), True
+    )
+    assert not updated["equipment"][0].get("unit_conversion", {}).get("enabled")
+    assert any(
+        "does not support Garrett extrapolation" in a.get("reason", "") for a in audit
+    )
+
+
+def test_alternative_volume_model_keeps_physical_assumptions(tmp_path):
+    store = Store(tmp_path / "retain-basis.db")
+    original, _ = resolve(
+        REPORT, {"equipment": [selected()]}, "", store, Provider(), True
+    )
+    previous = original["equipment"][0]["unit_conversion"]
+
+    class DifferentGuess(Provider):
+        def generate(self, **kwargs):
+            d = decision()
+            d["model_id"] = "G258-008"
+            d["assumptions"][1]["value"] = 999
+            return {"decisions": [d]}
+
+    retry = selected()
+    retry["curve_id"] = "G258-008"
+    updated, audit = resolve(
+        REPORT,
+        {"equipment": [retry]},
+        "",
+        store,
+        DifferentGuess(),
+        True,
+        repair_feedback=[
+            {
+                "equipment_key": "e",
+                "preserve_physical_basis": True,
+                "previous_conversion": previous,
+            }
+        ],
+    )
+    spec = updated["equipment"][0]["unit_conversion"]
+    assert spec["model_id"] == "G258-008"
+    assert spec["inputs"]["residence_time_h"] == 2
+    assert any(a["status"] == "retained_physical_basis" for a in audit)
+
+
+def test_ai_conceptual_first_choice_does_not_hide_reviewed_alternatives(tmp_path):
+    row = selected()
+    row.update(
+        curve_id="G258-008",
+        matching={
+            "selected_model_id": "G258-008",
+            "review_available": True,
+            "candidate_model_ids": ["G258-008", "G258-004"],
+        },
+    )
+
+    class Alternative(Provider):
+        def generate(self, **kwargs):
+            allowed = kwargs["schema"]["properties"]["decisions"]["items"][
+                "properties"
+            ]["model_id"]["enum"]
+            assert "G258-004" in allowed and "G258-008" in allowed
+            return super().generate(**kwargs)
+
+    result, _ = resolve(
+        REPORT,
+        {"equipment": [row]},
+        "",
+        Store(tmp_path / "alternatives.db"),
+        Alternative(),
+        True,
+    )
+    assert result["equipment"][0]["curve_id"] == "G258-004"
+    assert result["equipment"][0]["unit_conversion"]["enabled"]
+
+
 def test_prompt_requires_all_five_conversion_matching_skills(tmp_path):
     class Skills(Provider):
         def generate(self, **kw):
