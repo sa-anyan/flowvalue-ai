@@ -227,3 +227,33 @@ def test_api_upload_is_idle_and_old_full_run_endpoint_is_disabled(tmp_path):
             assert common.call_args.args[1].use_ai is True
         assert client.get(f"/api/assessments/{key}").status_code == 200
         assert not store.get(key)["stage_runs"]
+
+@pytest.mark.parametrize("with_capital", [False, True])
+def test_revenue_ai_ignores_large_equipment_outputs(study, with_capital):
+    from backend.blocks.models import Context
+    from backend.blocks.shared import operating_proposal
+
+    store, key = study
+    state = run_stage(store, key, "engineering_data")
+    state["results"]["stages"]["equipment"] = {"result": {"register": "x" * 500000}}
+    if with_capital:
+        state["results"]["stages"]["capex"] = {
+            "result": {"currency": "USD", "period": "early 1987"}
+        }
+
+    class ReachedProvider(Exception):
+        pass
+
+    class Probe:
+        model = "test-revenue-context"
+
+        def generate(self, *, instructions, context, schema):
+            assert "equipment" not in context["calculated_stage_summary"]
+            assert any(row["kind"] == "material" for row in context["report"]["entities"])
+            assert ("materials" in schema["properties"]) == with_capital
+            raise ReachedProvider
+
+    source = state["stage_outputs"]["engineering_data"]
+    ctx = Context(state, source["report"], {"engineering_data": source}, store, None, Probe(), True)
+    with pytest.raises(ReachedProvider):
+        operating_proposal(ctx, "revenue")

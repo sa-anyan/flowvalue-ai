@@ -42,7 +42,7 @@ def indexed_amount(amount, *, base_index, target_index):
 
 
 def year(period):
-    matches = re.findall(r"(?<!\d)\d{4}(?!\d)", str(period))
+    matches = list(dict.fromkeys(re.findall(r"(?<!\d)\d{4}(?!\d)", str(period))))
     if len(matches) != 1 or int(matches[0]) == 0:
         raise ValueError("A single explicit source price year is required")
     return matches[0]
@@ -64,6 +64,10 @@ class Translation:
     status: str
     method_id: str
     notice: str
+
+
+class MissingIndexObservation(ValueError):
+    """The requested price conversion has no matching index observation."""
 
 
 def translate_cost(
@@ -149,7 +153,7 @@ def translate_cost(
         base = observations.get(source_period) or observations.get(source_year)
         target_point = observations.get(target)
         if not base or not target_point:
-            raise ValueError(
+            raise MissingIndexObservation(
                 f"Missing {selected_series} observation for {source_period} or {target}"
             )
     if selected.get("currency") != currency:

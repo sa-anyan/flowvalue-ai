@@ -1,0 +1,13 @@
+.rv-worksheet { margin: 12px 0; }
+.rv-worksheet summary { cursor: pointer; font-weight: 650; }
+.rv-worksheet summary small { color: var(--rv-muted); font-weight: 400; margin-left: 8px; }
+.rv-worksheet-line { border: 1px solid var(--rv-border); border-radius: 10px; margin: 12px 0; padding: 12px; min-width: 0; }
+.rv-worksheet-line legend { font-size: .9rem; font-weight: 650; padding: 0 6px; }
+.rv-worksheet-figures, .rv-worksheet-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 165px), 1fr)); gap: 8px; margin: 12px 0; }
+.rv-worksheet-figures > div { background: #f4f8fa; border-radius: 8px; padding: 9px 11px; }
+.rv-worksheet-figures dt, .rv-worksheet-inputs .field > span { color: var(--rv-muted); font-size: .75rem; }
+.rv-worksheet-figures dd { margin: 4px 0 0; font-weight: 650; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.rv-worksheet .field { margin: 0; }
+.rv-worksheet caption { text-align: left; font-size: .8rem; color: var(--rv-muted); padding: 8px 0; }
+.rv-worksheet button { margin: 4px 8px 4px 0; }
+.rv-worksheet .check input { width: auto; }

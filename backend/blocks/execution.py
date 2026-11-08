@@ -252,7 +252,7 @@ def _apply(state, block, updates):
                 "additional_expenses",
                 "garrett_factors",
             ),
-            "opex": ("sales", "commercial_lines", "avoided_costs", "commercial_intent"),
+            "opex": ("sales", "commercial_lines", "avoided_costs", "commercial_intent", "pending_inputs"),
         }.get(block, ())
         if any(before.get(key) != after.get(key) for key in other):
             raise ValueError("A stage cannot overwrite another stage’s assumptions")
