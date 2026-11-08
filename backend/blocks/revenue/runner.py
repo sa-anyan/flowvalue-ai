@@ -45,8 +45,12 @@ def calculate(ctx):
         ),
         engineering_scenario=True,
     )
+    display = plain(result)
+    notice = next((row["notice"] for row in audit if "notice" in row), None)
+    if notice:
+        display["price_basis_notice"] = notice
     return Product(
-        plain(result),
+        display,
         {
             "revenue": plain(result),
             "schedule": {"hours": str(hours), "ramp": plain(ramp)},

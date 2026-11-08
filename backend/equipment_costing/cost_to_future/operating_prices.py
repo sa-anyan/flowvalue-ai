@@ -100,6 +100,7 @@ def translate_operating_prices(config, *, target_basis, policy, indices=None):
                 if item.get("price_basis"):
                     row["price_basis"] = item["price_basis"]
                 translate(row, keys, f"{group}.{i}.years.{j}")
-    translate(config["financial"], ("closure_allowance",), "financial")
+    if "financial" in config:
+        translate(config["financial"], ("closure_allowance",), "financial")
     config["price_basis"] = dict(target_basis)
     return config, audit

@@ -35,7 +35,7 @@ def basis_and_schedule(ctx, config):
     return basis, hours, ramp
 
 
-def proposal(ctx, sections):
+def proposal(ctx, sections, *, basis_only=False):
     """A selected block may request a proposal; other blocks' outputs are never run."""
     if not ctx.use_ai:
         return {}, {}
@@ -66,6 +66,7 @@ def proposal(ctx, sections):
         stage_results={
             key: {"result": value.get("result")}
             for key, value in ctx.state.get("results", {}).get("stages", {}).items()
+            if not basis_only or key == "capex"
         },
     )
     return {
@@ -83,7 +84,11 @@ def operating_proposal(ctx, owner):
         )
     if not ctx.use_ai or "operating_economics" in ctx.state.get("locked", []):
         return config, {}
-    proposed, meta = proposal(ctx, ("revenue", "opex"))
+    capital = ctx.state.get("results", {}).get("stages", {}).get("capex", {}).get("result") or {}
+    sections = ("revenue", "opex")
+    if owner == "revenue" and not (capital.get("currency") and capital.get("period")):
+        sections = ("revenue",)
+    proposed, meta = proposal(ctx, sections, basis_only=owner == "revenue")
     value = proposed.get("operating_economics", {})
     owned = {
         "revenue": (
@@ -91,6 +96,7 @@ def operating_proposal(ctx, owner):
             "commercial_lines",
             "avoided_costs",
             "commercial_intent",
+            "pending_inputs",
             "questions",
             "intent_source",
         ),
@@ -199,9 +205,20 @@ def translate_inputs(ctx, config, owner):
         "currency": basis.get("currency"),
         "price_period": policy.get("target_period"),
     }
-    changed, audit = translate_operating_prices(
-        part, target_basis=target, policy=policy
-    )
+    from backend.equipment_costing.cost_to_future.cost_translation import MissingIndexObservation
+
+    try:
+        changed, audit = translate_operating_prices(part, target_basis=target, policy=policy)
+    except MissingIndexObservation:
+        if owner != "revenue":
+            raise
+        # Keep the approved scenario basis when its index observation is unavailable.
+        changed, audit = translate_operating_prices(
+            part, target_basis=basis, policy={**policy, "target_period": basis["price_period"]}
+        )
+        audit.append({
+            "notice": "Revenue uses the approved price period because an index observation is unavailable."
+        })
     result = copy.deepcopy(config)
     result.update(changed)
     return result, audit

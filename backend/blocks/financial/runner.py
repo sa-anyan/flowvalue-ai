@@ -21,6 +21,8 @@ def calculate(ctx):
         )
     capex = canonical(CapexResult, ctx.upstream["capex"]["capital"])
     revenue = canonical(RevenueResult, ctx.upstream["revenue"]["revenue"])
+    if (revenue.basis.currency, revenue.basis.price_period) != (capex.currency, capex.period):
+        raise DataRequired("CAPEX and Revenue need a common currency and price period before calculating financial metrics.")
     opex = {
         int(y): canonical(OpexResult, value)
         for y, value in ctx.upstream["opex"]["years"].items()

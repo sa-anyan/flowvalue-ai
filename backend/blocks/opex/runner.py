@@ -33,6 +33,11 @@ def calculate(ctx):
         if "revenue" in ctx.upstream
         else None
     )
+    if revenue and revenue.basis != basis:
+        raise DataRequired(
+            "Revenue and OPEX need a common currency and price period for sales-dependent expenses.",
+            updates={"plan": {"operating_economics": original}},
+        )
     years, details = {}, {}
     complete = True
     for year, fraction in ramp.items():
