@@ -193,11 +193,17 @@ def view(saved):
         state["execution_notice"] = (
             "These saved results were produced by the retired connected workflow. They are retained as history; run Engineering data and Equipment through the shared pipeline for current results."
         )
-    if state.get("engineering_workflow", {}).get("status") == "running":
+    if any(
+        state.get(key, {}).get("status") == "running"
+        for key in ("engineering_workflow", "stage_workflow")
+    ):
         state["running"] = True
     if not fresh(state, "engineering_data"):
         for field in ("parsed", "effective_report", "scoped_report"):
             state.pop(field, None)
+    from .stage_workflow import approved
+
+    state["engineering_data_approved"] = approved(state)
     state["stage_definitions"] = [
         dict(item, requires=dependencies(item["id"], state)) for item in list_blocks()
     ]

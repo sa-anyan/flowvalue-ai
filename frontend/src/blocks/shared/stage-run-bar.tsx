@@ -1,0 +1,8 @@
+'use client';
+import Link from 'next/link';
+import {useState} from 'react';
+import {assessmentHref} from '@/lib/assessment-navigation';
+export function StageRunBar({id,stage,approved,busy,dirty=false,onApprove,onRun,onRunAll}:{id:string;stage?:string;approved:boolean;busy:boolean;dirty?:boolean;onApprove?:()=>void;onRun:(ai:boolean)=>void;onRunAll:(ai:boolean)=>void}){
+ const [ai,setAI]=useState(false);
+ return <section className="stage-run-bar" aria-label="Stage execution"><div><strong>{approved?'Engineering data approved':'Review engineering data before calculation'}</strong><small>{approved?'Run one stage or calculate all downstream stages from the saved inputs.':'Save your edits, inspect the extracted data, then approve it.'}</small></div><div className="toolbar">{!approved&&(onApprove?<button disabled={busy||dirty||!id} onClick={onApprove}>Approve engineering data</button>:<Link href={assessmentHref('/data/equipment',id)}>Review & approve engineering data →</Link>)}{stage&&stage!=='engineering_data'&&<button disabled={busy||dirty||!approved} onClick={()=>onRun(ai)}>Run {({equipment:'Equipment',capex:'CAPEX',opex:'OPEX',revenue:'Revenue',financial:'Financial model'} as Record<string,string>)[stage]||stage}</button>}<button className="secondary" disabled={busy||dirty||!approved} onClick={()=>onRunAll(ai)}>Run all stages</button></div><label className="check"><input type="checkbox" checked={ai} disabled={busy} onChange={e=>setAI(e.target.checked)}/>Use AI proposals while running (usage charges apply). Saved inputs run with Python when unchecked.</label><small>All stages: Equipment → CAPEX → Revenue → OPEX → Financial model. Missing inputs are flagged; revenue approval is still required.</small></section>;
+}

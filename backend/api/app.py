@@ -482,6 +482,48 @@ def rerun(key: str, options: Rerun):
     return run_engineering_workflow(key, EngineeringRun(use_ai=options.use_ai))
 
 
+class EngineeringApproval(BaseModel):
+    revision: int
+
+
+@app.post("/api/assessments/{key}/engineering-approval")
+def approve_engineering_data(key: str, options: EngineeringApproval):
+    from backend.blocks.stage_workflow import approve
+    from backend.blocks.execution import view
+
+    return view(approve(store, key, options.revision))
+
+
+@app.post("/api/assessments/{key}/run-all-stages", status_code=202)
+def run_all_stages(key: str, options: Rerun):
+    from backend.blocks.stage_workflow import queue, run
+
+    if not lock.acquire(blocking=False):
+        raise HTTPException(409, "Another stage is running")
+    try:
+        queue(store, key)
+    except Exception:
+        lock.release()
+        raise
+
+    def work():
+        try:
+            run(store, key, use_ai=options.use_ai)
+        finally:
+            lock.release()
+
+    try:
+        executor.submit(work)
+    except Exception:
+        state = store.get(key)
+        state["running"] = False
+        state["stage_workflow"]["status"] = "failed"
+        store.put(state, state["revision"])
+        lock.release()
+        raise
+    return {"id": key}
+
+
 @app.post("/api/assessments/{key}/stages/{stage}/run", status_code=202)
 def run_individual_stage(key: str, stage: str, options: Rerun):
     from backend.blocks.execution import queue_stage, run_stage
@@ -489,6 +531,12 @@ def run_individual_stage(key: str, stage: str, options: Rerun):
     if not lock.acquire(blocking=False):
         raise HTTPException(409, "Another stage is running")
     try:
+        from backend.blocks.stage_workflow import approved
+
+        if stage != "engineering_data" and not approved(store.get(key)):
+            raise ValueError(
+                "Review and approve Engineering Data before running downstream stages"
+            )
         queued = queue_stage(store, key, stage)
     except Exception:
         lock.release()
