@@ -34,3 +34,9 @@ test('blocked stage shows its actual error within the dashboard',()=>{
  const html=render({domain:'opex',issues:['AI review exceeded context limit']});
  assert.match(html,/AI review exceeded context limit/);assert.match(html,/Operating cost drivers/);
 });
+
+test('missing OPEX inputs show a review notice and no zero trajectory',()=>{
+ const result={complete:false,currency:'USD',years:{1:{annual_cash_opex:null,resolved_cash_subtotal:0,lines:[{accounting:'financing',scope:'recurring',amount:0}]}},operating_detail:{years:{1:{pending_items:[{id:'utilities'}]}}}};
+ const html=render({domain:'opex',result});
+ assert.match(html,/OPEX inputs are missing/);assert.match(html,/1 input needs review/);assert.doesNotMatch(html,/<circle/);
+});

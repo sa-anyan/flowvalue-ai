@@ -41,8 +41,12 @@ def indexed_amount(amount, *, base_index, target_index):
         )
 
 
+def price_years(period):
+    return list(dict.fromkeys(re.findall(r"(?<!\d)\d{4}(?!\d)", str(period))))
+
+
 def year(period):
-    matches = list(dict.fromkeys(re.findall(r"(?<!\d)\d{4}(?!\d)", str(period))))
+    matches = price_years(period)
     if len(matches) != 1 or int(matches[0]) == 0:
         raise ValueError("A single explicit source price year is required")
     return matches[0]

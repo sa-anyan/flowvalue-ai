@@ -75,6 +75,55 @@ def test_revenue_has_no_capex_or_opex_dependency(study):
     assert set(state["stage_outputs"]) == {"engineering_data", "revenue"}
 
 
+def test_revenue_uses_explicitly_selected_project_price_basis(study):
+    store, key = study
+    state = run_stage(store, key, "engineering_data")
+    config = state["plan"]["operating_economics"]
+    config["price_basis"]["price_period"] = "USD per kg; flat throughout operating life."
+    state["plan"]["cost_translation"] = {"target_period": "2026-09"}
+    state = store.put(state, state["revision"])
+    state = update(store, key, state["revision"], approve=True)
+    state = run_stage(store, key, "revenue")
+    assert "Revenue needs a dated price basis" in state["results"]["stages"]["revenue"]["issues"][0]
+
+    text = state["revenue_description"] + ". Use the project’s saved USD price basis."
+    state = update(store, key, state["revision"], text=text, approve=True)
+    state = run_stage(store, key, "revenue")
+    stage = state["results"]["stages"]["revenue"]
+    assert not stage["issues"]
+    assert stage["result"]["basis"] == {"currency": "USD", "price_period": "2026-09"}
+    assert "as requested" in stage["result"]["price_basis_notice"]
+    assert state["plan"]["operating_economics"]["price_basis"] == config["price_basis"]
+
+
+def test_opex_preparation_fills_missing_fields_without_overwriting_locked_revenue(study):
+    import json
+    from backend.blocks.preparation import prepare_stage
+
+    store, key = study
+    state = run_stage(store, key, "engineering_data")
+    config = state["plan"]["operating_economics"]
+    proposal = copy.deepcopy(config)
+    proposal["price_basis"]["price_period"] = "2026-09"
+    proposal["sales"][0]["unit_price"] = 999
+    proposal["materials"] = []
+    expected_energy = config.pop("energy")
+    state["locked"] = ["operating_economics"]
+    state = store.put(state, state["revision"])
+    state = update(store, key, state["revision"], approve=True)
+
+    response = {"sections": [{"section": "operating_economics", "value_json": json.dumps(proposal)}]}
+    with patch("backend.orchestration.advisor.propose", return_value=(response, {})) as propose:
+        prepared = prepare_stage(store, key, "opex", provider=object())
+    saved = prepared["plan"]["operating_economics"]
+    assert "operating_economics" not in propose.call_args.args[3]
+    assert saved["sales"] == config["sales"]
+    assert saved["materials"] == config["materials"]
+    assert saved["price_basis"] == config["price_basis"]
+    assert saved["energy"] == [{**item, "price_basis": proposal["price_basis"]} for item in expected_energy]
+    assert prepared["revenue_approval"] == state["revenue_approval"]
+
+
 def test_manual_stage_order_and_finance_only_consumes_saved_inputs(study):
     store, key = study
     state = run_stage(store, key, "engineering_data")

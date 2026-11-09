@@ -152,6 +152,10 @@ def snapshot(saved):
         "stale",
         "data_required",
     )
+    issues = list(fin.get("issues") or [])
+    capital = stages.get("capex", {}).get("result") or {}
+    if not ledger and capital.get("complete") is False:
+        issues = list(dict.fromkeys([*(capital.get("issues") or []), *issues]))
     return {
         "id": state["id"],
         "revision": state["revision"],
@@ -165,7 +169,7 @@ def snapshot(saved):
         "financial_stale": fin.get("result_is_stale", False)
         or fin.get("status") in ("stale", "data_required"),
         "revenue_stale": rev.get("result_is_stale", False),
-        "issues": fin.get("issues", []),
+        "issues": issues,
         "has_financial_ledger": bool(ledger),
         "break_even": cash_break_even(result, stale=stale),
         "revenue_approved": bool(state.get("revenue_approval")),
