@@ -7,7 +7,15 @@ consent endpoint, never this prompt. A proposed opportunity is not a signed cont
 from ..advisor import TEXT, obj
 from ..validation import CATEGORIES
 
-PROMPT = """Identify ALL distinct commercial payments in the process description.
+PROMPT = """MINIMISE CLARIFICATION FRICTION: reuse saved operating hours, currency, price basis,
+user prices and actual engineering quantities. Do not ask for values already supplied.
+Ask only about consequential ambiguity: who pays for what, incompatible stream/specification,
+missing price/billing basis, or genuinely missing billable quantity. Combine related missing
+inputs into one short question per income source. Do not ask users to specify absent optional
+contract clauses: use the explicitly disclosed neutral scenario values below. Keep known
+commercial lines while recording unresolved other sources separately in pending_inputs.
+Never treat a provisional assumption as a verified fact or approve inputs for the user.
+Identify ALL distinct commercial payments in the process description.
 Use product_sales for physical products only; processing_services for wastewater/
 waste treatment and toll manufacturing; capacity_availability for reservations;
 infrastructure_usage for access/throughput tariffs; environmental_attributes for

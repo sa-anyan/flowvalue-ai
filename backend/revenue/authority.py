@@ -250,6 +250,11 @@ def update(store, key, revision, *, text=None, approve=False):
         )
         state.pop("revenue_approval", None)
     config = state.get("plan", {}).get("operating_economics", {})
+    if state.get("analysis_schedule"):
+        from backend.blocks.cashflow.schedule import apply_policy
+
+        config = apply_policy(config, state["analysis_schedule"])
+        state["plan"]["operating_economics"] = config
     report = (
         state.get("scoped_report")
         or state.get("effective_report")

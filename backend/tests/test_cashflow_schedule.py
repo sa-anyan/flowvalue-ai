@@ -121,3 +121,33 @@ def test_default_plateau_and_preservation():
         make_policy(20, 2, {"production_ramp": [0.3, 0.7]})["production_ramp"]
         == [0.3] + [0.7] * 17
     )
+
+
+def test_browser_number_serialization_does_not_invalidate_approval(study):
+    from backend.revenue.authority import update
+    from backend.orchestration.service import edit
+    import json
+
+    store, key = study
+    run_stage(store, key, "engineering_data")
+    policy = make_policy(6, 2, {"production_ramp": [1]})
+    save(store, key, store.get(key)["revision"], policy, approve_revenue=True)
+    state = store.get(key)
+    # JSON.stringify turns 1.0 into 1; this must not make Python reject approval.
+    config = json.loads(
+        json.dumps(state["plan"]["operating_economics"]).replace("1.0", "1")
+    )
+    edited = edit(
+        store,
+        key,
+        state["revision"],
+        "operating_economics",
+        config,
+        "User review",
+        manual_revenue=True,
+    )
+    update(store, key, edited["revision"], approve=True)
+    result = run_stage(store, key, "revenue", use_ai=False)
+    assert result["stage_runs"]["revenue"]["status"] == "ready", result["stage_runs"][
+        "revenue"
+    ]
