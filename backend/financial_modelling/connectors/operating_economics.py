@@ -1,6 +1,7 @@
 """Expand an explicit operating-study policy into the canonical financial handoff."""
 
 import re
+from dataclasses import replace
 from datetime import date
 from decimal import Decimal
 
@@ -132,6 +133,53 @@ def prepare_study_financials(*, project_id, config, capex, revenue, opex_by_year
     spend = tuple(
         Spend(i + 1 if construction else 0, a(f)) for i, f in enumerate(fractions)
     )
+    timing = config.get("cashflow_schedule") or {}
+    from backend.blocks.cashflow.schedule import validate
+
+    if timing:
+        validate(timing, config)
+
+    def dated_spend(shares):
+        values = [
+            (int(y), Decimal(str(f)))
+            for y, f in sorted(shares.items(), key=lambda x: int(x[0]))
+            if Decimal(str(f))
+        ]
+        residual = Decimal(1) - sum((f for _, f in values), Decimal(0))
+        if abs(residual) > Decimal("1e-12"):
+            raise ValueError("Capital spending must total 100%")
+        # Reconcile binary-JSON percentage rounding only; never rescale budgets.
+        year, last = values[-1]
+        values[-1] = (year, last + residual)
+        return tuple(
+            Spend(
+                y,
+                replace(
+                    a(f),
+                    rationale=(
+                        "Explicit project-year share; final Decimal rounding residual "
+                        + str(residual)
+                        if i == len(values) - 1
+                        else "Explicit project-year share"
+                    ),
+                ),
+            )
+            for i, (y, f) in enumerate(values)
+        )
+
+    if "capital_spend_fractions" in timing:
+        spend = dated_spend(timing["capital_spend_fractions"])
+        assumptions = replace(
+            assumptions,
+            capital_payment_end_year=max(
+                construction,
+                max(
+                    int(y)
+                    for y, f in timing["capital_spend_fractions"].items()
+                    if Decimal(str(f))
+                ),
+            ),
+        )
     amounts = {
         "direct": capex.direct_costs,
         "indirect": capex.indirect_costs,
@@ -187,8 +235,21 @@ def prepare_study_financials(*, project_id, config, capex, revenue, opex_by_year
         depreciation_policies=policies,
         disposal_proceeds=proceeds,
         startup_treatment="capitalized",
-        working_capital_funding_year=construction,
+        working_capital_funding_year=timing.get(
+            "working_capital_funding_year", construction
+        ),
         classifications=classifications,
         selling_cost_reconciliation="Commercial deductions are net revenue adjustments; no duplicate OPEX charge.",
     )
+    # Commissioning/start-up is a separate capital component, not recurring OPEX.
+    # Keep its total unchanged while placing it at the explicitly selected dates.
+    if "startup_spend_fractions" in timing:
+        startup_spend = dated_spend(timing["startup_spend_fractions"])
+        inputs = replace(
+            inputs,
+            capital=tuple(
+                replace(item, spend=startup_spend) if item.id == "startup" else item
+                for item in inputs.capital
+            ),
+        )
     return inputs

@@ -11,6 +11,7 @@ from backend.blocks.shared import (
 from backend.capex.models import CapexResult
 from backend.revenue.models import RevenueResult
 from .input_builder import _costs_for_year, _opex
+from backend.opex.annual_phasing import phase_fixed_costs
 
 
 def calculate(ctx):
@@ -54,6 +55,7 @@ def calculate(ctx):
 
             costs = apply_savings(costs, revenue.avoided_costs, year)
         result = _opex(cap, basis, costs, annual, allow_partial=True)
+        result = phase_fixed_costs(result, config, year)
         years[str(year)], details[str(year)] = plain(result), detail
         complete = (
             complete

@@ -298,6 +298,9 @@ class FinancialAssumptions:
     source: str
     closure_price_treatment: str = "actual"
     closure_escalation: Assumption | None = None
+    # Explicit final construction payment may overlap operating years.
+    # This changes cash timing, not commissioning or depreciation dates.
+    capital_payment_end_year: int | None = None
 
     def __post_init__(self):
         tuples(self, (("exchange_rates", ExchangeRate),))

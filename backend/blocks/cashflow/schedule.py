@@ -12,20 +12,49 @@ def make_policy(horizon, build, previous=None):
     previous = previous or {}
     count = horizon - build
     old = previous.get("production_ramp") or [0.2, 0.4, 0.6, 0.8]
+    # New studies use an explicit staged planning example. Existing policies
+    # without cost timing keep legacy financial weights until the user edits them.
+    initial_timing = (
+        {}
+        if previous
+        else {
+            "capital_spend_fractions": (
+                {"1": 0.3, "2": 0.5, "3": 0.2}
+                if build == 2
+                else {
+                    str(i + 1 if build else 0): 1 / max(1, build)
+                    for i in range(max(1, build))
+                }
+            ),
+            "startup_spend_fractions": {str(build + 1): 1},
+            "working_capital_funding_year": build + 1,
+        }
+    )
     return validate(
         {
+            **initial_timing,
             "analysis_years": horizon,
             "construction_years": build,
             "production_ramp": [
                 old[min(i, len(old) - 1)] for i in range(max(0, count))
             ],
+            **{
+                k: copy.deepcopy(previous[k])
+                for k in (
+                    "capital_spend_fractions",
+                    "startup_spend_fractions",
+                    "working_capital_funding_year",
+                    "fixed_opex_factors",
+                )
+                if k in previous
+            },
             "revenue_factors": {
                 y: v
                 for y, v in previous.get("revenue_factors", {}).items()
                 if build < int(y) <= horizon
             },
             "rationale": previous.get("rationale")
-            or "FlowValue planning assumption: 20%, 40%, 60%, then 80% throughput utilization during scheduled operating hours. Annual steps are not published Garrett factors. Garrett pp.45,76,104 discusses downtime, gradual market uptake and historical utilization near 80%; operating hours remain a separate assumption.",
+            or "FlowValue editable planning example: fixed capital 30/50/20 across project years 1–3 when two pre-operation construction years are selected; start-up capital and working capital at first operation. Other construction durations use equal capital shares. These percentages are not prescribed by Garrett. Production: 20%, 40%, 60%, then 80% throughput utilization during scheduled operating hours. Annual steps are not published Garrett factors. Garrett pp.45,76,104 discusses downtime, gradual market uptake and historical utilization near 80%; operating hours remain a separate assumption.",
         },
         {
             "sales": [
@@ -86,6 +115,34 @@ def validate(policy, config=None):
                     "Select an existing revenue stream; do not add income through the schedule"
                 )
             streams[key] = float(decimal(value, maximum=1))
+    for name in ("capital_spend_fractions", "startup_spend_fractions"):
+        if name not in policy:
+            continue  # Legacy schedules retain their saved capital timing.
+        shares = policy[name]
+        if not isinstance(shares, dict) or not shares:
+            raise ValueError(name + " requires project-year percentages totaling 100%")
+        for year, share in shares.items():
+            if not str(year).isdigit() or str(year) != str(int(year)):
+                raise ValueError("Use canonical integer project-year keys")
+            if not 0 <= int(year) <= horizon:
+                raise ValueError("Capital spending falls outside the project calendar")
+            shares[year] = float(decimal(share, maximum=1))
+        if abs(
+            sum((Decimal(str(v)) for v in shares.values()), Decimal(0)) - 1
+        ) > Decimal("1e-12"):
+            raise ValueError(name + " must total 100%; no silent normalization")
+    if "working_capital_funding_year" in policy:
+        year = policy["working_capital_funding_year"]
+        if type(year) is not int or not 0 <= year <= build + 1:
+            raise ValueError(
+                "Fund working capital no later than the first operating year"
+            )
+    if not isinstance(policy.setdefault("fixed_opex_factors", {}), dict):
+        raise ValueError("Fixed OPEX factors must be a project-year map")
+    for year, value in policy["fixed_opex_factors"].items():
+        if not str(year).isdigit() or not build < int(year) <= horizon:
+            raise ValueError("Fixed OPEX factors must refer to operating project years")
+        policy["fixed_opex_factors"][year] = float(decimal(value, maximum=1))
     if not str(policy.get("rationale", "")).strip():
         raise ValueError("Record the schedule basis")
     return policy

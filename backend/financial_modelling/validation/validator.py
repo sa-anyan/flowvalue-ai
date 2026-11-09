@@ -85,6 +85,17 @@ def validate(inputs):
         errors.append(str(exc))
         return tuple(errors)
     years = set(range(len(periods)))
+    payment_end = (
+        a.construction_years
+        if a.capital_payment_end_year is None
+        else a.capital_payment_end_year
+    )
+    require(
+        type(payment_end) is int
+        and payment_end in years
+        and payment_end >= a.construction_years,
+        "Explicit capital payment window must cover construction within the project horizon",
+    )
     credits = a.tax.annual_nonrefundable_credits
     require(
         len({x.year for x in credits}) == len(credits)
@@ -176,7 +187,10 @@ def validate(inputs):
         )
         if capital.kind in {"direct", "indirect", "offsite"}:
             require(
-                all(s.year <= a.construction_years for s in capital.spend),
+                all(
+                    type(payment_end) is int and s.year <= payment_end
+                    for s in capital.spend
+                ),
                 "Initial construction capital outside construction spending window",
             )
     operations = {o.year: o for o in inputs.operations}
@@ -205,7 +219,18 @@ def validate(inputs):
                 p.sold <= p.saleable <= p.produced,
                 "Production, saleable and sales quantities inconsistent",
             )
-            require(p.revenue_category in {"product_sales", "processing_services", "capacity_availability", "infrastructure_usage", "environmental_attributes", "other_contractual_income"}, "Unknown revenue category")
+            require(
+                p.revenue_category
+                in {
+                    "product_sales",
+                    "processing_services",
+                    "capacity_availability",
+                    "infrastructure_usage",
+                    "environmental_attributes",
+                    "other_contractual_income",
+                },
+                "Unknown revenue category",
+            )
             if p.sold == 0 and p.revenue_category == "product_sales":
                 require(
                     p.revenue.amount in (None, Decimal(0)),

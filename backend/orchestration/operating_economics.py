@@ -159,6 +159,12 @@ def calculate_operating_study(
             opex[annual.year] = _opex(
                 capex, basis, costs[annual.year], annual.sales_revenue
             )
+        from backend.opex.annual_phasing import phase_fixed_costs
+
+        opex = {
+            year: phase_fixed_costs(result, config, year)
+            for year, result in opex.items()
+        }
         financial_inputs = prepare_study_financials(
             project_id=project_id,
             config=config,

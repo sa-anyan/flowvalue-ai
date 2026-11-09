@@ -3,6 +3,35 @@
 from backend.blocks.execution import view as assessment_view
 
 
+from decimal import Decimal, InvalidOperation
+
+
+def cash_break_even(result, *, stale=False):
+    """Expose canonical project payback; never infer recovery from sales revenue."""
+    base = {"year": None, "basis": "Undiscounted cumulative project free cashflow"}
+    if not result.get("ledger"):
+        return {**base, "status": "pending"}
+    if stale:
+        return {**base, "status": "stale"}
+    metric = dict(result.get("metrics") or []).get("project_payback") or {}
+    status = metric.get("status", "pending")
+    if status != "calculated":
+        return {**base, "status": status}
+    try:
+        year = Decimal(str(metric["value"]))
+        end = max(int(r["period"]["year"]) for r in result["ledger"])
+        if not year.is_finite() or not 0 <= year <= end:
+            raise ValueError("Payback falls outside the saved ledger")
+    except (KeyError, TypeError, ValueError, InvalidOperation):
+        return {**base, "status": "pending"}
+    return {
+        **base,
+        "status": "calculated",
+        "year": str(year),
+        "method": metric.get("basis", "First cumulative recovery"),
+    }
+
+
 def snapshot(saved):
     state = assessment_view(saved)
     config = state.get("plan", {}).get("operating_economics", {})
@@ -26,6 +55,27 @@ def snapshot(saved):
             ),
         }
     )
+    # Expose the current financial timing, including legacy saved shares, without
+    # changing the user's approved baseline just by opening the page.
+    import copy
+
+    policy = copy.deepcopy(policy)
+    weights = financial.get("construction_spend_fractions") or [1] * max(1, build)
+    total = sum(Decimal(str(w)) for w in weights)
+    legacy_spend = (
+        {
+            str(i + 1 if build else 0): float(Decimal(str(w)) / total)
+            for i, w in enumerate(weights)
+        }
+        if total > 0
+        else {}
+    )
+    policy.setdefault("capital_spend_fractions", legacy_spend)
+    policy.setdefault(
+        "startup_spend_fractions", copy.deepcopy(policy["capital_spend_fractions"])
+    )
+    policy.setdefault("working_capital_funding_year", build)
+    policy.setdefault("fixed_opex_factors", {})
     streams = [
         {
             "id": prefix + str(r["id"]),
@@ -98,6 +148,10 @@ def snapshot(saved):
                 },
             }
         )
+    stale = fin.get("result_is_stale", False) or fin.get("status") in (
+        "stale",
+        "data_required",
+    )
     return {
         "id": state["id"],
         "revision": state["revision"],
@@ -113,5 +167,6 @@ def snapshot(saved):
         "revenue_stale": rev.get("result_is_stale", False),
         "issues": fin.get("issues", []),
         "has_financial_ledger": bool(ledger),
+        "break_even": cash_break_even(result, stale=stale),
         "revenue_approved": bool(state.get("revenue_approval")),
     }
