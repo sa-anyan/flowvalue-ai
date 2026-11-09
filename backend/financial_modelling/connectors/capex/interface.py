@@ -49,7 +49,11 @@ def capital_from_result(
         "offsite": offsite,
         "startup": result.startup_expenses,
     }
-    if sum(amounts.values(), Decimal(0)) + result.working_capital != result.total_capex:
+    reconciled = sum(amounts.values(), Decimal(0)) + result.working_capital
+    # Reordering Decimal sums of sampled factors can differ in their last digits.
+    if abs(reconciled - result.total_capex) > Decimal("1e-20") * max(
+        1, abs(result.total_capex)
+    ):
         raise ValueError("CAPEX components and working capital do not reconcile")
     source = (
         "Canonical CAPEX "

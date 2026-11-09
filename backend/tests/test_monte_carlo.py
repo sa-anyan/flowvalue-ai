@@ -19,25 +19,30 @@ from backend.scenarios_and_uncertainty.monte_carlo.models import (
     Settings,
 )
 from backend.scenarios_and_uncertainty.monte_carlo.sampling import sample, validate
-from backend.scenarios_and_uncertainty.monte_carlo.scenarios import prepare
-from backend.tests.test_operating_economics import DESCRIPTION, fixture
+from backend.scenarios_and_uncertainty.monte_carlo.scenarios import apply, prepare
+from backend.tests.test_isolated_stages import study
+from backend.tests.test_operating_economics import DESCRIPTION
+from backend.tests.test_revenue_authority import BOX, approve, ready
 
 
 def complete_state():
-    report, config, _ = fixture()
+    report, config, _ = ready()
+    config["price_basis"]["price_period"] = "1987"
     plan = {
         "equipment": [
             {
                 "equipment_key": "pump",
-                "curve_id": "G296-122",
-                "size": 1,
-                "size_unit": "1000 US_gpm_psi",
                 "quantity": 1,
-                "costing_options": {
-                    "allow_unverified": True,
-                    "unit_context": {"target_gallon_basis": "US"},
+                "manual_price": {
+                    "amount": 10_000,
+                    "currency": "USD",
+                    "price_period": "1987",
+                    "source": "Synthetic manual purchase price",
+                    "notes": "Explicit per-unit purchase cost for testing",
+                    "cost_scope": "purchased_equipment",
+                    "approved": True,
                 },
-                "rationale": "Synthetic supplied pump size for integration testing, not an industrial reference",
+                "rationale": "Synthetic asset with an approved purchase price",
             }
         ],
         "capex": {
@@ -47,12 +52,15 @@ def complete_state():
             "factor_selection": "minimum",
         },
         "operating_economics": config,
+        "cost_translation": {"enabled": False},
     }
     return {
         "id": "synthetic",
         "revision": 0,
         "plan": plan,
-        "description": DESCRIPTION,
+        "description": DESCRIPTION + "\n" + BOX,
+        "revenue_description": BOX,
+        "revenue_approval": approve(config, report)["approval"],
         "parsed": {"report": report},
         "results": None,
     }
@@ -93,6 +101,36 @@ def test_distributions_reproduce_and_respect_limits():
         _, b = sample(settings, original)
         np.testing.assert_array_equal(a, b)
         assert np.min(a.astype(float)) >= 0.5 and np.max(a.astype(float)) <= 2
+
+
+def test_method_ranges_and_approved_commercial_draws():
+    state = complete_state()
+    report = state["parsed"]["report"]
+    state["plan"]["capex"]["selected_factors"] = {"piping": .30}
+    before = copy.deepcopy(state)
+    settings = Settings.model_validate(discover(state)["settings"])
+    by_id = {p.id: p for p in settings.parameters}
+    piping = by_id["capex.selected_factors.piping"]
+    assert (piping.minimum, piping.mode, piping.maximum) == (.15, .30, .70)
+    assert any(p.minimum is not None and p.maximum is not None for p in settings.parameters
+               if "garrett_factors" in p.targets[0])
+    rate = next(p for p in settings.parameters if "commercial_lines" in p.targets[0]
+                and p.targets[0][-1] == "rate")
+    assert len(rate.targets) == settings.operating_years
+    assert not rate.enabled and rate.minimum is None
+    plan = prepare(state, settings)
+    assert plan["_monte_carlo_revenue_approved"]
+    low = evaluate(report, state["description"], plan, [])
+    equipment_price = by_id["equipment.0.manual_price.amount"]
+    apply(plan, [equipment_price], [12_000])
+    assert evaluate(report, state["description"], plan, [])["metrics"]["capex"] > low["metrics"]["capex"]
+    apply(plan, [rate], [rate.mode * 2])
+    high = evaluate(report, state["description"], plan, [])
+    assert high["metrics"]["revenue"] > low["metrics"]["revenue"] > 0
+    assert state == before
+    state.pop("revenue_approval")
+    unapproved = evaluate(report, state["description"], prepare(state, settings), [])
+    assert unapproved["metrics"]["revenue"] is None
 
 
 def test_correlations_and_constraints_cannot_be_bypassed():
@@ -171,7 +209,8 @@ def test_canonical_financials_and_reproducible_simulation():
 
     state = complete_state()
     original = copy.deepcopy(state)
-    settings = Settings(parameters=[])
+    settings = Settings.model_validate(discover(state)["settings"])
+    settings.parameters = []
     a = simulate(state, settings)
     b = simulate(state, settings)
     assert a == b
@@ -358,19 +397,19 @@ def test_engineering_proposals_are_separate_and_require_enablement():
     assert proposals == [] and audit
 
 
-def test_api_freezes_baseline_and_rejects_stale_and_wrong_parent(tmp_path):
+def test_api_freezes_baseline_and_rejects_stale_and_wrong_parent(study):
     import threading
     from unittest.mock import patch
 
     from fastapi.testclient import TestClient
 
     import backend.api.app as api
-    from backend.orchestration.store import Store
+    from backend.blocks.execution import fresh, run_stage
+    from backend.blocks.stage_workflow import approve as approve_engineering, queue as queue_stages, run
+    from backend.revenue.authority import update
 
-    store = Store(tmp_path / "mc.db")
-    state = store.create({**complete_state(), "running": False}, b"fixture")
-    before = copy.deepcopy(store.get(state["id"]))
-    settings = Settings.model_validate(discover(state)["settings"])
+    store, key = study
+    endpoint = f"/api/assessments/{key}/monte-carlo/run"
 
     class Queue:
         def submit(self, call):
@@ -383,20 +422,29 @@ def test_api_freezes_baseline_and_rejects_stale_and_wrong_parent(tmp_path):
         patch.object(api, "executor", queue),
         TestClient(api.app, base_url="http://localhost") as client,
     ):
-        settings.baseline_revision = 99
-        response = client.post(
-            f"/api/assessments/{state['id']}/monte-carlo/run",
-            json=settings.model_dump(),
-        )
+        response = client.post(endpoint, json=Settings().model_dump())
         assert response.status_code == 422
+        assert "run financial first" in response.json()["detail"]
+
+        state = run_stage(store, key, "engineering_data")
+        state = approve_engineering(store, key, state["revision"])
+        update(store, key, state["revision"], approve=True)
+        queue_stages(store, key)
+        state = run(store, key)
+        assert fresh(state, "financial"), state["stage_runs"]
+
+        before = copy.deepcopy(state)
+        settings = Settings.model_validate(discover(state)["settings"])
+        settings.baseline_revision = state["revision"] - 1
+        response = client.post(endpoint, json=settings.model_dump())
+        assert response.status_code == 422
+        assert "rediscover parameters" in response.json()["detail"]
         settings.baseline_revision = state["revision"]
-        response = client.post(
-            f"/api/assessments/{state['id']}/monte-carlo/run",
-            json=settings.model_dump(),
-        )
+        response = client.post(endpoint, json=settings.model_dump())
         assert response.status_code == 202, response.text
         job = response.json()
         assert job["status"] == "queued"
+        assert store.get(job["snapshot_id"])["assessment"] == before
         assert (
             client.get(
                 f"/api/assessments/not-the-parent/monte-carlo/jobs/{job['id']}"
@@ -440,23 +488,29 @@ def test_marginal_moments_are_consistent_with_definitions():
     assert abs(float(np.mean(draw.astype(float))) - (0.5 + 1 + 2) / 3) < 0.03
 
 
-def test_preflight_uses_reviewed_central_assumptions():
-    from backend.scenarios_and_uncertainty.monte_carlo.service import preflight
+def test_preflight_uses_reviewed_central_assumptions(monkeypatch):
+    from backend.scenarios_and_uncertainty.monte_carlo import service
 
     state = complete_state()
     settings = Settings.model_validate(discover(state)["settings"])
-    sale = next(
-        p
-        for p in settings.parameters
-        if p.targets[0][:2] == ["operating_economics", "sales"]
-    )
+    report = state["parsed"]["report"]
+    baseline = evaluate(report, state["description"], prepare(state, settings), [])
+    sale = next(p for p in settings.parameters if p.id == "operating_economics.sales.0.unit_price")
     sale.enabled = True
     sale.minimum = 0.8
     sale.mode = 1.1
     sale.maximum = 1.2
     sale.rationale = "Synthetic explicit central-case price"
-    check = preflight(state, settings)
+    central = {}
+
+    def record_evaluation(*args):
+        central.update(evaluate(*args))
+        return central
+
+    monkeypatch.setattr(service, "evaluate", record_evaluation)
+    check = service.preflight(state, settings)
     assert check["status"] == "complete"
+    assert central["metrics"]["revenue"] > baseline["metrics"]["revenue"] > 0
     assert state["plan"]["operating_economics"]["sales"][0]["unit_price"] == 1
 
 

@@ -5,6 +5,68 @@ from decimal import Decimal, InvalidOperation
 from .authority import questions
 
 
+def preview_annual_continuation(config, text, report):
+    """Offer an explicit forecast for missing later terms, without changing saved inputs."""
+    from backend.blocks.shared import production_schedule
+
+    try:
+        schedule = production_schedule(config)
+    except (KeyError, TypeError, ValueError, ArithmeticError):
+        return None
+    if len(schedule) < 2:
+        return None
+
+    projected = copy.deepcopy(config)
+    changes = []
+    for line in projected.get("commercial_lines", []):
+        if line.get("method_form") or line.get("included") is False:
+            continue
+        years = {row.get("year"): row for row in line.get("years", [])}
+        if len(years) != len(line.get("years", [])) or set(years) - schedule.keys():
+            continue
+        first = years.get(1, {})
+        fields = ["rate", "fixed_payment", "minimum_quantity", "minimum_payment", "availability", "escalation"]
+        if not line.get("stream_key"):
+            fields.append("quantity")
+        if any(first.get(field) is None for field in fields):
+            continue
+        filled = {}
+        for year in list(schedule)[1:]:
+            annual = years.get(year, {"year": year, "quantity": None})
+            missing = [field for field in fields if annual.get(field) is None]
+            if not missing:
+                continue
+            annual.update({field: first[field] for field in missing})
+            annual["periods"] = 12 if line.get("rate_period") == "monthly" else 1
+            years[year] = annual
+            filled[year] = missing
+        if filled:
+            line["years"] = [years[year] for year in sorted(years)]
+            if line.get("arrangement") == "user_confirmed":
+                line["arrangement"] = "user_assumption"
+            line["rationale"] = (
+                str(line.get("rationale") or "")
+                + "; user-selected forecast repeats missing Year 1 commercial terms in operating years "
+                + ", ".join(map(str, filled))
+                + ". Forecast continuation does not extend a confirmed contract."
+            )
+            changes.append({
+                "id": line["id"],
+                "name": line.get("name", line["id"]),
+                "years": list(filled),
+                "missing": filled,
+            })
+
+    if not changes:
+        return None
+    review = inspect_revenue(projected, text, report)
+    return {
+        "lines": projected["commercial_lines"],
+        "changes": changes,
+        "questions": review["questions"],
+    }
+
+
 def inspect_revenue(config, text, report):
     config = copy.deepcopy(config)
     config.pop("_revenue_authority", None)

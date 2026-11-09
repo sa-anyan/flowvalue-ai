@@ -83,7 +83,7 @@ class Distinct(Contract):
 
 class Settings(Contract):
     baseline_revision: int | None = None
-    parameters: list[Parameter] = Field(default_factory=list, max_length=250)
+    parameters: list[Parameter] = Field(default_factory=list, max_length=2_000)
     correlations: list[Correlation] = Field(default_factory=list, max_length=1000)
     distinct: list[Distinct] = Field(default_factory=list, max_length=100)
     aliases: list[Alias] = Field(default_factory=list, max_length=100)

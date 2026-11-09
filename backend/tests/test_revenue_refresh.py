@@ -101,3 +101,37 @@ def test_save_endpoint_queues_ai_but_approval_does_not():
                 "revision": response.json()["revision"], "approve": True, "reinterpret": True,
             })
             assert bad.status_code == 422
+
+
+def test_clarification_batch_over_description_limit_reaches_revenue_interpretation():
+    from backend.api import app as api
+
+    with tempfile.TemporaryDirectory() as folder:
+        store = Store(Path(folder) / "test.db")
+        state = state_for(store)
+        description = BOX + "\n" + "Description evidence. " * 260
+        clarifications = [
+            {"question": f"What is the basis for payment {i}?",
+             "answer": "Additional contract evidence. " * 30 + f"Final term {i}."}
+            for i in range(3)
+        ]
+        endpoint = f'/api/assessments/{state["id"]}/revenue-authority'
+        request = {
+            "revision": state["revision"], "revenue_description": description,
+            "clarifications": clarifications,
+        }
+        with patch.object(api, "store", store), patch.object(api, "submit") as submit:
+            client = TestClient(api.app)
+            assert client.post(endpoint, json={**request, "approve": True}).status_code == 422
+            response = client.post(endpoint, json={**request, "reinterpret": True})
+            assert response.status_code == 200
+            submit.assert_called_once_with(state["id"], use_ai=True, refresh_revenue=True)
+
+        saved = store.get(state["id"])
+        assert len(description) < 6_000 < len(saved["revenue_description"])
+        assert saved["revenue_description"].startswith(description)
+        assert saved["revenue_description"].endswith("Final term 2.")
+        assert not saved.get("revenue_approval")
+        with patch("backend.orchestration.revenue_workflow.propose", side_effect=RevenueAIError("Mock interpreter")) as propose:
+            reinterpret_revenue(store, saved, provider=object())
+        assert propose.call_args.args[0]["revenue_box"] == saved["revenue_description"]

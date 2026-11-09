@@ -19,6 +19,7 @@ from backend.ingestion.limits import (
 from backend.orchestration.pipeline import contracts
 from backend.orchestration.service import compare, edit, new_assessment
 from backend.orchestration.store import Store
+from backend.revenue.authority import MAX_REVENUE_REVIEW_LENGTH
 
 app = FastAPI(title="FlowValue Assessment Orchestration")
 store = Store(
@@ -78,10 +79,17 @@ def edit_equipment_register(key: str, options: RegisterEdit):
     )
 
 
+class RevenueClarification(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    question: str = Field(min_length=1, max_length=4_000)
+    answer: str = Field(min_length=1, max_length=4_000)
+
+
 class RevenueAuthorityRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     revision: int
-    revenue_description: str | None = Field(default=None, max_length=6000)
+    revenue_description: str | None = Field(default=None, max_length=MAX_REVENUE_REVIEW_LENGTH)
+    clarifications: list[RevenueClarification] = Field(default_factory=list, max_length=100)
     approve: bool = False
     reinterpret: bool = False
 
@@ -400,6 +408,8 @@ def revenue_authority(key: str, options: RevenueAuthorityRequest):
 
     if options.reinterpret and options.approve:
         raise HTTPException(422, "Review the AI interpretation before approving it")
+    if options.clarifications and not options.reinterpret:
+        raise HTTPException(422, "Revenue clarifications must be interpreted and reviewed before approval")
     if options.reinterpret and lock.locked():
         raise HTTPException(409, "Wait for the current assessment to finish")
     state = update(
@@ -408,6 +418,7 @@ def revenue_authority(key: str, options: RevenueAuthorityRequest):
         options.revision,
         text=options.revenue_description,
         approve=options.approve,
+        clarifications=[(item.question, item.answer) for item in options.clarifications],
     )
     if options.reinterpret:
         state["running"] = True
@@ -432,7 +443,7 @@ class RevenuePreflight(BaseModel):
 
 @app.post("/api/assessments/{key}/revenue-preflight")
 def revenue_preflight(key: str, request: RevenuePreflight):
-    from backend.revenue.review import inspect_revenue
+    from backend.revenue.review import inspect_revenue, preview_annual_continuation
 
     state = store.get(key)
     if state.get("running") or state["revision"] != request.revision:
@@ -442,11 +453,11 @@ def revenue_preflight(key: str, request: RevenuePreflight):
         or state.get("effective_report")
         or state.get("parsed", {}).get("report", {})
     )
-    result = inspect_revenue(
-        state.get("plan", {}).get("operating_economics", {}),
-        state.get("revenue_description", ""),
-        report,
-    )
+    config = state.get("plan", {}).get("operating_economics", {})
+    text = state.get("revenue_description", "")
+    result = inspect_revenue(config, text, report)
+    if result["questions"]:
+        result["annual_projection"] = preview_annual_continuation(config, text, report)
     return {**result, "revision": state["revision"]}
 
 

@@ -1,0 +1,15 @@
+.mc-scope-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,155px),1fr)); gap: 10px; }
+.mc-scope-check { display: flex; align-items: flex-start; gap: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 9px; }
+.mc-scope-check input, .mc-driver input { flex: 0 0 auto; width: auto; margin-top: 3px; }
+.mc-scope-check small, .mc-driver small { display: block; color: var(--muted); margin-top: 4px; }
+.mc-scope-drawer { position: fixed; inset: 0 0 0 auto; margin: 0; width: min(880px, 100vw); height: 100dvh; max-width: 100vw; max-height: 100dvh; padding: 0; background: var(--card); color: var(--ink); border: 1px solid var(--line); }
+.mc-scope-drawer::backdrop { background: #152b2480; }
+.mc-scope-drawer-content { padding: 20px; }
+.mc-scope-drawer .mc-parameter-layout { align-items: start; }
+.mc-scope-drawer .mc-parameter-list { max-height: 67vh; }
+.mc-scope-drawer .mc-parameter-list details { margin: 5px 0; padding: 8px; }
+.mc-driver { display: flex; gap: 8px; align-items: flex-start; }
+.mc-scope-drawer .mc-driver button { flex: 1; min-width: 0; }
+@media (max-width: 750px) {
+  .mc-scope-drawer .mc-parameter-list { max-height: 38vh; }
+}

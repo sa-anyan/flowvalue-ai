@@ -8,10 +8,22 @@ from .discovery import get, set_value
 
 
 def prepare(state, settings):
-    from backend.revenue.authority import bind
+    from backend.revenue.authority import bind, runtime
 
     state = bind(copy.deepcopy(state))
     plan = copy.deepcopy(state["plan"])
+    report = (
+        state.get("scoped_report")
+        or state.get("effective_report")
+        or state["parsed"]["report"]
+    )
+    plan.pop("_monte_carlo_revenue_approved", None)
+    if plan.get("revenue_authority") and plan.get("operating_economics"):
+        # Carry authorization only from the unchanged, approved snapshot. It
+        # covers sensitivity calculations on the copy, never a saved approval.
+        plan["_monte_carlo_revenue_approved"] = not runtime(
+            plan["operating_economics"], plan["revenue_authority"], report
+        )["questions"]
     from backend.equipment_costing.cost_to_future.cost_translation import DEFAULT_POLICY
 
     plan.setdefault("cost_translation", copy.deepcopy(DEFAULT_POLICY))
@@ -27,11 +39,6 @@ def prepare(state, settings):
     by_key = {
         row["equipment_key"]: get(plan, path) for path, row in equipment_paths(plan)
     }
-    report = (
-        state.get("scoped_report")
-        or state.get("effective_report")
-        or state["parsed"]["report"]
-    )
     report, _ = expand(report, plan)
     registered = {e["key"] for e in report["entities"] if e["kind"] == "equipment"}
     aliases = {a.equipment_key: a for a in settings.aliases}
@@ -98,4 +105,11 @@ def apply(plan, parameters, draw):
     for p, value in zip(parameters, draw):
         value = value.item() if hasattr(value, "item") else value
         for target in p.targets:
+            if (
+                len(target) == 6
+                and target[:2] == ["operating_economics", "commercial_lines"]
+                and target[3] == "years"
+                and target[4] >= len(get(plan, target[:4]))
+            ):
+                continue  # Explicitly shortened study horizon.
             set_value(plan, target, value)

@@ -218,10 +218,25 @@ def require(config):
         raise ValueError("Revenue Box: " + "; ".join(policy["questions"]))
 
 
-def update(store, key, revision, *, text=None, approve=False):
+MAX_REVENUE_REVIEW_LENGTH = 48_000
+
+
+def update(store, key, revision, *, text=None, approve=False, clarifications=()):
     state = store.get(key)
     if state.get("running") or state["revision"] != revision:
         raise ValueError("Wait for completion or reload the current revision")
+    if clarifications:
+        base = state.get("revenue_description", "") if text is None else text
+        block = "\n\n".join(
+            f"Question: {question.strip()}\nMy answer: {answer.strip()}"
+            for question, answer in clarifications
+        )
+        text = f"{base}\n\nREVENUE CLARIFICATIONS:\n{block}"
+        if len(text) > MAX_REVENUE_REVIEW_LENGTH:
+            raise ValueError(
+                "The saved revenue description and clarification history exceed 48,000 characters. "
+                "Consolidate earlier clarifications in the Revenue description and try again."
+            )
     if text is not None:
         from .price_edits import reconcile_product_price
 

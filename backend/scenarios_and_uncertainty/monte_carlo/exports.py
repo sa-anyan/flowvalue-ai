@@ -23,7 +23,7 @@ def rows(result):
             "status": run["status"],
             **{
                 k: run.get("metrics", {}).get(k)
-                for k in ("npv", "irr", "payback", "capex", "opex", "known_opex")
+                for k in ("npv", "irr", "payback", "capex", "opex", "known_opex", "revenue")
             },
             "coverage": run.get("coverage", {}).get("fraction"),
             "exceptions": run.get("unpriced", []),
@@ -44,6 +44,7 @@ def export(result, kind):
             "capex",
             "opex",
             "known_opex",
+            "revenue",
             "coverage",
             "exceptions",
             "errors",

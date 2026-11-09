@@ -2,7 +2,7 @@
 
 import copy
 from unittest.mock import patch
-from backend.revenue.review import inspect_revenue
+from backend.revenue.review import inspect_revenue, preview_annual_continuation
 from backend.blocks.execution import run_stage
 from backend.tests.test_isolated_stages import study
 
@@ -59,3 +59,27 @@ def test_missing_price_and_sold_fraction_are_one_complete_review(study):
     config["sales"][0].update(unit_price=2, sold_fraction=0.8)
     after = inspect_revenue(config, text, report)
     assert after["ready"], after
+
+
+def test_later_year_preview_preserves_known_terms_and_measured_quantity():
+    first = {"year": 1, "quantity": None, "rate": 5, "fixed_payment": 0,
+             "minimum_quantity": 0, "minimum_payment": 0, "availability": 1, "escalation": 0, "periods": 12}
+    later = {**first, "year": 2, "rate": None, "fixed_payment": 10}
+    config = {
+        "financial": {"operating_years": 3, "production_ramp": [1]},
+        "commercial_lines": [{
+            "id": "service", "name": "Treatment service", "rate_period": "per_unit",
+            "arrangement": "user_confirmed", "stream_key": "measured-feed",
+            "rationale": "Year 1 only", "years": [first, later],
+        }],
+    }
+    original = copy.deepcopy(config)
+    with patch("backend.revenue.review.inspect_revenue", return_value={"questions": []}):
+        preview = preview_annual_continuation(config, "Sell treatment service", {})
+    assert config == original
+    line = preview["lines"][0]
+    assert line["arrangement"] == "user_assumption"
+    assert line["years"][0] == first
+    assert line["years"][1] == {**later, "rate": 5, "periods": 1}
+    assert line["years"][2] == {**first, "year": 3, "periods": 1}
+    assert preview["changes"][0]["missing"][2] == ["rate"]

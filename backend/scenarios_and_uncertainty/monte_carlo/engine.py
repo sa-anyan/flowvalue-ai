@@ -29,6 +29,19 @@ def number(value):
 
 
 def evaluate(report, description, plan, confirmed_aliases):
+    if plan.get("_monte_carlo_revenue_approved"):
+        from backend.equipment_resolution.scope import expand
+        from backend.revenue.authority import fingerprint
+
+        expanded, _ = expand(report, plan)
+        authority = plan["revenue_authority"]
+        plan = {
+            **plan,
+            "revenue_authority": {
+                **authority,
+                "approval": {"fingerprint": fingerprint(plan["operating_economics"], authority["text"], expanded)},
+            },
+        }
     result = run(report, description, plan, calculate_ranges=False)
     stages = result["stages"]
     equipment = (stages.get("equipment", {}).get("result") or {}).get("equipment", [])
@@ -62,12 +75,15 @@ def evaluate(report, description, plan, confirmed_aliases):
     metrics = dict(financial.get("metrics") or [])
     capex = stages.get("capex", {}).get("result") or {}
     opex = stages.get("opex", {}).get("result") or {}
+    revenue = stages.get("revenue", {}).get("result") or {}
+    year_one = next((row for row in revenue.get("annual", []) if row.get("year") == 1), {})
     vals = {
         "npv": number(metrics.get("project_npv", {}).get("value")),
         "irr": number(metrics.get("project_irr", {}).get("value")),
         "payback": number(metrics.get("project_discounted_payback", {}).get("value")),
         "capex": number(capex.get("total_capex")),
         "opex": number(opex.get("first_year_cash_opex")),
+        "revenue": number(year_one.get("sales_revenue")) if not revenue.get("issues") else None,
         "known_opex": number(
             opex.get("known_cash_opex_subtotal", opex.get("first_year_cash_opex"))
         ),
@@ -173,7 +189,7 @@ def summarize(rows, parameters, settings):
                 for r in (good if name in {"npv", "irr", "payback"} else cost_valid)
             ]
         )
-        for name in ("npv", "irr", "payback", "capex", "opex", "known_opex")
+        for name in ("npv", "irr", "payback", "capex", "opex", "known_opex", "revenue")
     }
     tags = sorted({tag for r in valid for tag in r.get("equipment_costs", {})})
     equipment = {

@@ -7,10 +7,11 @@ from scipy import stats
 
 
 def validate(settings, discovered):
-    allowed = {tuple(p.targets[0]): p for p in discovered.parameters}
     # Discovery may group global utility tariffs into a single driver.
     allowed = {tuple(t): p for p in discovered.parameters for t in p.targets}
     enabled = [p for p in settings.parameters if p.enabled]
+    if len(enabled) > 250:
+        raise ValueError("Enable at most 250 sampling drivers per study")
     if len({p.id for p in settings.parameters}) != len(settings.parameters):
         raise ValueError("Duplicate parameter IDs")
     owned = set()
