@@ -9,6 +9,12 @@ from ..validation import CATEGORIES
 
 PROMPT = """MINIMISE CLARIFICATION FRICTION: reuse saved operating hours, currency, price basis,
 user prices and actual engineering quantities. Do not ask for values already supplied.
+Prepare the COMPLETE draft calculation structure for each stated income source before
+asking questions. Report all known missing consequential inputs together, not one per
+interpretation turn. Reuse confirmed answers; never ask to override a price already supplied.
+For a known payment method with missing numerical terms, return its complete commercial_line
+with unresolved numbers null as allowed by the schema, plus a concise question; do not
+withhold the whole line solely because its rate is missing. Optional edits are not questions.
 Ask only about consequential ambiguity: who pays for what, incompatible stream/specification,
 missing price/billing basis, or genuinely missing billable quantity. Combine related missing
 inputs into one short question per income source. Do not ask users to specify absent optional

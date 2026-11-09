@@ -425,6 +425,31 @@ def revenue_authority(key: str, options: RevenueAuthorityRequest):
     return state
 
 
+class RevenuePreflight(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    revision: int
+
+
+@app.post("/api/assessments/{key}/revenue-preflight")
+def revenue_preflight(key: str, request: RevenuePreflight):
+    from backend.revenue.review import inspect_revenue
+
+    state = store.get(key)
+    if state.get("running") or state["revision"] != request.revision:
+        raise HTTPException(409, "Reload the current assessment before reviewing")
+    report = (
+        state.get("scoped_report")
+        or state.get("effective_report")
+        or state.get("parsed", {}).get("report", {})
+    )
+    result = inspect_revenue(
+        state.get("plan", {}).get("operating_economics", {}),
+        state.get("revenue_description", ""),
+        report,
+    )
+    return {**result, "revision": state["revision"]}
+
+
 class RevenueLinePreview(BaseModel):
     model_config = ConfigDict(extra="forbid")
     revision: int

@@ -105,6 +105,15 @@ def research_draft(state, kind, target_id, provider, *, focus=""):
         sales = sales + state["plan"].get("operating_economics", {}).get(
             "commercial_lines", []
         )
+        pending = state["plan"].get("operating_economics", {}).get("pending_inputs", [])
+        revenue_text = state.get("revenue_description", "")
+        # Pending terms may be researched only for an explicitly stated payment.
+        sales += [
+            p
+            for p in pending
+            if p.get("context_quote")
+            and p["context_quote"].casefold() in revenue_text.casefold()
+        ]
         product = next((s for s in sales if s["id"] == target_id), None)
         if not product:
             raise ValueError("Select an explicit saleable product")
