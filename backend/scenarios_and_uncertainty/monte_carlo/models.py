@@ -23,7 +23,9 @@ class Parameter(Contract):
                 "hard_max",
             ):
                 if isinstance(value.get(field), bool):
-                    raise ValueError("Boolean is not a numerical assumption")  # noqa: TRY004 -- schema validation error
+                    raise ValueError(
+                        "Boolean is not a numerical assumption"
+                    )  # noqa: TRY004 -- schema validation error
             if any(
                 isinstance(v, bool)
                 for field in ("choices", "probabilities")
@@ -57,6 +59,7 @@ class Parameter(Contract):
         default="Uncalibrated engineering assumption; no numeric confidence assigned",
         max_length=1000,
     )
+    review_required: str = Field(default="", max_length=1500)
     hard_min: float | None = None
     hard_max: float | None = None
     strictly_positive: bool = False

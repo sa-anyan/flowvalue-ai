@@ -49,11 +49,13 @@ def commercial_inputs(report, description, config, basis, hours, ramp, assumptio
                 if item["arrangement"] == "llm_proposed"
                 else "user_assumption"
             )
-            if item.get("stream_key"):
+            if item.get("stream_key") or item.get("manual_rate"):
                 result = annual_billable(report, item, hours, ramp[row["year"]])
                 quantity = result["annual_quantity"]
                 quantity_source = str(result)
-                quantity_status = "source_supported"
+                quantity_status = (
+                    "user_assumption" if item.get("manual_rate") else "source_supported"
+                )
                 refs.append(quantity_source)
             elif item.get("property") != "contract_quantity":
                 raise ValueError(

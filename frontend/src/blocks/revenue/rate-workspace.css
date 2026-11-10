@@ -1,0 +1,761 @@
+.revenue-rate-workspace {
+  --rr-green: #267d69;
+}
+.rr-heading,
+.rr-section-head,
+.rr-save,
+.rr-line-top,
+.rr-equation,
+.rr-links {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.rr-heading {
+  margin: 25px 0;
+}
+.rr-heading h1 {
+  font-size: 30px;
+  letter-spacing: -1px;
+  margin: 0;
+}
+.rr-heading button {
+  font-size: 12px;
+}
+.rr-summary {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 15px;
+  margin: 20px 0;
+}
+.rr-summary > article,
+.rr-summary > button {
+  min-width: 0;
+  padding: 23px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--card);
+  color: var(--ink);
+  text-align: left;
+}
+.rr-summary > article:first-child {
+  background: var(--ink);
+  color: var(--card);
+}
+.rr-summary small {
+  display: block;
+  font-size: 10px;
+  opacity: 0.75;
+  font-weight: 500;
+}
+.rr-summary strong {
+  display: block;
+  font-size: 31px;
+  font-weight: 550;
+  letter-spacing: -1px;
+  margin: 17px 0;
+  overflow-wrap: anywhere;
+}
+.rr-summary em {
+  font-size: 11px;
+  font-style: normal;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+.rr-summary span {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.6;
+  opacity: 0.75;
+}
+.revenue-rate-workspace .rr-income,
+.revenue-rate-workspace .rr-forecast {
+  padding: 25px;
+  border-radius: 14px;
+  margin: 20px 0;
+}
+.rr-section-head {
+  margin-bottom: 23px;
+}
+.rr-section-head h2 {
+  font-size: 18px;
+  letter-spacing: -0.4px;
+  margin: 0;
+}
+.rr-section-head p {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 8px 0 0;
+}
+.rr-section-head > div:last-child {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.rr-section-head button {
+  font-size: 11px;
+  padding: 9px 12px;
+}
+.rr-line-list {
+  display: grid;
+  gap: 15px;
+}
+.rr-line {
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 20px;
+  min-width: 0;
+}
+.rr-line-top {
+  justify-content: flex-start;
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+.rr-tag {
+  font-size: 9px;
+  letter-spacing: 1px;
+  font-weight: 600;
+  color: var(--rr-green);
+  background: var(--soft);
+  padding: 7px 9px;
+  border-radius: 5px;
+}
+.rr-line-top button {
+  margin-left: auto;
+  width: 27px;
+  height: 27px;
+  padding: 0;
+  font-size: 16px;
+}
+.rr-line-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.rr-line label,
+.rr-drawer-body label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.rr-line input,
+.rr-line select,
+.rr-drawer-body input,
+.rr-drawer-body textarea,
+.rr-drawer-body select {
+  font-size: 12px;
+  margin: 8px 0 0;
+  width: 100%;
+  min-width: 0;
+}
+.rr-price {
+  display: flex;
+  gap: 7px;
+  min-width: 0;
+}
+.rr-price > input {
+  flex: 1;
+  min-width: 0;
+}
+.rr-price > select {
+  width: 83px;
+  flex-shrink: 0;
+  padding-left: 7px;
+  padding-right: 7px;
+}
+.rr-price-basis {
+  display: block;
+  font-size: 9px;
+  font-weight: 400;
+  margin-top: 3px;
+}
+.rr-custom-rate {
+  display: grid;
+  grid-template-columns: 160px 130px minmax(0, 1fr);
+  gap: 15px;
+  align-items: end;
+  padding: 16px 0;
+}
+.rr-custom-rate p,
+.rr-source {
+  font-size: 10px !important;
+  color: var(--muted);
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.rr-source {
+  margin: 13px 0;
+}
+.rr-equation {
+  border-top: 1px solid var(--line);
+  padding-top: 15px;
+  margin-top: 15px;
+  justify-content: flex-start;
+  font-size: 11px;
+  color: var(--muted);
+}
+.rr-equation > b {
+  font-weight: 400;
+  opacity: 0.6;
+}
+.rr-equation > strong {
+  margin-left: auto;
+  color: var(--rr-green);
+  font-size: 16px;
+  font-weight: 550;
+}
+.rr-equation strong small {
+  display: block;
+  font-size: 9px;
+  color: var(--muted);
+  font-weight: 400;
+  margin-top: 4px;
+}
+.rr-equation button {
+  font-size: 10px;
+  padding: 8px;
+}
+.rr-save {
+  padding: 22px 0 0;
+  margin-top: 22px;
+  border-top: 1px solid var(--line);
+}
+.rr-save > span {
+  font-size: 10px;
+  color: var(--muted);
+  margin-right: auto;
+}
+.rr-save button {
+  font-size: 12px;
+}
+.rr-consent {
+  display: block;
+  font-size: 10px !important;
+  line-height: 1.6;
+  color: var(--muted);
+  margin-top: 12px;
+}
+.rr-empty {
+  padding: 35px 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+.rr-empty strong {
+  display: block;
+  font-size: 18px;
+  color: var(--ink);
+}
+.rr-empty p {
+  max-width: 450px;
+  margin: 15px auto;
+  line-height: 1.7;
+}
+.rr-empty button {
+  font-size: 11px;
+}
+.rr-pending {
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+}
+.rr-pending p {
+  font-size: 11px;
+  color: var(--muted);
+}
+.rr-pending button {
+  font-size: 11px;
+}
+.rr-forecast svg {
+  width: 100%;
+  max-height: 260px;
+  display: block;
+  color: var(--muted);
+}
+.rr-forecast svg text {
+  fill: currentColor;
+  font-size: 10px;
+}
+.rr-forecast svg rect {
+  fill: var(--rr-green);
+}
+.rr-links {
+  font-size: 11px;
+  padding: 0 3px 20px;
+}
+.rr-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 160;
+  background: #142b2266;
+  backdrop-filter: blur(3px);
+  display: flex;
+  justify-content: flex-end;
+}
+.rr-drawer {
+  background: var(--card);
+  color: var(--ink);
+  width: min(600px, 100vw);
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -10px 0 50px #14291f22;
+  min-width: 0;
+}
+.rr-drawer-head {
+  padding: 27px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  border-bottom: 1px solid var(--line);
+}
+.rr-drawer-head small {
+  font-size: 9px;
+  letter-spacing: 1.6px;
+  color: var(--muted);
+}
+.rr-drawer-head h2 {
+  font-size: 22px;
+  margin: 10px 0 0;
+  letter-spacing: -0.5px;
+}
+.rr-drawer-head button {
+  background: var(--soft);
+  color: var(--ink);
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  flex-shrink: 0;
+}
+.rr-drawer-body {
+  padding: 27px;
+  overflow: auto;
+  min-height: 0;
+}
+.rr-drawer-body > p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.rr-drawer-body > label {
+  margin: 20px 0;
+}
+.rr-drawer-body textarea {
+  min-height: 110px;
+  line-height: 1.7;
+}
+.rr-drawer-body > small {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.8;
+  margin: 14px 0;
+}
+.rr-drawer-body > a {
+  display: block;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 20px 0;
+}
+.rr-drawer-body > button {
+  font-size: 12px;
+  margin-top: 12px;
+}
+.rr-assistant-hint {
+  padding: 18px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 12px;
+  margin: 20px 0;
+}
+.rr-assistant-hint p {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin-bottom: 0;
+}
+.rr-drawer-body textarea[aria-label="Revenue description"] {
+  min-height: 180px;
+}
+@media (max-width: 1150px) {
+  .rr-line-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .rr-line-grid > label:last-child {
+    grid-column: 1/-1;
+    max-width: 300px;
+  }
+  .rr-summary strong {
+    font-size: 26px;
+  }
+}
+@media (max-width: 700px) {
+  .rr-summary {
+    grid-template-columns: 1fr;
+  }
+  .rr-line-grid {
+    grid-template-columns: 1fr;
+  }
+  .rr-custom-rate {
+    grid-template-columns: 1fr 1fr;
+  }
+  .rr-custom-rate p {
+    grid-column: 1/-1;
+  }
+  .rr-line-grid > label:last-child {
+    max-width: none;
+  }
+  .revenue-rate-workspace .rr-income,
+  .revenue-rate-workspace .rr-forecast {
+    padding: 16px;
+  }
+  .rr-line {
+    padding: 15px;
+  }
+  .rr-equation > strong {
+    margin-left: 0;
+  }
+  .rr-save {
+    justify-content: flex-end;
+  }
+  .rr-save > span {
+    width: 100%;
+  }
+  .rr-drawer-body,
+  .rr-drawer-head {
+    padding: 20px;
+  }
+}
+.rr-mece-dialog {
+  width: min(1080px, calc(100vw - 48px));
+  height: calc(100dvh - 48px);
+  margin: auto;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 25px 100px #0b211a44;
+}
+.rr-mece-dialog .rr-drawer-body {
+  padding: 24px;
+}
+.rr-mece-dialog .rr-income {
+  padding: 0 !important;
+  border: 0;
+  margin: 28px 0 0 !important;
+  box-shadow: none;
+}
+.rr-mece-dialog .rr-drawer-body > label textarea {
+  min-height: 95px;
+}
+.rr-method-select {
+  max-width: 320px;
+  margin: 12px 0;
+}
+.rr-method-formula {
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--soft);
+  padding: 11px 13px;
+  border-radius: 7px;
+  line-height: 1.6;
+}
+.rr-review-calendar,
+.rr-range-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 14px 0 22px;
+}
+.rr-review-calendar {
+  padding: 16px;
+  background: var(--soft);
+  border-radius: 9px;
+}
+.rr-review-calendar label {
+  font-size: 11px;
+  color: var(--muted);
+}
+.rr-review-calendar input {
+  width: 100%;
+  min-width: 0;
+  margin-top: 7px;
+  font-size: 12px;
+}
+.rr-review-calendar p {
+  grid-column: 1/-1;
+  font-size: 10px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.7;
+}
+.rr-price-review {
+  font-size: 11px;
+  line-height: 1.7;
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.rr-price-review summary {
+  font-size: 11px;
+  cursor: pointer;
+}
+.rr-price-review textarea {
+  min-height: 65px;
+}
+.rr-range-grid strong {
+  display: block;
+  margin-top: 12px;
+  color: var(--ink);
+  font-size: 15px;
+}
+.rr-price-review small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  margin: 9px 0;
+}
+.rr-price-review p {
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.rr-price-review button {
+  font-size: 11px;
+}
+.rr-price-proposal {
+  border: 1px solid #83b6a5;
+  border-radius: 10px;
+  padding: 15px;
+  background: var(--soft);
+  margin-top: 15px;
+}
+.rr-price-proposal > strong {
+  font-size: 16px;
+}
+.rr-line .rev-inline-form {
+  padding: 12px 0;
+  border: 0;
+  box-shadow: none;
+  margin: 0;
+}
+.rr-line .revenue-lines-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+}
+.rr-line .revenue-lines-fields > p,
+.rr-line .revenue-lines-fields > details,
+.rr-line .revenue-lines-fields > .error {
+  grid-column: 1/-1;
+}
+.rr-line .revenue-lines-fields .field {
+  min-width: 0;
+}
+.rr-line .revenue-lines-fields input,
+.rr-line .revenue-lines-fields select {
+  max-width: 100%;
+}
+@media (max-width: 680px) {
+  .rr-mece-dialog {
+    width: 100vw;
+    height: 100dvh;
+    margin: 0;
+    border-radius: 0;
+  }
+  .rr-mece-dialog .rr-drawer-body {
+    padding: 16px;
+  }
+  .rr-review-calendar,
+  .rr-range-grid {
+    gap: 8px;
+  }
+  .rr-line .revenue-lines-fields {
+    grid-template-columns: 1fr;
+  }
+}
+.rr-reinterpret {
+  margin: 20px 0 0;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  font-size: 11px;
+}
+.rr-reinterpret summary {
+  cursor: pointer;
+  font-size: 12px;
+}
+.rr-reinterpret > p {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+.rr-mece-dialog .rr-income {
+  margin-top: 0 !important;
+}
+.rr-mece-dialog .rr-section-head {
+  margin-bottom: 12px;
+}
+.rr-mece-dialog .rr-review-calendar {
+  margin-top: 10px;
+  margin-bottom: 16px;
+  padding: 12px;
+}
+/* Simple defaults; the technical detail remains one click away. */
+.rr-line label,
+.rr-drawer-body label {
+  font-size: 13px;
+  color: var(--ink);
+}
+.rr-line input,
+.rr-line select,
+.rr-drawer-body input,
+.rr-drawer-body select {
+  font-size: 14px;
+  min-height: 46px;
+  border-radius: 9px;
+  padding: 11px 12px;
+}
+.rr-line input:focus-visible,
+.rr-line select:focus-visible,
+.rr-drawer-body input:focus-visible,
+.rr-drawer-body select:focus-visible {
+  outline: 2px solid var(--rr-green);
+  outline-offset: 2px;
+}
+.rr-line-top {
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+.rr-tag {
+  font-size: 11px;
+  letter-spacing: 0;
+  text-transform: none;
+  padding: 8px 10px;
+}
+.rr-method-select {
+  max-width: none;
+  margin: 10px 0 18px;
+}
+.rr-line-grid {
+  gap: 18px;
+}
+.rr-method-formula {
+  font-size: 12px;
+}
+.rr-time-options,
+.rr-more-options {
+  font-size: 13px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 12px 14px;
+  margin: 14px 0;
+}
+.rr-time-options summary,
+.rr-more-options summary,
+.rr-price-review summary {
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.rr-time-options .rr-review-calendar {
+  margin-bottom: 0;
+}
+.rr-more-options {
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  padding: 14px 0;
+  margin: 10px 0 0;
+}
+.rr-price-review {
+  margin-top: 0;
+  padding-top: 12px;
+}
+.rr-find-price {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+.rr-find-price small {
+  font-size: 11px;
+  color: var(--muted);
+  max-width: 300px;
+  line-height: 1.5;
+}
+.rr-price-help > .rr-price-review {
+  margin-top: 8px;
+}
+.rr-price-help button,
+.rr-more-options button,
+.rr-section-head button,
+.rr-save button {
+  font-size: 13px;
+  min-height: 42px;
+  padding: 10px 14px;
+}
+.rr-line .revenue-lines-fields {
+  gap: 18px;
+}
+.rr-line .rev-inline-form h3 {
+  font-size: 17px;
+  margin: 10px 0 18px;
+}
+.rr-mece-dialog .rr-drawer-head {
+  padding: 20px 24px;
+}
+.rr-line .rr-source {
+  font-size: 12px;
+  line-height: 1.6;
+}
+.rr-equation {
+  font-size: 12px;
+}
+.rr-price-basis {
+  font-size: 10px !important;
+}
+.rr-reinterpret .rr-assistant-hint {
+  display: none;
+}
+@media (max-width: 680px) {
+  .rr-time-options summary {
+    line-height: 1.7;
+  }
+  .rr-line-grid {
+    grid-template-columns: 1fr;
+  }
+  .rr-line {
+    padding: 16px;
+  }
+  .rr-mece-dialog .rr-drawer-head {
+    padding: 16px;
+  }
+}
+.rr-payment-details {
+  margin: 12px 0;
+  font-size: 13px;
+}
+.rr-payment-details summary {
+  font-weight: 500;
+  cursor: pointer;
+  padding: 12px;
+  background: var(--soft);
+  border-radius: 8px;
+  line-height: 1.6;
+}
+.rr-contract-value {
+  font-size: 18px;
+  font-weight: 550;
+  color: var(--rr-green);
+  margin: 16px 0;
+}

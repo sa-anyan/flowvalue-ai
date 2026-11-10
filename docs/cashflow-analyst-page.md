@@ -116,3 +116,45 @@ versioned assumption-save pathway, retains the other operating-study assumptions
 and links to Engineering Data for recalculation. Annual phasing remains owned by
 Cashflow. The dashboard does not calculate finance, invoke AI or mutate inputs
 when exploring charts. Existing report/snapshot exports remain available.
+
+## Monte Carlo uncertainty discovery and probability presentation
+
+Monte Carlo discovers editable inputs consumed by the current canonical engines:
+engineering sizing/conversion assumptions, prices and supported extrapolation
+exponents, selected and implicit CAPEX factors, OPEX factors/consumption/pricing,
+commercial terms, annual production utilization and supported financial assumptions.
+Implicit CAPEX factors are resolved using the selected canonical method and its
+published bounds, skipping embedded/non-additive, excluded and overridden lines.
+Only an enabled factor is materialized in a simulation copy, never in the baseline.
+
+Saved low/high values and input-provenance ranges are retained. Missing ranges are
+visible but not fabricated or automatically enabled. The one-time optional AI
+range advisor now covers both engineering and economic parameters; proposals stay
+unverified and require user selection. No AI calls are made per iteration. A
+single action can select all numeric inputs with usable bounds, subject to the
+existing 250-active-driver limit; model configurations require separate review.
+
+This is not permission to randomize all numbers in source code. Unit constants,
+workbook facts, equation coefficients with no supported editable uncertainty
+contract, identifiers, quantities such as asset counts requiring discrete scope
+review, and calculated outputs are not generic sampling targets. Known catalog
+ranges describe allowable scenarios, not calibrated probability distributions.
+Physical dependencies still require explicit reviewed correlations. Current
+adapters and their registered fields define coverage; universal coverage is not
+claimed. Economic-saving and arbitrary new model-coefficient adapters remain
+outside this extension.
+
+Output histograms now default to empirical probability per bin, with run-count
+mode, eligible-observation denominator, consistent axis units and P10/P50/P90
+markers. A constant output is labelled as no spread. No normal curve is fitted or
+implied automatically; normal/lognormal input distributions remain explicit,
+bounded setup choices. Unsupported scope and unsuccessful calculations stay
+separate from probability distributions through the existing summary machinery.
+
+Scope-dependent inputs are separate from missing ranges. For example, a positive
+off-site CAPEX allowance requires the existing nonoverlap confirmation. Discovery
+marks that factor as requiring scope review; bulk selection excludes it, and the
+backend independently prevents bypassing that prerequisite. No scope confirmation
+is invented. Preflight and simulation audit now include nested canonical result
+issues, so a missing CAPEX total cannot be hidden behind a 100% equipment-register
+coverage count.

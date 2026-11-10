@@ -1,22 +1,363 @@
-'use client';
-import {useEffect,useState} from 'react';
-import {RevenueSlider} from './revenue-slider';
-type Json=null|string|number|boolean|Json[]|{[key:string]:Json};
-type Row={[key:string]:Json};
-type Field={key:string;label:string;kind:string;required:boolean;choices:string[]};
-type Forms=Record<string,{label:string;variants:Record<string,{label:string;fields:Field[]}>}>;
-export function RevenueMethodForm({assessmentId,revision,line,onApply,onCancel,inline=false}:{assessmentId:string;revision:number;line?:Row;onApply:(line:Row)=>void|Promise<void>;onCancel:()=>void;inline?:boolean}){
- const prior=(line?.method_form||{}) as Row;
- const first=(Array.isArray(line?.years)?line.years[0]:{}) as Row;
- const suggestedSubtype=String(line?.category)==='other_contractual_income'?(Number(first.fixed_payment)>0&&!Number(first.rate)?'fixed':'variable'):'';
- const legacy={name:line?.name||'',description:line?.rationale||'',quantity:first.quantity??'',rate:first.rate??'',unit:line?.quantity_unit||'',fixed:first.fixed_payment??'',fixed_fee:first.fixed_payment??'',fixed_scope:line?.fixed_variable_distinct?String(line?.rationale||''):'',availability:first.availability??'',period:line?.rate_period==='per_unit'?'':line?.rate_period||'',eligibility:line?.eligibility_basis||'',ownership:'',escalation:first.escalation??''};
- const [forms,setForms]=useState<Forms>({}),[method,setMethod]=useState(String(prior.method||line?.category||'product_sales')),[subtype,setSubtype]=useState(String(prior.subtype||suggestedSubtype));
- const [values,setValues]=useState<Record<string,string|number>>(()=>{const inputs=(prior.inputs||legacy) as Row;return Object.fromEntries(Object.entries(inputs).filter(([,v])=>typeof v==='string'||typeof v==='number')) as Record<string,string|number>;}),[error,setError]=useState(''),[busy,setBusy]=useState(false);
- useEffect(()=>{let active=true;fetch('/api/catalogue/revenue-forms').then(async r=>{if(!r.ok)throw new Error('Could not load revenue methods');return r.json();}).then((data:Forms)=>{if(!active)return;setForms(data);setSubtype(current=>current||Object.keys(data[method]?.variants||{})[0]||'');}).catch(e=>{if(active)setError(e.message);});return()=>{active=false;};},[]);
- const fields=forms[method]?.variants[subtype]?.fields||[];
- const set=(key:string,value:string)=>setValues(v=>({...v,[key]:value}));
- async function apply(){setBusy(true);setError('');try{const allowed=new Set(['name','description',...fields.map(f=>f.key)]);const inputs=Object.fromEntries(Object.entries(values).filter(([key,value])=>allowed.has(key)&&value!==''));const r=await fetch(`/api/assessments/${assessmentId}/revenue-line-preview`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision,method,subtype,inputs,identity:line?.id||null})});const value=await r.json();if(!r.ok)throw new Error(typeof value.detail==='string'?value.detail:'Check the required inputs');await onApply(value);}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
- const required=fields.filter(f=>f.required),optional=fields.filter(f=>!f.required);
- function input(f:Field){const required=f.required||(f.key==='fixed_scope'&&Number(values.fixed_fee)>0);return <label className="field" key={f.key}><span>{f.label}{required?' *':''}</span>{f.kind==='select'?<select required={required} value={String(values[f.key]??'')} onChange={e=>set(f.key,e.target.value)}><option value="">Choose…</option>{f.choices.map(c=><option key={c} value={c}>{c}</option>)}</select>:<input required={required} type={f.kind==='number'?'number':'text'} step={f.kind==='number'?'any':undefined} min={f.kind==='number'&&f.key!=='escalation'?0:undefined} max={f.key==='availability'?1:undefined} value={values[f.key]??''} onChange={e=>set(f.key,e.target.value)}/>} {f.kind==='number'&&f.key!=='escalation'&&<RevenueSlider label={f.label} value={values[f.key]} fraction={f.key==='availability'} onChange={v=>set(f.key,String(v))}/>}</label>;}
- return <section className={inline?"rev-inline-form":"rev-method-card"}><h3>{line?String(line.name||'Edit revenue'):'Add revenue'}</h3><p>Choose what earns the payment. Only the inputs for that method are shown.</p><form onSubmit={e=>{e.preventDefault();void apply();}}><fieldset disabled={busy} className="revenue-lines-fields"><label className="field"><span>MECE method *</span><select required value={method} onChange={e=>{const m=e.target.value;setMethod(m);setSubtype(Object.keys(forms[m].variants)[0]);setValues(v=>({name:v.name||'',description:v.description||''}));setError('');}}>{Object.entries(forms).map(([id,m])=><option key={id} value={id}>{m.label}</option>)}</select></label><label className="field"><span>Payment basis *</span><select required value={subtype} onChange={e=>{setSubtype(e.target.value);setValues(v=>({name:v.name||'',description:v.description||''}));}}>{Object.entries(forms[method]?.variants||{}).map(([id,v])=><option key={id} value={id}>{v.label}</option>)}</select></label>{input({key:'name',label:'Revenue line name',kind:'text',required:true,choices:[]})}{input({key:'description',label:'Description and commercial basis',kind:'text',required:true,choices:[]})}{required.map(input)}{optional.length>0&&<details><summary>Optional terms</summary>{optional.map(input)}</details>}<p className="muted">Amounts use the saved project currency. Stream-linked quantities must be entered explicitly when converting an existing line; original workbook observations stay unchanged. These terms apply to each operating year; blank optional fees mean no fee and blank escalation means constant prices. Existing annual schedules remain available under advanced settings.</p>{error&&<p role="alert" className="error">{error}</p>}<button disabled={busy||!fields.length} type="submit">{busy?'Saving…':line&&inline?'Save changes':line?'Update draft line':'Add to draft'}</button><button type="button" className="secondary" onClick={onCancel}>Cancel</button></fieldset></form></section>;
+"use client";
+import { useEffect, useState } from "react";
+import { RevenueSlider } from "./revenue-slider";
+import { displayInput, storedInput } from "../blocks/revenue/simple-inputs";
+type Json = null | string | number | boolean | Json[] | { [key: string]: Json };
+type Row = { [key: string]: Json };
+type Field = {
+  key: string;
+  label: string;
+  kind: string;
+  required: boolean;
+  choices: string[];
+};
+type Forms = Record<
+  string,
+  {
+    label: string;
+    variants: Record<string, { label: string; fields: Field[] }>;
+  }
+>;
+export function RevenueMethodForm({
+  assessmentId,
+  revision,
+  line,
+  onApply,
+  onCancel,
+  inline = false,
+  disabled = false,
+  fixedMethod,
+  submitLabel,
+}: {
+  assessmentId: string;
+  revision: number;
+  line?: Row;
+  onApply: (line: Row) => void | Promise<void>;
+  onCancel: () => void;
+  inline?: boolean;
+  disabled?: boolean;
+  fixedMethod?: string;
+  submitLabel?: string;
+}) {
+  const prior = (line?.method_form || {}) as Row;
+  const first = (Array.isArray(line?.years) ? line.years[0] : {}) as Row;
+  const suggestedSubtype =
+    String(line?.category) === "other_contractual_income"
+      ? Number(first.fixed_payment) > 0 && !Number(first.rate)
+        ? "fixed"
+        : "variable"
+      : "";
+  const legacy = {
+    name: line?.name || "",
+    description: line?.rationale || "",
+    quantity: first.quantity ?? "",
+    rate: first.rate ?? "",
+    unit: line?.quantity_unit || "",
+    fixed: first.fixed_payment ?? "",
+    fixed_fee: first.fixed_payment ?? "",
+    fixed_scope: line?.fixed_variable_distinct
+      ? String(line?.rationale || "")
+      : "",
+    availability: first.availability ?? "",
+    period: line?.rate_period === "per_unit" ? "" : line?.rate_period || "",
+    eligibility: line?.eligibility_basis || "",
+    ownership: "",
+    escalation: first.escalation ?? "",
+  };
+  const [forms, setForms] = useState<Forms>({}),
+    [method, setMethod] = useState(
+      String(prior.method || line?.category || "product_sales"),
+    ),
+    [subtype, setSubtype] = useState(String(prior.subtype || suggestedSubtype));
+  const [values, setValues] = useState<Record<string, string | number>>(() => {
+      const inputs = (prior.inputs || legacy) as Row;
+      return Object.fromEntries(
+        Object.entries(inputs).filter(
+          ([, v]) => typeof v === "string" || typeof v === "number",
+        ),
+      ) as Record<string, string | number>;
+    }),
+    [error, setError] = useState(""),
+    [busy, setBusy] = useState(false);
+  useEffect(() => {
+    let active = true;
+    fetch("/api/catalogue/revenue-forms")
+      .then(async (r) => {
+        if (!r.ok) throw new Error("Could not load revenue methods");
+        return r.json();
+      })
+      .then((data: Forms) => {
+        if (!active) return;
+        setForms(data);
+        setSubtype(
+          (current) =>
+            current || Object.keys(data[method]?.variants || {})[0] || "",
+        );
+      })
+      .catch((e) => {
+        if (active) setError(e.message);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+  const fields = forms[method]?.variants[subtype]?.fields || [];
+  const set = (key: string, value: string) =>
+    setValues((v) => ({ ...v, [key]: value }));
+  async function apply() {
+    setBusy(true);
+    setError("");
+    try {
+      const allowed = new Set([
+        "name",
+        "description",
+        ...fields.map((f) => f.key),
+      ]);
+      const inputs = Object.fromEntries(
+        Object.entries(values).filter(
+          ([key, value]) => allowed.has(key) && value !== "",
+        ),
+      );
+      if (fixedMethod && !inputs.description)
+        inputs.description = `User-entered ${forms[method]?.label || "income"}: ${inputs.name || "payment"}`;
+      const r = await fetch(
+        `/api/assessments/${assessmentId}/revenue-line-preview`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            revision,
+            method,
+            subtype,
+            inputs,
+            identity: line?.id || null,
+          }),
+        },
+      );
+      const value = await r.json();
+      if (!r.ok)
+        throw new Error(
+          typeof value.detail === "string"
+            ? value.detail
+            : "Check the required inputs",
+        );
+      await onApply(value);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  const required = fields.filter((f) => f.required),
+    optional = fields.filter((f) => !f.required);
+  function input(f: Field) {
+    const required =
+      f.required || (f.key === "fixed_scope" && Number(values.fixed_fee) > 0);
+    const percent = Boolean(
+      fixedMethod && ["availability", "escalation"].includes(f.key),
+    );
+    return (
+      <label className="field" key={f.key}>
+        <span>
+          {fixedMethod
+            ? (
+                {
+                  name: "Name",
+                  description: "Notes",
+                  quantity:
+                    method === "capacity_availability"
+                      ? "Reserved capacity"
+                      : "Units per year",
+                  rate: "Price per unit",
+                  unit: "Unit (e.g. kg or m³)",
+                  fixed: "Payment per year",
+                  availability: "Available time (%)",
+                  period: "Paid how often?",
+                  escalation: "Yearly price change (%)",
+                  eligibility: "Why do these credits qualify?",
+                  ownership: "Who owns these credits?",
+                } as Record<string, string>
+              )[f.key] || f.label
+            : f.label}
+          {required ? " *" : ""}
+        </span>
+        {f.kind === "select" ? (
+          <select
+            required={required}
+            value={String(values[f.key] ?? "")}
+            onChange={(e) => set(f.key, e.target.value)}
+          >
+            <option value="">Choose…</option>
+            {f.choices.map((c) => (
+              <option key={c} value={c}>
+                {fixedMethod
+                  ? (
+                      {
+                        monthly: "Every month",
+                        annual: "Once a year",
+                        per_unit: "For each unit",
+                      } as Record<string, string>
+                    )[c] || c
+                  : c}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            required={required}
+            type={f.kind === "number" ? "number" : "text"}
+            step={f.kind === "number" ? "any" : undefined}
+            min={f.kind === "number" && f.key !== "escalation" ? 0 : undefined}
+            max={f.key === "availability" ? (percent ? 100 : 1) : undefined}
+            value={displayInput(values[f.key], percent)}
+            onChange={(e) => set(f.key, storedInput(e.target.value, percent))}
+          />
+        )}{" "}
+        {!fixedMethod && f.kind === "number" && f.key !== "escalation" && (
+          <RevenueSlider
+            label={f.label}
+            value={values[f.key]}
+            fraction={f.key === "availability"}
+            onChange={(v) => set(f.key, String(v))}
+          />
+        )}
+      </label>
+    );
+  }
+  return (
+    <section className={inline ? "rev-inline-form" : "rev-method-card"}>
+      <h3>{line ? String(line.name || "Edit revenue") : "Add revenue"}</h3>
+      {!fixedMethod && <p>Choose a payment type and fill in its details.</p>}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          void apply();
+        }}
+      >
+        <fieldset disabled={busy || disabled} className="revenue-lines-fields">
+          {!fixedMethod && (
+            <label className="field">
+              <span>MECE method *</span>
+              <select
+                required
+                value={method}
+                onChange={(e) => {
+                  const m = e.target.value;
+                  setMethod(m);
+                  setSubtype(Object.keys(forms[m].variants)[0]);
+                  setValues((v) => ({
+                    name: v.name || "",
+                    description: v.description || "",
+                  }));
+                  setError("");
+                }}
+              >
+                {Object.entries(forms).map(([id, m]) => (
+                  <option key={id} value={id}>
+                    {m.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          <label className="field">
+            <span>{fixedMethod ? "How is it paid?" : "Payment basis *"}</span>
+            <select
+              required
+              value={subtype}
+              onChange={(e) => {
+                setSubtype(e.target.value);
+                setValues((v) => ({
+                  name: v.name || "",
+                  description: v.description || "",
+                }));
+              }}
+            >
+              {Object.entries(forms[method]?.variants || {}).map(([id, v]) => (
+                <option key={id} value={id}>
+                  {fixedMethod
+                    ? (
+                        {
+                          fixed: "Fixed yearly payment",
+                          variable: "Payment for each unit",
+                          reservation: "Payment for reserved capacity",
+                          usage: "Payment for usage",
+                          subscription: "Monthly rent",
+                          credits: "Payment for credits",
+                          processed_quantity: "Payment for processed material",
+                        } as Record<string, string>
+                      )[id] || v.label
+                    : v.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          {input({
+            key: "name",
+            label: "Revenue line name",
+            kind: "text",
+            required: true,
+            choices: [],
+          })}
+          {!fixedMethod && (
+            <>
+              {" "}
+              {input({
+                key: "description",
+                label: "Description and commercial basis",
+                kind: "text",
+                required: !fixedMethod,
+                choices: [],
+              })}
+            </>
+          )}
+          {required.map(input)}
+          {optional.length > 0 && (
+            <details>
+              <summary>More options</summary>
+              {fixedMethod &&
+                input({
+                  key: "description",
+                  label: "Notes",
+                  kind: "text",
+                  required: false,
+                  choices: [],
+                })}
+              {optional.map(input)}
+            </details>
+          )}
+          {!fixedMethod && (
+            <p className="muted">
+              Amounts use the saved project currency. Stream-linked quantities
+              must be entered explicitly when converting an existing line;
+              original workbook observations stay unchanged. These terms apply
+              to each operating year; blank optional fees mean no fee and blank
+              escalation means constant prices. Existing annual schedules remain
+              available under advanced settings.
+            </p>
+          )}
+
+          {error && (
+            <p role="alert" className="error">
+              {error}
+            </p>
+          )}
+          <button disabled={busy || !fields.length} type="submit">
+            {busy
+              ? "Saving…"
+              : submitLabel
+                ? submitLabel
+                : line && inline
+                  ? "Save changes"
+                  : line
+                    ? "Update draft line"
+                    : "Add to draft"}
+          </button>
+          <button type="button" className="secondary" onClick={onCancel}>
+            Cancel
+          </button>
+        </fieldset>
+      </form>
+    </section>
+  );
 }

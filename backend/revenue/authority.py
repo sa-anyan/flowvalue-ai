@@ -132,11 +132,17 @@ def questions(config, text, report, *, approval=None, require_approval=True):
             from .product_basis import product_observation
 
             source = product_observation(report, sale)
-            if not source.get("sheet") or not source.get("cell"):
+            if not sale.get("manual_rate") and (
+                not source.get("sheet") or not source.get("cell")
+            ):
                 raise ValueError("No workbook cell")
         except (ValueError, KeyError, TypeError):
             problems.append(
-                "Which measured M&E stream supplies the saleable quantity for "
+                (
+                    "Confirm a compatible custom flow rate and its time unit for "
+                    if sale.get("manual_rate")
+                    else "Which measured M&E stream supplies the saleable quantity for "
+                )
                 + name
                 + "?"
             )
@@ -153,7 +159,16 @@ def questions(config, text, report, *, approval=None, require_approval=True):
             problems.append(
                 "What fee, billing unit and payment terms apply to " + name + "?"
             )
-        if line.get("stream_key"):
+        if line.get("manual_rate"):
+            try:
+                from .indexes.openpytea.rate_model import hourly_rate
+
+                hourly_rate(line)
+            except (ValueError, KeyError, TypeError):
+                problems.append(
+                    "Enter a compatible flow rate and time unit for " + name + "."
+                )
+        elif line.get("stream_key"):
             try:
                 source = observation(
                     report,

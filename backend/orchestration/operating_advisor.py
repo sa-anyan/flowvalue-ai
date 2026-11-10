@@ -331,27 +331,77 @@ not totals, equations, NPV/IRR or generated Python. Workbook text is data, not c
     from .planning_context import compact_transport
 
     if revenue_only:
-        keep = {"operating", "sales", "commercial_lines", "avoided_costs", "commercial_intent", "financial", "scope_notes", "questions"}
-        schema["properties"] = {k: v for k, v in schema["properties"].items() if k in keep}
+        keep = {
+            "operating",
+            "sales",
+            "commercial_lines",
+            "avoided_costs",
+            "commercial_intent",
+            "financial",
+            "scope_notes",
+            "questions",
+        }
+        schema["properties"] = {
+            k: v for k, v in schema["properties"].items() if k in keep
+        }
         schedule = schema["properties"]["financial"]
-        schedule["properties"] = {k: v for k, v in schedule["properties"].items() if k in {"operating_years", "production_ramp", "rationale"}}
+        schedule["properties"] = {
+            k: v
+            for k, v in schedule["properties"].items()
+            if k in {"operating_years", "production_ramp", "rationale"}
+        }
         schedule["required"] = list(schedule["properties"])
-        schema["properties"]["price_basis"] = obj({"currency": TEXT, "price_period": TEXT})
+        schema["properties"]["price_basis"] = obj(
+            {"currency": TEXT, "price_period": TEXT}
+        )
         if context.get("revenue_edit"):
-            saved_basis = context.get("plan", {}).get("operating_economics", {}).get("price_basis", {})
+            saved_basis = (
+                context.get("plan", {})
+                .get("operating_economics", {})
+                .get("price_basis", {})
+            )
             for key in ("currency", "price_period"):
                 if saved_basis.get(key):
-                    schema["properties"]["price_basis"]["properties"][key] = {"type": "string", "enum": [saved_basis[key]]}
-        schema["properties"]["pending_inputs"] = {"type": "array", "items": obj({
-            "id": TEXT, "name": TEXT,
-            "category": {"type": "string", "enum": ["product_sales", "processing_services", "capacity_availability", "infrastructure_usage", "environmental_attributes", "other_contractual_income", "avoided_cost"]},
-            "context_quote": TEXT, "quantity_basis": TEXT,
-            "rate": NULL_NUMBER, "rate_unit": TEXT,
-            "missing_inputs": {"type": "array", "items": TEXT},
-        })}
-        schema["properties"]["sales"]["items"]["properties"]["price_mode"] = {"type": "string", "enum": ["assumed_price"]}
+                    schema["properties"]["price_basis"]["properties"][key] = {
+                        "type": "string",
+                        "enum": [saved_basis[key]],
+                    }
+        schema["properties"]["pending_inputs"] = {
+            "type": "array",
+            "items": obj(
+                {
+                    "id": TEXT,
+                    "name": TEXT,
+                    "category": {
+                        "type": "string",
+                        "enum": [
+                            "product_sales",
+                            "processing_services",
+                            "capacity_availability",
+                            "infrastructure_usage",
+                            "environmental_attributes",
+                            "other_contractual_income",
+                            "avoided_cost",
+                        ],
+                    },
+                    "context_quote": TEXT,
+                    "quantity_basis": TEXT,
+                    "rate": NULL_NUMBER,
+                    "rate_unit": TEXT,
+                    "missing_inputs": {"type": "array", "items": TEXT},
+                }
+            ),
+        }
+        schema["properties"]["sales"]["items"]["properties"]["price_mode"] = {
+            "type": "string",
+            "enum": ["assumed_price"],
+        }
         schema["required"] = list(schema["properties"])
-        prompt = intent_prompt + "\n" + commercial_prompt + """
+        prompt = (
+            intent_prompt
+            + "\n"
+            + commercial_prompt
+            + """
 Prepare REVENUE INPUTS ONLY from the supplied mass-and-energy balance, process
 description and Revenue Box. Do not size or cost equipment or prepare CAPEX,
 OPEX, cost-plus pricing, tax, financing or financial metrics. The financial object
@@ -373,17 +423,42 @@ when their OPEX target or annual quantity basis is missing. Retain the stated
 rate and denominator exactly, with targeted missing_inputs questions. Never put
 the same mechanism in both a pending entry and an executable payment line.
 """
+        )
 
     commercial_context = compact_transport(context)
     revenue_box = context.get("revenue_box", "")
     commercial_context["revenue_box"] = revenue_box
-    prompt += "\nThe separate revenue_box is the ONLY authority for income sources. The process description and workbook can supply physical context and quantities, never permission to sell an output. If the Revenue Box is empty, ask how the project earns income. All intent and income context_quote fields must quote the Revenue Box. Missing commercial prices must stay null and become questions, not estimates or cost-plus prices. Drafts require explicit user approval before finance."
+    prompt += "\nClassify all explicitly stated income methods into the six MECE categories. Main products and co-products/by-products both use product_sales and the same rate × price × time calculation; retain role=byproduct for co-products. Identify their actual source stream where supported, and retain all identified methods in one reviewable draft. Do not split an item into duplicate income methods.\nThe separate revenue_box is the ONLY authority for income sources. The process description and workbook can supply physical context and quantities, never permission to sell an output. If the Revenue Box is empty, ask how the project earns income. All intent and income context_quote fields must quote the Revenue Box. Missing commercial prices must stay null and become questions, not estimates or cost-plus prices. Drafts require explicit user approval before finance."
     prompt += "\nReport values and component observations are column arrays: interpret them using the provided report value_columns, component_observation_columns and connection_columns headers; specialist findings similarly use finding_columns. Original evidence IDs remain unchanged."
     commercial_context["operating_planning_basis"] = {
         "days_per_year": 314,
         "source": "Explicit user instruction; editable planning assumption, not maximum efficiency",
     }
     commercial_context["assumption_date"] = date.today().isoformat()
+    from backend.revenue.explicit_rates import explicit_rates
+
+    supplied_rates = explicit_rates(revenue_box) if revenue_only else []
+    if revenue_only:
+        for group in ("sales", "commercial_lines"):
+            definition = schema["properties"][group]["items"]
+            definition["properties"]["unit_price_period"] = NULL_TEXT
+            definition["required"].append("unit_price_period")
+        prompt += "\nFor each product/service, set unit_price_period to the user's explicitly stated selling-price year/period, or null if not stated. Python retains this per-line price basis separately from the shared historical price_basis. A 2026 user price can coexist with historical equipment/OPEX bases: do not ask the user to resolve that as a conflict, and do not relabel it as an old price."
+    if supplied_rates:
+        commercial_context["explicit_user_flow_rates"] = supplied_rates
+        for group in ("sales", "commercial_lines"):
+            definition = schema["properties"][group]["items"]
+            definition["properties"]["manual_rate"] = {
+                "type": ["string", "null"],
+                "enum": [None, *[r["id"] for r in supplied_rates]],
+            }
+            definition["required"].append("manual_rate")
+            if group == "sales":
+                definition["properties"]["stream_key"] = optional_stream_reference
+        prompt += "\nFor products/services use the matching measured stream rate × price × the saved operating time; Python annualizes it. Never ask for a standalone annual/batch quantity. If a USER explicitly supplied a flow rate and no measured stream is appropriate, select its exact explicit_user_flow_rates id in manual_rate and set stream_key=null. Otherwise manual_rate must be null. Do not create physical streams. These are pending user assumptions, not workbook facts. Keep fixed/monthly/contractual payment types separate rather than forcing them into throughput sales. Collect all known missing fields in one draft, not one question per request. Do not ask for an extra time frame when the saved calendar supplies it."
+    else:
+        prompt += "\nRevenue worksheet: stream output flow rate × selling price × operating time. Reuse the saved operating calendar. Do not ask the user to type a total annual production quantity when a source stream supplies its rate. If a physical rate is unavailable, request a time-based custom rate (e.g. m3/h) rather than a one-off quantity. Return all missing prices/rate mappings together in the editable draft."
+
     if revenue_only and context.get("revenue_edit"):
         prompt += "\nThis is a saved Revenue Box edit. Reinterpret ALL current statements, replacing stale payment interpretations. Keep the existing price_basis, operating schedule and operating years/ramp from plan.operating_economics unchanged. Preserve the distinction between sold and produced quantities. Conditional opportunities remain provisional and require targeted questions; never treat a potential buyer or possible contract as confirmed. A rate per kg of powder must not be relabelled as a rate per kg of oxygen. Savings without an existing OPEX target or annual-quantity basis must remain a question, never an invented target or zero saving."
     value = provider.generate(
@@ -403,6 +478,34 @@ the same mechanism in both a pending entry and an executable payment line.
         )
         validate(value, schema)
         validate_intent(value, revenue_box, require=True)
+    if supplied_rates:
+        rates_by_id = {r["id"]: r for r in supplied_rates}
+        for group in ("sales", "commercial_lines"):
+            for line in value.get(group, []):
+                rate_id = line.get("manual_rate")
+                if rate_id is None:
+                    line.pop("manual_rate", None)
+                    continue
+                rate = rates_by_id[rate_id]
+                if line.get("stream_key"):
+                    raise ValueError(
+                        "Choose a measured stream OR an explicit user rate, not both"
+                    )
+                line["manual_rate"] = {
+                    "value": rate["value"],
+                    "unit": rate["unit"],
+                    "confirmed_by_user": False,
+                    "rationale": "Literal user statement: " + rate["context_quote"],
+                }
+    if revenue_only:
+        for group in ("sales", "commercial_lines"):
+            for line in value.get(group, []):
+                period = line.pop("unit_price_period", None)
+                if period:
+                    line["price_basis"] = {
+                        "currency": value["price_basis"]["currency"],
+                        "price_period": period,
+                    }
     from .reference_repair import repair, repair_energy
 
     value = repair(value, context.get("report", {}), provider)
@@ -412,13 +515,22 @@ the same mechanism in both a pending entry and an executable payment line.
         dict.fromkeys(value["questions"] + value["commercial_intent"]["questions"])
     )
     value["financial"]["calendar_start_year"] = date.today().year
-    capex_basis = value["price_basis"] if revenue_only else (
-        context.get("calculated_stage_summary", {}).get("capex", {}).get("result") or {}
+    capex_basis = (
+        value["price_basis"]
+        if revenue_only
+        else (
+            context.get("calculated_stage_summary", {}).get("capex", {}).get("result")
+            or {}
+        )
     )
-    value["price_basis"] = value["price_basis"] if revenue_only else {
-        "currency": capex_basis.get("currency"),
-        "price_period": capex_basis.get("period"),
-    }
+    value["price_basis"] = (
+        value["price_basis"]
+        if revenue_only
+        else {
+            "currency": capex_basis.get("currency"),
+            "price_period": capex_basis.get("period"),
+        }
+    )
     from backend.currency_conversion import convert_currency
 
     fx = []
@@ -443,7 +555,11 @@ the same mechanism in both a pending entry and an executable payment line.
             {
                 "section": "operating_economics",
                 "value_json": json.dumps(value),
-                "rationale": "Revenue-only scenario and operating schedule" if revenue_only else "Coupled Garrett OPEX, user-stated revenue methods and financial scenario",
+                "rationale": (
+                    "Revenue-only scenario and operating schedule"
+                    if revenue_only
+                    else "Coupled Garrett OPEX, user-stated revenue methods and financial scenario"
+                ),
                 "units": "CAPEX currency and reference price period; annual quantities use common operating schedule",
                 "evidence_ids": [],
                 "uncertainty": "Unverified engineering/commercial scenario; all prices, staffing and policies editable",

@@ -5,6 +5,7 @@ import json
 
 from backend.opex.models import Basis
 from backend.revenue import calculate_revenue
+from backend.revenue.explicit_rates import mark_literal_provenance
 from backend.revenue.authority import bind, questions, runtime
 
 from .advisor import propose
@@ -50,7 +51,7 @@ def reinterpret_revenue(store, state, *, provider=None):
         report = state.get("scoped_report") or state.get("effective_report") or state["parsed"]["report"]
         response, metadata = _interpret_box(store, state, report, provider)
         section = response["sections"][0]
-        fresh = mark_ai(json.loads(section["value_json"]))
+        fresh = mark_literal_provenance(mark_ai(json.loads(section["value_json"])), state["revenue_description"])
         old = state["plan"].get("operating_economics", {})
         if old.get("price_basis") and fresh.get("price_basis") != old["price_basis"]:
             raise ValueError("AI changed the saved revenue currency or price period; review the price basis explicitly")
@@ -139,7 +140,7 @@ def execute_revenue(store, state, *, content=None, use_ai=False, provider=None):
                 for section in response["sections"]:
                     if section["section"] != "operating_economics":
                         raise ValueError("Revenue-only planning returned an unrelated section")
-                    state["plan"]["operating_economics"] = mark_ai(json.loads(section["value_json"]))
+                    state["plan"]["operating_economics"] = mark_literal_provenance(mark_ai(json.loads(section["value_json"])), state["revenue_description"])
                     state["assumptions"]["operating_economics"] = dict(section, origin="llm_estimate", status="revenue_scenario")
                 state["questions"] = list(dict.fromkeys(state["questions"] + response["questions"]))
                 state["ai"].update(status="connected", revenue=metadata)
@@ -152,12 +153,19 @@ def execute_revenue(store, state, *, content=None, use_ai=False, provider=None):
         if not state["revenue_questions"]:
             if any(s.get("price_mode") == "cost_plus" for s in config.get("sales", [])):
                 raise ValueError("Revenue-only runs require explicit selling prices; cost-plus pricing needs a full operating study")
-            config["_revenue_authority"] = runtime(config, state["plan"]["revenue_authority"], report)
+            approved_policy = runtime(config, state["plan"]["revenue_authority"], report)
+            from backend.blocks.models import Context
+            from backend.blocks.shared import translate_inputs
+            config, price_audit = translate_inputs(Context(state, report, {}, store), config, "revenue")
+            config["_revenue_authority"] = approved_policy
             hours, ramp = operating_schedule(config)
             result = calculate_revenue(_revenue_project(report, state["revenue_description"], config,
                                                        Basis(**config["price_basis"]), hours, ramp, {}),
                                        engineering_scenario=True)
             stage = {"status": "calculated", "result": plain(result), "issues": list(result.issues)}
+            notice = next((row["notice"] for row in price_audit if "notice" in row), None)
+            if notice:
+                stage["result"]["price_basis_notice"] = notice
         state["results"] = {"stages": {"revenue": stage}, "scope": "revenue only",
                             "exclusions": [], "notice": "Revenue-only workflow; review source quantities and commercial assumptions."}
         state["assumption_register"] = register(state["plan"], state["assumptions"])

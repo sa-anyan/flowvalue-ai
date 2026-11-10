@@ -8,6 +8,10 @@ def annual_billable(report, line, hours, ramp):
         raise ValueError(
             "Reservation capacity is not annual throughput; supply an explicit contracted capacity quantity"
         )
+    if line.get("manual_rate"):
+        from ..indexes.openpytea.rate_model import annual_manual_quantity
+
+        return annual_manual_quantity(line, hours, ramp)
     return annual_consumption(
         report,
         stream_key=line["stream_key"],

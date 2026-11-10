@@ -39,7 +39,11 @@ def evaluate(report, description, plan, confirmed_aliases):
             **plan,
             "revenue_authority": {
                 **authority,
-                "approval": {"fingerprint": fingerprint(plan["operating_economics"], authority["text"], expanded)},
+                "approval": {
+                    "fingerprint": fingerprint(
+                        plan["operating_economics"], authority["text"], expanded
+                    )
+                },
             },
         }
     result = run(report, description, plan, calculate_ranges=False)
@@ -76,14 +80,18 @@ def evaluate(report, description, plan, confirmed_aliases):
     capex = stages.get("capex", {}).get("result") or {}
     opex = stages.get("opex", {}).get("result") or {}
     revenue = stages.get("revenue", {}).get("result") or {}
-    year_one = next((row for row in revenue.get("annual", []) if row.get("year") == 1), {})
+    year_one = next(
+        (row for row in revenue.get("annual", []) if row.get("year") == 1), {}
+    )
     vals = {
         "npv": number(metrics.get("project_npv", {}).get("value")),
         "irr": number(metrics.get("project_irr", {}).get("value")),
         "payback": number(metrics.get("project_discounted_payback", {}).get("value")),
         "capex": number(capex.get("total_capex")),
         "opex": number(opex.get("first_year_cash_opex")),
-        "revenue": number(year_one.get("sales_revenue")) if not revenue.get("issues") else None,
+        "revenue": (
+            number(year_one.get("sales_revenue")) if not revenue.get("issues") else None
+        ),
         "known_opex": number(
             opex.get("known_cash_opex_subtotal", opex.get("first_year_cash_opex"))
         ),
@@ -103,9 +111,20 @@ def evaluate(report, description, plan, confirmed_aliases):
         for r in financial.get("ledger", [])
     ]
     issues = [
-        {"stage": k, "status": v.get("status"), "issues": v.get("issues", [])}
-        for k, v in stages.items()
-        if v.get("issues")
+        {
+            "stage": key,
+            "status": value.get("status"),
+            "issues": list(
+                dict.fromkeys(
+                    [
+                        *value.get("issues", []),
+                        *((value.get("result") or {}).get("issues") or []),
+                    ]
+                )
+            ),
+        }
+        for key, value in stages.items()
+        if value.get("issues") or (value.get("result") or {}).get("issues")
     ]
     return {
         "status": "complete" if complete else "partial",

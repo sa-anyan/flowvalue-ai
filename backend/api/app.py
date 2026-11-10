@@ -105,6 +105,7 @@ class ResearchRequest(BaseModel):
     target_id: str = Field(min_length=1, max_length=200)
     consent: bool
     focus: str = Field(default="", max_length=300)
+    recommend_price: bool = False
 
 
 class ComparablePreview(BaseModel):
@@ -211,6 +212,9 @@ def research(key: str, request: ResearchRequest):
                 EngineeringProvider(),
                 focus=request.focus,
             )
+            if request.kind == "market" and request.recommend_price:
+                from backend.revenue.price_review import propose_review
+                result.update(propose_review(state, request.target_id, result, EngineeringProvider()))
             current = store.get(key)
             current.setdefault("research_drafts", []).append(result)
             current["research_job"] = dict(current["research_job"], status="completed")
@@ -400,6 +404,15 @@ def patch(key: str, change: Edit):
         change.rationale,
         manual_revenue=change.manual_revenue,
     )
+
+
+from backend.revenue.rate_workspace import RateStudyRequest
+
+
+@app.post("/api/assessments/{key}/revenue-rates")
+def revenue_rates(key: str, request: RateStudyRequest):
+    from backend.revenue.rate_workspace import save_rates
+    return save_rates(store, key, request)
 
 
 @app.post("/api/assessments/{key}/revenue-authority")

@@ -27,6 +27,7 @@ export function variationGroup(parameter: Parameter): [Category, string] {
 }
 
 export function canSample(parameter: Parameter) {
+  if(parameter.review_required)return false;
   const {minimum, mode, maximum, hard_min, hard_max, distribution, stddev, choices, probabilities, source, rationale} = parameter;
   if (!source.trim() || !rationale.trim()) return false;
   if (distribution === 'discrete') {

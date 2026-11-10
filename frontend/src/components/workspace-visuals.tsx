@@ -6,7 +6,7 @@ const rows=(v:unknown):Row[]=>Array.isArray(v)?v.map(record):[];
 const number=(v:unknown):number|null=>v===null||v===undefined||v===''?null:Number.isFinite(Number(v))?Number(v):null;
 const fmt=(v:number)=>new Intl.NumberFormat('en-GB',{notation:'compact',maximumFractionDigits:2}).format(v);
 export function WorkspaceIcon({name}:{name:string}){
- const paths:Record<string,string>={entry:'M5 3h9l5 5v13H5z M14 3v6h5 M8 14h8 M8 18h5',overview:'M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z',data:'M3 6l9-4 9 4-9 4z M3 12l9 4 9-4 M3 18l9 4 9-4',equipment:'M4 8h16v12H4z M8 8V4h8v4 M4 13h16',capex:'M12 3v18 M17 7c-1-4-10-4-10 1s10 3 10 8-9 5-10 1',opex:'M4 3h16v18H4z M8 7h8 M8 12h8 M8 17h5',revenue:'M3 18l6-6 4 3 8-11 M15 4h6v6',cashflow:'M3 12h4l3-7 4 14 3-7h4',financial:'M4 21V3 M4 21h17 M8 17v-5 M13 17V8 M18 17V5'};
+ const paths:Record<string,string>={scenario:'M4 5h16 M4 12h16 M4 19h16 M8 2v6 M16 9v6 M10 16v6',entry:'M5 3h9l5 5v13H5z M14 3v6h5 M8 14h8 M8 18h5',overview:'M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z',data:'M3 6l9-4 9 4-9 4z M3 12l9 4 9-4 M3 18l9 4 9-4',equipment:'M4 8h16v12H4z M8 8V4h8v4 M4 13h16',capex:'M12 3v18 M17 7c-1-4-10-4-10 1s10 3 10 8-9 5-10 1',opex:'M4 3h16v18H4z M8 7h8 M8 12h8 M8 17h5',revenue:'M3 18l6-6 4 3 8-11 M15 4h6v6',cashflow:'M3 12h4l3-7 4 14 3-7h4',financial:'M4 21V3 M4 21h17 M8 17v-5 M13 17V8 M18 17V5'};
  return <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths[name]||paths.overview}/></svg>;
 }
 export function StageVisuals({page,stages}:{page:string;stages:Record<string,{result?:unknown;status:string}>}){

@@ -19,6 +19,24 @@ def _revenue_project(report, description, config, basis, hours, ramp, prices):
     from backend.revenue.authority import require
 
     require(config)
+    # A uniform explicit revenue price basis may differ from historical OPEX.
+    # After translation, all line bases must agree before monetary aggregation.
+    from backend.opex.models import Basis
+
+    price_bases = {
+        (
+            row.get("price_basis", {}).get("currency", basis.currency),
+            row.get("price_basis", {}).get("price_period", basis.price_period),
+        )
+        for group in ("sales", "commercial_lines", "avoided_costs")
+        for row in config.get(group, [])
+    }
+    if len(price_bases) > 1:
+        raise ValueError(
+            "Revenue prices use different currencies or periods; enable the canonical price/currency conversion before aggregating them"
+        )
+    if price_bases:
+        basis = Basis(*next(iter(price_bases)))
     if config.get("_revenue_authority"):
         description = config["_revenue_authority"]["text"]
     from backend.orchestration.commercial_pricing import adjusted_price
@@ -55,15 +73,22 @@ def _revenue_project(report, description, config, basis, hours, ramp, prices):
         unit = quantity_unit(item)
         v = product_observation(report, item)
         stream = Stream(
-            item["stream_key"],
+            item.get("stream_key") or ("user-rate:" + item["id"]),
             item["name"],
             _a(
                 v["normalized_value"],
                 v["normalized_unit"],
                 config,
-                "Workbook observation; quantity is not invented",
-                source=v["workbook"] + "!" + v["sheet"] + "!" + v["cell"],
-                status="source_supported",
+                (
+                    "Explicit user rate"
+                    if item.get("manual_rate")
+                    else "Workbook observation; quantity is not invented"
+                ),
+                source=v.get("source")
+                or (v["workbook"] + "!" + v["sheet"] + "!" + v["cell"]),
+                status=(
+                    "user_assumption" if item.get("manual_rate") else "source_supported"
+                ),
             ),
             (v["id"],),
             "outlet",

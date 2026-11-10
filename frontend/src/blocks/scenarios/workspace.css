@@ -1,0 +1,115 @@
+.scenario-workspace {
+  max-width: 1400px;
+}
+.scenario-workspace h1 {
+  font-size: clamp(24px, 3vw, 32px);
+  line-height: 1.25;
+  letter-spacing: -0.7px;
+  margin: 28px 0;
+}
+.scenario-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  width: fit-content;
+  margin-bottom: 22px;
+}
+.scenario-tabs button {
+  min-height: 44px;
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+}
+.scenario-tabs button[aria-selected="true"] {
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: 0 2px 7px #10271c12;
+}
+.scenario-tabs button:focus-visible,
+.scenario-panel:focus-visible {
+  outline: 2px solid #287c68;
+  outline-offset: 3px;
+}
+.scenario-panel {
+  padding: 28px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+.scenario-panel[hidden] {
+  display: none;
+}
+.scenario-panel-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+.scenario-panel-heading > svg {
+  color: #287c68;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+.scenario-panel h2 {
+  font-size: 20px;
+  margin: 0 0 10px;
+  letter-spacing: -0.3px;
+}
+.scenario-panel p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin: 0;
+}
+.scenario-empty {
+  margin-top: 28px;
+  padding: 40px 24px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  text-align: center;
+}
+.scenario-status {
+  display: inline-block;
+  font-size: 12px;
+  padding: 7px 12px;
+  border-radius: 6px;
+  background: var(--soft);
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.scenario-related {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 20px 3px;
+  font-size: 13px;
+}
+.scenario-related > span,
+.scenario-start {
+  color: var(--muted);
+}
+.scenario-start {
+  font-size: 13px;
+}
+@media (max-width: 640px) {
+  .scenario-panel {
+    padding: 20px;
+  }
+  .scenario-tabs {
+    width: 100%;
+  }
+  .scenario-tabs button {
+    flex: 1;
+    padding: 12px 15px;
+  }
+  .scenario-empty {
+    padding: 30px 14px;
+  }
+}

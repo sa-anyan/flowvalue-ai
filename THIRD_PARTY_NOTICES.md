@@ -184,3 +184,15 @@ engineering applicability, or grant rights to reproduce their full tables,
 graphs or text. No original textbook pages/graphs or upstream TEA financial
 runtime are copied. The upstream CEPCI snapshot is reference-only, not automatic
 2026/verified-index data. This import does not change FlowValue's source licence.
+
+### Rate-based revenue convention (10 November 2026)
+
+`backend/revenue/indexes/openpytea/rate_model.py` is independently authored
+FlowValue code implementing the rate × price × operating-time convention used
+by `Plant.calculate_revenue` in optional OpenPyTEA 3.2.1 (MIT, Copyright (c) 2025
+Panji Tamarona; https://github.com/pbtamarona/OpenPyTEA). The resolved installed
+package's licence was inspected. No upstream revenue source was copied and no
+new production dependency was added. An optional test compares numerical results
+against that pinned implementation. FlowValue keeps its canonical annual engine,
+explicit unit conversions, user-approved calendar and annual ramp rather than
+importing a second financial engine or assuming 365 operating days.

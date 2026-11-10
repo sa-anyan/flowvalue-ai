@@ -25,7 +25,8 @@ def recommend(state, store, provider):
     needed = [
         p
         for p in original.parameters
-        if p.kind == "engineering"
+        if p.kind in {"engineering", "economic"}
+        and not p.review_required
         and (p.minimum is None or p.maximum is None or p.mode is None)
         and p.targets[0][0] not in state.get("locked", [])
     ]
@@ -63,9 +64,8 @@ def recommend(state, store, provider):
                 }
                 for e in report["entities"]
             ],
-            "operating_assumptions": state["plan"]
-            .get("operating_economics", {})
-            .get("energy", []),
+            "operating_assumptions": state["plan"].get("operating_economics", {}),
+            "capital_assumptions": state["plan"].get("capex", {}),
             "source_notice": "Existing workbook/assumptions only. No market or literature research was performed.",
         }
         schema = obj(
@@ -100,7 +100,7 @@ def recommend(state, store, provider):
                 }
             }
         )
-        instructions = """Act as the existing Chemical Engineer Specialist. Propose editable preliminary ranges only when physically defensible from this process and the supplied source context. Select an appropriate bounded distribution and explain it. For a known baseline central value, retain it; never overwrite a workbook or user value. A missing duty may be an explicitly labelled engineering scenario, never a measured value. Return unresolved if no defensible range exists. No external research was performed: do not invent citations or claim published data not supplied. Confidence must be qualitative with its basis; no calibrated probability or numeric confidence score is available. Python performs calculations. Triangular uses mode; normal uses mean and absolute standard deviation; lognormal uses median and log-space sigma. Respect given physical/method limits."""
+        instructions = """Act as the existing Chemical Engineer and Techno-economic Analyst Specialist. Review uncertainty in equipment sizing and costing inputs, capital factors, operating costs, and commercial assumptions. Propose bounds around existing economic estimates only when their basis supports it; do not invent new revenue methods, market quotes or equation coefficients. Published allowable factor intervals are not measured probability distributions. Propose editable preliminary ranges only when physically defensible from this process and the supplied source context. Select an appropriate bounded distribution and explain it. For a known baseline central value, retain it; never overwrite a workbook or user value. A missing duty may be an explicitly labelled engineering scenario, never a measured value. Return unresolved if no defensible range exists. No external research was performed: do not invent citations or claim published data not supplied. Confidence must be qualitative with its basis; no calibrated probability or numeric confidence score is available. Python performs calculations. Triangular uses mode; normal uses mean and absolute standard deviation; lognormal uses median and log-space sigma. Respect given physical/method limits."""
 
         def call(
             context=context,

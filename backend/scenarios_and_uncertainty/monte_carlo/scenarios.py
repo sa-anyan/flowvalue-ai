@@ -28,9 +28,9 @@ def prepare(state, settings):
 
     plan.setdefault("cost_translation", copy.deepcopy(DEFAULT_POLICY))
     if plan.get("operating_economics"):
-        plan["operating_economics"]["financial"]["operating_years"] = (
-            settings.operating_years
-        )
+        plan["operating_economics"]["financial"][
+            "operating_years"
+        ] = settings.operating_years
         for key in ("commercial_lines", "avoided_costs"):
             for row in plan["operating_economics"].get(key, []):
                 # Never invent extra contract years. Existing shorter schedules remain invalid/pending.
@@ -92,6 +92,19 @@ def prepare(state, settings):
                 "rationale": a.rationale,
             },
         )
+    # Expand only explicitly enabled default CAPEX factors in this copied plan.
+    # They are already registered by canonical discovery and schema-validated.
+    from .discovery import discover
+
+    defaults = {p["id"]: p for p in discover(state)["settings"]["parameters"]}
+    for parameter in getattr(settings, "parameters", ()):
+        if not parameter.enabled or parameter.id not in defaults:
+            continue
+        for target in defaults[parameter.id]["targets"]:
+            if len(target) == 3 and target[:2] == ["capex", "selected_factors"]:
+                plan.setdefault("capex", {}).setdefault(
+                    "selected_factors", {}
+                ).setdefault(target[2], defaults[parameter.id]["mode"])
     # Sampled ranges are not recalculated as low/high endpoint envelopes in every iteration.
     for _, row in equipment_paths(plan):
         for value in (row.get("sizing") or {}).get("parameters", {}).values():

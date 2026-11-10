@@ -23,6 +23,8 @@ def validate(settings, discovered):
             if key not in allowed:
                 raise ValueError("Unrecognised parameter target")
             original = allowed[key]
+            if original.review_required:
+                raise ValueError(p.label + ": " + original.review_required)
             if p.unit != original.unit or p.kind != original.kind:
                 raise ValueError(p.label + ": unit/kind mismatch")
             if key in owned:
