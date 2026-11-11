@@ -108,3 +108,30 @@ python -m pytest backend -q -ra --tb=short -p no:cacheprovider
 - Relevant backend: **87 passed, 0 failed, 1 skipped, 1 warning** in 129.74 seconds. The skip was the private equipment workbook.
 - Full backend: **4,268 passed, 0 failed, 9 skipped, 367 subtests passed, 1 warning** in 803.86 seconds. Eight private-fixture cases and one optional pinned OpenPyTEA reference were unavailable.
 - Both runs emitted the existing Starlette TestClient/httpx deprecation. Frontend checks were outside scope.
+
+
+## Increment 4B · Isolated atomic storage contract
+
+[Receipt journal fixture](../backend/tests/receipt_journal_fixture.py) creates its own temporary SQLite database and has no production caller. Its proposed scope-local revision starts at zero, independent of the receipt's frozen input revision. One `BEGIN IMMEDIATE` transaction checks for replay, appends the immutable receipt and result in one row, and advances the scope revision with compare-and-swap. A failed CAS rolls back the append. Readers order committed rows by database sequence, independent of execution timestamps. The prototype treats the exact fixture result digest as its output identity. This is a test convention and does not select the production handoff or ledger digest.
+
+An identical scoped receipt/result replay returns the original sequence without a new row or revision, even after subsequent writes. A different payload with the same scoped ID is rejected. There is no automatic conflict retry. The fixture retains all committed rows so a failed or partial attempt leaves the earlier complete payload retrievable. The existing standalone lifecycle projection distinguishes active and previous complete output. The fixture does not approve consumption or establish a production retention rule.
+
+[Storage tests](../backend/tests/test_receipt_journal.py) exercise two competing completions at the same expected revision, exact replay after a newer commit, conflicting delivery, a SQL failure injected after insertion, and abrupt process exit before the revision update. They verify the prior history/result survives and the original expected revision is still usable. Separate assessment and scenario scopes can use the same receipt ID without collision. A temporary assessment-store fixture reopens a named version with identical original receipt metadata and stored snapshot bytes. The journal has no execution receipt in the fork scope.
+
+**4A-to-production handoff.** The 4A callback is best effort and runs after the normal stage write. Using it as a persistence hook would leave a window where a result is visible without its receipt. Before activation, assemble and validate the immutable receipt from frozen dispatch and returned Product evidence before the final write. Commit the receipt, result and revision/active pointer in a single transaction. Handle replay and conflict at that boundary. In cloud storage, that requires one revision-conditional update if using a bounded single-row envelope, or a reviewed owner-scoped transactional RPC for separate storage. Separate client calls cannot provide this guarantee.
+
+**Pending Engineer 1 decisions.** Confirm consumed input and executed-method capture, authoritative handoff/result digests and equivalent rerun rules, retry versus re-execution and retention under conflicts, named-version and scenario inheritance, partial and failed result consumption, and stale/export and approval authority. The existing Store and CloudStore code and schema are untouched. Cloud atomicity, retention limits and production failure policy were not tested. **B09 remains PARTIAL.**
+
+
+### Increment 4B verification
+
+Windows 11, Python 3.12.14, AI/cloud disabled, temporary SQLite and unique pytest `--basetemp` for each run.
+
+~~~powershell
+python -m pytest backend/tests/test_receipt_journal.py backend/tests/test_calculation_receipts.py backend/tests/test_execution_observation.py -q -ra --tb=short -p no:cacheprovider
+python -m pytest backend/tests/test_shared_pipeline.py backend/tests/test_cloud_runtime.py -q -ra --tb=short -p no:cacheprovider
+~~~
+
+- Focused B09: **51 passed, 0 failed, 0 skipped, 0 warnings** in 21.35 seconds.
+- Shared pipeline and cloud runtime regressions: **12 passed, 0 failed, 0 skipped, 1 warning** in 25.63 seconds. The warning is the existing Starlette TestClient/httpx deprecation.
+- Full-suite, frontend and live-cloud tests were outside this test-only increment.
