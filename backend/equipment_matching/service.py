@@ -520,6 +520,17 @@ def apply_matches(previous, matching):
             )
             rows.append(row)
             continue
+        from .library_preference import user_selected_model
+
+        if user_selected_model(row):
+            # A model the user chose is never replaced by an AI rerun or by the
+            # OpenPyTEA preference. The new proposal is kept for review only.
+            row["matching_attempt"] = copy.deepcopy(match)
+            row["matching_preservation_reason"] = (
+                "User-selected model retained; the new AI proposal is shown for review only."
+            )
+            rows.append(row)
+            continue
         old_id = row.get("curve_id")
         new_id = (
             match["selected_model_id"] if match["match_status"] == "matched" else None

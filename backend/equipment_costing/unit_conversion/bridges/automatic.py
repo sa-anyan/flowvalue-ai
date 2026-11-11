@@ -12,10 +12,10 @@ from .. import convert, ConversionContext
 from .service import describe, evaluate, model_contract, PARAMETERS, RECIPES
 from .derivations import METHODS, derive, discover
 
-VERSION = "equipment-input-resolution-23-physical-duty-bases"
+VERSION = "equipment-input-resolution-24-prefer-openpytea"
 PROMPT = """For a dryer model requiring evaporation rate, use dryer_evaporation: measurement_id is feed water COMPONENT mass flow and outlet_measurement_id is product water COMPONENT mass flow. Python subtracts and converts them. Confirm the selected drying boundary has no other water paths/reaction; disclose this scope assumption. Never use total wet-feed flow as evaporation. Carrier-gas inlet/outlet water can independently check the calculated evaporation; do not confuse those roles with feed/product.
 For OpenPyTEA power coordinates use electrical_to_shaft_power / shaft_to_electrical_power with explicit motor_efficiency, or pump_hydraulic_power, when the power role differs. Shaft power is not electrical input power. For OpenPyTEA correlations, preserve exact required parameter roles (shaft/fluid/electrical power, actual/standard flow, composite design coordinates). Never substitute an uncalculated feed rate for a composite coordinate. Two-variable models require secondary_input: choose its measurement_id independently, or provide an explicit assumed value/unit/rationale; Python converts it. Missing second input remains MISSING_SIZING_INPUT. Disabled models cannot be selected. No automatic size clamping or parallelisation.
-OpenPyTEA correlations have strict published capacity limits and do not accept Garrett extrapolation options. If the physically calculated size is outside a correlation's domain, choose a conceptually compatible supplied alternative with an applicable domain or a Garrett model supporting disclosed boundary extrapolation. Never change a source quantity or tune residence time, efficiency or density just to fit a cost curve. Keep extrapolation_exponent null for non-Garrett models.
+LIBRARY PREFERENCE: among compatible candidates whose published domain covers the calculated size, choose an OpenPyTEA model before any Garrett model. Use Garrett only when no OpenPyTEA candidate applies. OpenPyTEA correlations have strict published capacity limits and do not accept Garrett extrapolation options. If the physically calculated size is outside a correlation's domain, choose a conceptually compatible supplied alternative with an applicable domain or a Garrett model supporting disclosed boundary extrapolation. Never change a source quantity or tune residence time, efficiency or density just to fit a cost curve. Keep extrapolation_exponent null for non-Garrett models.
 For the Turton fermenter, specify operating_mode from process evidence, or an explicit provisional operating assumption. Flow-to-volume sizing requires continuous mode, residence time and working fraction. Batch/unknown requires directly documented per-vessel volume. Never extrapolate beyond 35 m3. For a clarifier use clarifier_area (hydraulic_loading_m_h is surface overflow rate). A generic settler does not prove mechanical equipment exists. A mechanically equipped clarifier may be proposed as an explicit preliminary configuration scenario for a compatible settling duty, with geometry, mechanical scope and uncertainty disclosed; never label that configuration as extracted or verified. Likewise a biofilm reactor may use a defensible vessel-core costing proxy with biofilm media/aeration/internals explicitly excluded or unresolved; it is not a complete validated bioreactor package.
 You are the chemical-engineering input-resolution specialist AFTER equipment matching.
 Apply these five skills in order for every conversion-matching decision:
@@ -569,11 +569,14 @@ def resolve(
             if row.get("curve_id")
             else match.get("candidate_model_ids", [])
         )
+        from backend.equipment_matching.library_preference import user_selected_model
+
         if (
             row.get("curve_id") == match.get("selected_model_id")
             and match.get("review_available") is True
             and use_ai
             and not locked
+            and not user_selected_model(row)
         ):
             # A conceptual first choice is not an exclusive design instruction.
             # Sizing may discover a strict domain/coordinate mismatch before any
@@ -1163,11 +1166,14 @@ def repair_pricing(
         key = (line.parsed_source or {}).get("equipment_key")
         row = rows.get(key, {})
         spec = row.get("unit_conversion") or {}
+        from backend.equipment_matching.library_preference import user_selected_model
+
         if (
             line.equipment_cost is not None
             or (getattr(line, "amount", None) is not None)
             or row.get("manual_price")
             or row.get("external_quote")
+            or user_selected_model(row)
             or (row.get("size") is not None and not spec.get("enabled"))
         ):
             continue

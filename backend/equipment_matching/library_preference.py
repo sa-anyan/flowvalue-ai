@@ -57,6 +57,19 @@ FAMILY_TO_OPENPYTEA = {
 }
 
 
+def user_selected_model(row):
+    """The model a person chose for this row, or None.
+
+    The equipment editor records {"origin": "user", "curve_id": ...} when a user
+    picks a model. It counts only while the row still uses that model, so a later
+    user change or clear is respected.
+    """
+    selection = (row or {}).get("model_selection") or {}
+    if selection.get("origin") == "user" and selection.get("curve_id") and selection.get("curve_id") == row.get("curve_id"):
+        return selection["curve_id"]
+    return None
+
+
 def is_garrett(model):
     return model.get("source") in (None, "garrett")
 
@@ -72,38 +85,77 @@ def usable(model):
     return model.get("availability", "available") in {"available", "available_provisional"} and not model.get("coordinate_issues")
 
 
+def _words(model):
+    import re
+
+    # Configuration only: Garrett family names list several types at once
+    # (for example "shell/tube, double-pipe, air"), which would blur the ranking.
+    text = str(model.get("configuration", "")).replace("and", " ")
+    return {w for w in re.findall(r"[a-z]{4,}", text.lower())}
+
+
+def catalogue_family(garrett_model, model_by_id, limit=8):
+    """Computable OpenPyTEA models of the Garrett model's family, closest first."""
+    families = FAMILY_TO_OPENPYTEA.get(garrett_model.get("equipment_name"), set())
+    words = _words(garrett_model)
+    found = [
+        m for m in model_by_id.values()
+        if m.get("source") == "openpytea" and openpytea_category(m) in families and usable(m)
+    ]
+    found.sort(key=lambda m: (-len(words & _words(m)), m["model_id"]))
+    return [m["model_id"] for m in found[:limit]]
+
+
 def openpytea_first(ids, model_by_id):
     """Stable reorder: OpenPyTEA candidates first, so sizing tries them first."""
     return sorted(ids, key=lambda i: model_by_id[i].get("source") != "openpytea")
 
 
 def apply_preference(decision, model_by_id):
-    """Return (decision, audit). audit is None when the rule did not apply."""
+    """Return (decision, audit). audit is None when the rule did not apply.
+
+    Order: a usable OpenPyTEA model the AI listed; otherwise usable OpenPyTEA
+    models of the same family from the catalogue; otherwise keep Garrett.
+    """
     decision = dict(decision)
     decision["candidate_model_ids"] = openpytea_first(decision.get("candidate_model_ids", []), model_by_id)
     selected = model_by_id.get(decision.get("selected_model_id"))
     if not selected or not is_garrett(selected):
         return decision, None
     families = FAMILY_TO_OPENPYTEA.get(selected.get("equipment_name"), set())
-    same_family = [
+    listed = [
         i for i in decision["candidate_model_ids"]
         if model_by_id[i].get("source") == "openpytea" and openpytea_category(model_by_id[i]) in families
     ]
-    if not same_family:
-        return decision, None
-    computable = [i for i in same_family if usable(model_by_id[i])]
-    if not computable:
+    computable = [i for i in listed if usable(model_by_id[i])]
+    if computable:
+        decision["selected_model_id"] = computable[0]
         return decision, {
             "rule": "prefer_openpytea_over_garrett",
-            "applied": False,
-            "kept": selected["model_id"],
-            "reason": "Same-family OpenPyTEA candidates exist but none can be sized: " + ", ".join(same_family),
+            "applied": True,
+            "replaced": selected["model_id"],
+            "selected": computable[0],
+            "reason": "Founder rule: OpenPyTEA is preferred when it covers the same equipment family; the Garrett model stays as an alternative.",
         }
-    decision["selected_model_id"] = computable[0]
+    # The AI listed no usable OpenPyTEA option. Look in the catalogue itself, so
+    # "OpenPyTEA first" does not depend on what the AI happened to list.
+    found = catalogue_family(selected, model_by_id)
+    if not found:
+        if listed:
+            return decision, {
+                "rule": "prefer_openpytea_over_garrett",
+                "applied": False,
+                "kept": selected["model_id"],
+                "reason": "Same-family OpenPyTEA models exist but none can be sized: " + ", ".join(listed),
+            }
+        return decision, None
+    decision["candidate_model_ids"] = found + [i for i in decision["candidate_model_ids"] if i not in found]
+    decision["selected_model_id"] = None
     return decision, {
         "rule": "prefer_openpytea_over_garrett",
         "applied": True,
         "replaced": selected["model_id"],
-        "selected": computable[0],
-        "reason": "Founder rule: OpenPyTEA is preferred when it covers the same equipment family; the Garrett model stays as an alternative.",
+        "selected": None,
+        "added_from_catalogue": found,
+        "reason": "Founder rule: OpenPyTEA models of the same family exist in the catalogue; the configuration is chosen at sizing, OpenPyTEA first, with the Garrett model kept as the fallback.",
     }
