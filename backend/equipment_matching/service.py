@@ -9,10 +9,10 @@ from backend.equipment_costing.registry import list_equipment_models
 from backend.revenue.advisor import TEXT, obj
 from backend.orchestration.equipment_advisor import validate as validate_shape
 
-VERSION = "equipment-concept-matcher-8-explicit-core-scope"
+VERSION = "equipment-concept-matcher-9-prefer-openpytea"
 # Bound request/response size so one unavailable review cannot erase the plant.
 BATCH_SIZE = 8
-PROMPT = """Search all registered libraries without preferring Garrett or OpenPyTEA. Rank physical function, configuration, required measurements, valid domain, cost scope, source and assumptions; price year does not determine suitability. P-001 may mean pH adjustment, NOT a pump: function and target-bound process evidence take precedence over tag prefixes. Fermenter correlation range is strict; clarifier geometry/mechanical scope must be justified.
+PROMPT = """Search all registered libraries. LIBRARY PREFERENCE: when an OpenPyTEA model and a Garrett model both describe the same equipment function and configuration, select the OpenPyTEA model and keep the Garrett model as a candidate. Select Garrett only when no OpenPyTEA model fits the function, configuration or size inputs, and say why. Rank physical function, configuration, required measurements, valid domain, cost scope, source and assumptions; price year does not determine suitability. P-001 may mean pH adjustment, NOT a pump: function and target-bound process evidence take precedence over tag prefixes. Fermenter correlation range is strict; clarifier geometry/mechanical scope must be justified.
 Prefer explicit raw workbook equipment nouns over earlier AI-normalised labels.
 A name explicitly attached to an equipment tag in any source stream applies across
 all occurrences of that same tag; absence of the name elsewhere is not ambiguity.
@@ -453,6 +453,11 @@ def match_report(report, description, store, provider=None):
                 decision.update(match_status="ambiguous", selected_model_id=None)
             if decision["match_status"] != "matched":
                 decision["selected_model_id"] = None
+            from .library_preference import apply_preference
+
+            decision, preference = apply_preference(decision, model_by_id)
+            if preference:
+                decision["library_preference"] = preference
             chosen = model_by_id.get(decision["selected_model_id"]) or {}
             output.append(
                 {
