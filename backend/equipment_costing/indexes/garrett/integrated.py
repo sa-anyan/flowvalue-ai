@@ -34,11 +34,16 @@ def _read(name):
         for curve in data["curves"]:
             correction = corrections["models"].get(curve["id"])
             if not correction:continue
-            curve["source_correction"] = {**correction,"source":corrections["source"]}
-            curve["size_unit"] = "actual chamber volume, ft3"
+            # Per-model source details (page) override the file-level source record.
+            curve["source_correction"] = {**correction,"source":{**corrections["source"],**correction.get("source",{})}}
+            # Only the fluid-bed/spray dryer corrections change the size basis.
+            if "size_unit" in correction:
+                curve["size_unit"] = correction["size_unit"]
+            elif "physical_volume_multiplier" in correction or curve["printed_page"] == 277:
+                curve["size_unit"] = "actual chamber volume, ft3"
             if "points" in correction:
                 template=copy.deepcopy(curve["points"][0])
-                curve["points"]=[{**template,"size":p["size"],"source_price":p["price"]/1000,"cached_usd":p["price"],"source_correction":correction["note"],"purpose":"Graph anchor (unverified)","status":"Pending","confidence":"Low","size_unit":curve["size_unit"]} for p in correction["points"]]
+                curve["points"]=[{**template,"size":p["size"],"source_price":p["price"]/1000,"cached_usd":p["price"],"source_correction":correction["note"],"purpose":correction.get("point_purpose","Graph anchor (unverified)"),"status":"Pending","confidence":correction.get("confidence","Low"),"method":correction.get("method",template.get("method")),"size_unit":curve["size_unit"]} for p in correction["points"]]
             else:
                 for point in curve["points"]:
                     if point["size"] is not None:point["size"]*=correction["physical_volume_multiplier"]

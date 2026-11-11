@@ -660,7 +660,9 @@
   },
   "G296-124": {
     "printed_exponent": 0.79,
-    "blocking_issues": [],
+    "blocking_issues": [
+      "GARRETT-C01: page 296 prints mixed flow and axial flow as two separate lines (axial about two thirds of mixed); one combined configuration cannot be priced. The stored readings traced the conventional pump line instead. Split into mixed-flow and axial-flow configurations before use."
+    ],
     "warnings": []
   },
   "G297-125": {
