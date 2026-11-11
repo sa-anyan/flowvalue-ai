@@ -7,6 +7,69 @@ from backend.equipment_resolution.scope import equipment_paths, expand
 from .discovery import get, set_value
 
 
+def resolve_horizon(state, settings):
+    """Distinguish omission from an explicit integer, including a saved legacy 20.
+
+    Keep the existing Settings wire schema/default; Pydantic tracks supplied fields.
+    No approved baseline or contract rows are changed by resolution.
+    """
+    project = (
+        state.get("plan", {})
+        .get("operating_economics", {})
+        .get("financial", {})
+        .get("operating_years")
+    )
+    supplied_fields = getattr(settings, "model_fields_set", None)
+    # Older internal adapters use plain namespaces with an explicitly set value.
+    explicit = (
+        "operating_years" in supplied_fields
+        if supplied_fields is not None
+        else hasattr(settings, "operating_years")
+    )
+    selected = settings.operating_years if explicit or project is None else project
+    if type(selected) is not int or not 1 <= selected <= 50:
+        raise ValueError(
+            "An unambiguous operating horizon from 1 to 50 years is required"
+        )
+    return {
+        "operating_years": selected,
+        "project_operating_years": project,
+        "requested_operating_years": settings.operating_years if explicit else None,
+        "selection": (
+            "explicit"
+            if explicit
+            else (
+                "project"
+                if project is not None
+                else "legacy_default_no_project_horizon"
+            )
+        ),
+    }
+
+
+def resolved_settings(state, settings):
+    """Freeze the effective integer before settings are serialized to a job."""
+    return settings.model_copy(
+        update={"operating_years": resolve_horizon(state, settings)["operating_years"]}
+    )
+
+
+def _annual_rows(rows):
+    """Validate identities before any explicit shorter scenario selects its years."""
+    if not isinstance(rows, list):
+        raise ValueError("Commercial annual schedule must be a list")
+    years = [row.get("year") if isinstance(row, dict) else None for row in rows]
+    if any(type(y) is not int or not 1 <= y <= 50 for y in years):
+        raise ValueError(
+            "Commercial years must be operating-year indexes 1–50, not calendar dates"
+        )
+    if len(set(years)) != len(years) or years != sorted(years):
+        raise ValueError(
+            "Commercial annual years must be unique and in increasing order"
+        )
+    return years
+
+
 def prepare(state, settings):
     from backend.revenue.authority import bind, runtime
 
@@ -27,15 +90,35 @@ def prepare(state, settings):
     from backend.equipment_costing.cost_to_future.cost_translation import DEFAULT_POLICY
 
     plan.setdefault("cost_translation", copy.deepcopy(DEFAULT_POLICY))
+    horizon = resolve_horizon(state, settings)
+    horizon["excluded_schedule_years"] = []
+    plan["_monte_carlo_horizon"] = horizon
     if plan.get("operating_economics"):
-        plan["operating_economics"]["financial"][
+        plan["operating_economics"]["financial"]["operating_years"] = horizon[
             "operating_years"
-        ] = settings.operating_years
+        ]
+        project_years = horizon["project_operating_years"]
+        shortening = (
+            horizon["selection"] == "explicit"
+            and type(project_years) is int
+            and horizon["operating_years"] < project_years
+        )
         for key in ("commercial_lines", "avoided_costs"):
             for row in plan["operating_economics"].get(key, []):
-                # Never invent extra contract years. Existing shorter schedules remain invalid/pending.
-                if len(row.get("years", [])) > settings.operating_years:
-                    row["years"] = row["years"][: settings.operating_years]
+                years = _annual_rows(row.get("years", []))
+                # Only an explicitly shorter scenario can select a subset. Gaps
+                # remain gaps; never extend, renew, reorder or replace with zero.
+                if shortening:
+                    excluded = [y for y in years if y > horizon["operating_years"]]
+                    if excluded:
+                        horizon["excluded_schedule_years"].append(
+                            {"kind": key, "id": row.get("id"), "years": excluded}
+                        )
+                    row["years"] = [
+                        r
+                        for r in row.get("years", [])
+                        if r["year"] <= horizon["operating_years"]
+                    ]
     by_key = {
         row["equipment_key"]: get(plan, path) for path, row in equipment_paths(plan)
     }

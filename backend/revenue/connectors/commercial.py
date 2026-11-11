@@ -27,9 +27,15 @@ def commercial_inputs(report, description, config, basis, hours, ramp, assumptio
             )
         years, refs = [], list(item.get("source_references", []))
         expected = list(ramp)
-        if [y["year"] for y in item["years"]] != expected:
+        actual = [y["year"] for y in item["years"]]
+        if actual != expected:
+            missing = [year for year in expected if year not in actual]
             raise ValueError(
-                "Commercial annual schedule must match operating years in order"
+                "Commercial annual schedule must match operating years in order; "
+                + "missing operating years="
+                + str(missing)
+                + "; supplied operating years="
+                + str(actual)
             )
         for original_row in item["years"]:
             from backend.blocks.cashflow.schedule import factor

@@ -17,7 +17,7 @@ from backend.orchestration.pipeline import run
 from .discovery import discover
 from .models import Settings
 from .sampling import sample
-from .scenarios import apply, prepare
+from .scenarios import apply, prepare, resolve_horizon, resolved_settings
 
 
 def number(value):
@@ -363,6 +363,8 @@ def summarize(rows, parameters, settings):
 
 
 def simulate(state, settings, progress=lambda *args: None):
+    horizon = resolve_horizon(state, settings)
+    settings = resolved_settings(state, settings)
     discovery = discover(state)
     original = Settings.model_validate(discovery["settings"])
     parameters, draws = sample(settings, original)
@@ -474,6 +476,7 @@ def simulate(state, settings, progress=lambda *args: None):
             "costing_cache": "Canonical Garrett curve-fit cache plus up to 64 repeated complete scenarios",
             "llm_calls_per_iteration": 0,
             "operating_years": settings.operating_years,
+            "horizon_resolution": horizon,
             "baseline_operating_years": state["plan"]
             .get("operating_economics", {})
             .get("financial", {})
