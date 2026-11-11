@@ -100,7 +100,7 @@ Adopt Engineer 2's **R01–R19** as the single forward register: each row alread
 
 | ID | Decision | Proposal | Engineer 1 | Engineer 2 |
 |---|---|---|---|---|
-| S1 | **Reference project (M0.5)** | Team 8 wastewater study, with owner permission and the 8-item reference pack in `reference_project_recommendation.md`; the four synthetic workbook fixtures stay as parser regression tests. If permission cannot be obtained, name the alternative here. | ☐ | ☐ |
+| S1 | **Reference project (M0.5)** | **Charlie protein-from-air study** (Engineer 1 decision, 11 November 2026). Its M&E workbook and the human economics study (`Task 2 Charlie Economics 2.xlsx`) are both available; Team 8 has an M&E workbook but no economics file. The economics study is a comparison made *after* independent calculation, never a price source. **Team 8 is the held-out project** for AI matching and assumption evaluation, because Charlie was used to tune them. Source files stay private and local; only page references, hashes and derived checks enter the repository. The four synthetic workbook fixtures stay as parser regression tests. | ☑ 11 Nov 2026 | ☐ |
 | S2 | **Single requirements register** (IW-05, M0.3, T-06) | R01–R19 plus R20 and R21 above, with the REQ mapping retained | ☐ | ☐ |
 | S3 | **Capability register** (IW-02, M0.2) | Engineer 2's 22-capability register is the maintained one; Engineer 1's 19 groups stay as the baseline snapshot | ☐ | ☐ |
 | S4 | **Baseline rules and test disposition** (IW-07, T-02 skips, T-05) | B08 decisions (PR #3) for money, timeline, missing and approval; Phase 1 per-method tolerances; the 3 private-fixture or optional-package skips accepted as documented skips; Engineer 2 confirms the test log and fixture policy for T-05 | ☐ | ☐ |
