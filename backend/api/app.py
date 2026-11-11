@@ -936,7 +936,9 @@ def study_report(key: str, currency: str | None = None):
     viewed = view(state)
     saved_equipment = ((state.get("results") or {}).get("stages") or {}).get("equipment")
     if saved_equipment and not viewed["results"]["stages"].get("equipment"):
-        viewed["results"]["stages"]["equipment"] = saved_equipment
+        viewed["results"]["stages"]["equipment"] = {
+            **saved_equipment, "result_is_stale": True,
+        }
     state = currency_view(viewed, currency)
     return HTMLResponse(render_study(state), headers={"Cache-Control": "no-store"})
 

@@ -6,6 +6,8 @@ from html import unescape
 from fastapi.testclient import TestClient
 
 from backend.api import app as api
+from backend.blocks.execution import run_stage
+from backend.tests.test_isolated_stages import study
 from backend.engineering_sizing.adapter import derive
 from backend.orchestration.store import Store
 from backend.tests.test_engineering_method_versions import synthetic_report
@@ -67,6 +69,25 @@ def test_sizing_audit_survives_named_version_and_exports(tmp_path, monkeypatch):
     assert prepared["engineering_method"]["implementation_fingerprint"] in html
     assert prepared["calculation"]["engineering_method"]["implementation_fingerprint"] in html
     assert "Unversioned" in html
+    assert "Saved changes await recalculation" in html
     assert snapshot_bytes() == original
     assert store.get(saved["id"]) == saved
     assert store.get(key)["results"] == saved["results"]
+
+
+def test_study_report_labels_saved_equipment_after_input_edit(study, monkeypatch):
+    store, key = study
+    monkeypatch.setattr(api, "store", store)
+    run_stage(store, key, "engineering_data")
+    saved = run_stage(store, key, "equipment")
+    assert saved["stage_runs"]["equipment"]["status"] == "ready"
+    client = TestClient(api.app)
+    route = f"/api/assessments/{key}/report"
+    assert "Saved changes await recalculation" not in client.get(route).text
+
+    saved["plan"]["equipment"][0]["quantity"] = 3
+    edited = store.put(saved, saved["revision"])
+    report = client.get(route)
+    assert report.status_code == 200
+    assert "Saved changes await recalculation" in report.text
+    assert store.get(key) == edited
