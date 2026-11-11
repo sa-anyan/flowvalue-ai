@@ -107,6 +107,17 @@ Adopt Engineer 2's **R01–R19** as the single forward register: each row alread
 
 When all eight boxes are ticked, with the decision and date recorded beside S1, **G0 passes at the commit that records the sign-offs.** Record each sign-off as a pull-request approval or a dated line in this file, made by the engineer themself.
 
+## Update after Engineer 2's PR #9 (11 November 2026)
+
+PR #9 (`engineer-2/development`, head `9bec52d`, CI green) settles several items once merged:
+
+- **CI consolidated (IW-06, M0.4):** one backend job (`backend-baseline.yml`, no cache override) and one test requirements file (`requirements-phase0-tests.txt`). The duplicate backend job and `requirements-test.txt` are gone.
+- **Engineer 2's Phase 0 audit and the R01–R19 register arrive on `main`** (`docs/phase-0/`), so the single register proposed for **S2** and the capability register proposed for **S3** both exist in the repository.
+- **Commit authorship:** Engineer 2's new commits use their own git identity.
+- Combined with every open Engineer 1 PR, the full suite gives 4,285 passed, 0 failed.
+
+The sign-offs below are still required. Merging PR #9 first lets S2 and S3 point at files on `main`.
+
 ## Not part of G0
 
 Hosted restore and two-user isolation (Phase 8, R17), the 13-field commercial contract (Phase 4), costing source verification (Phase 3) and industrial validation (Phase 9) stay with their phases. They are not reasons to hold G0.
