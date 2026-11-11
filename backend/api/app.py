@@ -387,10 +387,11 @@ def save_cashflow_policy(key: str, change: CashflowPolicyEdit):
 def get(key: str, historical: bool = False, currency: str | None = None):
     saved = store.get(key)
     from backend.blocks.execution import view
+    from backend.equipment_resolution.identity import project_assessment_identity
 
     if historical:
-        return saved  # Explicit history is a snapshot, never a calculation route.
-    return currency_view(view(saved), currency)
+        return project_assessment_identity(saved)
+    return project_assessment_identity(currency_view(view(saved), currency), saved)
 
 
 @app.patch("/api/assessments/{key}")
@@ -804,7 +805,9 @@ def versions(key: str):
 
 @app.post("/api/versions/{version}/open")
 def reopen(version: str):
-    return store.load(version)
+    from backend.equipment_resolution.identity import project_assessment_identity
+
+    return project_assessment_identity(store.load(version))
 
 
 @app.get("/api/assessments/{key}/compare/{other}")
