@@ -49,7 +49,7 @@ Every criterion that software or evidence can settle now passes. The criteria st
 | T-06 | Every planned feature has an owner and measurable criterion | PARTIAL | As IW-05. **Sign-off S2** |
 | G0-A | Baseline reproducible | PASS | T-01, T-02 |
 | G0-B | Existing failures documented | PASS | T-03 |
-| G0-C | Critical security issues triaged | PASS | 16 severity-ranked risks with owners; no confirmed critical exploit. Live tenant testing is Phase 8 |
+| G0-C | Critical security issues triaged | PASS | 17 severity-ranked risks (R-01 to R-17) with owners; no confirmed critical exploit. Live tenant testing is Phase 8 |
 | G0-D | Implementation distinguishable from roadmap promises | PASS | Both capability registers separate implemented, partial and planned |
 
 ## How the two audits map
