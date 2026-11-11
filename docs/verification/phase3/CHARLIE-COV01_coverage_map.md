@@ -52,7 +52,7 @@ These are Charlie's small items: a 100 kg/h plant is smaller than most 1987 Garr
 
 ## Effect of GARRETT-C01 (PR #7)
 
-The equipment total changes only slightly ($4.367 M → $4.356 M), because R-101 dominates. Line by line: pumps P-101AB to P-201AB fall by 60–80%; tanks T-105 and T-106 rise by about 70%; T-101AB, T-102AB and T-301 fall by 24–36%; C-202 rises by 27%. All of these are still extrapolated, so the corrections fix the anchors but not the size-range problem.
+The equipment total changes only slightly ($4.367 M → $4.356 M), because R-101 dominates. Line by line: pumps P-101AB, P-102AB, P-104AB and P-201AB fall by 68–82%; tanks T-105 and T-106 rise by 71%; T-101AB, T-102AB and T-301 fall by 24–36%; C-202 rises by 28%. All of these are still extrapolated, so the corrections fix the anchors but not the size-range problem.
 
 ## Next steps, in order
 
