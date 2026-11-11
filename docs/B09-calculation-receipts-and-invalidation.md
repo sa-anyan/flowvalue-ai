@@ -98,3 +98,51 @@ python -m pytest backend/tests/test_calculation_receipts.py backend/tests/test_i
 - Focused: 10 passed, 0 failed, 0 skipped, 0 warnings in 1.99 seconds.
 - Relevant backend: 52 passed, 0 failed, 1 skipped, 1 warning in 97.47 seconds. The private workbook fixture was unavailable. The warning was the existing Starlette TestClient/httpx deprecation. The selection includes equipment-to-finance propagation and manual-price Monte Carlo parity.
 - This increment changes only backend contract/test files and documentation. Frontend and the full backend suite were outside this verification selection.
+
+
+## Increment 2 · Lifecycle and freshness safety
+
+The existing isolated runner can keep a prior result while replacing its mutable stage attempt record. The B09 lifecycle adapter models those independently. It is a pure projection from immutable schema-v1 receipts supplied in persisted append order, scoped to one assessment and scenario. The order must come from the future store or caller. Timestamp sorting cannot disambiguate concurrent writes.
+
+- The **latest attempt** is the last unique receipt in the stage history, regardless of outcome. Identical retransmissions of a receipt ID are idempotent. A conflicting payload with the same ID in the same scope is rejected.
+- The **active output** is the latest output-bearing ready or partial receipt. A failed or blocked attempt leaves that pointer on the retained output. A partial result may be active as partial. An earlier complete result remains available through `previous_complete_receipt_id`. Selection describes the available output and confers no permission to promote it into an approved baseline.
+- `superseded_receipt_ids` contains older output-bearing receipts in append order. Failed and blocked receipts stay in history. The projection never mutates that history or the associated numerical payloads.
+- Numerical freshness uses current input/configuration identities and active upstream output digests. Known digest changes are stale. Missing evidence is unknown. A retained output with unverified or changed method identity is unknown unless a known input change already makes it stale. A downstream consumer of a formerly complete result cannot be marked current solely because a replacement partial result has the same digest.
+- `provenance` compares recorded method identity to supplied current identity (or the latest attempt's method identity for a retained output when no current identity is supplied). For a direct upstream rerun it compares the original and replacement input/configuration and complete method tuples. A missing original receipt or incomplete method identity yields unknown unless an observed change is already known. Matching means the compared evidence matches. It says nothing about mathematical equivalence, scientific validity or policy approval.
+- `approval_status` is explicitly unknown. Stored approval references are retained, with authorization, scope, expiry and invalidation policy outside this evaluator.
+
+| Rerun or read condition | Numerical freshness | Provenance and history |
+|---|---|---|
+| Same inputs, method and output digest | Current when dependencies are current | Matching evidence when available. The prior receipt is superseded. |
+| Upstream inputs changed but its fresh rerun has an identical output | Downstream may remain current | Direct upstream provenance changed. |
+| Upstream method changed but its fresh rerun has an identical output | Downstream may remain current | Direct upstream provenance changed. Review is required before treating lineage as equivalent. |
+| Upstream output digest changed | Downstream stale | Provenance independently reflects recorded input/method evidence. |
+| Failed or blocked attempt after a successful run | Evaluate the retained output against current evidence | The failed or blocked receipt is latest, and the previous successful receipt remains active. |
+| Partial after complete | Evaluate the partial output on its own inputs | Earlier complete output remains available. A dependent that had consumed a complete result needs explicit completeness review when the replacement is partial. |
+| Original upstream receipt missing but its digest matches a fresh upstream replacement | Current numerically if the other checks pass | Original lineage is unknown. |
+| Legacy or named-version fork without a scope-local receipt | Unknown for known historical output | A fork retains original scope and receipt bytes. It acquires no active receipt by inheritance. |
+
+Example stage projection for a failed recalculation after a relevant input edit:
+
+~~~json
+{
+  "latest_attempt_id": "equipment-run-43",
+  "latest_outcome": "failed",
+  "active_receipt_id": "equipment-run-42",
+  "active_completeness": "complete",
+  "previous_complete_receipt_id": null,
+  "superseded_receipt_ids": [],
+  "freshness": {"state": "stale", "reasons": ["Input or configuration digest changed"]},
+  "provenance": {"state": "unknown", "reasons": ["Current or recorded method identity unavailable"]},
+  "approval_status": "unknown"
+}
+~~~
+
+**Engineer 1 review before integration.** Confirm append sequencing under concurrent writes, the frozen inputs and methods captured for failed attempts, criteria for consuming partial outputs, and which method/input comparisons need transitive review. Agree the consumer policy when a digest matches but provenance changed, and keep approval reevaluation separate. Confirm how historical lineage is presented for scenario and named-version forks before wiring live persistence, UI or exports. No production runner, database, report, numerical kernel or B08 policy is changed by this increment. B09 remains **PARTIAL**.
+
+
+### Increment 2 verification
+
+Same isolated Windows 11 / Python 3.12.14 setup and commands as above, with new temporary database and pytest directories. The test-first run reported **10 passed and 10 failed** in 1.69 seconds because the new lifecycle API did not exist. With the implementation, the focused suite reported **20 passed, 0 failed, 0 skipped, 0 warnings** in 2.33 seconds. The relevant backend selection reported **62 passed, 0 failed, 1 skipped, 1 warning** in 90.98 seconds. The skip was the unavailable private workbook and the warning was the existing Starlette TestClient/httpx deprecation.
+
+The full backend and frontend suites were outside this increment’s verification boundary. The changes are confined to the existing standalone B09 contract, its tests and this note. Live execution and persistence modules were untouched.

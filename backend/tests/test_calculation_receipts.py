@@ -163,3 +163,125 @@ def test_named_snapshot_round_trip_preserves_original_receipt_and_bytes(tmp_path
         assert "calculation_receipts" not in reopened
         state = evaluate_dependencies(scope, required_stage_graph({}), (), {}, legacy_outputs=("equipment",))
         assert state["equipment"].state == "unknown"
+
+
+def method(version="1"):
+    return MethodIdentity(
+        method_id="vessel_hold_up", method_version=version,
+        implementation_fingerprint=f"sha256:method-{version}",
+        fingerprint_scheme="flowvalue-loaded-engineering-v1", execution_layer="native",
+    )
+
+
+@pytest.mark.parametrize(("change", "freshness", "provenance"), [
+    ("none", "current", "matching"),
+    ("input", "current", "changed"),
+    ("method", "current", "changed"),
+    ("output", "stale", "matching"),
+])
+def test_lifecycle_equivalent_upstream_reruns(change, freshness, provenance):
+    from backend.orchestration.calculation_receipts import evaluate_lifecycle
+
+    original = receipt("engineering_data", methods=(method(),))
+    dependent = receipt("equipment", original, methods=(method(),))
+    changes = {
+        "none": {},
+        "input": {"input_digest": semantic_digest("changed input")},
+        "method": {"methods": (method("2"),)},
+        "output": {"output_digest": semantic_digest("changed output")},
+    }
+    rerun = original.model_copy(update={"receipt_id": "engineering_data-2", **changes[change]})
+    views = evaluate_lifecycle(
+        SCOPE, required_stage_graph({}), (original, dependent, rerun, rerun),
+        inputs(rerun, dependent), current_methods={"equipment": (method(),)},
+    )
+    assert views["equipment"].freshness.state == freshness
+    assert views["equipment"].provenance.state == provenance
+    assert views["engineering_data"].active_receipt_id == rerun.receipt_id
+    assert views["engineering_data"].superseded_receipt_ids == (original.receipt_id,)
+
+
+@pytest.mark.parametrize("outcome", ["failed", "blocked"])
+def test_lifecycle_retains_output_without_claiming_changed_inputs_current(outcome):
+    from backend.orchestration.calculation_receipts import evaluate_lifecycle
+
+    original = receipt("engineering_data", methods=(method(),))
+    attempt = receipt("engineering_data", receipt_id="attempt-2", outcome=outcome, output_digest=None)
+    graph = required_stage_graph({})
+    retained = evaluate_lifecycle(SCOPE, graph, (original, attempt), inputs(original),
+                                  current_methods={"engineering_data": (method(),)})["engineering_data"]
+    assert retained.active_receipt_id == original.receipt_id
+    assert retained.latest_attempt_id == attempt.receipt_id
+    assert retained.latest_outcome == outcome
+    assert retained.freshness.state == "current"
+    changed = evaluate_lifecycle(SCOPE, graph, (original, attempt),
+                                 {"engineering_data": (semantic_digest("edited input"), None)})["engineering_data"]
+    assert changed.freshness.state == "stale"
+    changed_method = evaluate_lifecycle(SCOPE, graph, (original, attempt), inputs(original),
+                                        current_methods={"engineering_data": (method("2"),)})["engineering_data"]
+    assert changed_method.freshness.state == "unknown"
+    assert changed_method.provenance.state == "changed"
+    assert changed_method.approval_status == "unknown"
+
+
+def test_lifecycle_partial_is_active_and_complete_output_is_retained():
+    from backend.orchestration.calculation_receipts import evaluate_lifecycle
+
+    complete = receipt("engineering_data")
+    partial = receipt("engineering_data", receipt_id="partial-2", outcome="partial")
+    result = evaluate_lifecycle(SCOPE, required_stage_graph({}), (complete, partial), inputs(partial))["engineering_data"]
+    assert result.active_receipt_id == partial.receipt_id
+    assert result.previous_complete_receipt_id == complete.receipt_id
+    assert result.active_completeness == "partial"
+    assert result.freshness.state == "current"
+    assert result.provenance.state == "unknown"
+
+
+def test_lifecycle_missing_original_lineage_and_legacy_output():
+    from backend.orchestration.calculation_receipts import evaluate_lifecycle
+
+    original = receipt("engineering_data", methods=(method(),))
+    rerun = original.model_copy(update={"receipt_id": "engineering_data-2"})
+    dependent = receipt("equipment", original, methods=(method(),))
+    results = evaluate_lifecycle(
+        SCOPE, required_stage_graph({}), (rerun, dependent), inputs(rerun, dependent),
+        current_methods={"equipment": (method(),)}, legacy_outputs=("capex",),
+    )
+    assert results["equipment"].freshness.state == "current"
+    assert results["equipment"].provenance.state == "unknown"
+    assert "engineering_data: original receipt unavailable" in results["equipment"].provenance.reasons
+    assert results["capex"].freshness.state == "unknown"
+
+
+def test_lifecycle_rejects_reused_receipt_id_and_ignores_foreign_attempts():
+    from backend.orchestration.calculation_receipts import evaluate_lifecycle
+
+    local = receipt("engineering_data")
+    conflict = local.model_copy(update={"input_digest": semantic_digest("different")})
+    graph = required_stage_graph({})
+    with pytest.raises(ValueError, match="Conflicting immutable receipt"):
+        evaluate_lifecycle(SCOPE, graph, (local, conflict), inputs(local))
+    for other in (CalculationScope(assessment_id="other"), SCOPE.model_copy(update={"scenario_id": "alt"})):
+        foreign = receipt("engineering_data", scope=other, receipt_id="foreign")
+        view = evaluate_lifecycle(SCOPE, graph, (local, foreign), inputs(local))["engineering_data"]
+        assert view.latest_attempt_id == local.receipt_id
+
+
+def test_lifecycle_fork_keeps_parent_receipt_as_original_lineage(tmp_path):
+    from backend.orchestration.calculation_receipts import evaluate_lifecycle
+
+    store = Store(tmp_path / "fork.sqlite")
+    original = store.create({"results": {"cost": "20"}}, b"fixture")
+    scope = CalculationScope(assessment_id=original["id"])
+    run = receipt("equipment", scope=scope)
+    original["calculation_receipts"] = [run.model_dump(mode="json")]
+    saved = store.put(original, original["revision"])
+    version = store.version(saved["id"], "Before fork")
+    fork = store.load(version)
+    history = tuple(CalculationReceipt.model_validate(r) for r in fork["calculation_receipts"])
+    assert history == (run,)
+    views = evaluate_lifecycle(CalculationScope(assessment_id=fork["id"]), required_stage_graph({}),
+                               history, {}, legacy_outputs=("equipment",))
+    assert views["equipment"].active_receipt_id is None
+    assert views["equipment"].freshness.state == "unknown"
+    assert store.get(saved["id"]) == saved

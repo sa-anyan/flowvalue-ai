@@ -84,7 +84,9 @@ def required_stage_graph(state) -> dict[str, tuple[str, ...]]:
     return {block["id"]: tuple(dependencies(block["id"], state)) for block in list_blocks()}
 
 
-def evaluate_dependencies(scope, graph, receipts, current_inputs, *, legacy_outputs=()):
+def evaluate_dependencies(
+    scope, graph, receipts, current_inputs, *, legacy_outputs=(), uncertainty=None,
+):
     """Evaluate one scope using current per-stage (input, configuration) digests.
 
     Receipt IDs bind the original lineage. A rerun yielding the same upstream
@@ -128,7 +130,7 @@ def evaluate_dependencies(scope, graph, receipts, current_inputs, *, legacy_outp
             )
         else:
             stale = []
-            unknown = []
+            unknown = list((uncertainty or {}).get(stage, ()))
             observed = current_inputs.get(stage)
             if observed is None:
                 unknown.append("Current input identity unavailable")
@@ -156,3 +158,116 @@ def evaluate_dependencies(scope, graph, receipts, current_inputs, *, legacy_outp
     for stage in edges:
         evaluate(stage)
     return results
+
+
+class ProvenanceStatus(Contract):
+    state: Literal["matching", "changed", "unknown"]
+    reasons: tuple[str, ...] = ()
+
+
+class StageLifecycle(Contract):
+    latest_attempt_id: Identifier | None = None
+    latest_outcome: Literal["ready", "partial", "failed", "blocked"] | None = None
+    active_receipt_id: Identifier | None = None
+    active_completeness: Literal["complete", "partial"] | None = None
+    previous_complete_receipt_id: Identifier | None = None
+    superseded_receipt_ids: tuple[Identifier, ...] = ()
+    freshness: DependencyStatus
+    provenance: ProvenanceStatus
+    approval_status: Literal["unknown"] = "unknown"
+
+
+def _known_methods(methods):
+    return bool(methods) and all(
+        m.method_version and m.implementation_fingerprint
+        and m.fingerprint_scheme and m.execution_layer for m in methods
+    )
+
+
+def evaluate_lifecycle(
+    scope, graph, history, current_inputs, *, current_methods=None, legacy_outputs=(),
+):
+    """Project one scope from immutable receipts in persisted append order."""
+    from collections import defaultdict
+
+    by_id = {}
+    attempts = defaultdict(list)
+    for item in history:
+        if item.scope != scope:
+            continue
+        previous = by_id.get(item.receipt_id)
+        if previous is not None:
+            if previous != item:
+                raise ValueError(f"Conflicting immutable receipt: {item.receipt_id}")
+            continue
+        by_id[item.receipt_id] = item
+        attempts[item.stage].append(item)
+
+    latest = {stage: runs[-1] for stage, runs in attempts.items()}
+    outputs = {
+        stage: [item for item in runs if item.output_digest is not None]
+        for stage, runs in attempts.items()
+    }
+    active = {stage: runs[-1] for stage, runs in outputs.items() if runs}
+    provenance = {}
+    uncertainty = defaultdict(list)
+    for stage, item in active.items():
+        changed = []
+        unknown = []
+        expected = (current_methods or {}).get(stage)
+        if expected is None and latest[stage] != item:
+            expected = latest[stage].methods
+        if not _known_methods(item.methods) or not _known_methods(expected):
+            unknown.append("Current or recorded method identity unavailable")
+            if latest[stage] != item:
+                uncertainty[stage].append("Retained output method identity is unverified")
+        elif item.methods != tuple(expected):
+            changed.append("Current method identity differs")
+            uncertainty[stage].append("Current method identity differs from active output")
+        for ref in item.upstream:
+            original = by_id.get(ref.receipt_id)
+            replacement = active.get(ref.stage)
+            if original is None or original.stage != ref.stage or original.output_digest != ref.output_digest:
+                unknown.append(f"{ref.stage}: original receipt unavailable")
+                continue
+            if replacement is None or original == replacement:
+                continue
+            if (original.input_digest, original.configuration_digest) != (
+                replacement.input_digest, replacement.configuration_digest,
+            ):
+                changed.append(f"{ref.stage}: upstream inputs or configuration changed")
+            if not _known_methods(original.methods) or not _known_methods(replacement.methods):
+                unknown.append(f"{ref.stage}: upstream method identity unavailable")
+            elif original.methods != replacement.methods:
+                changed.append(f"{ref.stage}: upstream method identity changed")
+            if original.outcome == "ready" and replacement.outcome == "partial":
+                uncertainty[stage].append(f"{ref.stage}: complete upstream output replaced by a partial output")
+        provenance[stage] = ProvenanceStatus(
+            state="changed" if changed else "unknown" if unknown else "matching",
+            reasons=tuple(changed + unknown),
+        )
+
+    selected = (active.get(stage, attempt) for stage, attempt in latest.items())
+    statuses = evaluate_dependencies(
+        scope, graph, selected, current_inputs,
+        legacy_outputs=legacy_outputs, uncertainty=uncertainty,
+    )
+    views = {}
+    for stage, status in statuses.items():
+        item, attempt = active.get(stage), latest.get(stage)
+        superseded = outputs.get(stage, [])[:-1]
+        previous_complete = next(
+            (prior.receipt_id for prior in reversed(superseded) if prior.outcome == "ready"),
+            None,
+        )
+        views[stage] = StageLifecycle(
+            latest_attempt_id=attempt.receipt_id if attempt else None,
+            latest_outcome=attempt.outcome if attempt else None,
+            active_receipt_id=item.receipt_id if item else None,
+            active_completeness=("complete" if item.outcome == "ready" else "partial") if item else None,
+            previous_complete_receipt_id=previous_complete,
+            superseded_receipt_ids=tuple(prior.receipt_id for prior in superseded),
+            freshness=status,
+            provenance=provenance.get(stage, ProvenanceStatus(state="unknown", reasons=("No active receipt",))),
+        )
+    return views
