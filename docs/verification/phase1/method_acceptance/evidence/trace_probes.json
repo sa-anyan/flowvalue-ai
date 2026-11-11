@@ -1,0 +1,751 @@
+[
+  {
+    "method": "ion_exchange_capacity",
+    "report": {
+      "entities": [
+        {
+          "key": "s",
+          "kind": "material",
+          "identifier": "REFERENCE-ion_exchange_capacity",
+          "values": [
+            {
+              "id": "METHOD-001:ion_exchange_capacity:B3",
+              "property": "volume_flow",
+              "normalized_value": 10,
+              "normalized_unit": "m3/h",
+              "status": "verified",
+              "workbook": "isolated METHOD-001 reference, not a real plant",
+              "sheet": "Reference",
+              "cell": "B3"
+            }
+          ]
+        }
+      ]
+    },
+    "sizing_spec": {
+      "method": "ion_exchange_capacity",
+      "stream_key": "s",
+      "parameters": {
+        "ionic_load_mol_equiv_m3": 2,
+        "service_cycle_h": 8,
+        "working_resin_capacity_mol_equiv_m3": 1000,
+        "resin_bed_fraction": 0.5
+      }
+    },
+    "returned_result": [
+      0.32,
+      "m3",
+      {
+        "method": "ion_exchange_capacity",
+        "source_evidence": [
+          "METHOD-001:ion_exchange_capacity:B3"
+        ],
+        "assumptions": {
+          "method": "ion_exchange_capacity",
+          "stream_key": "s",
+          "parameters": {
+            "ionic_load_mol_equiv_m3": 2,
+            "service_cycle_h": 8,
+            "working_resin_capacity_mol_equiv_m3": 1000,
+            "resin_bed_fraction": 0.5
+          }
+        },
+        "parameter_unit_conversions": [],
+        "status": "preliminary engineering scenario",
+        "calculation": {
+          "formula": "V_bed = Q * feed_equivalent_concentration * service_cycle / working_capacity; V_vessel = V_bed / bed_fraction",
+          "resin_bed_volume_m3": 0.16,
+          "regeneration_load_mol_equivalents": 160.0,
+          "limitation": "Working capacity must match resin, species, competing ions and breakthrough target. Regenerant type, stoichiometry, efficiency, backwash and neutralisation costs remain separate explicit inputs."
+        },
+        "size_range": null
+      }
+    ],
+    "runtime_method_version_present": false,
+    "external_source_hash": "91dec8e862162e94653df55e6752e9054b709de36892a3f50678fa8b746c1c8c",
+    "scope": "Synthetic numerical reference trace; not a workbook ingestion or persistence test"
+  },
+  {
+    "method": "vaporizer_area",
+    "report": {
+      "entities": [
+        {
+          "key": "s",
+          "kind": "material",
+          "identifier": "REFERENCE-vaporizer_area",
+          "values": [
+            {
+              "id": "METHOD-001:vaporizer_area:B3",
+              "property": "heat_duty",
+              "normalized_value": 250,
+              "normalized_unit": "kW",
+              "status": "verified",
+              "workbook": "isolated METHOD-001 reference, not a real plant",
+              "sheet": "Reference",
+              "cell": "B3"
+            }
+          ]
+        }
+      ]
+    },
+    "sizing_spec": {
+      "method": "vaporizer_area",
+      "stream_key": "s",
+      "parameters": {
+        "overall_u_w_m2_k": 1000,
+        "lmtd_k": 25,
+        "lmtd_correction": 0.8
+      }
+    },
+    "returned_result": [
+      12.5,
+      "m2",
+      {
+        "method": "vaporizer_area",
+        "source_evidence": [
+          "METHOD-001:vaporizer_area:B3"
+        ],
+        "assumptions": {
+          "method": "vaporizer_area",
+          "stream_key": "s",
+          "parameters": {
+            "overall_u_w_m2_k": 1000,
+            "lmtd_k": 25,
+            "lmtd_correction": 0.8
+          }
+        },
+        "parameter_unit_conversions": [],
+        "status": "preliminary engineering scenario",
+        "calculation": {
+          "formula": "A = abs(Q_kW) * 1000 / (U_W_m2_K * LMTD_K * F)",
+          "scope": "Thermal area estimate; no mechanical exchanger design"
+        },
+        "size_range": null
+      }
+    ],
+    "runtime_method_version_present": false,
+    "external_source_hash": "a87b55c8e2bcdf46970e9e7f736cac30deed17eadec33c218b93650bcd7ea62f",
+    "scope": "Synthetic numerical reference trace; not a workbook ingestion or persistence test"
+  },
+  {
+    "method": "gas_compression",
+    "report": {
+      "entities": [
+        {
+          "key": "s",
+          "kind": "material",
+          "identifier": "REFERENCE-gas_compression",
+          "values": [
+            {
+              "id": "METHOD-001:gas_compression:B3",
+              "property": "mass_flow",
+              "normalized_value": 3600,
+              "normalized_unit": "kg/h",
+              "status": "verified",
+              "workbook": "isolated METHOD-001 reference, not a real plant",
+              "sheet": "Reference",
+              "cell": "B3"
+            }
+          ]
+        }
+      ]
+    },
+    "sizing_spec": {
+      "method": "gas_compression",
+      "stream_key": "s",
+      "parameters": {
+        "molecular_weight_kg_kmol": 28,
+        "temperature_k": 300,
+        "absolute_pressure_bar": 1,
+        "discharge_pressure_bar": 8,
+        "heat_capacity_ratio": 1.5,
+        "efficiency": 0.75,
+        "compressibility_z": 1
+      }
+    },
+    "returned_result": [
+      356.33411220656734,
+      "kW",
+      {
+        "method": "gas_compression",
+        "source_evidence": [
+          "METHOD-001:gas_compression:B3"
+        ],
+        "assumptions": {
+          "method": "gas_compression",
+          "stream_key": "s",
+          "parameters": {
+            "molecular_weight_kg_kmol": 28,
+            "temperature_k": 300,
+            "absolute_pressure_bar": 1,
+            "discharge_pressure_bar": 8,
+            "heat_capacity_ratio": 1.5,
+            "efficiency": 0.75,
+            "compressibility_z": 1
+          }
+        },
+        "parameter_unit_conversions": [],
+        "status": "preliminary engineering scenario",
+        "calculation": {
+          "formula": "W = m R T Z k/(k-1) * ((Pout/Pin)^((k-1)/k)-1) / eta",
+          "scope": "Single-stage gas screening only; constant k and Z, no condensation/intercooling; applicability must be reviewed",
+          "applicability_warnings": [
+            "Z is a supplied representative compression-path approximation; an inlet Z alone does not establish real-gas work accuracy.",
+            "Constant k and Z must be justified for the selected gas and path. Variable properties, near-critical states, phase change or multistage/intercooled duty require an EOS/enthalpy-based or specialist calculation.",
+            "Use consistent absolute pressure and temperature states and isentropic efficiency. The numerical k limits are guards, not a certified operating envelope or a motor-rating calculation."
+          ]
+        },
+        "size_range": null
+      }
+    ],
+    "runtime_method_version_present": false,
+    "external_source_hash": "7e6a492fada36556a1e03cbd3a9cc2f705be7dbf8786f295dfc59deb8b419a0a",
+    "scope": "Synthetic numerical reference trace; not a workbook ingestion or persistence test"
+  },
+  {
+    "method": "phase_change_duty",
+    "report": {
+      "entities": [
+        {
+          "key": "s",
+          "kind": "material",
+          "identifier": "REFERENCE-phase_change_duty",
+          "values": [
+            {
+              "id": "METHOD-001:phase_change_duty:B3",
+              "property": "mass_flow",
+              "normalized_value": 360,
+              "normalized_unit": "kg/h",
+              "status": "verified",
+              "workbook": "isolated METHOD-001 reference, not a real plant",
+              "sheet": "Reference",
+              "cell": "B3"
+            }
+          ]
+        }
+      ]
+    },
+    "sizing_spec": {
+      "method": "phase_change_duty",
+      "stream_key": "s",
+      "parameters": {
+        "latent_heat_kj_kg": 2000,
+        "phase_change_fraction": 0.5,
+        "sensible_enthalpy_change_kj_kg": 100
+      }
+    },
+    "returned_result": [
+      110.0,
+      "kW",
+      {
+        "method": "phase_change_duty",
+        "source_evidence": [
+          "METHOD-001:phase_change_duty:B3"
+        ],
+        "assumptions": {
+          "method": "phase_change_duty",
+          "stream_key": "s",
+          "parameters": {
+            "latent_heat_kj_kg": 2000,
+            "phase_change_fraction": 0.5,
+            "sensible_enthalpy_change_kj_kg": 100
+          }
+        },
+        "parameter_unit_conversions": [],
+        "status": "preliminary engineering scenario",
+        "calculation": {
+          "formula": "Q = m_dot * (fraction * latent_heat + sensible_delta_h) / 3600",
+          "scope": "Explicit property input must match composition, pressure and phase; no property database was invoked"
+        },
+        "size_range": null
+      }
+    ],
+    "runtime_method_version_present": false,
+    "external_source_hash": "2ea255a0633f37147b502624716ca34b2c73a2fe45249a31bc99c29f5f5813ee",
+    "scope": "Synthetic numerical reference trace; not a workbook ingestion or persistence test"
+  },
+  {
+    "method": "evaporated_water",
+    "report": {
+      "entities": [
+        {
+          "key": "s",
+          "kind": "material",
+          "identifier": "REFERENCE-evaporated_water",
+          "values": [
+            {
+              "id": "METHOD-001:evaporated_water:B3",
+              "property": "mass_flow",
+              "normalized_value": 1000,
+              "normalized_unit": "kg/h",
+              "status": "verified",
+              "workbook": "isolated METHOD-001 reference, not a real plant",
+              "sheet": "Reference",
+              "cell": "B3"
+            }
+          ]
+        }
+      ]
+    },
+    "sizing_spec": {
+      "method": "evaporated_water",
+      "stream_key": "s",
+      "parameters": {
+        "feed_water_mass_fraction": 0.8,
+        "product_water_mass_fraction": 0.1
+      }
+    },
+    "returned_result": [
+      777.7777777777778,
+      "kg/h",
+      {
+        "method": "evaporated_water",
+        "source_evidence": [
+          "METHOD-001:evaporated_water:B3"
+        ],
+        "assumptions": {
+          "method": "evaporated_water",
+          "stream_key": "s",
+          "parameters": {
+            "feed_water_mass_fraction": 0.8,
+            "product_water_mass_fraction": 0.1
+          }
+        },
+        "parameter_unit_conversions": [],
+        "status": "preliminary engineering scenario",
+        "calculation": {
+          "formula": "m_evap = m_feed * (x_feed - x_product) / (1 - x_product)",
+          "scope": "Conserved dry solids; wet-basis moisture; no solids loss or chemical reaction"
+        },
+        "size_range": null
+      }
+    ],
+    "runtime_method_version_present": false,
+    "external_source_hash": "2ea255a0633f37147b502624716ca34b2c73a2fe45249a31bc99c29f5f5813ee",
+    "scope": "Synthetic numerical reference trace; not a workbook ingestion or persistence test"
+  },
+  {
+    "method": "ion_exchange_ebct",
+    "report": {
+      "entities": [
+        {
+          "key": "s",
+          "kind": "material",
+          "identifier": "REFERENCE-ion_exchange_ebct",
+          "values": [
+            {
+              "id": "METHOD-001:ion_exchange_ebct:B3",
+              "property": "volume_flow",
+              "normalized_value": 12,
+              "normalized_unit": "m3/h",
+              "status": "verified",
+              "workbook": "isolated METHOD-001 reference, not a real plant",
+              "sheet": "Reference",
+              "cell": "B3"
+            }
+          ]
+        }
+      ]
+    },
+    "sizing_spec": {
+      "method": "ion_exchange_ebct",
+      "stream_key": "s",
+      "parameters": {
+        "empty_bed_contact_time_min": 5,
+        "resin_bed_fraction": 0.5
+      }
+    },
+    "returned_result": [
+      2.0,
+      "m3",
+      {
+        "method": "ion_exchange_ebct",
+        "source_evidence": [
+          "METHOD-001:ion_exchange_ebct:B3"
+        ],
+        "assumptions": {
+          "method": "ion_exchange_ebct",
+          "stream_key": "s",
+          "parameters": {
+            "empty_bed_contact_time_min": 5,
+            "resin_bed_fraction": 0.5
+          }
+        },
+        "parameter_unit_conversions": [],
+        "status": "preliminary engineering scenario",
+        "calculation": {
+          "formula": "V_bed = Q * EBCT_minutes / 60; V_vessel = V_bed / resin_bed_fraction",
+          "resin_bed_volume_m3": 1.0,
+          "limitation": "Preliminary EBCT scenario only; ionic load, resin capacity, regeneration cycle and freeboard require independent checks."
+        },
+        "size_range": null
+      }
+    ],
+    "runtime_method_version_present": false,
+    "external_source_hash": "91dec8e862162e94653df55e6752e9054b709de36892a3f50678fa8b746c1c8c",
+    "scope": "Synthetic numerical reference trace; not a workbook ingestion or persistence test"
+  },
+  {
+    "method": "vessel_hold_up",
+    "report": {
+      "entities": [
+        {
+          "key": "s",
+          "kind": "material",
+          "identifier": "REFERENCE-vessel_hold_up",
+          "values": [
+            {
+              "id": "METHOD-001:vessel_hold_up:B3",
+              "property": "volume_flow",
+              "normalized_value": 10,
+              "normalized_unit": "m3/h",
+              "status": "verified",
+              "workbook": "isolated METHOD-001 reference, not a real plant",
+              "sheet": "Reference",
+              "cell": "B3"
+            }
+          ]
+        }
+      ]
+    },
+    "sizing_spec": {
+      "method": "vessel_hold_up",
+      "stream_key": "s",
+      "parameters": {
+        "residence_time_h": 2,
+        "working_fraction": 0.8
+      }
+    },
+    "returned_result": [
+      25.0,
+      "m3",
+      {
+        "method": "vessel_hold_up",
+        "source_evidence": [
+          "METHOD-001:vessel_hold_up:B3"
+        ],
+        "assumptions": {
+          "method": "vessel_hold_up",
+          "stream_key": "s",
+          "parameters": {
+            "residence_time_h": 2,
+            "working_fraction": 0.8
+          }
+        },
+        "parameter_unit_conversions": [],
+        "status": "preliminary engineering scenario",
+        "calculation": {
+          "formula": "V = Q * residence_time / working_fraction",
+          "quantity": "vessel capacity"
+        },
+        "size_range": null
+      }
+    ],
+    "runtime_method_version_present": false,
+    "external_source_hash": "34f37d476e85897530e3067c7a37d067f7017f308e64ff2bd4ab5de6566120f0",
+    "scope": "Synthetic numerical reference trace; not a workbook ingestion or persistence test"
+  },
+  {
+    "method": "pump_duty",
+    "report": {
+      "entities": [
+        {
+          "key": "s",
+          "kind": "material",
+          "identifier": "REFERENCE-pump_duty",
+          "values": [
+            {
+              "id": "METHOD-001:pump_duty:B3",
+              "property": "volume_flow",
+              "normalized_value": 3.6,
+              "normalized_unit": "m3/h",
+              "status": "verified",
+              "workbook": "isolated METHOD-001 reference, not a real plant",
+              "sheet": "Reference",
+              "cell": "B3"
+            }
+          ]
+        }
+      ]
+    },
+    "sizing_spec": {
+      "method": "pump_duty",
+      "stream_key": "s",
+      "parameters": {
+        "differential_pressure_bar": 1,
+        "efficiency": 0.5
+      }
+    },
+    "returned_result": [
+      0.22988950107343342,
+      "1000 US_gpm_psi",
+      {
+        "method": "pump_duty",
+        "source_evidence": [
+          "METHOD-001:pump_duty:B3"
+        ],
+        "assumptions": {
+          "method": "pump_duty",
+          "stream_key": "s",
+          "parameters": {
+            "differential_pressure_bar": 1,
+            "efficiency": 0.5
+          }
+        },
+        "parameter_unit_conversions": [],
+        "status": "preliminary engineering scenario",
+        "calculation": {
+          "formula": "coordinate = Q_US_gpm * differential_pressure_psi / 1000",
+          "hydraulic_power_kw": 0.1,
+          "shaft_power_kw": 0.2
+        },
+        "size_range": null
+      }
+    ],
+    "runtime_method_version_present": false,
+    "external_source_hash": "f3895311975fe2d26b227f30a7fdb9afb10fa9f739ae825fdf5efdc62c9d4c9c",
+    "scope": "Synthetic numerical reference trace; not a workbook ingestion or persistence test"
+  },
+  {
+    "method": "exchanger_area",
+    "report": {
+      "entities": [
+        {
+          "key": "s",
+          "kind": "material",
+          "identifier": "REFERENCE-exchanger_area",
+          "values": [
+            {
+              "id": "METHOD-001:exchanger_area:B3",
+              "property": "heat_duty",
+              "normalized_value": 100,
+              "normalized_unit": "kW",
+              "status": "verified",
+              "workbook": "isolated METHOD-001 reference, not a real plant",
+              "sheet": "Reference",
+              "cell": "B3"
+            }
+          ]
+        }
+      ]
+    },
+    "sizing_spec": {
+      "method": "exchanger_area",
+      "stream_key": "s",
+      "parameters": {
+        "overall_u_w_m2_k": 500,
+        "lmtd_k": 20,
+        "lmtd_correction": 1
+      }
+    },
+    "returned_result": [
+      10.0,
+      "m2",
+      {
+        "method": "exchanger_area",
+        "source_evidence": [
+          "METHOD-001:exchanger_area:B3"
+        ],
+        "assumptions": {
+          "method": "exchanger_area",
+          "stream_key": "s",
+          "parameters": {
+            "overall_u_w_m2_k": 500,
+            "lmtd_k": 20,
+            "lmtd_correction": 1
+          }
+        },
+        "parameter_unit_conversions": [],
+        "status": "preliminary engineering scenario",
+        "calculation": {
+          "formula": "A = abs(Q_kW) * 1000 / (U_W_m2_K * LMTD_K * F)",
+          "scope": "Thermal area estimate; no mechanical exchanger design"
+        },
+        "size_range": null
+      }
+    ],
+    "runtime_method_version_present": false,
+    "external_source_hash": "a87b55c8e2bcdf46970e9e7f736cac30deed17eadec33c218b93650bcd7ea62f",
+    "scope": "Synthetic numerical reference trace; not a workbook ingestion or persistence test"
+  },
+  {
+    "method": "filter_area",
+    "report": {
+      "entities": [
+        {
+          "key": "s",
+          "kind": "material",
+          "identifier": "REFERENCE-filter_area",
+          "values": [
+            {
+              "id": "METHOD-001:filter_area:B3",
+              "property": "volume_flow",
+              "normalized_value": 20,
+              "normalized_unit": "m3/h",
+              "status": "verified",
+              "workbook": "isolated METHOD-001 reference, not a real plant",
+              "sheet": "Reference",
+              "cell": "B3"
+            }
+          ]
+        }
+      ]
+    },
+    "sizing_spec": {
+      "method": "filter_area",
+      "stream_key": "s",
+      "parameters": {
+        "hydraulic_loading_m_h": 5
+      }
+    },
+    "returned_result": [
+      4.0,
+      "m2",
+      {
+        "method": "filter_area",
+        "source_evidence": [
+          "METHOD-001:filter_area:B3"
+        ],
+        "assumptions": {
+          "method": "filter_area",
+          "stream_key": "s",
+          "parameters": {
+            "hydraulic_loading_m_h": 5
+          }
+        },
+        "parameter_unit_conversions": [],
+        "status": "preliminary engineering scenario",
+        "calculation": {
+          "formula": "A = Q / hydraulic_loading",
+          "scope": "Explicit hydraulic screening assumption; solids/cake/cycle constraints may govern"
+        },
+        "size_range": null
+      }
+    ],
+    "runtime_method_version_present": false,
+    "external_source_hash": "119a40834a0bfce9611c2ee45f3b727dba6dbab4cf57d444f2fc9ab3b7b02fb8",
+    "scope": "Synthetic numerical reference trace; not a workbook ingestion or persistence test"
+  },
+  {
+    "method": "gas_volume",
+    "report": {
+      "entities": [
+        {
+          "key": "s",
+          "kind": "material",
+          "identifier": "REFERENCE-gas_volume",
+          "values": [
+            {
+              "id": "METHOD-001:gas_volume:B3",
+              "property": "mass_flow",
+              "normalized_value": 28,
+              "normalized_unit": "kg/h",
+              "status": "verified",
+              "workbook": "isolated METHOD-001 reference, not a real plant",
+              "sheet": "Reference",
+              "cell": "B3"
+            }
+          ]
+        }
+      ]
+    },
+    "sizing_spec": {
+      "method": "gas_volume",
+      "stream_key": "s",
+      "parameters": {
+        "molecular_weight_kg_kmol": 28,
+        "temperature_k": 300,
+        "absolute_pressure_bar": 1,
+        "compressibility_z": 1
+      }
+    },
+    "returned_result": [
+      24.94338785445972,
+      "m3/h",
+      {
+        "method": "gas_volume",
+        "source_evidence": [
+          "METHOD-001:gas_volume:B3"
+        ],
+        "assumptions": {
+          "method": "gas_volume",
+          "stream_key": "s",
+          "parameters": {
+            "molecular_weight_kg_kmol": 28,
+            "temperature_k": 300,
+            "absolute_pressure_bar": 1,
+            "compressibility_z": 1
+          }
+        },
+        "parameter_unit_conversions": [],
+        "status": "preliminary engineering scenario",
+        "calculation": {
+          "formula": "Q = (mass/MW) * R * T * Z / P_abs",
+          "scope": "Actual ideal/real-gas screening volume; explicit phase/composition/condition basis required"
+        },
+        "size_range": null
+      }
+    ],
+    "runtime_method_version_present": false,
+    "external_source_hash": "3455d104daa70d447210f754ddce45a6beb8843403ef141d5b1f4a87c3cc3a7d",
+    "scope": "Synthetic numerical reference trace; not a workbook ingestion or persistence test"
+  },
+  {
+    "method": "dryer_chamber",
+    "report": {
+      "entities": [
+        {
+          "key": "s",
+          "kind": "material",
+          "identifier": "REFERENCE-dryer_chamber",
+          "values": [
+            {
+              "id": "METHOD-001:dryer_chamber:B3",
+              "property": "volume_flow",
+              "normalized_value": 3600,
+              "normalized_unit": "m3/h",
+              "status": "verified",
+              "workbook": "isolated METHOD-001 reference, not a real plant",
+              "sheet": "Reference",
+              "cell": "B3"
+            }
+          ]
+        }
+      ]
+    },
+    "sizing_spec": {
+      "method": "dryer_chamber",
+      "stream_key": "s",
+      "parameters": {
+        "gas_residence_time_s": 10
+      }
+    },
+    "returned_result": [
+      10.0,
+      "m3",
+      {
+        "method": "dryer_chamber",
+        "source_evidence": [
+          "METHOD-001:dryer_chamber:B3"
+        ],
+        "assumptions": {
+          "method": "dryer_chamber",
+          "stream_key": "s",
+          "parameters": {
+            "gas_residence_time_s": 10
+          }
+        },
+        "parameter_unit_conversions": [],
+        "status": "preliminary engineering scenario",
+        "calculation": {
+          "formula": "V = actual gas flow * residence_seconds / 3600",
+          "scope": "Gas hold-up screening only; evaporation, droplet drying and vendor design may govern"
+        },
+        "size_range": null
+      }
+    ],
+    "runtime_method_version_present": false,
+    "external_source_hash": "9423e8de29bde799f08a4245ec0b4c9bcd2555304529c4a6bf83620330105bc1",
+    "scope": "Synthetic numerical reference trace; not a workbook ingestion or persistence test"
+  }
+]

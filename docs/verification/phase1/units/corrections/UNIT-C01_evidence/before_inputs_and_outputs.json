@@ -1,0 +1,373 @@
+[
+  {
+    "method": "ion_exchange_capacity",
+    "source": {
+      "entities": [
+        {
+          "key": "s",
+          "values": [
+            {
+              "id": "source",
+              "property": "volume_flow",
+              "normalized_value": 10,
+              "normalized_unit": "m3/h",
+              "status": "verified"
+            }
+          ]
+        }
+      ]
+    },
+    "parameters": {
+      "ionic_load_mol_equiv_m3": true,
+      "service_cycle_h": 8,
+      "working_resin_capacity_mol_equiv_m3": 1000,
+      "resin_bed_fraction": 0.5
+    },
+    "invalid_parameter": "ionic_load_mol_equiv_m3",
+    "invalid_type": "numpy.bool_",
+    "invalid_value": true,
+    "expected": "ValueError before float/abs",
+    "unsafe_size": 0.16,
+    "unit": "m3"
+  },
+  {
+    "method": "vaporizer_area",
+    "source": {
+      "entities": [
+        {
+          "key": "s",
+          "values": [
+            {
+              "id": "source",
+              "property": "heat_duty",
+              "normalized_value": 250,
+              "normalized_unit": "kW",
+              "status": "verified"
+            }
+          ]
+        }
+      ]
+    },
+    "parameters": {
+      "overall_u_w_m2_k": true,
+      "lmtd_k": 25,
+      "lmtd_correction": 0.8
+    },
+    "invalid_parameter": "overall_u_w_m2_k",
+    "invalid_type": "numpy.bool_",
+    "invalid_value": true,
+    "expected": "ValueError before float/abs",
+    "unsafe_size": 12500.0,
+    "unit": "m2"
+  },
+  {
+    "method": "gas_compression",
+    "source": {
+      "entities": [
+        {
+          "key": "s",
+          "values": [
+            {
+              "id": "source",
+              "property": "mass_flow",
+              "normalized_value": 3600,
+              "normalized_unit": "kg/h",
+              "status": "verified"
+            }
+          ]
+        }
+      ]
+    },
+    "parameters": {
+      "molecular_weight_kg_kmol": true,
+      "temperature_k": 300,
+      "absolute_pressure_bar": 1,
+      "discharge_pressure_bar": 8,
+      "heat_capacity_ratio": 1.5,
+      "efficiency": 0.75,
+      "compressibility_z": 1
+    },
+    "invalid_parameter": "molecular_weight_kg_kmol",
+    "invalid_type": "numpy.bool_",
+    "invalid_value": true,
+    "expected": "ValueError before float/abs",
+    "unsafe_size": 9977.355141783884,
+    "unit": "kW"
+  },
+  {
+    "method": "phase_change_duty",
+    "source": {
+      "entities": [
+        {
+          "key": "s",
+          "values": [
+            {
+              "id": "source",
+              "property": "mass_flow",
+              "normalized_value": 360,
+              "normalized_unit": "kg/h",
+              "status": "verified"
+            }
+          ]
+        }
+      ]
+    },
+    "parameters": {
+      "latent_heat_kj_kg": true,
+      "phase_change_fraction": 0.5,
+      "sensible_enthalpy_change_kj_kg": 100
+    },
+    "invalid_parameter": "latent_heat_kj_kg",
+    "invalid_type": "numpy.bool_",
+    "invalid_value": true,
+    "expected": "ValueError before float/abs",
+    "unsafe_size": 10.05,
+    "unit": "kW"
+  },
+  {
+    "method": "evaporated_water",
+    "source": {
+      "entities": [
+        {
+          "key": "s",
+          "values": [
+            {
+              "id": "source",
+              "property": "mass_flow",
+              "normalized_value": 1000,
+              "normalized_unit": "kg/h",
+              "status": "verified"
+            }
+          ]
+        }
+      ]
+    },
+    "parameters": {
+      "feed_water_mass_fraction": 0.8,
+      "product_water_mass_fraction": false
+    },
+    "invalid_parameter": "product_water_mass_fraction",
+    "invalid_type": "numpy.bool_",
+    "invalid_value": false,
+    "expected": "ValueError before float/abs",
+    "unsafe_size": 800.0,
+    "unit": "kg/h"
+  },
+  {
+    "method": "ion_exchange_ebct",
+    "source": {
+      "entities": [
+        {
+          "key": "s",
+          "values": [
+            {
+              "id": "source",
+              "property": "volume_flow",
+              "normalized_value": 12,
+              "normalized_unit": "m3/h",
+              "status": "verified"
+            }
+          ]
+        }
+      ]
+    },
+    "parameters": {
+      "empty_bed_contact_time_min": true,
+      "resin_bed_fraction": 0.5
+    },
+    "invalid_parameter": "empty_bed_contact_time_min",
+    "invalid_type": "numpy.bool_",
+    "invalid_value": true,
+    "expected": "ValueError before float/abs",
+    "unsafe_size": 0.4,
+    "unit": "m3"
+  },
+  {
+    "method": "vessel_hold_up",
+    "source": {
+      "entities": [
+        {
+          "key": "s",
+          "values": [
+            {
+              "id": "source",
+              "property": "volume_flow",
+              "normalized_value": 10,
+              "normalized_unit": "m3/h",
+              "status": "verified"
+            }
+          ]
+        }
+      ]
+    },
+    "parameters": {
+      "residence_time_h": true,
+      "working_fraction": 0.8
+    },
+    "invalid_parameter": "residence_time_h",
+    "invalid_type": "numpy.bool_",
+    "invalid_value": true,
+    "expected": "ValueError before float/abs",
+    "unsafe_size": 12.5,
+    "unit": "m3"
+  },
+  {
+    "method": "pump_duty",
+    "source": {
+      "entities": [
+        {
+          "key": "s",
+          "values": [
+            {
+              "id": "source",
+              "property": "volume_flow",
+              "normalized_value": 3.6,
+              "normalized_unit": "m3/h",
+              "status": "verified"
+            }
+          ]
+        }
+      ]
+    },
+    "parameters": {
+      "differential_pressure_bar": 1,
+      "efficiency": true
+    },
+    "invalid_parameter": "efficiency",
+    "invalid_type": "numpy.bool_",
+    "invalid_value": true,
+    "expected": "ValueError before float/abs",
+    "unsafe_size": 0.22988950107343342,
+    "unit": "1000 US_gpm_psi"
+  },
+  {
+    "method": "exchanger_area",
+    "source": {
+      "entities": [
+        {
+          "key": "s",
+          "values": [
+            {
+              "id": "source",
+              "property": "heat_duty",
+              "normalized_value": 100,
+              "normalized_unit": "kW",
+              "status": "verified"
+            }
+          ]
+        }
+      ]
+    },
+    "parameters": {
+      "overall_u_w_m2_k": true,
+      "lmtd_k": 20,
+      "lmtd_correction": 1
+    },
+    "invalid_parameter": "overall_u_w_m2_k",
+    "invalid_type": "numpy.bool_",
+    "invalid_value": true,
+    "expected": "ValueError before float/abs",
+    "unsafe_size": 5000.0,
+    "unit": "m2"
+  },
+  {
+    "method": "filter_area",
+    "source": {
+      "entities": [
+        {
+          "key": "s",
+          "values": [
+            {
+              "id": "source",
+              "property": "volume_flow",
+              "normalized_value": 20,
+              "normalized_unit": "m3/h",
+              "status": "verified"
+            }
+          ]
+        }
+      ]
+    },
+    "parameters": {
+      "hydraulic_loading_m_h": true
+    },
+    "invalid_parameter": "hydraulic_loading_m_h",
+    "invalid_type": "numpy.bool_",
+    "invalid_value": true,
+    "expected": "ValueError before float/abs",
+    "unsafe_size": 20.0,
+    "unit": "m2"
+  },
+  {
+    "method": "gas_volume",
+    "source": {
+      "entities": [
+        {
+          "key": "s",
+          "values": [
+            {
+              "id": "source",
+              "property": "mass_flow",
+              "normalized_value": 28,
+              "normalized_unit": "kg/h",
+              "status": "verified"
+            }
+          ]
+        }
+      ]
+    },
+    "parameters": {
+      "molecular_weight_kg_kmol": true,
+      "temperature_k": 300,
+      "absolute_pressure_bar": 1,
+      "compressibility_z": 1
+    },
+    "invalid_parameter": "molecular_weight_kg_kmol",
+    "invalid_type": "numpy.bool_",
+    "invalid_value": true,
+    "expected": "ValueError before float/abs",
+    "unsafe_size": 698.4148599248722,
+    "unit": "m3/h"
+  },
+  {
+    "method": "dryer_chamber",
+    "source": {
+      "entities": [
+        {
+          "key": "s",
+          "values": [
+            {
+              "id": "source",
+              "property": "volume_flow",
+              "normalized_value": 3600,
+              "normalized_unit": "m3/h",
+              "status": "verified"
+            }
+          ]
+        }
+      ]
+    },
+    "parameters": {
+      "gas_residence_time_s": true
+    },
+    "invalid_parameter": "gas_residence_time_s",
+    "invalid_type": "numpy.bool_",
+    "invalid_value": true,
+    "expected": "ValueError before float/abs",
+    "unsafe_size": 1.0,
+    "unit": "m3"
+  },
+  {
+    "method": "pump_duty observation",
+    "source_type": "numpy.bool_",
+    "source_value": true,
+    "source_unit": "m3/h",
+    "parameters": {
+      "differential_pressure_bar": 1,
+      "efficiency": 0.5
+    },
+    "expected": "ValueError before observation.float()",
+    "unsafe_size": 0.06385819474262039,
+    "unit": "1000 US_gpm_psi"
+  }
+]

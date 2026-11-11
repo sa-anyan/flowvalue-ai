@@ -50,7 +50,7 @@ def derive_size(proposal, report):
                 ):
                     v = observations[0]
                     return (
-                        float(v["normalized_value"]),
+                        _positive_size(v["normalized_value"], "supplied " + prop),
                         v["normalized_unit"],
                         {
                             "method": "supplied_dimension",
@@ -108,6 +108,8 @@ def derive_size(proposal, report):
         raise ValueError(
             "Sizing needs an unambiguous total " + str(prop) + " observation"
         )
+    if isinstance(matches[0]["normalized_value"], bool):
+        raise ValueError("A boolean cannot be a physical sizing observation")
     value = Decimal(str(matches[0]["normalized_value"]))
     unit = matches[0]["normalized_unit"]
     evidence = {
@@ -118,7 +120,10 @@ def derive_size(proposal, report):
         "status": "preliminary engineering scenario",
     }
     if method == "stream_property":
-        return float(value), unit, evidence
+        return _positive_size(value, "stream " + str(prop)), unit, evidence
+    if method in {"mass_residence", "mass_to_volume_flow", "volume_residence"}:
+        # METHOD-LEGACY01: a negative or zero source flow is not a sizing basis.
+        _positive_size(value, "source " + str(prop))
     if method in {"mass_residence", "mass_to_volume_flow"}:
         if unit != "kg/h":
             raise ValueError(
@@ -157,5 +162,29 @@ def derive_size(proposal, report):
             raise ValueError(
                 "Positive residence time and working fraction (0,1] required"
             )
-        return float(value * residence / fraction), "m3", evidence
+        # Delegate the arithmetic to the registered, versioned vessel_hold_up
+        # method so this legacy route shares its guards and method identity.
+        from backend.engineering_sizing.registry import calculate
+
+        size, size_unit, details = calculate(
+            "vessel_hold_up",
+            float(value),
+            {"residence_time_h": float(residence), "working_fraction": float(fraction)},
+        )
+        evidence["calculation"] = details
+        evidence["engineering_method"] = details["engineering_method"]
+        return size, size_unit, evidence
     raise ValueError("No Python sizing method exists for " + str(method))
+
+
+def _positive_size(value, name):
+    """A sizing or costing coordinate must be finite and strictly positive."""
+    if isinstance(value, bool):
+        raise ValueError(name + " cannot be boolean")
+    try:
+        number = float(value)
+    except (TypeError, ValueError, InvalidOperation) as exc:
+        raise ValueError(name + " must be numeric") from exc
+    if number != number or number in (float("inf"), float("-inf")) or number <= 0:
+        raise ValueError(name + " must be finite and positive for sizing")
+    return number

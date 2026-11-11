@@ -29,3 +29,10 @@ backend/.venv-biosteam/
 # Local development dependency links and TypeScript cache
 /frontend/node_modules
 *.tsbuildinfo
+
+# Cloud-sync duplicate copies (e.g. "runner 2.py"); use git, not folder sync
+* [0-9].*
+* [0-9]
+
+# Internal roadmap documents stay local (public repository)
+/docs/reference/*.docx

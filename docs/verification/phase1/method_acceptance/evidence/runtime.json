@@ -1,0 +1,8 @@
+{
+  "recorded_prior_python": "/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/bin/python",
+  "prior_python_available": false,
+  "current_python": "/usr/local/bin/python3",
+  "python_version": "3.12.10",
+  "numpy_version": "2.5.3",
+  "pytest_version": "9.1.1"
+}

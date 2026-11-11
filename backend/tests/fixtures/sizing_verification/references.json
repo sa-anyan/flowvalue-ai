@@ -1,0 +1,168 @@
+[
+  {
+    "method": "ion_exchange_capacity",
+    "value": 10,
+    "parameters": {
+      "ionic_load_mol_equiv_m3": 2,
+      "service_cycle_h": 8,
+      "working_resin_capacity_mol_equiv_m3": 1000,
+      "resin_bed_fraction": 0.5
+    },
+    "expected": ".32",
+    "unit": "m3",
+    "hand_calculation": "10*2*8=160 equivalents; /1000=.16 m3 bed; /.5=.32 m3 vessel",
+    "relative_tolerance": 1e-13,
+    "absolute_tolerance": 1e-14
+  },
+  {
+    "method": "vaporizer_area",
+    "value": 250,
+    "parameters": {
+      "overall_u_w_m2_k": 1000,
+      "lmtd_k": 25,
+      "lmtd_correction": 0.8
+    },
+    "expected": "12.5",
+    "unit": "m2",
+    "hand_calculation": "250000 W / (1000*25*.8)=12.5 m2",
+    "relative_tolerance": 1e-12,
+    "absolute_tolerance": 1e-14
+  },
+  {
+    "method": "gas_compression",
+    "value": 3600,
+    "parameters": {
+      "molecular_weight_kg_kmol": 28,
+      "temperature_k": 300,
+      "absolute_pressure_bar": 1,
+      "discharge_pressure_bar": 8,
+      "heat_capacity_ratio": 1.5,
+      "efficiency": 0.75,
+      "compressibility_z": 1
+    },
+    "expected": "356.3341122065674285714285714",
+    "unit": "kW",
+    "hand_calculation": "PR=8; ideal outlet=600 K; cp=3R/28; 1 kg/s*cp*300/.75",
+    "relative_tolerance": 5e-12,
+    "absolute_tolerance": 1e-14
+  },
+  {
+    "method": "phase_change_duty",
+    "value": 360,
+    "parameters": {
+      "latent_heat_kj_kg": 2000,
+      "phase_change_fraction": 0.5,
+      "sensible_enthalpy_change_kj_kg": 100
+    },
+    "expected": "110",
+    "unit": "kW",
+    "hand_calculation": "0.1 kg/s*(1000+100) kJ/kg=110 kW",
+    "relative_tolerance": 1e-13,
+    "absolute_tolerance": 1e-14
+  },
+  {
+    "method": "evaporated_water",
+    "value": 1000,
+    "parameters": {
+      "feed_water_mass_fraction": 0.8,
+      "product_water_mass_fraction": 0.1
+    },
+    "expected": "777.7777777777777777777777778",
+    "unit": "kg/h",
+    "hand_calculation": "Dry solids=200 kg/h; product=200/.9; water removed=1000-product",
+    "relative_tolerance": 1e-12,
+    "absolute_tolerance": 1e-14
+  },
+  {
+    "method": "ion_exchange_ebct",
+    "value": 12,
+    "parameters": {
+      "empty_bed_contact_time_min": 5,
+      "resin_bed_fraction": 0.5
+    },
+    "expected": "2",
+    "unit": "m3",
+    "hand_calculation": "12*(5/60)=1 m3 bed; /.5=2 m3 vessel",
+    "relative_tolerance": 1e-13,
+    "absolute_tolerance": 1e-14
+  },
+  {
+    "method": "vessel_hold_up",
+    "value": 10,
+    "parameters": {
+      "residence_time_h": 2,
+      "working_fraction": 0.8
+    },
+    "expected": "25",
+    "unit": "m3",
+    "hand_calculation": "10*2=20 m3 liquid; /.8=25 m3 vessel",
+    "relative_tolerance": 1e-13,
+    "absolute_tolerance": 1e-14
+  },
+  {
+    "method": "pump_duty",
+    "value": 3.6,
+    "parameters": {
+      "differential_pressure_bar": 1,
+      "efficiency": 0.5
+    },
+    "expected": "0.2298895010734333601697918125",
+    "unit": "1000 US_gpm_psi",
+    "hand_calculation": "Hydraulic power=.1 kW; divide by exact SI power of 1000 US gpm psi",
+    "relative_tolerance": 1e-11,
+    "absolute_tolerance": 1e-14
+  },
+  {
+    "method": "exchanger_area",
+    "value": 100,
+    "parameters": {
+      "overall_u_w_m2_k": 500,
+      "lmtd_k": 20,
+      "lmtd_correction": 1
+    },
+    "expected": "10",
+    "unit": "m2",
+    "hand_calculation": "100000 W / (500*20)=10 m2",
+    "relative_tolerance": 1e-12,
+    "absolute_tolerance": 1e-14
+  },
+  {
+    "method": "filter_area",
+    "value": 20,
+    "parameters": {
+      "hydraulic_loading_m_h": 5
+    },
+    "expected": "4",
+    "unit": "m2",
+    "hand_calculation": "20 m3/h /5 m/h=4 m2",
+    "relative_tolerance": 1e-13,
+    "absolute_tolerance": 1e-14
+  },
+  {
+    "method": "gas_volume",
+    "value": 28,
+    "parameters": {
+      "molecular_weight_kg_kmol": 28,
+      "temperature_k": 300,
+      "absolute_pressure_bar": 1,
+      "compressibility_z": 1
+    },
+    "expected": "24.94338785445972",
+    "unit": "m3/h",
+    "hand_calculation": "1 kmol/h*R*300/100 kPa=3R m3/h",
+    "relative_tolerance": 2e-13,
+    "absolute_tolerance": 1e-14
+  },
+  {
+    "method": "dryer_chamber",
+    "value": 3600,
+    "parameters": {
+      "gas_residence_time_s": 10
+    },
+    "expected": "10",
+    "unit": "m3",
+    "hand_calculation": "1 m3/s*10 s=10 m3",
+    "relative_tolerance": 1e-13,
+    "absolute_tolerance": 1e-14
+  }
+]

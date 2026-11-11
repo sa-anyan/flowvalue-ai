@@ -1,0 +1,6 @@
+[
+  "backend/tests/test_unit003_active_conversions.py",
+  "backend/tests/test_garrett_integration.py",
+  "backend/tests/test_total_equipment_cost.py",
+  "backend/equipment_costing/indexes/nottingham/test_smoke.py"
+]

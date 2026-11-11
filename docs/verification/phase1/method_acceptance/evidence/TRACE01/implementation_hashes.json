@@ -1,0 +1,10 @@
+{
+  "backend/engineering_sizing/adapter.py": "c63269ccbd79e02254fcbc1afc21170f1b5c1c166c42b25cadc8b073b379a5e9",
+  "backend/engineering_sizing/registry.py": "1884a2c52d3120819990f237b9ad84348956399547101732ba55a8226d8e69a3",
+  "backend/equipment_costing/unit_conversion/bridges/liquid.py": "6933f8c2433b3e941473bdec9313f511a9f3f9d11cb9e70df2d78f5c5c60fb52",
+  "backend/equipment_costing/unit_conversion/bridges/mechanical.py": "4d574559f4ba79da66c95427cc0b4492ce204bec9497bfb28470eda34cbdb2af",
+  "backend/equipment_costing/unit_conversion/bridges/production_sizing.py": "9044efac799c59803106d43b2d659a6e9581bce8202569ad6e90442c0da1a05c",
+  "backend/equipment_costing/unit_conversion/bridges/service.py": "cbcf3dca013f6b08c05a8a82421325b59174ae12332c80a1535ac9c005fa50e5",
+  "backend/engineering_sizing/versioning.py": "cd0bf6d0db0b974645375ab04b4284ba34f88ec151a0004d2f0bbe5610059421",
+  "backend/tests/test_engineering_method_versions.py": "ba39e4f053c710b7ec789222b6a776e0ac46660f492720e4b2a0290f1808a0b8"
+}

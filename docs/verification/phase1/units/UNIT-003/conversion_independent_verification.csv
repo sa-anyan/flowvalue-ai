@@ -1,0 +1,39 @@
+id,relationship,source_value,source_unit,target_unit,independent_expected,actual,absolute_difference,relative_tolerance,absolute_tolerance,reverse_actual,roundtrip_actual,status,basis
+m/s-0,same-quantity conversion,0,m/s,m/s,0,0.0,0.0,2e-12,1e-13,0.0,0.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+m/s-1,same-quantity conversion,1,m/s,m/s,1,1.0,0.0,2e-12,1e-13,1.0,1.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+m/s-17.25,same-quantity conversion,17.25,m/s,m/s,17.25,17.25,0.0,2e-12,1e-13,17.25,17.25,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+m/h-0,same-quantity conversion,0,m/h,m/s,0E-48,0.0,0.0,2e-12,1e-13,0.0,0.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+m/h-1,same-quantity conversion,1,m/h,m/s,0.000277777777777777777777777777777777777777777778,0.0002777777777777778,0.0,2e-12,1e-13,1.0,1.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+m/h-17.25,same-quantity conversion,17.25,m/h,m/s,0.00479166666666666666666666666666666666666666667,0.004791666666666666,0.0,2e-12,1e-13,17.25,17.25,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+ft/s-0,same-quantity conversion,0,ft/s,m/s,0.0000,0.0,0.0,2e-12,1e-13,0.0,0.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+ft/s-1,same-quantity conversion,1,ft/s,m/s,0.3048,0.3048,0.0,2e-12,1e-13,1.0,1.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+ft/s-17.25,same-quantity conversion,17.25,ft/s,m/s,5.257800,5.2578000000000005,8.881784197001252e-16,2e-12,1e-13,17.249999999999996,17.25,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+ft/min-0,same-quantity conversion,0,ft/min,m/s,0.00000,0.0,0.0,2e-12,1e-13,0.0,0.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+ft/min-1,same-quantity conversion,1,ft/min,m/s,0.00508,0.00508,0.0,2e-12,1e-13,1.0,1.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+ft/min-17.25,same-quantity conversion,17.25,ft/min,m/s,0.0876300,0.08763,0.0,2e-12,1e-13,17.25,17.25,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+s-0,same-quantity conversion,0,s,s,0,0.0,0.0,2e-12,1e-13,0.0,0.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+s-1,same-quantity conversion,1,s,s,1,1.0,0.0,2e-12,1e-13,1.0,1.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+s-17.25,same-quantity conversion,17.25,s,s,17.25,17.25,0.0,2e-12,1e-13,17.25,17.25,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+min-0,same-quantity conversion,0,min,s,0,0.0,0.0,2e-12,1e-13,0.0,0.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+min-1,same-quantity conversion,1,min,s,60,60.0,0.0,2e-12,1e-13,1.0,1.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+min-17.25,same-quantity conversion,17.25,min,s,1035.00,1035.0,0.0,2e-12,1e-13,17.25,17.25,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+h-0,same-quantity conversion,0,h,s,0,0.0,0.0,2e-12,1e-13,0.0,0.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+h-1,same-quantity conversion,1,h,s,3600,3600.0,0.0,2e-12,1e-13,1.0,1.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+h-17.25,same-quantity conversion,17.25,h,s,62100.00,62100.0,0.0,2e-12,1e-13,17.25,17.25,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+day-0,same-quantity conversion,0,day,s,0,0.0,0.0,2e-12,1e-13,0.0,0.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+day-1,same-quantity conversion,1,day,s,86400,86400.0,0.0,2e-12,1e-13,1.0,1.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+day-17.25,same-quantity conversion,17.25,day,s,1490400.00,1490400.0,0.0,2e-12,1e-13,17.25,17.25,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+W/m2/K-0,same-quantity conversion,0,W/m2/K,W/m2/K,0,0.0,0.0,2e-12,1e-13,0.0,0.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+W/m2/K-1,same-quantity conversion,1,W/m2/K,W/m2/K,1,1.0,0.0,2e-12,1e-13,1.0,1.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+W/m2/K-17.25,same-quantity conversion,17.25,W/m2/K,W/m2/K,17.25,17.25,0.0,2e-12,1e-13,17.25,17.25,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+kW/m2/K-0,same-quantity conversion,0,kW/m2/K,W/m2/K,0,0.0,0.0,2e-12,1e-13,0.0,0.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+kW/m2/K-1,same-quantity conversion,1,kW/m2/K,W/m2/K,1000,1000.0,0.0,2e-12,1e-13,1.0,1.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+kW/m2/K-17.25,same-quantity conversion,17.25,kW/m2/K,W/m2/K,17250.00,17250.0,0.0,2e-12,1e-13,17.25,17.25,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+Btu_IT/(h*ft2*delta_degF)-0,same-quantity conversion,0,Btu_IT/(h*ft2*delta_degF),W/m2/K,0E-44,0.0,0.0,2e-12,1e-13,0.0,0.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+Btu_IT/(h*ft2*delta_degF)-1,same-quantity conversion,1,Btu_IT/(h*ft2*delta_degF),W/m2/K,5.67826334111348778253112061779679114913785383,5.678263341113487,8.881784197001252e-16,2e-12,1e-13,1.0000000000000002,1.0,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+Btu_IT/(h*ft2*delta_degF)-17.25,same-quantity conversion,17.25,Btu_IT/(h*ft2*delta_degF),W/m2/K,97.9500426342076642486618306569946473226279786,97.95004263420765,1.4210854715202004e-14,2e-12,1e-13,17.250000000000004,17.25,PASS,Exact length/time/prefix/temperature-interval definitions; conventional Btu_IT
+Btu_th/(h*ft2*delta_degF)-0,same-quantity conversion,0,Btu_th/(h*ft2*delta_degF),W/m2/K,0E-44,0.0,0.0,5e-07,1e-13,0.0,0.0,PASS,NIST displayed thermochemical-Btu precision; half last place propagated
+Btu_th/(h*ft2*delta_degF)-1,same-quantity conversion,1,Btu_th/(h*ft2*delta_degF),W/m2/K,5.67446447392894785789571579143158286316572633,5.6744658971331825,1.4232042344630713e-06,5e-07,1e-13,0.999999749191508,1.0,PASS,NIST displayed thermochemical-Btu precision; half last place propagated
+Btu_th/(h*ft2*delta_degF)-17.25,same-quantity conversion,17.25,Btu_th/(h*ft2*delta_degF),W/m2/K,97.8845121752743505487010974021948043896087792,97.88453672554739,2.4550273039380954e-05,5e-07,1e-13,17.249995673553514,17.25,PASS,NIST displayed thermochemical-Btu precision; half last place propagated
+D1,P_average = E / duration,"[{""value"": 4, ""unit"": ""kWh"", ""source"": {}, ""pressure_basis"": null}, {""value"": 30, ""unit"": ""min"", ""source"": {}, ""pressure_basis"": null}]",typed quantities,kW,8,8.0,0.0,2e-12,1e-13,not an automatic inverse physical derivation,input component unit checks in targeted tests,PASS,4kWh/(.5h)=8kW; 1m3/(2m3/h)=.5h; no inferred inputs
+D2,residence_time = working_volume / actual_volume_flow,"[{""value"": 1000, ""unit"": ""L"", ""source"": {}, ""pressure_basis"": null}, {""value"": 2, ""unit"": ""m3/h"", ""source"": {}, ""pressure_basis"": null}]",typed quantities,h,0.5,0.5,0.0,2e-12,1e-13,not an automatic inverse physical derivation,input component unit checks in targeted tests,PASS,4kWh/(.5h)=8kW; 1m3/(2m3/h)=.5h; no inferred inputs

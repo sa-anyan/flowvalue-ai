@@ -1,0 +1,8 @@
+{
+  "commit": "74f364d2ebdcbc67bd0732937f59ef6a3704dce3",
+  "branch": "main",
+  "tracked_changes": "",
+  "baseline_capture_interpreter": "3.13.5 | packaged by Anaconda, Inc. | (main, Jun 12 2025, 11:09:21) [Clang 14.0.6 ]",
+  "test_interpreter": "CPython 3.12.10; reused existing project venv",
+  "frontend_dependency_install": "Reused installed node_modules through symlink; not fresh install"
+}

@@ -1,0 +1,7 @@
+# Existing project test dependencies, pinned to the audited Python 3.12 environment.
+-r requirements-monte-carlo.txt
+pytest==9.1.1
+httpx==0.28.1
+pandas==3.1.0
+xlwt==1.3.0
+# Optional installed-OpenPyTEA parity is reported skipped unless separately installed.

@@ -1,0 +1,46 @@
+
+> flowvalue-assessment@0.1.0 build
+> next build --webpack
+
+▲ Next.js 16.4.3 (webpack)
+✓ Running next.config took 58ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 14.1s
+  Running TypeScript ...
+  Finished TypeScript in 21.0s ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/20) ...
+  Generating static pages using 11 workers (5/20) 
+  Generating static pages using 11 workers (10/20) 
+  Generating static pages using 11 workers (15/20) 
+✓ Generating static pages using 11 workers (20/20) in 703ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/[...path]
+├ ƒ /api/auth
+├ ○ /capex
+├ ○ /capex/equipment
+├ ○ /cashflow
+├ ○ /dashboard
+├ ○ /data
+├ ○ /data/equipment
+├ ○ /entry
+├ ○ /financial-modelling
+├ ○ /login
+├ ○ /main-dashboard
+├ ○ /monte-carlo/overview
+├ ○ /monte-carlo/setup
+├ ○ /opex
+├ ƒ /revenue
+├ ƒ /revenue/cashflow
+└ ○ /scenario-and-sensitivity
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

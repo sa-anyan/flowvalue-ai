@@ -1,0 +1,8 @@
+{
+  "files_checked": 532,
+  "changed": [
+    "backend/engineering_sizing/adapter.py",
+    "backend/engineering_sizing/heat_exchangers.py"
+  ],
+  "compressor_pump_parent_report_original_tests_preserved": true
+}

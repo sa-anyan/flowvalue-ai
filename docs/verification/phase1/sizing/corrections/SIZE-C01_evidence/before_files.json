@@ -1,0 +1,3 @@
+[
+  "backend/tests/test_sizing_independent_verification.py::test_required_compression_stability_near_unity_gamma"
+]

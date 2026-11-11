@@ -1,0 +1,10 @@
+[
+  "backend/tests/test_unit_acceptance.py",
+  "backend/tests/test_unit_conversion.py",
+  "backend/tests/test_unit_conversion_bridges.py",
+  "backend/tests/test_gas_compression_bridge.py",
+  "backend/tests/test_heat_duty_validation.py",
+  "backend/tests/test_sizing_independent_verification.py",
+  "backend/tests/test_currency_conversion.py",
+  "backend/tests/test_cost_translation.py"
+]

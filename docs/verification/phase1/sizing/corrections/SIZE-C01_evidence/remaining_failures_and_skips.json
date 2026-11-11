@@ -1,0 +1,32 @@
+[
+  {
+    "test": "test_real_charlie_thirteen_cases_against_saved_engineering_register",
+    "status": "skipped",
+    "message": "Private real workbook fixture is not redistributed"
+  },
+  {
+    "test": "test_actual_charlie_register_when_available",
+    "status": "skipped",
+    "message": "Private Charlie snapshot not distributed"
+  },
+  {
+    "test": "test_installed_openpytea_321_reference_is_equivalent_with_an_explicit_calendar",
+    "status": "skipped",
+    "message": "Optional pinned OpenPyTEA reference not installed"
+  },
+  {
+    "test": "test_required_boolean_heat_duty_rejection[exchanger_area]",
+    "status": "failure",
+    "message": "Failed: DID NOT RAISE ValueError"
+  },
+  {
+    "test": "test_required_boolean_heat_duty_rejection[vaporizer_area]",
+    "status": "failure",
+    "message": "Failed: DID NOT RAISE ValueError"
+  },
+  {
+    "test": "test_required_finite_pump_auxiliary_outputs",
+    "status": "failure",
+    "message": "assert False\n +  where False = <built-in function isfinite>(inf)\n +    where <built-in function isfinite> = math.isfinite"
+  }
+]

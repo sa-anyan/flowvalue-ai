@@ -1,0 +1,36 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____________ test_required_compression_stability_near_unity_gamma _____________
+
+    def test_required_compression_stability_near_unity_gamma():
+        k = math.nextafter(1.0, 2.0)
+        with localcontext() as ctx:
+            ctx.prec = 100
+            gamma = Decimal.from_float(k)
+            r = Decimal("1.380649e-23") * Decimal("6.02214076e23")
+            # Independent high-precision ideal enthalpy change, evaluated with exp/ln.
+            t2 = Decimal(300) * (Decimal(2).ln() * ((gamma - 1) / gamma)).exp()
+            cp = r / 28 * gamma / (gamma - 1)
+            expected = float(cp * (t2 - 300) / Decimal(".75"))
+        p = dict(
+            molecular_weight_kg_kmol=28,
+            temperature_k=300,
+            absolute_pressure_bar=1,
+            discharge_pressure_bar=2,
+            heat_capacity_ratio=k,
+            efficiency=0.75,
+            compressibility_z=1,
+        )
+>       assert calculate("gas_compression", 3600, p)[0] == pytest.approx(
+            expected, rel=5e-12
+        )
+E       assert 118.77803740218916 == 82.33066173777114 ± 4.1e-10
+E         
+E         comparison failed
+E         Obtained: 118.77803740218916
+E         Expected: 82.33066173777114 ± 4.1e-10
+
+backend/tests/test_sizing_independent_verification.py:131: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_sizing_independent_verification.py::test_required_compression_stability_near_unity_gamma
+1 failed in 0.18s

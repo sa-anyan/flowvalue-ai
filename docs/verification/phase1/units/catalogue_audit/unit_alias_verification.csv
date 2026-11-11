@@ -1,0 +1,563 @@
+namespace,alias,registry_target,independent_intended_target,physical_quantity,recognition,numeric_meaning,variant_probes,status
+ALIASES,Btu_IT,Btu_IT,Btu_IT,energy,PASS,PASS,"[""  Btu_IT  "", ""Btu_IT""]",PASS
+ALIASES,Btu_IT/d,Btu_IT/day,Btu_IT/day,power,PASS,PASS,"[""  Btu_IT/d  "", ""Btu_IT/d""]",PASS
+ALIASES,Btu_IT/day,Btu_IT/day,Btu_IT/day,power,PASS,PASS,"[""  Btu_IT/day  "", ""Btu_IT/day""]",PASS
+ALIASES,Btu_IT/days,Btu_IT/day,Btu_IT/day,power,PASS,PASS,"[""  Btu_IT/days  "", ""Btu_IT/days""]",PASS
+ALIASES,Btu_IT/h,Btu_IT/h,Btu_IT/h,power,PASS,PASS,"[""  Btu_IT/h  "", ""Btu_IT/h""]",PASS
+ALIASES,Btu_IT/hour,Btu_IT/h,Btu_IT/h,power,PASS,PASS,"[""  Btu_IT/hour  "", ""Btu_IT/hour""]",PASS
+ALIASES,Btu_IT/hours,Btu_IT/h,Btu_IT/h,power,PASS,PASS,"[""  Btu_IT/hours  "", ""Btu_IT/hours""]",PASS
+ALIASES,Btu_IT/hr,Btu_IT/h,Btu_IT/h,power,PASS,PASS,"[""  Btu_IT/hr  "", ""Btu_IT/hr""]",PASS
+ALIASES,Btu_IT/min,Btu_IT/min,Btu_IT/min,power,PASS,PASS,"[""  Btu_IT/min  "", ""Btu_IT/min""]",PASS
+ALIASES,Btu_IT/minute,Btu_IT/min,Btu_IT/min,power,PASS,PASS,"[""  Btu_IT/minute  "", ""Btu_IT/minute""]",PASS
+ALIASES,Btu_IT/minutes,Btu_IT/min,Btu_IT/min,power,PASS,PASS,"[""  Btu_IT/minutes  "", ""Btu_IT/minutes""]",PASS
+ALIASES,Btu_IT/s,Btu_IT/s,Btu_IT/s,power,PASS,PASS,"[""  Btu_IT/s  "", ""Btu_IT/s""]",PASS
+ALIASES,Btu_IT/sec,Btu_IT/s,Btu_IT/s,power,PASS,PASS,"[""  Btu_IT/sec  "", ""Btu_IT/sec""]",PASS
+ALIASES,Btu_IT/second,Btu_IT/s,Btu_IT/s,power,PASS,PASS,"[""  Btu_IT/second  "", ""Btu_IT/second""]",PASS
+ALIASES,Btu_IT/seconds,Btu_IT/s,Btu_IT/s,power,PASS,PASS,"[""  Btu_IT/seconds  "", ""Btu_IT/seconds""]",PASS
+ALIASES,Btu_th,Btu_th,Btu_th,energy,PASS,PASS,"[""  Btu_th  "", ""Btu_th""]",PASS
+ALIASES,Btu_th/d,Btu_th/day,Btu_th/day,power,PASS,PASS,"[""  Btu_th/d  "", ""Btu_th/d""]",PASS
+ALIASES,Btu_th/day,Btu_th/day,Btu_th/day,power,PASS,PASS,"[""  Btu_th/day  "", ""Btu_th/day""]",PASS
+ALIASES,Btu_th/days,Btu_th/day,Btu_th/day,power,PASS,PASS,"[""  Btu_th/days  "", ""Btu_th/days""]",PASS
+ALIASES,Btu_th/h,Btu_th/h,Btu_th/h,power,PASS,PASS,"[""  Btu_th/h  "", ""Btu_th/h""]",PASS
+ALIASES,Btu_th/hour,Btu_th/h,Btu_th/h,power,PASS,PASS,"[""  Btu_th/hour  "", ""Btu_th/hour""]",PASS
+ALIASES,Btu_th/hours,Btu_th/h,Btu_th/h,power,PASS,PASS,"[""  Btu_th/hours  "", ""Btu_th/hours""]",PASS
+ALIASES,Btu_th/hr,Btu_th/h,Btu_th/h,power,PASS,PASS,"[""  Btu_th/hr  "", ""Btu_th/hr""]",PASS
+ALIASES,Btu_th/min,Btu_th/min,Btu_th/min,power,PASS,PASS,"[""  Btu_th/min  "", ""Btu_th/min""]",PASS
+ALIASES,Btu_th/minute,Btu_th/min,Btu_th/min,power,PASS,PASS,"[""  Btu_th/minute  "", ""Btu_th/minute""]",PASS
+ALIASES,Btu_th/minutes,Btu_th/min,Btu_th/min,power,PASS,PASS,"[""  Btu_th/minutes  "", ""Btu_th/minutes""]",PASS
+ALIASES,Btu_th/s,Btu_th/s,Btu_th/s,power,PASS,PASS,"[""  Btu_th/s  "", ""Btu_th/s""]",PASS
+ALIASES,Btu_th/sec,Btu_th/s,Btu_th/s,power,PASS,PASS,"[""  Btu_th/sec  "", ""Btu_th/sec""]",PASS
+ALIASES,Btu_th/second,Btu_th/s,Btu_th/s,power,PASS,PASS,"[""  Btu_th/second  "", ""Btu_th/second""]",PASS
+ALIASES,Btu_th/seconds,Btu_th/s,Btu_th/s,power,PASS,PASS,"[""  Btu_th/seconds  "", ""Btu_th/seconds""]",PASS
+ALIASES,C,degC,degC,temperature,PASS,PASS,"[""  C  "", ""C""]",PASS
+ALIASES,F,degF,degF,temperature,PASS,PASS,"[""  F  "", ""F""]",PASS
+ALIASES,GJ,GJ,GJ,energy,PASS,PASS,"[""  GJ  "", ""GJ""]",PASS
+ALIASES,GJ/d,GJ/day,GJ/day,power,PASS,PASS,"[""  GJ/d  "", ""GJ/d""]",PASS
+ALIASES,GJ/day,GJ/day,GJ/day,power,PASS,PASS,"[""  GJ/day  "", ""GJ/day""]",PASS
+ALIASES,GJ/days,GJ/day,GJ/day,power,PASS,PASS,"[""  GJ/days  "", ""GJ/days""]",PASS
+ALIASES,GJ/h,GJ/h,GJ/h,power,PASS,PASS,"[""  GJ/h  "", ""GJ/h""]",PASS
+ALIASES,GJ/hour,GJ/h,GJ/h,power,PASS,PASS,"[""  GJ/hour  "", ""GJ/hour""]",PASS
+ALIASES,GJ/hours,GJ/h,GJ/h,power,PASS,PASS,"[""  GJ/hours  "", ""GJ/hours""]",PASS
+ALIASES,GJ/hr,GJ/h,GJ/h,power,PASS,PASS,"[""  GJ/hr  "", ""GJ/hr""]",PASS
+ALIASES,GJ/min,GJ/min,GJ/min,power,PASS,PASS,"[""  GJ/min  "", ""GJ/min""]",PASS
+ALIASES,GJ/minute,GJ/min,GJ/min,power,PASS,PASS,"[""  GJ/minute  "", ""GJ/minute""]",PASS
+ALIASES,GJ/minutes,GJ/min,GJ/min,power,PASS,PASS,"[""  GJ/minutes  "", ""GJ/minutes""]",PASS
+ALIASES,GJ/s,GJ/s,GJ/s,power,PASS,PASS,"[""  GJ/s  "", ""GJ/s""]",PASS
+ALIASES,GJ/sec,GJ/s,GJ/s,power,PASS,PASS,"[""  GJ/sec  "", ""GJ/sec""]",PASS
+ALIASES,GJ/second,GJ/s,GJ/s,power,PASS,PASS,"[""  GJ/second  "", ""GJ/second""]",PASS
+ALIASES,GJ/seconds,GJ/s,GJ/s,power,PASS,PASS,"[""  GJ/seconds  "", ""GJ/seconds""]",PASS
+ALIASES,HP,hp,hp,power,PASS,PASS,"[""  HP  "", ""HP""]",PASS
+ALIASES,Imp_gal,Imp_gal,Imp_gal,volume,PASS,PASS,"[""  Imp_gal  "", ""Imp_gal""]",PASS
+ALIASES,Imp_gal/d,Imp_gal/day,Imp_gal/day,volume_flow,PASS,PASS,"[""  Imp_gal/d  "", ""Imp_gal/d""]",PASS
+ALIASES,Imp_gal/day,Imp_gal/day,Imp_gal/day,volume_flow,PASS,PASS,"[""  Imp_gal/day  "", ""Imp_gal/day""]",PASS
+ALIASES,Imp_gal/days,Imp_gal/day,Imp_gal/day,volume_flow,PASS,PASS,"[""  Imp_gal/days  "", ""Imp_gal/days""]",PASS
+ALIASES,Imp_gal/h,Imp_gal/h,Imp_gal/h,volume_flow,PASS,PASS,"[""  Imp_gal/h  "", ""Imp_gal/h""]",PASS
+ALIASES,Imp_gal/hour,Imp_gal/h,Imp_gal/h,volume_flow,PASS,PASS,"[""  Imp_gal/hour  "", ""Imp_gal/hour""]",PASS
+ALIASES,Imp_gal/hours,Imp_gal/h,Imp_gal/h,volume_flow,PASS,PASS,"[""  Imp_gal/hours  "", ""Imp_gal/hours""]",PASS
+ALIASES,Imp_gal/hr,Imp_gal/h,Imp_gal/h,volume_flow,PASS,PASS,"[""  Imp_gal/hr  "", ""Imp_gal/hr""]",PASS
+ALIASES,Imp_gal/min,Imp_gal/min,Imp_gal/min,volume_flow,PASS,PASS,"[""  Imp_gal/min  "", ""Imp_gal/min""]",PASS
+ALIASES,Imp_gal/minute,Imp_gal/min,Imp_gal/min,volume_flow,PASS,PASS,"[""  Imp_gal/minute  "", ""Imp_gal/minute""]",PASS
+ALIASES,Imp_gal/minutes,Imp_gal/min,Imp_gal/min,volume_flow,PASS,PASS,"[""  Imp_gal/minutes  "", ""Imp_gal/minutes""]",PASS
+ALIASES,Imp_gal/s,Imp_gal/s,Imp_gal/s,volume_flow,PASS,PASS,"[""  Imp_gal/s  "", ""Imp_gal/s""]",PASS
+ALIASES,Imp_gal/sec,Imp_gal/s,Imp_gal/s,volume_flow,PASS,PASS,"[""  Imp_gal/sec  "", ""Imp_gal/sec""]",PASS
+ALIASES,Imp_gal/second,Imp_gal/s,Imp_gal/s,volume_flow,PASS,PASS,"[""  Imp_gal/second  "", ""Imp_gal/second""]",PASS
+ALIASES,Imp_gal/seconds,Imp_gal/s,Imp_gal/s,volume_flow,PASS,PASS,"[""  Imp_gal/seconds  "", ""Imp_gal/seconds""]",PASS
+ALIASES,Imp_gpm,Imp_gpm,Imp_gpm,volume_flow,PASS,PASS,"[""  Imp_gpm  "", ""Imp_gpm""]",PASS
+ALIASES,Imp_gpm_psi,Imp_gpm_psi,Imp_gpm_psi,flow_pressure_product,PASS,PASS,"[""  Imp_gpm_psi  "", ""Imp_gpm_psi""]",PASS
+ALIASES,Imp_gpm_sqrt_ft,Imp_gpm_sqrt_ft,Imp_gpm_sqrt_ft,flow_sqrt_head,PASS,PASS,"[""  Imp_gpm_sqrt_ft  "", ""Imp_gpm_sqrt_ft""]",PASS
+ALIASES,Imperial gal,Imp_gal,Imp_gal,volume,PASS,PASS,"[""  Imperial gal  "", ""Imperial   gal""]",PASS
+ALIASES,Imperial gal/min,Imp_gpm,Imp_gpm,volume_flow,PASS,PASS,"[""  Imperial gal/min  "", ""Imperial   gal/min""]",PASS
+ALIASES,J,J,J,energy,PASS,PASS,"[""  J  "", ""J""]",PASS
+ALIASES,J/d,J/day,J/day,power,PASS,PASS,"[""  J/d  "", ""J/d""]",PASS
+ALIASES,J/day,J/day,J/day,power,PASS,PASS,"[""  J/day  "", ""J/day""]",PASS
+ALIASES,J/days,J/day,J/day,power,PASS,PASS,"[""  J/days  "", ""J/days""]",PASS
+ALIASES,J/h,J/h,J/h,power,PASS,PASS,"[""  J/h  "", ""J/h""]",PASS
+ALIASES,J/hour,J/h,J/h,power,PASS,PASS,"[""  J/hour  "", ""J/hour""]",PASS
+ALIASES,J/hours,J/h,J/h,power,PASS,PASS,"[""  J/hours  "", ""J/hours""]",PASS
+ALIASES,J/hr,J/h,J/h,power,PASS,PASS,"[""  J/hr  "", ""J/hr""]",PASS
+ALIASES,J/min,J/min,J/min,power,PASS,PASS,"[""  J/min  "", ""J/min""]",PASS
+ALIASES,J/minute,J/min,J/min,power,PASS,PASS,"[""  J/minute  "", ""J/minute""]",PASS
+ALIASES,J/minutes,J/min,J/min,power,PASS,PASS,"[""  J/minutes  "", ""J/minutes""]",PASS
+ALIASES,J/s,J/s,J/s,power,PASS,PASS,"[""  J/s  "", ""J/s""]",PASS
+ALIASES,J/sec,J/s,J/s,power,PASS,PASS,"[""  J/sec  "", ""J/sec""]",PASS
+ALIASES,J/second,J/s,J/s,power,PASS,PASS,"[""  J/second  "", ""J/second""]",PASS
+ALIASES,J/seconds,J/s,J/s,power,PASS,PASS,"[""  J/seconds  "", ""J/seconds""]",PASS
+ALIASES,K,K,K,temperature,PASS,PASS,"[""  K  "", ""K""]",PASS
+ALIASES,L,L,L,volume,PASS,PASS,"[""  L  "", ""L""]",PASS
+ALIASES,L/d,L/day,L/day,volume_flow,PASS,PASS,"[""  L/d  "", ""L/d""]",PASS
+ALIASES,L/day,L/day,L/day,volume_flow,PASS,PASS,"[""  L/day  "", ""L/day""]",PASS
+ALIASES,L/days,L/day,L/day,volume_flow,PASS,PASS,"[""  L/days  "", ""L/days""]",PASS
+ALIASES,L/h,L/h,L/h,volume_flow,PASS,PASS,"[""  L/h  "", ""L/h""]",PASS
+ALIASES,L/hour,L/h,L/h,volume_flow,PASS,PASS,"[""  L/hour  "", ""L/hour""]",PASS
+ALIASES,L/hours,L/h,L/h,volume_flow,PASS,PASS,"[""  L/hours  "", ""L/hours""]",PASS
+ALIASES,L/hr,L/h,L/h,volume_flow,PASS,PASS,"[""  L/hr  "", ""L/hr""]",PASS
+ALIASES,L/min,L/min,L/min,volume_flow,PASS,PASS,"[""  L/min  "", ""L/min""]",PASS
+ALIASES,L/minute,L/min,L/min,volume_flow,PASS,PASS,"[""  L/minute  "", ""L/minute""]",PASS
+ALIASES,L/minutes,L/min,L/min,volume_flow,PASS,PASS,"[""  L/minutes  "", ""L/minutes""]",PASS
+ALIASES,L/s,L/s,L/s,volume_flow,PASS,PASS,"[""  L/s  "", ""L/s""]",PASS
+ALIASES,L/sec,L/s,L/s,volume_flow,PASS,PASS,"[""  L/sec  "", ""L/sec""]",PASS
+ALIASES,L/second,L/s,L/s,volume_flow,PASS,PASS,"[""  L/second  "", ""L/second""]",PASS
+ALIASES,L/seconds,L/s,L/s,volume_flow,PASS,PASS,"[""  L/seconds  "", ""L/seconds""]",PASS
+ALIASES,MGD_US,US_MGD,US_MGD,volume_flow,PASS,PASS,"[""  MGD_US  "", ""MGD_US""]",PASS
+ALIASES,MJ,MJ,MJ,energy,PASS,PASS,"[""  MJ  "", ""MJ""]",PASS
+ALIASES,MJ/d,MJ/day,MJ/day,power,PASS,PASS,"[""  MJ/d  "", ""MJ/d""]",PASS
+ALIASES,MJ/day,MJ/day,MJ/day,power,PASS,PASS,"[""  MJ/day  "", ""MJ/day""]",PASS
+ALIASES,MJ/days,MJ/day,MJ/day,power,PASS,PASS,"[""  MJ/days  "", ""MJ/days""]",PASS
+ALIASES,MJ/h,MJ/h,MJ/h,power,PASS,PASS,"[""  MJ/h  "", ""MJ/h""]",PASS
+ALIASES,MJ/hour,MJ/h,MJ/h,power,PASS,PASS,"[""  MJ/hour  "", ""MJ/hour""]",PASS
+ALIASES,MJ/hours,MJ/h,MJ/h,power,PASS,PASS,"[""  MJ/hours  "", ""MJ/hours""]",PASS
+ALIASES,MJ/hr,MJ/h,MJ/h,power,PASS,PASS,"[""  MJ/hr  "", ""MJ/hr""]",PASS
+ALIASES,MJ/min,MJ/min,MJ/min,power,PASS,PASS,"[""  MJ/min  "", ""MJ/min""]",PASS
+ALIASES,MJ/minute,MJ/min,MJ/min,power,PASS,PASS,"[""  MJ/minute  "", ""MJ/minute""]",PASS
+ALIASES,MJ/minutes,MJ/min,MJ/min,power,PASS,PASS,"[""  MJ/minutes  "", ""MJ/minutes""]",PASS
+ALIASES,MJ/s,MJ/s,MJ/s,power,PASS,PASS,"[""  MJ/s  "", ""MJ/s""]",PASS
+ALIASES,MJ/sec,MJ/s,MJ/s,power,PASS,PASS,"[""  MJ/sec  "", ""MJ/sec""]",PASS
+ALIASES,MJ/second,MJ/s,MJ/s,power,PASS,PASS,"[""  MJ/second  "", ""MJ/second""]",PASS
+ALIASES,MJ/seconds,MJ/s,MJ/s,power,PASS,PASS,"[""  MJ/seconds  "", ""MJ/seconds""]",PASS
+ALIASES,MPa,MPa,MPa,pressure,PASS,PASS,"[""  MPa  "", ""MPa""]",PASS
+ALIASES,MW,MW,MW,power,PASS,PASS,"[""  MW  "", ""MW""]",PASS
+ALIASES,Nm3/h,Nm3/h,Nm3/h,standard_volume_flow,PASS,PASS,"[""  Nm3/h  "", ""Nm3/h"", ""Nm\u00b3/h"", ""Nm^3/h""]",PASS
+ALIASES,Pa,Pa,Pa,pressure,PASS,PASS,"[""  Pa  "", ""Pa""]",PASS
+ALIASES,Sm3/h,Sm3/h,Sm3/h,standard_volume_flow,PASS,PASS,"[""  Sm3/h  "", ""Sm3/h"", ""Sm\u00b3/h"", ""Sm^3/h""]",PASS
+ALIASES,Sm3/s,Sm3/s,Sm3/s,standard_volume_flow,PASS,PASS,"[""  Sm3/s  "", ""Sm3/s"", ""Sm\u00b3/s"", ""Sm^3/s""]",PASS
+ALIASES,Torr,Torr,Torr,pressure,PASS,PASS,"[""  Torr  "", ""Torr""]",PASS
+ALIASES,US MGD,US_MGD,US_MGD,volume_flow,PASS,PASS,"[""  US MGD  "", ""US   MGD""]",PASS
+ALIASES,US gal,US_gal,US_gal,volume,PASS,PASS,"[""  US gal  "", ""US   gal""]",PASS
+ALIASES,US gal/min,US_gpm,US_gpm,volume_flow,PASS,PASS,"[""  US gal/min  "", ""US   gal/min""]",PASS
+ALIASES,US_MGD,US_MGD,US_MGD,volume_flow,PASS,PASS,"[""  US_MGD  "", ""US_MGD""]",PASS
+ALIASES,US_gal,US_gal,US_gal,volume,PASS,PASS,"[""  US_gal  "", ""US_gal""]",PASS
+ALIASES,US_gal/d,US_gal/day,US_gal/day,volume_flow,PASS,PASS,"[""  US_gal/d  "", ""US_gal/d""]",PASS
+ALIASES,US_gal/day,US_gal/day,US_gal/day,volume_flow,PASS,PASS,"[""  US_gal/day  "", ""US_gal/day""]",PASS
+ALIASES,US_gal/days,US_gal/day,US_gal/day,volume_flow,PASS,PASS,"[""  US_gal/days  "", ""US_gal/days""]",PASS
+ALIASES,US_gal/h,US_gal/h,US_gal/h,volume_flow,PASS,PASS,"[""  US_gal/h  "", ""US_gal/h""]",PASS
+ALIASES,US_gal/hour,US_gal/h,US_gal/h,volume_flow,PASS,PASS,"[""  US_gal/hour  "", ""US_gal/hour""]",PASS
+ALIASES,US_gal/hours,US_gal/h,US_gal/h,volume_flow,PASS,PASS,"[""  US_gal/hours  "", ""US_gal/hours""]",PASS
+ALIASES,US_gal/hr,US_gal/h,US_gal/h,volume_flow,PASS,PASS,"[""  US_gal/hr  "", ""US_gal/hr""]",PASS
+ALIASES,US_gal/min,US_gal/min,US_gal/min,volume_flow,PASS,PASS,"[""  US_gal/min  "", ""US_gal/min""]",PASS
+ALIASES,US_gal/minute,US_gal/min,US_gal/min,volume_flow,PASS,PASS,"[""  US_gal/minute  "", ""US_gal/minute""]",PASS
+ALIASES,US_gal/minutes,US_gal/min,US_gal/min,volume_flow,PASS,PASS,"[""  US_gal/minutes  "", ""US_gal/minutes""]",PASS
+ALIASES,US_gal/s,US_gal/s,US_gal/s,volume_flow,PASS,PASS,"[""  US_gal/s  "", ""US_gal/s""]",PASS
+ALIASES,US_gal/sec,US_gal/s,US_gal/s,volume_flow,PASS,PASS,"[""  US_gal/sec  "", ""US_gal/sec""]",PASS
+ALIASES,US_gal/second,US_gal/s,US_gal/s,volume_flow,PASS,PASS,"[""  US_gal/second  "", ""US_gal/second""]",PASS
+ALIASES,US_gal/seconds,US_gal/s,US_gal/s,volume_flow,PASS,PASS,"[""  US_gal/seconds  "", ""US_gal/seconds""]",PASS
+ALIASES,US_gpm,US_gpm,US_gpm,volume_flow,PASS,PASS,"[""  US_gpm  "", ""US_gpm""]",PASS
+ALIASES,US_gpm_psi,US_gpm_psi,US_gpm_psi,flow_pressure_product,PASS,PASS,"[""  US_gpm_psi  "", ""US_gpm_psi""]",PASS
+ALIASES,US_gpm_sqrt_ft,US_gpm_sqrt_ft,US_gpm_sqrt_ft,flow_sqrt_head,PASS,PASS,"[""  US_gpm_sqrt_ft  "", ""US_gpm_sqrt_ft""]",PASS
+ALIASES,W,W,W,power,PASS,PASS,"[""  W  "", ""W""]",PASS
+ALIASES,atm,atm,atm,pressure,PASS,PASS,"[""  atm  "", ""atm""]",PASS
+ALIASES,bar,bar,bar,pressure,PASS,PASS,"[""  bar  "", ""bar""]",PASS
+ALIASES,bar_abs,bara,bara,pressure,PASS,PASS,"[""  bar_abs  "", ""bar_abs""]",PASS
+ALIASES,bar_absolute,bara,bara,pressure,PASS,PASS,"[""  bar_absolute  "", ""bar_absolute""]",PASS
+ALIASES,bar_gauge,barg,barg,pressure,PASS,PASS,"[""  bar_gauge  "", ""bar_gauge""]",PASS
+ALIASES,bara,bara,bara,pressure,PASS,PASS,"[""  bara  "", ""bara""]",PASS
+ALIASES,barg,barg,barg,pressure,PASS,PASS,"[""  barg  "", ""barg""]",PASS
+ALIASES,boiler_hp,boiler_hp,boiler_hp,boiler_power,PASS,IDENTITY ONLY,"[""  boiler_hp  "", ""boiler_hp""]",PARTIAL
+ALIASES,cfm,cfm,cfm,volume_flow,PASS,PASS,"[""  cfm  "", ""cfm""]",PASS
+ALIASES,cm,cm,cm,length,PASS,PASS,"[""  cm  "", ""cm""]",PASS
+ALIASES,cm2,cm2,cm2,area,PASS,PASS,"[""  cm2  "", ""cm2"", ""cm\u00b2"", ""cm^2""]",PASS
+ALIASES,cm3,cm3,cm3,volume,PASS,PASS,"[""  cm3  "", ""cm3"", ""cm\u00b3"", ""cm^3""]",PASS
+ALIASES,cm3/d,cm3/day,cm3/day,volume_flow,PASS,PASS,"[""  cm3/d  "", ""cm3/d"", ""cm\u00b3/d"", ""cm^3/d""]",PASS
+ALIASES,cm3/day,cm3/day,cm3/day,volume_flow,PASS,PASS,"[""  cm3/day  "", ""cm3/day"", ""cm\u00b3/day"", ""cm^3/day""]",PASS
+ALIASES,cm3/days,cm3/day,cm3/day,volume_flow,PASS,PASS,"[""  cm3/days  "", ""cm3/days"", ""cm\u00b3/days"", ""cm^3/days""]",PASS
+ALIASES,cm3/h,cm3/h,cm3/h,volume_flow,PASS,PASS,"[""  cm3/h  "", ""cm3/h"", ""cm\u00b3/h"", ""cm^3/h""]",PASS
+ALIASES,cm3/hour,cm3/h,cm3/h,volume_flow,PASS,PASS,"[""  cm3/hour  "", ""cm3/hour"", ""cm\u00b3/hour"", ""cm^3/hour""]",PASS
+ALIASES,cm3/hours,cm3/h,cm3/h,volume_flow,PASS,PASS,"[""  cm3/hours  "", ""cm3/hours"", ""cm\u00b3/hours"", ""cm^3/hours""]",PASS
+ALIASES,cm3/hr,cm3/h,cm3/h,volume_flow,PASS,PASS,"[""  cm3/hr  "", ""cm3/hr"", ""cm\u00b3/hr"", ""cm^3/hr""]",PASS
+ALIASES,cm3/min,cm3/min,cm3/min,volume_flow,PASS,PASS,"[""  cm3/min  "", ""cm3/min"", ""cm\u00b3/min"", ""cm^3/min""]",PASS
+ALIASES,cm3/minute,cm3/min,cm3/min,volume_flow,PASS,PASS,"[""  cm3/minute  "", ""cm3/minute"", ""cm\u00b3/minute"", ""cm^3/minute""]",PASS
+ALIASES,cm3/minutes,cm3/min,cm3/min,volume_flow,PASS,PASS,"[""  cm3/minutes  "", ""cm3/minutes"", ""cm\u00b3/minutes"", ""cm^3/minutes""]",PASS
+ALIASES,cm3/s,cm3/s,cm3/s,volume_flow,PASS,PASS,"[""  cm3/s  "", ""cm3/s"", ""cm\u00b3/s"", ""cm^3/s""]",PASS
+ALIASES,cm3/sec,cm3/s,cm3/s,volume_flow,PASS,PASS,"[""  cm3/sec  "", ""cm3/sec"", ""cm\u00b3/sec"", ""cm^3/sec""]",PASS
+ALIASES,cm3/second,cm3/s,cm3/s,volume_flow,PASS,PASS,"[""  cm3/second  "", ""cm3/second"", ""cm\u00b3/second"", ""cm^3/second""]",PASS
+ALIASES,cm3/seconds,cm3/s,cm3/s,volume_flow,PASS,PASS,"[""  cm3/seconds  "", ""cm3/seconds"", ""cm\u00b3/seconds"", ""cm^3/seconds""]",PASS
+ALIASES,cu cm,cm3,cm3,volume,PASS,PASS,"[""  cu cm  "", ""cu   cm""]",PASS
+ALIASES,cu ft,ft3,ft3,volume,PASS,PASS,"[""  cu ft  "", ""cu   ft""]",PASS
+ALIASES,cu in,in3,in3,volume,PASS,PASS,"[""  cu in  "", ""cu   in""]",PASS
+ALIASES,cu m,m3,m3,volume,PASS,PASS,"[""  cu m  "", ""cu   m""]",PASS
+ALIASES,cu mm,mm3,mm3,volume,PASS,PASS,"[""  cu mm  "", ""cu   mm""]",PASS
+ALIASES,degC,degC,degC,temperature,PASS,PASS,"[""  degC  "", ""degC""]",PASS
+ALIASES,degF,degF,degF,temperature,PASS,PASS,"[""  degF  "", ""degF""]",PASS
+ALIASES,degR,degR,degR,temperature,PASS,PASS,"[""  degR  "", ""degR""]",PASS
+ALIASES,delta_C,delta_degC,delta_degC,temperature_difference,PASS,PASS,"[""  delta_C  "", ""delta_C""]",PASS
+ALIASES,delta_F,delta_degF,delta_degF,temperature_difference,PASS,PASS,"[""  delta_F  "", ""delta_F""]",PASS
+ALIASES,delta_K,delta_K,delta_K,temperature_difference,PASS,PASS,"[""  delta_K  "", ""delta_K""]",PASS
+ALIASES,delta_degC,delta_degC,delta_degC,temperature_difference,PASS,PASS,"[""  delta_degC  "", ""delta_degC""]",PASS
+ALIASES,delta_degF,delta_degF,delta_degF,temperature_difference,PASS,PASS,"[""  delta_degF  "", ""delta_degF""]",PASS
+ALIASES,delta_°C,delta_degC,delta_degC,temperature_difference,PASS,PASS,"[""  delta_\u00b0C  "", ""delta_\u00b0C"", ""delta_\u00baC""]",PASS
+ALIASES,delta_°F,delta_degF,delta_degF,temperature_difference,PASS,PASS,"[""  delta_\u00b0F  "", ""delta_\u00b0F"", ""delta_\u00baF""]",PASS
+ALIASES,ft,ft,ft,length,PASS,PASS,"[""  ft  "", ""ft""]",PASS
+ALIASES,ft2,ft2,ft2,area,PASS,PASS,"[""  ft2  "", ""ft2"", ""ft\u00b2"", ""ft^2""]",PASS
+ALIASES,ft3,ft3,ft3,volume,PASS,PASS,"[""  ft3  "", ""ft3"", ""ft\u00b3"", ""ft^3""]",PASS
+ALIASES,ft3/d,ft3/day,ft3/day,volume_flow,PASS,PASS,"[""  ft3/d  "", ""ft3/d"", ""ft\u00b3/d"", ""ft^3/d""]",PASS
+ALIASES,ft3/day,ft3/day,ft3/day,volume_flow,PASS,PASS,"[""  ft3/day  "", ""ft3/day"", ""ft\u00b3/day"", ""ft^3/day""]",PASS
+ALIASES,ft3/days,ft3/day,ft3/day,volume_flow,PASS,PASS,"[""  ft3/days  "", ""ft3/days"", ""ft\u00b3/days"", ""ft^3/days""]",PASS
+ALIASES,ft3/h,ft3/h,ft3/h,volume_flow,PASS,PASS,"[""  ft3/h  "", ""ft3/h"", ""ft\u00b3/h"", ""ft^3/h""]",PASS
+ALIASES,ft3/hour,ft3/h,ft3/h,volume_flow,PASS,PASS,"[""  ft3/hour  "", ""ft3/hour"", ""ft\u00b3/hour"", ""ft^3/hour""]",PASS
+ALIASES,ft3/hours,ft3/h,ft3/h,volume_flow,PASS,PASS,"[""  ft3/hours  "", ""ft3/hours"", ""ft\u00b3/hours"", ""ft^3/hours""]",PASS
+ALIASES,ft3/hr,ft3/h,ft3/h,volume_flow,PASS,PASS,"[""  ft3/hr  "", ""ft3/hr"", ""ft\u00b3/hr"", ""ft^3/hr""]",PASS
+ALIASES,ft3/min,ft3/min,ft3/min,volume_flow,PASS,PASS,"[""  ft3/min  "", ""ft3/min"", ""ft\u00b3/min"", ""ft^3/min""]",PASS
+ALIASES,ft3/minute,ft3/min,ft3/min,volume_flow,PASS,PASS,"[""  ft3/minute  "", ""ft3/minute"", ""ft\u00b3/minute"", ""ft^3/minute""]",PASS
+ALIASES,ft3/minutes,ft3/min,ft3/min,volume_flow,PASS,PASS,"[""  ft3/minutes  "", ""ft3/minutes"", ""ft\u00b3/minutes"", ""ft^3/minutes""]",PASS
+ALIASES,ft3/s,ft3/s,ft3/s,volume_flow,PASS,PASS,"[""  ft3/s  "", ""ft3/s"", ""ft\u00b3/s"", ""ft^3/s""]",PASS
+ALIASES,ft3/sec,ft3/s,ft3/s,volume_flow,PASS,PASS,"[""  ft3/sec  "", ""ft3/sec"", ""ft\u00b3/sec"", ""ft^3/sec""]",PASS
+ALIASES,ft3/second,ft3/s,ft3/s,volume_flow,PASS,PASS,"[""  ft3/second  "", ""ft3/second"", ""ft\u00b3/second"", ""ft^3/second""]",PASS
+ALIASES,ft3/seconds,ft3/s,ft3/s,volume_flow,PASS,PASS,"[""  ft3/seconds  "", ""ft3/seconds"", ""ft\u00b3/seconds"", ""ft^3/seconds""]",PASS
+ALIASES,ft_height,ft,ft,length,PASS,PASS,"[""  ft_height  "", ""ft_height""]",PASS
+ALIASES,g,g,g,mass,PASS,PASS,"[""  g  "", ""g""]",PASS
+ALIASES,g/cm3,g/cm3,g/cm3,density,PASS,PASS,"[""  g/cm3  "", ""g/cm3"", ""g/cm\u00b3"", ""g/cm^3""]",PASS
+ALIASES,g/d,g/day,g/day,mass_flow,PASS,PASS,"[""  g/d  "", ""g/d""]",PASS
+ALIASES,g/day,g/day,g/day,mass_flow,PASS,PASS,"[""  g/day  "", ""g/day""]",PASS
+ALIASES,g/days,g/day,g/day,mass_flow,PASS,PASS,"[""  g/days  "", ""g/days""]",PASS
+ALIASES,g/h,g/h,g/h,mass_flow,PASS,PASS,"[""  g/h  "", ""g/h""]",PASS
+ALIASES,g/hour,g/h,g/h,mass_flow,PASS,PASS,"[""  g/hour  "", ""g/hour""]",PASS
+ALIASES,g/hours,g/h,g/h,mass_flow,PASS,PASS,"[""  g/hours  "", ""g/hours""]",PASS
+ALIASES,g/hr,g/h,g/h,mass_flow,PASS,PASS,"[""  g/hr  "", ""g/hr""]",PASS
+ALIASES,g/min,g/min,g/min,mass_flow,PASS,PASS,"[""  g/min  "", ""g/min""]",PASS
+ALIASES,g/minute,g/min,g/min,mass_flow,PASS,PASS,"[""  g/minute  "", ""g/minute""]",PASS
+ALIASES,g/minutes,g/min,g/min,mass_flow,PASS,PASS,"[""  g/minutes  "", ""g/minutes""]",PASS
+ALIASES,g/s,g/s,g/s,mass_flow,PASS,PASS,"[""  g/s  "", ""g/s""]",PASS
+ALIASES,g/sec,g/s,g/s,mass_flow,PASS,PASS,"[""  g/sec  "", ""g/sec""]",PASS
+ALIASES,g/second,g/s,g/s,mass_flow,PASS,PASS,"[""  g/second  "", ""g/second""]",PASS
+ALIASES,g/seconds,g/s,g/s,mass_flow,PASS,PASS,"[""  g/seconds  "", ""g/seconds""]",PASS
+ALIASES,gal_Imp,Imp_gal,Imp_gal,volume,PASS,PASS,"[""  gal_Imp  "", ""gal_Imp""]",PASS
+ALIASES,gal_US,US_gal,US_gal,volume,PASS,PASS,"[""  gal_US  "", ""gal_US""]",PASS
+ALIASES,hp,hp,hp,power,PASS,PASS,"[""  hp  "", ""hp""]",PASS
+ALIASES,in,in,in,length,PASS,PASS,"[""  in  "", ""in""]",PASS
+ALIASES,in2,in2,in2,area,PASS,PASS,"[""  in2  "", ""in2"", ""in\u00b2"", ""in^2""]",PASS
+ALIASES,in3,in3,in3,volume,PASS,PASS,"[""  in3  "", ""in3"", ""in\u00b3"", ""in^3""]",PASS
+ALIASES,in3/d,in3/day,in3/day,volume_flow,PASS,PASS,"[""  in3/d  "", ""in3/d"", ""in\u00b3/d"", ""in^3/d""]",PASS
+ALIASES,in3/day,in3/day,in3/day,volume_flow,PASS,PASS,"[""  in3/day  "", ""in3/day"", ""in\u00b3/day"", ""in^3/day""]",PASS
+ALIASES,in3/days,in3/day,in3/day,volume_flow,PASS,PASS,"[""  in3/days  "", ""in3/days"", ""in\u00b3/days"", ""in^3/days""]",PASS
+ALIASES,in3/h,in3/h,in3/h,volume_flow,PASS,PASS,"[""  in3/h  "", ""in3/h"", ""in\u00b3/h"", ""in^3/h""]",PASS
+ALIASES,in3/hour,in3/h,in3/h,volume_flow,PASS,PASS,"[""  in3/hour  "", ""in3/hour"", ""in\u00b3/hour"", ""in^3/hour""]",PASS
+ALIASES,in3/hours,in3/h,in3/h,volume_flow,PASS,PASS,"[""  in3/hours  "", ""in3/hours"", ""in\u00b3/hours"", ""in^3/hours""]",PASS
+ALIASES,in3/hr,in3/h,in3/h,volume_flow,PASS,PASS,"[""  in3/hr  "", ""in3/hr"", ""in\u00b3/hr"", ""in^3/hr""]",PASS
+ALIASES,in3/min,in3/min,in3/min,volume_flow,PASS,PASS,"[""  in3/min  "", ""in3/min"", ""in\u00b3/min"", ""in^3/min""]",PASS
+ALIASES,in3/minute,in3/min,in3/min,volume_flow,PASS,PASS,"[""  in3/minute  "", ""in3/minute"", ""in\u00b3/minute"", ""in^3/minute""]",PASS
+ALIASES,in3/minutes,in3/min,in3/min,volume_flow,PASS,PASS,"[""  in3/minutes  "", ""in3/minutes"", ""in\u00b3/minutes"", ""in^3/minutes""]",PASS
+ALIASES,in3/s,in3/s,in3/s,volume_flow,PASS,PASS,"[""  in3/s  "", ""in3/s"", ""in\u00b3/s"", ""in^3/s""]",PASS
+ALIASES,in3/sec,in3/s,in3/s,volume_flow,PASS,PASS,"[""  in3/sec  "", ""in3/sec"", ""in\u00b3/sec"", ""in^3/sec""]",PASS
+ALIASES,in3/second,in3/s,in3/s,volume_flow,PASS,PASS,"[""  in3/second  "", ""in3/second"", ""in\u00b3/second"", ""in^3/second""]",PASS
+ALIASES,in3/seconds,in3/s,in3/s,volume_flow,PASS,PASS,"[""  in3/seconds  "", ""in3/seconds"", ""in\u00b3/seconds"", ""in^3/seconds""]",PASS
+ALIASES,item,item,item,count,PASS,PASS,"[""  item  "", ""item""]",PASS
+ALIASES,kJ,kJ,kJ,energy,PASS,PASS,"[""  kJ  "", ""kJ""]",PASS
+ALIASES,kJ/d,kJ/day,kJ/day,power,PASS,PASS,"[""  kJ/d  "", ""kJ/d""]",PASS
+ALIASES,kJ/day,kJ/day,kJ/day,power,PASS,PASS,"[""  kJ/day  "", ""kJ/day""]",PASS
+ALIASES,kJ/days,kJ/day,kJ/day,power,PASS,PASS,"[""  kJ/days  "", ""kJ/days""]",PASS
+ALIASES,kJ/h,kJ/h,kJ/h,power,PASS,PASS,"[""  kJ/h  "", ""kJ/h""]",PASS
+ALIASES,kJ/hour,kJ/h,kJ/h,power,PASS,PASS,"[""  kJ/hour  "", ""kJ/hour""]",PASS
+ALIASES,kJ/hours,kJ/h,kJ/h,power,PASS,PASS,"[""  kJ/hours  "", ""kJ/hours""]",PASS
+ALIASES,kJ/hr,kJ/h,kJ/h,power,PASS,PASS,"[""  kJ/hr  "", ""kJ/hr""]",PASS
+ALIASES,kJ/min,kJ/min,kJ/min,power,PASS,PASS,"[""  kJ/min  "", ""kJ/min""]",PASS
+ALIASES,kJ/minute,kJ/min,kJ/min,power,PASS,PASS,"[""  kJ/minute  "", ""kJ/minute""]",PASS
+ALIASES,kJ/minutes,kJ/min,kJ/min,power,PASS,PASS,"[""  kJ/minutes  "", ""kJ/minutes""]",PASS
+ALIASES,kJ/s,kJ/s,kJ/s,power,PASS,PASS,"[""  kJ/s  "", ""kJ/s""]",PASS
+ALIASES,kJ/sec,kJ/s,kJ/s,power,PASS,PASS,"[""  kJ/sec  "", ""kJ/sec""]",PASS
+ALIASES,kJ/second,kJ/s,kJ/s,power,PASS,PASS,"[""  kJ/second  "", ""kJ/second""]",PASS
+ALIASES,kJ/seconds,kJ/s,kJ/s,power,PASS,PASS,"[""  kJ/seconds  "", ""kJ/seconds""]",PASS
+ALIASES,kPa,kPa,kPa,pressure,PASS,PASS,"[""  kPa  "", ""kPa""]",PASS
+ALIASES,kPaa,kPaa,kPaa,pressure,PASS,PASS,"[""  kPaa  "", ""kPaa""]",PASS
+ALIASES,kPag,kPag,kPag,pressure,PASS,PASS,"[""  kPag  "", ""kPag""]",PASS
+ALIASES,kW,kW,kW,power,PASS,PASS,"[""  kW  "", ""kW""]",PASS
+ALIASES,kWh,kWh,kWh,energy,PASS,PASS,"[""  kWh  "", ""kWh""]",PASS
+ALIASES,kWh/d,kWh/day,kWh/day,power,PASS,PASS,"[""  kWh/d  "", ""kWh/d""]",PASS
+ALIASES,kWh/day,kWh/day,kWh/day,power,PASS,PASS,"[""  kWh/day  "", ""kWh/day""]",PASS
+ALIASES,kWh/days,kWh/day,kWh/day,power,PASS,PASS,"[""  kWh/days  "", ""kWh/days""]",PASS
+ALIASES,kWh/h,kWh/h,kWh/h,power,PASS,PASS,"[""  kWh/h  "", ""kWh/h""]",PASS
+ALIASES,kWh/hour,kWh/h,kWh/h,power,PASS,PASS,"[""  kWh/hour  "", ""kWh/hour""]",PASS
+ALIASES,kWh/hours,kWh/h,kWh/h,power,PASS,PASS,"[""  kWh/hours  "", ""kWh/hours""]",PASS
+ALIASES,kWh/hr,kWh/h,kWh/h,power,PASS,PASS,"[""  kWh/hr  "", ""kWh/hr""]",PASS
+ALIASES,kWh/min,kWh/min,kWh/min,power,PASS,PASS,"[""  kWh/min  "", ""kWh/min""]",PASS
+ALIASES,kWh/minute,kWh/min,kWh/min,power,PASS,PASS,"[""  kWh/minute  "", ""kWh/minute""]",PASS
+ALIASES,kWh/minutes,kWh/min,kWh/min,power,PASS,PASS,"[""  kWh/minutes  "", ""kWh/minutes""]",PASS
+ALIASES,kWh/s,kWh/s,kWh/s,power,PASS,PASS,"[""  kWh/s  "", ""kWh/s""]",PASS
+ALIASES,kWh/sec,kWh/s,kWh/s,power,PASS,PASS,"[""  kWh/sec  "", ""kWh/sec""]",PASS
+ALIASES,kWh/second,kWh/s,kWh/s,power,PASS,PASS,"[""  kWh/second  "", ""kWh/second""]",PASS
+ALIASES,kWh/seconds,kWh/s,kWh/s,power,PASS,PASS,"[""  kWh/seconds  "", ""kWh/seconds""]",PASS
+ALIASES,kg,kg,kg,mass,PASS,PASS,"[""  kg  "", ""kg""]",PASS
+ALIASES,kg/d,kg/day,kg/day,mass_flow,PASS,PASS,"[""  kg/d  "", ""kg/d""]",PASS
+ALIASES,kg/day,kg/day,kg/day,mass_flow,PASS,PASS,"[""  kg/day  "", ""kg/day""]",PASS
+ALIASES,kg/days,kg/day,kg/day,mass_flow,PASS,PASS,"[""  kg/days  "", ""kg/days""]",PASS
+ALIASES,kg/h,kg/h,kg/h,mass_flow,PASS,PASS,"[""  kg/h  "", ""kg/h""]",PASS
+ALIASES,kg/h/mmHg_abs,kg/h/mmHg_abs,kg/h/mmHg_abs,vacuum_capacity,PASS,PASS,"[""  kg/h/mmHg_abs  "", ""kg/h/mmHg_abs""]",PASS
+ALIASES,kg/hour,kg/h,kg/h,mass_flow,PASS,PASS,"[""  kg/hour  "", ""kg/hour""]",PASS
+ALIASES,kg/hours,kg/h,kg/h,mass_flow,PASS,PASS,"[""  kg/hours  "", ""kg/hours""]",PASS
+ALIASES,kg/hr,kg/h,kg/h,mass_flow,PASS,PASS,"[""  kg/hr  "", ""kg/hr""]",PASS
+ALIASES,kg/m3,kg/m3,kg/m3,density,PASS,PASS,"[""  kg/m3  "", ""kg/m3"", ""kg/m\u00b3"", ""kg/m^3""]",PASS
+ALIASES,kg/min,kg/min,kg/min,mass_flow,PASS,PASS,"[""  kg/min  "", ""kg/min""]",PASS
+ALIASES,kg/minute,kg/min,kg/min,mass_flow,PASS,PASS,"[""  kg/minute  "", ""kg/minute""]",PASS
+ALIASES,kg/minutes,kg/min,kg/min,mass_flow,PASS,PASS,"[""  kg/minutes  "", ""kg/minutes""]",PASS
+ALIASES,kg/s,kg/s,kg/s,mass_flow,PASS,PASS,"[""  kg/s  "", ""kg/s""]",PASS
+ALIASES,kg/sec,kg/s,kg/s,mass_flow,PASS,PASS,"[""  kg/sec  "", ""kg/sec""]",PASS
+ALIASES,kg/second,kg/s,kg/s,mass_flow,PASS,PASS,"[""  kg/second  "", ""kg/second""]",PASS
+ALIASES,kg/seconds,kg/s,kg/s,mass_flow,PASS,PASS,"[""  kg/seconds  "", ""kg/seconds""]",PASS
+ALIASES,kmol,kmol,kmol,amount,PASS,PASS,"[""  kmol  "", ""kmol""]",PASS
+ALIASES,kmol/d,kmol/day,kmol/day,molar_flow,PASS,PASS,"[""  kmol/d  "", ""kmol/d""]",PASS
+ALIASES,kmol/day,kmol/day,kmol/day,molar_flow,PASS,PASS,"[""  kmol/day  "", ""kmol/day""]",PASS
+ALIASES,kmol/days,kmol/day,kmol/day,molar_flow,PASS,PASS,"[""  kmol/days  "", ""kmol/days""]",PASS
+ALIASES,kmol/h,kmol/h,kmol/h,molar_flow,PASS,PASS,"[""  kmol/h  "", ""kmol/h""]",PASS
+ALIASES,kmol/hour,kmol/h,kmol/h,molar_flow,PASS,PASS,"[""  kmol/hour  "", ""kmol/hour""]",PASS
+ALIASES,kmol/hours,kmol/h,kmol/h,molar_flow,PASS,PASS,"[""  kmol/hours  "", ""kmol/hours""]",PASS
+ALIASES,kmol/hr,kmol/h,kmol/h,molar_flow,PASS,PASS,"[""  kmol/hr  "", ""kmol/hr""]",PASS
+ALIASES,kmol/min,kmol/min,kmol/min,molar_flow,PASS,PASS,"[""  kmol/min  "", ""kmol/min""]",PASS
+ALIASES,kmol/minute,kmol/min,kmol/min,molar_flow,PASS,PASS,"[""  kmol/minute  "", ""kmol/minute""]",PASS
+ALIASES,kmol/minutes,kmol/min,kmol/min,molar_flow,PASS,PASS,"[""  kmol/minutes  "", ""kmol/minutes""]",PASS
+ALIASES,kmol/s,kmol/s,kmol/s,molar_flow,PASS,PASS,"[""  kmol/s  "", ""kmol/s""]",PASS
+ALIASES,kmol/sec,kmol/s,kmol/s,molar_flow,PASS,PASS,"[""  kmol/sec  "", ""kmol/sec""]",PASS
+ALIASES,kmol/second,kmol/s,kmol/s,molar_flow,PASS,PASS,"[""  kmol/second  "", ""kmol/second""]",PASS
+ALIASES,kmol/seconds,kmol/s,kmol/s,molar_flow,PASS,PASS,"[""  kmol/seconds  "", ""kmol/seconds""]",PASS
+ALIASES,l,L,L,volume,PASS,PASS,"[""  l  "", ""l""]",PASS
+ALIASES,lb,lb,lb,mass,PASS,PASS,"[""  lb  "", ""lb""]",PASS
+ALIASES,lb/d,lb/day,lb/day,mass_flow,PASS,PASS,"[""  lb/d  "", ""lb/d""]",PASS
+ALIASES,lb/day,lb/day,lb/day,mass_flow,PASS,PASS,"[""  lb/day  "", ""lb/day""]",PASS
+ALIASES,lb/days,lb/day,lb/day,mass_flow,PASS,PASS,"[""  lb/days  "", ""lb/days""]",PASS
+ALIASES,lb/ft3,lb/ft3,lb/ft3,density,PASS,PASS,"[""  lb/ft3  "", ""lb/ft3"", ""lb/ft\u00b3"", ""lb/ft^3""]",PASS
+ALIASES,lb/h,lb/h,lb/h,mass_flow,PASS,PASS,"[""  lb/h  "", ""lb/h""]",PASS
+ALIASES,lb/h/mmHg_abs,lb/h/mmHg_abs,lb/h/mmHg_abs,vacuum_capacity,PASS,PASS,"[""  lb/h/mmHg_abs  "", ""lb/h/mmHg_abs""]",PASS
+ALIASES,lb/hour,lb/h,lb/h,mass_flow,PASS,PASS,"[""  lb/hour  "", ""lb/hour""]",PASS
+ALIASES,lb/hours,lb/h,lb/h,mass_flow,PASS,PASS,"[""  lb/hours  "", ""lb/hours""]",PASS
+ALIASES,lb/hr,lb/h,lb/h,mass_flow,PASS,PASS,"[""  lb/hr  "", ""lb/hr""]",PASS
+ALIASES,lb/min,lb/min,lb/min,mass_flow,PASS,PASS,"[""  lb/min  "", ""lb/min""]",PASS
+ALIASES,lb/minute,lb/min,lb/min,mass_flow,PASS,PASS,"[""  lb/minute  "", ""lb/minute""]",PASS
+ALIASES,lb/minutes,lb/min,lb/min,mass_flow,PASS,PASS,"[""  lb/minutes  "", ""lb/minutes""]",PASS
+ALIASES,lb/s,lb/s,lb/s,mass_flow,PASS,PASS,"[""  lb/s  "", ""lb/s""]",PASS
+ALIASES,lb/sec,lb/s,lb/s,mass_flow,PASS,PASS,"[""  lb/sec  "", ""lb/sec""]",PASS
+ALIASES,lb/second,lb/s,lb/s,mass_flow,PASS,PASS,"[""  lb/second  "", ""lb/second""]",PASS
+ALIASES,lb/seconds,lb/s,lb/s,mass_flow,PASS,PASS,"[""  lb/seconds  "", ""lb/seconds""]",PASS
+ALIASES,lbm,lb,lb,mass,PASS,PASS,"[""  lbm  "", ""lbm""]",PASS
+ALIASES,lbs,lb,lb,mass,PASS,PASS,"[""  lbs  "", ""lbs""]",PASS
+ALIASES,liter,L,L,volume,PASS,PASS,"[""  liter  "", ""liter""]",PASS
+ALIASES,litre,L,L,volume,PASS,PASS,"[""  litre  "", ""litre""]",PASS
+ALIASES,long_ton,long_ton,long_ton,mass,PASS,PASS,"[""  long_ton  "", ""long_ton""]",PASS
+ALIASES,long_ton/d,long_ton/day,long_ton/day,mass_flow,PASS,PASS,"[""  long_ton/d  "", ""long_ton/d""]",PASS
+ALIASES,long_ton/day,long_ton/day,long_ton/day,mass_flow,PASS,PASS,"[""  long_ton/day  "", ""long_ton/day""]",PASS
+ALIASES,long_ton/days,long_ton/day,long_ton/day,mass_flow,PASS,PASS,"[""  long_ton/days  "", ""long_ton/days""]",PASS
+ALIASES,long_ton/h,long_ton/h,long_ton/h,mass_flow,PASS,PASS,"[""  long_ton/h  "", ""long_ton/h""]",PASS
+ALIASES,long_ton/hour,long_ton/h,long_ton/h,mass_flow,PASS,PASS,"[""  long_ton/hour  "", ""long_ton/hour""]",PASS
+ALIASES,long_ton/hours,long_ton/h,long_ton/h,mass_flow,PASS,PASS,"[""  long_ton/hours  "", ""long_ton/hours""]",PASS
+ALIASES,long_ton/hr,long_ton/h,long_ton/h,mass_flow,PASS,PASS,"[""  long_ton/hr  "", ""long_ton/hr""]",PASS
+ALIASES,long_ton/min,long_ton/min,long_ton/min,mass_flow,PASS,PASS,"[""  long_ton/min  "", ""long_ton/min""]",PASS
+ALIASES,long_ton/minute,long_ton/min,long_ton/min,mass_flow,PASS,PASS,"[""  long_ton/minute  "", ""long_ton/minute""]",PASS
+ALIASES,long_ton/minutes,long_ton/min,long_ton/min,mass_flow,PASS,PASS,"[""  long_ton/minutes  "", ""long_ton/minutes""]",PASS
+ALIASES,long_ton/s,long_ton/s,long_ton/s,mass_flow,PASS,PASS,"[""  long_ton/s  "", ""long_ton/s""]",PASS
+ALIASES,long_ton/sec,long_ton/s,long_ton/s,mass_flow,PASS,PASS,"[""  long_ton/sec  "", ""long_ton/sec""]",PASS
+ALIASES,long_ton/second,long_ton/s,long_ton/s,mass_flow,PASS,PASS,"[""  long_ton/second  "", ""long_ton/second""]",PASS
+ALIASES,long_ton/seconds,long_ton/s,long_ton/s,mass_flow,PASS,PASS,"[""  long_ton/seconds  "", ""long_ton/seconds""]",PASS
+ALIASES,m,m,m,length,PASS,PASS,"[""  m  "", ""m""]",PASS
+ALIASES,m2,m2,m2,area,PASS,PASS,"[""  m2  "", ""m2"", ""m\u00b2"", ""m^2""]",PASS
+ALIASES,m3,m3,m3,volume,PASS,PASS,"[""  m3  "", ""m3"", ""m\u00b3"", ""m^3""]",PASS
+ALIASES,m3/d,m3/day,m3/day,volume_flow,PASS,PASS,"[""  m3/d  "", ""m3/d"", ""m\u00b3/d"", ""m^3/d""]",PASS
+ALIASES,m3/day,m3/day,m3/day,volume_flow,PASS,PASS,"[""  m3/day  "", ""m3/day"", ""m\u00b3/day"", ""m^3/day""]",PASS
+ALIASES,m3/days,m3/day,m3/day,volume_flow,PASS,PASS,"[""  m3/days  "", ""m3/days"", ""m\u00b3/days"", ""m^3/days""]",PASS
+ALIASES,m3/h,m3/h,m3/h,volume_flow,PASS,PASS,"[""  m3/h  "", ""m3/h"", ""m\u00b3/h"", ""m^3/h""]",PASS
+ALIASES,m3/h_sqrt_m,m3/h_sqrt_m,m3/h_sqrt_m,flow_sqrt_head,PASS,PASS,"[""  m3/h_sqrt_m  "", ""m3/h_sqrt_m"", ""m\u00b3/h_sqrt_m"", ""m^3/h_sqrt_m""]",PASS
+ALIASES,m3/hour,m3/h,m3/h,volume_flow,PASS,PASS,"[""  m3/hour  "", ""m3/hour"", ""m\u00b3/hour"", ""m^3/hour""]",PASS
+ALIASES,m3/hours,m3/h,m3/h,volume_flow,PASS,PASS,"[""  m3/hours  "", ""m3/hours"", ""m\u00b3/hours"", ""m^3/hours""]",PASS
+ALIASES,m3/hr,m3/h,m3/h,volume_flow,PASS,PASS,"[""  m3/hr  "", ""m3/hr"", ""m\u00b3/hr"", ""m^3/hr""]",PASS
+ALIASES,m3/min,m3/min,m3/min,volume_flow,PASS,PASS,"[""  m3/min  "", ""m3/min"", ""m\u00b3/min"", ""m^3/min""]",PASS
+ALIASES,m3/minute,m3/min,m3/min,volume_flow,PASS,PASS,"[""  m3/minute  "", ""m3/minute"", ""m\u00b3/minute"", ""m^3/minute""]",PASS
+ALIASES,m3/minutes,m3/min,m3/min,volume_flow,PASS,PASS,"[""  m3/minutes  "", ""m3/minutes"", ""m\u00b3/minutes"", ""m^3/minutes""]",PASS
+ALIASES,m3/s,m3/s,m3/s,volume_flow,PASS,PASS,"[""  m3/s  "", ""m3/s"", ""m\u00b3/s"", ""m^3/s""]",PASS
+ALIASES,m3/s*Pa,m3/s_Pa,m3/s_Pa,flow_pressure_product,PASS,PASS,"[""  m3/s*Pa  "", ""m3/s*Pa"", ""m\u00b3/s*Pa"", ""m^3/s*Pa""]",PASS
+ALIASES,m3/s_Pa,m3/s_Pa,m3/s_Pa,flow_pressure_product,PASS,PASS,"[""  m3/s_Pa  "", ""m3/s_Pa"", ""m\u00b3/s_Pa"", ""m^3/s_Pa""]",PASS
+ALIASES,m3/sec,m3/s,m3/s,volume_flow,PASS,PASS,"[""  m3/sec  "", ""m3/sec"", ""m\u00b3/sec"", ""m^3/sec""]",PASS
+ALIASES,m3/second,m3/s,m3/s,volume_flow,PASS,PASS,"[""  m3/second  "", ""m3/second"", ""m\u00b3/second"", ""m^3/second""]",PASS
+ALIASES,m3/seconds,m3/s,m3/s,volume_flow,PASS,PASS,"[""  m3/seconds  "", ""m3/seconds"", ""m\u00b3/seconds"", ""m^3/seconds""]",PASS
+ALIASES,mL,mL,mL,volume,PASS,PASS,"[""  mL  "", ""mL""]",PASS
+ALIASES,mL/d,mL/day,mL/day,volume_flow,PASS,PASS,"[""  mL/d  "", ""mL/d""]",PASS
+ALIASES,mL/day,mL/day,mL/day,volume_flow,PASS,PASS,"[""  mL/day  "", ""mL/day""]",PASS
+ALIASES,mL/days,mL/day,mL/day,volume_flow,PASS,PASS,"[""  mL/days  "", ""mL/days""]",PASS
+ALIASES,mL/h,mL/h,mL/h,volume_flow,PASS,PASS,"[""  mL/h  "", ""mL/h""]",PASS
+ALIASES,mL/hour,mL/h,mL/h,volume_flow,PASS,PASS,"[""  mL/hour  "", ""mL/hour""]",PASS
+ALIASES,mL/hours,mL/h,mL/h,volume_flow,PASS,PASS,"[""  mL/hours  "", ""mL/hours""]",PASS
+ALIASES,mL/hr,mL/h,mL/h,volume_flow,PASS,PASS,"[""  mL/hr  "", ""mL/hr""]",PASS
+ALIASES,mL/min,mL/min,mL/min,volume_flow,PASS,PASS,"[""  mL/min  "", ""mL/min""]",PASS
+ALIASES,mL/minute,mL/min,mL/min,volume_flow,PASS,PASS,"[""  mL/minute  "", ""mL/minute""]",PASS
+ALIASES,mL/minutes,mL/min,mL/min,volume_flow,PASS,PASS,"[""  mL/minutes  "", ""mL/minutes""]",PASS
+ALIASES,mL/s,mL/s,mL/s,volume_flow,PASS,PASS,"[""  mL/s  "", ""mL/s""]",PASS
+ALIASES,mL/sec,mL/s,mL/s,volume_flow,PASS,PASS,"[""  mL/sec  "", ""mL/sec""]",PASS
+ALIASES,mL/second,mL/s,mL/s,volume_flow,PASS,PASS,"[""  mL/second  "", ""mL/second""]",PASS
+ALIASES,mL/seconds,mL/s,mL/s,volume_flow,PASS,PASS,"[""  mL/seconds  "", ""mL/seconds""]",PASS
+ALIASES,mW,mW,mW,power,PASS,PASS,"[""  mW  "", ""mW""]",PASS
+ALIASES,mbar,mbar,mbar,pressure,PASS,PASS,"[""  mbar  "", ""mbar""]",PASS
+ALIASES,metric tonne,tonne,tonne,mass,PASS,PASS,"[""  metric tonne  "", ""metric   tonne""]",PASS
+ALIASES,metric_hp,metric_hp,metric_hp,power,PASS,PASS,"[""  metric_hp  "", ""metric_hp""]",PASS
+ALIASES,metric_ton,tonne,tonne,mass,PASS,PASS,"[""  metric_ton  "", ""metric_ton""]",PASS
+ALIASES,mg,mg,mg,mass,PASS,PASS,"[""  mg  "", ""mg""]",PASS
+ALIASES,mg/d,mg/day,mg/day,mass_flow,PASS,PASS,"[""  mg/d  "", ""mg/d""]",PASS
+ALIASES,mg/day,mg/day,mg/day,mass_flow,PASS,PASS,"[""  mg/day  "", ""mg/day""]",PASS
+ALIASES,mg/days,mg/day,mg/day,mass_flow,PASS,PASS,"[""  mg/days  "", ""mg/days""]",PASS
+ALIASES,mg/h,mg/h,mg/h,mass_flow,PASS,PASS,"[""  mg/h  "", ""mg/h""]",PASS
+ALIASES,mg/hour,mg/h,mg/h,mass_flow,PASS,PASS,"[""  mg/hour  "", ""mg/hour""]",PASS
+ALIASES,mg/hours,mg/h,mg/h,mass_flow,PASS,PASS,"[""  mg/hours  "", ""mg/hours""]",PASS
+ALIASES,mg/hr,mg/h,mg/h,mass_flow,PASS,PASS,"[""  mg/hr  "", ""mg/hr""]",PASS
+ALIASES,mg/min,mg/min,mg/min,mass_flow,PASS,PASS,"[""  mg/min  "", ""mg/min""]",PASS
+ALIASES,mg/minute,mg/min,mg/min,mass_flow,PASS,PASS,"[""  mg/minute  "", ""mg/minute""]",PASS
+ALIASES,mg/minutes,mg/min,mg/min,mass_flow,PASS,PASS,"[""  mg/minutes  "", ""mg/minutes""]",PASS
+ALIASES,mg/s,mg/s,mg/s,mass_flow,PASS,PASS,"[""  mg/s  "", ""mg/s""]",PASS
+ALIASES,mg/sec,mg/s,mg/s,mass_flow,PASS,PASS,"[""  mg/sec  "", ""mg/sec""]",PASS
+ALIASES,mg/second,mg/s,mg/s,mass_flow,PASS,PASS,"[""  mg/second  "", ""mg/second""]",PASS
+ALIASES,mg/seconds,mg/s,mg/s,mass_flow,PASS,PASS,"[""  mg/seconds  "", ""mg/seconds""]",PASS
+ALIASES,ml,mL,mL,volume,PASS,PASS,"[""  ml  "", ""ml""]",PASS
+ALIASES,mm,mm,mm,length,PASS,PASS,"[""  mm  "", ""mm""]",PASS
+ALIASES,mm2,mm2,mm2,area,PASS,PASS,"[""  mm2  "", ""mm2"", ""mm\u00b2"", ""mm^2""]",PASS
+ALIASES,mm3,mm3,mm3,volume,PASS,PASS,"[""  mm3  "", ""mm3"", ""mm\u00b3"", ""mm^3""]",PASS
+ALIASES,mm3/d,mm3/day,mm3/day,volume_flow,PASS,PASS,"[""  mm3/d  "", ""mm3/d"", ""mm\u00b3/d"", ""mm^3/d""]",PASS
+ALIASES,mm3/day,mm3/day,mm3/day,volume_flow,PASS,PASS,"[""  mm3/day  "", ""mm3/day"", ""mm\u00b3/day"", ""mm^3/day""]",PASS
+ALIASES,mm3/days,mm3/day,mm3/day,volume_flow,PASS,PASS,"[""  mm3/days  "", ""mm3/days"", ""mm\u00b3/days"", ""mm^3/days""]",PASS
+ALIASES,mm3/h,mm3/h,mm3/h,volume_flow,PASS,PASS,"[""  mm3/h  "", ""mm3/h"", ""mm\u00b3/h"", ""mm^3/h""]",PASS
+ALIASES,mm3/hour,mm3/h,mm3/h,volume_flow,PASS,PASS,"[""  mm3/hour  "", ""mm3/hour"", ""mm\u00b3/hour"", ""mm^3/hour""]",PASS
+ALIASES,mm3/hours,mm3/h,mm3/h,volume_flow,PASS,PASS,"[""  mm3/hours  "", ""mm3/hours"", ""mm\u00b3/hours"", ""mm^3/hours""]",PASS
+ALIASES,mm3/hr,mm3/h,mm3/h,volume_flow,PASS,PASS,"[""  mm3/hr  "", ""mm3/hr"", ""mm\u00b3/hr"", ""mm^3/hr""]",PASS
+ALIASES,mm3/min,mm3/min,mm3/min,volume_flow,PASS,PASS,"[""  mm3/min  "", ""mm3/min"", ""mm\u00b3/min"", ""mm^3/min""]",PASS
+ALIASES,mm3/minute,mm3/min,mm3/min,volume_flow,PASS,PASS,"[""  mm3/minute  "", ""mm3/minute"", ""mm\u00b3/minute"", ""mm^3/minute""]",PASS
+ALIASES,mm3/minutes,mm3/min,mm3/min,volume_flow,PASS,PASS,"[""  mm3/minutes  "", ""mm3/minutes"", ""mm\u00b3/minutes"", ""mm^3/minutes""]",PASS
+ALIASES,mm3/s,mm3/s,mm3/s,volume_flow,PASS,PASS,"[""  mm3/s  "", ""mm3/s"", ""mm\u00b3/s"", ""mm^3/s""]",PASS
+ALIASES,mm3/sec,mm3/s,mm3/s,volume_flow,PASS,PASS,"[""  mm3/sec  "", ""mm3/sec"", ""mm\u00b3/sec"", ""mm^3/sec""]",PASS
+ALIASES,mm3/second,mm3/s,mm3/s,volume_flow,PASS,PASS,"[""  mm3/second  "", ""mm3/second"", ""mm\u00b3/second"", ""mm^3/second""]",PASS
+ALIASES,mm3/seconds,mm3/s,mm3/s,volume_flow,PASS,PASS,"[""  mm3/seconds  "", ""mm3/seconds"", ""mm\u00b3/seconds"", ""mm^3/seconds""]",PASS
+ALIASES,mmHg,mmHg,mmHg,pressure,PASS,PASS,"[""  mmHg  "", ""mmHg""]",PASS
+ALIASES,mol,mol,mol,amount,PASS,PASS,"[""  mol  "", ""mol""]",PASS
+ALIASES,mol/d,mol/day,mol/day,molar_flow,PASS,PASS,"[""  mol/d  "", ""mol/d""]",PASS
+ALIASES,mol/day,mol/day,mol/day,molar_flow,PASS,PASS,"[""  mol/day  "", ""mol/day""]",PASS
+ALIASES,mol/days,mol/day,mol/day,molar_flow,PASS,PASS,"[""  mol/days  "", ""mol/days""]",PASS
+ALIASES,mol/h,mol/h,mol/h,molar_flow,PASS,PASS,"[""  mol/h  "", ""mol/h""]",PASS
+ALIASES,mol/hour,mol/h,mol/h,molar_flow,PASS,PASS,"[""  mol/hour  "", ""mol/hour""]",PASS
+ALIASES,mol/hours,mol/h,mol/h,molar_flow,PASS,PASS,"[""  mol/hours  "", ""mol/hours""]",PASS
+ALIASES,mol/hr,mol/h,mol/h,molar_flow,PASS,PASS,"[""  mol/hr  "", ""mol/hr""]",PASS
+ALIASES,mol/min,mol/min,mol/min,molar_flow,PASS,PASS,"[""  mol/min  "", ""mol/min""]",PASS
+ALIASES,mol/minute,mol/min,mol/min,molar_flow,PASS,PASS,"[""  mol/minute  "", ""mol/minute""]",PASS
+ALIASES,mol/minutes,mol/min,mol/min,molar_flow,PASS,PASS,"[""  mol/minutes  "", ""mol/minutes""]",PASS
+ALIASES,mol/s,mol/s,mol/s,molar_flow,PASS,PASS,"[""  mol/s  "", ""mol/s""]",PASS
+ALIASES,mol/sec,mol/s,mol/s,molar_flow,PASS,PASS,"[""  mol/sec  "", ""mol/sec""]",PASS
+ALIASES,mol/second,mol/s,mol/s,molar_flow,PASS,PASS,"[""  mol/second  "", ""mol/second""]",PASS
+ALIASES,mol/seconds,mol/s,mol/s,molar_flow,PASS,PASS,"[""  mol/seconds  "", ""mol/seconds""]",PASS
+ALIASES,oz,oz,oz,mass,PASS,PASS,"[""  oz  "", ""oz""]",PASS
+ALIASES,oz/d,oz/day,oz/day,mass_flow,PASS,PASS,"[""  oz/d  "", ""oz/d""]",PASS
+ALIASES,oz/day,oz/day,oz/day,mass_flow,PASS,PASS,"[""  oz/day  "", ""oz/day""]",PASS
+ALIASES,oz/days,oz/day,oz/day,mass_flow,PASS,PASS,"[""  oz/days  "", ""oz/days""]",PASS
+ALIASES,oz/h,oz/h,oz/h,mass_flow,PASS,PASS,"[""  oz/h  "", ""oz/h""]",PASS
+ALIASES,oz/hour,oz/h,oz/h,mass_flow,PASS,PASS,"[""  oz/hour  "", ""oz/hour""]",PASS
+ALIASES,oz/hours,oz/h,oz/h,mass_flow,PASS,PASS,"[""  oz/hours  "", ""oz/hours""]",PASS
+ALIASES,oz/hr,oz/h,oz/h,mass_flow,PASS,PASS,"[""  oz/hr  "", ""oz/hr""]",PASS
+ALIASES,oz/min,oz/min,oz/min,mass_flow,PASS,PASS,"[""  oz/min  "", ""oz/min""]",PASS
+ALIASES,oz/minute,oz/min,oz/min,mass_flow,PASS,PASS,"[""  oz/minute  "", ""oz/minute""]",PASS
+ALIASES,oz/minutes,oz/min,oz/min,mass_flow,PASS,PASS,"[""  oz/minutes  "", ""oz/minutes""]",PASS
+ALIASES,oz/s,oz/s,oz/s,mass_flow,PASS,PASS,"[""  oz/s  "", ""oz/s""]",PASS
+ALIASES,oz/sec,oz/s,oz/s,mass_flow,PASS,PASS,"[""  oz/sec  "", ""oz/sec""]",PASS
+ALIASES,oz/second,oz/s,oz/s,mass_flow,PASS,PASS,"[""  oz/second  "", ""oz/second""]",PASS
+ALIASES,oz/seconds,oz/s,oz/s,mass_flow,PASS,PASS,"[""  oz/seconds  "", ""oz/seconds""]",PASS
+ALIASES,psi,psi,psi,pressure,PASS,PASS,"[""  psi  "", ""psi""]",PASS
+ALIASES,psi_abs,psia,psia,pressure,PASS,PASS,"[""  psi_abs  "", ""psi_abs""]",PASS
+ALIASES,psi_absolute,psia,psia,pressure,PASS,PASS,"[""  psi_absolute  "", ""psi_absolute""]",PASS
+ALIASES,psi_gauge,psig,psig,pressure,PASS,PASS,"[""  psi_gauge  "", ""psi_gauge""]",PASS
+ALIASES,psia,psia,psia,pressure,PASS,PASS,"[""  psia  "", ""psia""]",PASS
+ALIASES,psig,psig,psig,pressure,PASS,PASS,"[""  psig  "", ""psig""]",PASS
+ALIASES,refrigeration_ton,refrigeration_ton,refrigeration_ton,power,PASS,PASS,"[""  refrigeration_ton  "", ""refrigeration_ton""]",PASS
+ALIASES,scfm,scfm,scfm,standard_volume_flow,PASS,PASS,"[""  scfm  "", ""scfm""]",PASS
+ALIASES,short_ton,short_ton,short_ton,mass,PASS,PASS,"[""  short_ton  "", ""short_ton""]",PASS
+ALIASES,short_ton/d,short_ton/day,short_ton/day,mass_flow,PASS,PASS,"[""  short_ton/d  "", ""short_ton/d""]",PASS
+ALIASES,short_ton/day,short_ton/day,short_ton/day,mass_flow,PASS,PASS,"[""  short_ton/day  "", ""short_ton/day""]",PASS
+ALIASES,short_ton/days,short_ton/day,short_ton/day,mass_flow,PASS,PASS,"[""  short_ton/days  "", ""short_ton/days""]",PASS
+ALIASES,short_ton/h,short_ton/h,short_ton/h,mass_flow,PASS,PASS,"[""  short_ton/h  "", ""short_ton/h""]",PASS
+ALIASES,short_ton/hour,short_ton/h,short_ton/h,mass_flow,PASS,PASS,"[""  short_ton/hour  "", ""short_ton/hour""]",PASS
+ALIASES,short_ton/hours,short_ton/h,short_ton/h,mass_flow,PASS,PASS,"[""  short_ton/hours  "", ""short_ton/hours""]",PASS
+ALIASES,short_ton/hr,short_ton/h,short_ton/h,mass_flow,PASS,PASS,"[""  short_ton/hr  "", ""short_ton/hr""]",PASS
+ALIASES,short_ton/min,short_ton/min,short_ton/min,mass_flow,PASS,PASS,"[""  short_ton/min  "", ""short_ton/min""]",PASS
+ALIASES,short_ton/minute,short_ton/min,short_ton/min,mass_flow,PASS,PASS,"[""  short_ton/minute  "", ""short_ton/minute""]",PASS
+ALIASES,short_ton/minutes,short_ton/min,short_ton/min,mass_flow,PASS,PASS,"[""  short_ton/minutes  "", ""short_ton/minutes""]",PASS
+ALIASES,short_ton/s,short_ton/s,short_ton/s,mass_flow,PASS,PASS,"[""  short_ton/s  "", ""short_ton/s""]",PASS
+ALIASES,short_ton/sec,short_ton/s,short_ton/s,mass_flow,PASS,PASS,"[""  short_ton/sec  "", ""short_ton/sec""]",PASS
+ALIASES,short_ton/second,short_ton/s,short_ton/s,mass_flow,PASS,PASS,"[""  short_ton/second  "", ""short_ton/second""]",PASS
+ALIASES,short_ton/seconds,short_ton/s,short_ton/s,mass_flow,PASS,PASS,"[""  short_ton/seconds  "", ""short_ton/seconds""]",PASS
+ALIASES,sq cm,cm2,cm2,area,PASS,PASS,"[""  sq cm  "", ""sq   cm""]",PASS
+ALIASES,sq ft,ft2,ft2,area,PASS,PASS,"[""  sq ft  "", ""sq   ft""]",PASS
+ALIASES,sq in,in2,in2,area,PASS,PASS,"[""  sq in  "", ""sq   in""]",PASS
+ALIASES,sq m,m2,m2,area,PASS,PASS,"[""  sq m  "", ""sq   m""]",PASS
+ALIASES,sq mm,mm2,mm2,area,PASS,PASS,"[""  sq mm  "", ""sq   mm""]",PASS
+ALIASES,tonne,tonne,tonne,mass,PASS,PASS,"[""  tonne  "", ""tonne""]",PASS
+ALIASES,tonne/d,tonne/day,tonne/day,mass_flow,PASS,PASS,"[""  tonne/d  "", ""tonne/d""]",PASS
+ALIASES,tonne/day,tonne/day,tonne/day,mass_flow,PASS,PASS,"[""  tonne/day  "", ""tonne/day""]",PASS
+ALIASES,tonne/days,tonne/day,tonne/day,mass_flow,PASS,PASS,"[""  tonne/days  "", ""tonne/days""]",PASS
+ALIASES,tonne/h,tonne/h,tonne/h,mass_flow,PASS,PASS,"[""  tonne/h  "", ""tonne/h""]",PASS
+ALIASES,tonne/hour,tonne/h,tonne/h,mass_flow,PASS,PASS,"[""  tonne/hour  "", ""tonne/hour""]",PASS
+ALIASES,tonne/hours,tonne/h,tonne/h,mass_flow,PASS,PASS,"[""  tonne/hours  "", ""tonne/hours""]",PASS
+ALIASES,tonne/hr,tonne/h,tonne/h,mass_flow,PASS,PASS,"[""  tonne/hr  "", ""tonne/hr""]",PASS
+ALIASES,tonne/min,tonne/min,tonne/min,mass_flow,PASS,PASS,"[""  tonne/min  "", ""tonne/min""]",PASS
+ALIASES,tonne/minute,tonne/min,tonne/min,mass_flow,PASS,PASS,"[""  tonne/minute  "", ""tonne/minute""]",PASS
+ALIASES,tonne/minutes,tonne/min,tonne/min,mass_flow,PASS,PASS,"[""  tonne/minutes  "", ""tonne/minutes""]",PASS
+ALIASES,tonne/s,tonne/s,tonne/s,mass_flow,PASS,PASS,"[""  tonne/s  "", ""tonne/s""]",PASS
+ALIASES,tonne/sec,tonne/s,tonne/s,mass_flow,PASS,PASS,"[""  tonne/sec  "", ""tonne/sec""]",PASS
+ALIASES,tonne/second,tonne/s,tonne/s,mass_flow,PASS,PASS,"[""  tonne/second  "", ""tonne/second""]",PASS
+ALIASES,tonne/seconds,tonne/s,tonne/s,mass_flow,PASS,PASS,"[""  tonne/seconds  "", ""tonne/seconds""]",PASS
+ALIASES,tray,tray,tray,tray_count,PASS,PASS,"[""  tray  "", ""tray""]",PASS
+ALIASES,°C,degC,degC,temperature,PASS,PASS,"[""  \u00b0C  "", ""\u00b0C"", ""\u00baC""]",PASS
+ALIASES,°F,degF,degF,temperature,PASS,PASS,"[""  \u00b0F  "", ""\u00b0F"", ""\u00baF""]",PASS
+ALIASES,°R,degR,degR,temperature,PASS,PASS,"[""  \u00b0R  "", ""\u00b0R"", ""\u00baR""]",PASS
+WORDS,boiler horsepower,boiler_hp,boiler_hp,boiler_power,PASS,IDENTITY ONLY,"[""  boiler horsepower  "", ""boiler   horsepower"", ""BOILER HORSEPOWER""]",PARTIAL
+WORDS,celsius,degC,degC,temperature,PASS,PASS,"[""  celsius  "", ""celsius"", ""CELSIUS""]",PASS
+WORDS,centimeter,cm,cm,length,PASS,PASS,"[""  centimeter  "", ""centimeter"", ""CENTIMETER""]",PASS
+WORDS,centimeters,cm,cm,length,PASS,PASS,"[""  centimeters  "", ""centimeters"", ""CENTIMETERS""]",PASS
+WORDS,centimetre,cm,cm,length,PASS,PASS,"[""  centimetre  "", ""centimetre"", ""CENTIMETRE""]",PASS
+WORDS,centimetres,cm,cm,length,PASS,PASS,"[""  centimetres  "", ""centimetres"", ""CENTIMETRES""]",PASS
+WORDS,degrees celsius,degC,degC,temperature,PASS,PASS,"[""  degrees celsius  "", ""degrees   celsius"", ""DEGREES CELSIUS""]",PASS
+WORDS,degrees fahrenheit,degF,degF,temperature,PASS,PASS,"[""  degrees fahrenheit  "", ""degrees   fahrenheit"", ""DEGREES FAHRENHEIT""]",PASS
+WORDS,fahrenheit,degF,degF,temperature,PASS,PASS,"[""  fahrenheit  "", ""fahrenheit"", ""FAHRENHEIT""]",PASS
+WORDS,feet,ft,ft,length,PASS,PASS,"[""  feet  "", ""feet"", ""FEET""]",PASS
+WORDS,foot,ft,ft,length,PASS,PASS,"[""  foot  "", ""foot"", ""FOOT""]",PASS
+WORDS,gram,g,g,mass,PASS,PASS,"[""  gram  "", ""gram"", ""GRAM""]",PASS
+WORDS,grams,g,g,mass,PASS,PASS,"[""  grams  "", ""grams"", ""GRAMS""]",PASS
+WORDS,imperial gallon,Imp_gal,Imp_gal,volume,PASS,PASS,"[""  imperial gallon  "", ""imperial   gallon"", ""IMPERIAL GALLON""]",PASS
+WORDS,imperial gallons,Imp_gal,Imp_gal,volume,PASS,PASS,"[""  imperial gallons  "", ""imperial   gallons"", ""IMPERIAL GALLONS""]",PASS
+WORDS,imperial ton,long_ton,long_ton,mass,PASS,PASS,"[""  imperial ton  "", ""imperial   ton"", ""IMPERIAL TON""]",PASS
+WORDS,inch,in,in,length,PASS,PASS,"[""  inch  "", ""inch"", ""INCH""]",PASS
+WORDS,inches,in,in,length,PASS,PASS,"[""  inches  "", ""inches"", ""INCHES""]",PASS
+WORDS,items,item,item,count,PASS,PASS,"[""  items  "", ""items"", ""ITEMS""]",PASS
+WORDS,kelvin,K,K,temperature,PASS,PASS,"[""  kelvin  "", ""kelvin"", ""KELVIN""]",PASS
+WORDS,kelvins,K,K,temperature,PASS,PASS,"[""  kelvins  "", ""kelvins"", ""KELVINS""]",PASS
+WORDS,kilogram,kg,kg,mass,PASS,PASS,"[""  kilogram  "", ""kilogram"", ""KILOGRAM""]",PASS
+WORDS,kilograms,kg,kg,mass,PASS,PASS,"[""  kilograms  "", ""kilograms"", ""KILOGRAMS""]",PASS
+WORDS,liters,L,L,volume,PASS,PASS,"[""  liters  "", ""liters"", ""LITERS""]",PASS
+WORDS,litres,L,L,volume,PASS,PASS,"[""  litres  "", ""litres"", ""LITRES""]",PASS
+WORDS,long ton,long_ton,long_ton,mass,PASS,PASS,"[""  long ton  "", ""long   ton"", ""LONG TON""]",PASS
+WORDS,long tons,long_ton,long_ton,mass,PASS,PASS,"[""  long tons  "", ""long   tons"", ""LONG TONS""]",PASS
+WORDS,meter,m,m,length,PASS,PASS,"[""  meter  "", ""meter"", ""METER""]",PASS
+WORDS,meters,m,m,length,PASS,PASS,"[""  meters  "", ""meters"", ""METERS""]",PASS
+WORDS,metre,m,m,length,PASS,PASS,"[""  metre  "", ""metre"", ""METRE""]",PASS
+WORDS,metres,m,m,length,PASS,PASS,"[""  metres  "", ""metres"", ""METRES""]",PASS
+WORDS,metric ton,tonne,tonne,mass,PASS,PASS,"[""  metric ton  "", ""metric   ton"", ""METRIC TON""]",PASS
+WORDS,metric tonnes,tonne,tonne,mass,PASS,PASS,"[""  metric tonnes  "", ""metric   tonnes"", ""METRIC TONNES""]",PASS
+WORDS,metric tons,tonne,tonne,mass,PASS,PASS,"[""  metric tons  "", ""metric   tons"", ""METRIC TONS""]",PASS
+WORDS,milligram,mg,mg,mass,PASS,PASS,"[""  milligram  "", ""milligram"", ""MILLIGRAM""]",PASS
+WORDS,milligrams,mg,mg,mass,PASS,PASS,"[""  milligrams  "", ""milligrams"", ""MILLIGRAMS""]",PASS
+WORDS,milliliter,mL,mL,volume,PASS,PASS,"[""  milliliter  "", ""milliliter"", ""MILLILITER""]",PASS
+WORDS,milliliters,mL,mL,volume,PASS,PASS,"[""  milliliters  "", ""milliliters"", ""MILLILITERS""]",PASS
+WORDS,millilitre,mL,mL,volume,PASS,PASS,"[""  millilitre  "", ""millilitre"", ""MILLILITRE""]",PASS
+WORDS,millilitres,mL,mL,volume,PASS,PASS,"[""  millilitres  "", ""millilitres"", ""MILLILITRES""]",PASS
+WORDS,millimeter,mm,mm,length,PASS,PASS,"[""  millimeter  "", ""millimeter"", ""MILLIMETER""]",PASS
+WORDS,millimeters,mm,mm,length,PASS,PASS,"[""  millimeters  "", ""millimeters"", ""MILLIMETERS""]",PASS
+WORDS,millimetre,mm,mm,length,PASS,PASS,"[""  millimetre  "", ""millimetre"", ""MILLIMETRE""]",PASS
+WORDS,millimetres,mm,mm,length,PASS,PASS,"[""  millimetres  "", ""millimetres"", ""MILLIMETRES""]",PASS
+WORDS,ounce,oz,oz,mass,PASS,PASS,"[""  ounce  "", ""ounce"", ""OUNCE""]",PASS
+WORDS,ounces,oz,oz,mass,PASS,PASS,"[""  ounces  "", ""ounces"", ""OUNCES""]",PASS
+WORDS,pound,lb,lb,mass,PASS,PASS,"[""  pound  "", ""pound"", ""POUND""]",PASS
+WORDS,pounds,lb,lb,mass,PASS,PASS,"[""  pounds  "", ""pounds"", ""POUNDS""]",PASS
+WORDS,rankine,degR,degR,temperature,PASS,PASS,"[""  rankine  "", ""rankine"", ""RANKINE""]",PASS
+WORDS,refrigeration ton,refrigeration_ton,refrigeration_ton,power,PASS,PASS,"[""  refrigeration ton  "", ""refrigeration   ton"", ""REFRIGERATION TON""]",PASS
+WORDS,refrigeration tons,refrigeration_ton,refrigeration_ton,power,PASS,PASS,"[""  refrigeration tons  "", ""refrigeration   tons"", ""REFRIGERATION TONS""]",PASS
+WORDS,short ton,short_ton,short_ton,mass,PASS,PASS,"[""  short ton  "", ""short   ton"", ""SHORT TON""]",PASS
+WORDS,short tons,short_ton,short_ton,mass,PASS,PASS,"[""  short tons  "", ""short   tons"", ""SHORT TONS""]",PASS
+WORDS,ton of refrigeration,refrigeration_ton,refrigeration_ton,power,PASS,PASS,"[""  ton of refrigeration  "", ""ton   of   refrigeration"", ""TON OF REFRIGERATION""]",PASS
+WORDS,tonne,tonne,tonne,mass,PASS,PASS,"[""  tonne  "", ""tonne"", ""TONNE""]",PASS
+WORDS,tonnes,tonne,tonne,mass,PASS,PASS,"[""  tonnes  "", ""tonnes"", ""TONNES""]",PASS
+WORDS,tons of refrigeration,refrigeration_ton,refrigeration_ton,power,PASS,PASS,"[""  tons of refrigeration  "", ""tons   of   refrigeration"", ""TONS OF REFRIGERATION""]",PASS
+WORDS,trays,tray,tray,tray_count,PASS,PASS,"[""  trays  "", ""trays"", ""TRAYS""]",PASS
+WORDS,u.s. gallons,US_gal,US_gal,volume,PASS,PASS,"[""  u.s. gallons  "", ""u.s.   gallons"", ""U.S. GALLONS""]",PASS
+WORDS,uk gallon,Imp_gal,Imp_gal,volume,PASS,PASS,"[""  uk gallon  "", ""uk   gallon"", ""UK GALLON""]",PASS
+WORDS,uk gallons,Imp_gal,Imp_gal,volume,PASS,PASS,"[""  uk gallons  "", ""uk   gallons"", ""UK GALLONS""]",PASS
+WORDS,unit,item,item,count,PASS,PASS,"[""  unit  "", ""unit"", ""UNIT""]",PASS
+WORDS,units,item,item,count,PASS,PASS,"[""  units  "", ""units"", ""UNITS""]",PASS
+WORDS,us gallon,US_gal,US_gal,volume,PASS,PASS,"[""  us gallon  "", ""us   gallon"", ""US GALLON""]",PASS
+WORDS,us gallons,US_gal,US_gal,volume,PASS,PASS,"[""  us gallons  "", ""us   gallons"", ""US GALLONS""]",PASS
+WORDS,us ton,short_ton,short_ton,mass,PASS,PASS,"[""  us ton  "", ""us   ton"", ""US TON""]",PASS
+WORDS,us tons,short_ton,short_ton,mass,PASS,PASS,"[""  us tons  "", ""us   tons"", ""US TONS""]",PASS

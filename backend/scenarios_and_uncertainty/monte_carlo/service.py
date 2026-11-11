@@ -7,7 +7,7 @@ from .discovery import discover
 from .engine import evaluate, simulate, summarize
 from .models import Settings
 from .sampling import validate
-from .scenarios import apply, prepare
+from .scenarios import apply, prepare, resolve_horizon, resolved_settings
 
 
 def source_fingerprint():
@@ -82,6 +82,8 @@ def preflight(state, settings):
 
 def start(store, key, settings):
     state = store.get(key)
+    horizon = resolve_horizon(state, settings)
+    settings = resolved_settings(state, settings)
     coverage = preflight(state, settings)
     snapshot = store.create({"kind": "monte_carlo_snapshot", "assessment": state}, b"")
     job = store.create(
@@ -92,6 +94,7 @@ def start(store, key, settings):
             "snapshot_id": snapshot["id"],
             "calculation_source_hash": source_fingerprint(),
             "settings": settings.model_dump(),
+            "horizon_resolution": horizon,
             "status": "queued",
             "completed": 0,
             "total": settings.iterations,
@@ -128,6 +131,8 @@ def work(store, job_id):
             return not current.get("cancel_requested", False)
 
         result = simulate(state, Settings.model_validate(job["settings"]), progress)
+        if job.get("horizon_resolution"):
+            result["audit"]["horizon_resolution"] = job["horizon_resolution"]
         result["audit"]["frozen_snapshot_id"] = job["snapshot_id"]
         result["audit"]["calculation_source_hash"] = job.get("calculation_source_hash")
         result["audit"]["source_changed_during_run"] = bool(
@@ -162,7 +167,9 @@ def work(store, job_id):
             result_id=saved["id"],
         )
         store.put(current, current["revision"])
-    except Exception as exc:  # noqa: BLE001 -- background boundary always persists failures
+    except (
+        Exception
+    ) as exc:  # noqa: BLE001 -- background boundary always persists failures
         current = store.get(job_id)
         current.update(status="failed", error=str(exc)[:1200])
         store.put(current, current["revision"])

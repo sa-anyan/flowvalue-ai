@@ -1,0 +1,96 @@
+[
+  {
+    "method": "volume_residence",
+    "expected": "reject negative sizing flow; no accepted negative vessel volume",
+    "actual": [
+      -25.0,
+      "m3",
+      {
+        "method": "volume_residence",
+        "stream_key": "s",
+        "source_evidence": "METHOD-001-negative-flow",
+        "assumptions": {
+          "method": "volume_residence",
+          "stream_key": "s",
+          "residence_time_h": 2,
+          "working_fraction": 0.8
+        },
+        "status": "preliminary engineering scenario"
+      }
+    ],
+    "result": "FAIL",
+    "owner": "Engineer2/shared legacy integration",
+    "inputs": {
+      "sizing": {
+        "method": "volume_residence",
+        "stream_key": "s",
+        "residence_time_h": 2,
+        "working_fraction": 0.8
+      }
+    },
+    "source_report": {
+      "entities": [
+        {
+          "key": "s",
+          "values": [
+            {
+              "id": "METHOD-001-negative-flow",
+              "property": "volume_flow",
+              "normalized_value": -10,
+              "normalized_unit": "m3/h",
+              "status": "verified"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "method": "mass_residence",
+    "expected": "reject negative sizing flow; no accepted negative vessel volume",
+    "actual": [
+      -3.125,
+      "m3",
+      {
+        "method": "mass_residence",
+        "stream_key": "s",
+        "source_evidence": "METHOD-001-negative-flow",
+        "assumptions": {
+          "method": "mass_residence",
+          "stream_key": "s",
+          "density_kg_m3": 800,
+          "residence_time_h": 2,
+          "working_fraction": 0.8
+        },
+        "status": "preliminary engineering scenario"
+      }
+    ],
+    "result": "FAIL",
+    "owner": "Engineer2/shared legacy integration",
+    "inputs": {
+      "sizing": {
+        "method": "mass_residence",
+        "stream_key": "s",
+        "density_kg_m3": 800,
+        "residence_time_h": 2,
+        "working_fraction": 0.8
+      }
+    },
+    "source_report": {
+      "entities": [
+        {
+          "key": "s",
+          "values": [
+            {
+              "id": "METHOD-001-negative-flow",
+              "property": "mass_flow",
+              "normalized_value": -1000,
+              "normalized_unit": "kg/h",
+              "status": "verified"
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

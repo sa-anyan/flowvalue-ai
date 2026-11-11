@@ -1,0 +1,5 @@
+[
+  "backend/tests/test_heat_duty_validation.py",
+  "backend/tests/test_sizing_independent_verification.py::test_required_boolean_heat_duty_rejection",
+  "backend/tests/test_heat_exchanger_basis.py"
+]

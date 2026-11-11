@@ -1,0 +1,57 @@
+(node:93050) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///private<AUDIT_SCRATCH>/baseline/frontend/src/lib/assessment-navigation.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /private<AUDIT_SCRATCH>/baseline/frontend/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ pinned assessment wins over another tabs stored selection (1.905907ms)
+✔ all model links preserve the selected assessment (1.056972ms)
+✔ selecting a new upload/version replaces the old URL id without losing location (0.348251ms)
+✔ malformed stored selections and external navigation are rejected (0.532538ms)
+✔ recovery marker identifies the year at the cumulative zero crossing (170.883881ms)
+✔ pending and stale values never produce a fake marker (77.112008ms)
+✔ no recovery, stale results and initial zero balances are clearly labelled (2.90233ms)
+✔ empty dashboard points to engineering data without inventing metrics or execution controls (35.020447ms)
+✔ CAPEX uses saved subtotals without adding equipment twice (37.865863ms)
+✔ OPEX ranking excludes financing and depreciation and honours last saved year (7.539006ms)
+✔ zero is retained, missing data and stale outputs remain explicit (5.059941ms)
+✔ negative annual cash values remain within the chart and missing years create gaps (7.683774ms)
+✔ blocked stage shows its actual error within the dashboard (4.335921ms)
+✔ missing OPEX inputs show a review notice and no zero trajectory (5.551219ms)
+✔ missing data stays pending rather than implying zero or a successful model (18.753823ms)
+✔ financial metrics retain percentages and undefined/non-recovered states (0.392719ms)
+✔ the saved annual ledger supplies all charts without financial recomputation (53.473302ms)
+✔ probability bars reconcile to the actual eligible-run denominator (2.12645ms)
+✔ histogram labels distinguish empirical probability from a normal assumption (133.627627ms)
+✔ constant and missing outcomes do not manufacture a bell curve or invalid coordinates (14.413415ms)
+✔ bulk-sampling eligibility respects scope prerequisites, not just numeric bounds (2.502194ms)
+✔ review retains distinct product and service sources and zero price (2.840329ms)
+✔ empty commercial input does not invent an income source (0.29161ms)
+✔ assistant offers one reviewed calculation without research consent or automatic approval (16.482489ms)
+✔ screenshot currency questions merge only for one identified revenue source (1.052694ms)
+✔ multiple income sources are not guessed from a generic question (0.26534ms)
+✔ price extraction supports currency before or after price and refuses ambiguity (0.910703ms)
+✔ all missing inputs are visible and suggestions are optional (3.835315ms)
+✔ batch field answers preserve other assumptions and apply only selected changes (0.892188ms)
+✔ batch answers cannot edit an unrelated field or ambiguous source (1.392799ms)
+✔ invalid numeric batch answers are rejected before saving (0.924679ms)
+✔ custom rate draft retains its value, units and pending user confirmation (2.94223ms)
+✔ missing price stays missing while a zero user price remains explicit (0.740159ms)
+✔ complex annual contract terms remain in the advanced workflow (2.492006ms)
+✔ each income line retains its price period rather than inheriting an unrelated historical basis (0.547211ms)
+✔ co-products retain their role and saved price evidence range (1.022567ms)
+✔ fixed commercial income opens its own terms rather than physical flow fields (0.336333ms)
+✔ chart series use saved outputs, sorted years and distinct commercial identities (5.813195ms)
+✔ selection subtotal preserves missing years, true zero and immutable model data (0.762325ms)
+✔ equal product and contract IDs remain separate, with stable colours (1.436027ms)
+✔ stream colours remain distinct for eight lines and independent of toggle order (0.395799ms)
+✔ friendly percentages round-trip without changing the canonical fraction (2.226726ms)
+✔ empty and ordinary money inputs stay untouched (0.294913ms)
+✔ saved inputs compare equally after SQLite key sorting (106.673193ms)
+✔ real edits and ordered array changes stay dirty (0.415302ms)
+ℹ tests 45
+ℹ suites 0
+ℹ pass 45
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3249.548122

@@ -1,0 +1,16 @@
+{
+  "existing_files_checked": 830,
+  "changed_within_authorized_scope": [
+    "backend/engineering_sizing/adapter.py",
+    "backend/engineering_sizing/common.py",
+    "backend/engineering_sizing/heat_exchangers.py",
+    "docs/verification/phase1/units/unit_conversion_acceptance_register.csv",
+    "docs/verification/phase1/units/unit_alias_and_semantics_register.csv",
+    "docs/verification/phase1/units/sizing_native_unit_contract_acceptance.csv",
+    "docs/verification/phase1/units/evidence/UNIT-C01_numpy_boolean_guard.md"
+  ],
+  "original_unit_report_unchanged": true,
+  "all_existing_tests_unchanged": true,
+  "ingestion_costing_economics_unchanged": true,
+  "new_test_file": "backend/tests/test_native_boolean_safety.py"
+}

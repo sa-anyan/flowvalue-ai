@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="13" skipped="0" tests="13" time="0.905" timestamp="2026-11-11T06:53:05.697998+00:00" hostname="MacBookPro.lan"><testcase classname="test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[ion_exchange_capacity]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'ion_exchange_capacity', 'value': 10, 'parameters': {'ionic_load_mol_equiv_m3': 2, 'service_cycle_h': 8, 'working_resin_capacity_mol_equiv_m3': 1000, 'resin_bed_fraction': 0.5}, 'expected': '.32', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+/Users/user/Documents/ChatGPT/FlowValue-latest/backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[vaporizer_area]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'vaporizer_area', 'value': 250, 'parameters': {'overall_u_w_m2_k': 1000, 'lmtd_k': 25, 'lmtd_correction': 0.8}, 'expected': '12.5', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+/Users/user/Documents/ChatGPT/FlowValue-latest/backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[gas_compression]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'gas_compression', 'value': 3600, 'parameters': {'molecular_weight_kg_kmol': 28, 'temperature_k': 300, 'absolute_pressure_bar': 1, 'discharge_pressure_bar': 8, ...}, 'expected': '356.3341122065674285714285714', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+/Users/user/Documents/ChatGPT/FlowValue-latest/backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[phase_change_duty]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'phase_change_duty', 'value': 360, 'parameters': {'latent_heat_kj_kg': 2000, 'phase_change_fraction': 0.5, 'sensible_enthalpy_change_kj_kg': 100}, 'expected': '110', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+/Users/user/Documents/ChatGPT/FlowValue-latest/backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[evaporated_water]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'evaporated_water', 'value': 1000, 'parameters': {'feed_water_mass_fraction': 0.8, 'product_water_mass_fraction': 0.1}, 'expected': '777.7777777777777777777777778', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+/Users/user/Documents/ChatGPT/FlowValue-latest/backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[ion_exchange_ebct]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'ion_exchange_ebct', 'value': 12, 'parameters': {'empty_bed_contact_time_min': 5, 'resin_bed_fraction': 0.5}, 'expected': '2', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+/Users/user/Documents/ChatGPT/FlowValue-latest/backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[vessel_hold_up]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'vessel_hold_up', 'value': 10, 'parameters': {'residence_time_h': 2, 'working_fraction': 0.8}, 'expected': '25', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+/Users/user/Documents/ChatGPT/FlowValue-latest/backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[pump_duty]" time="0.002"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'pump_duty', 'value': 3.6, 'parameters': {'differential_pressure_bar': 1, 'efficiency': 0.5}, 'expected': '0.2298895010734333601697918125', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+/Users/user/Documents/ChatGPT/FlowValue-latest/backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[exchanger_area]" time="0.002"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'exchanger_area', 'value': 100, 'parameters': {'overall_u_w_m2_k': 500, 'lmtd_k': 20, 'lmtd_correction': 1}, 'expected': '10', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+/Users/user/Documents/ChatGPT/FlowValue-latest/backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[filter_area]" time="0.002"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'filter_area', 'value': 20, 'parameters': {'hydraulic_loading_m_h': 5}, 'expected': '4', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+/Users/user/Documents/ChatGPT/FlowValue-latest/backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[gas_volume]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'gas_volume', 'value': 28, 'parameters': {'molecular_weight_kg_kmol': 28, 'temperature_k': 300, 'absolute_pressure_bar': 1, 'compressibility_z': 1}, 'expected': '24.94338785445972', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+/Users/user/Documents/ChatGPT/FlowValue-latest/backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[dryer_chamber]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'dryer_chamber', 'value': 3600, 'parameters': {'gas_residence_time_s': 10}, 'expected': '10', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+/Users/user/Documents/ChatGPT/FlowValue-latest/backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="test_unit_acceptance" name="test_required_numpy_boolean_source_observation_rejected" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">def test_required_numpy_boolean_source_observation_rejected():
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": "volume_flow",
+                            "normalized_value": np.bool_(True),
+                            "normalized_unit": "m3/h",
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+        spec = {
+            "method": "pump_duty",
+            "stream_key": "s",
+            "parameters": {"differential_pressure_bar": 1, "efficiency": 0.5},
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+/Users/user/Documents/ChatGPT/FlowValue-latest/backend/tests/test_unit_acceptance.py:240: Failed</failure></testcase></testsuite></testsuites>

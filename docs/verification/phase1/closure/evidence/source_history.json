@@ -1,0 +1,158 @@
+{
+  "ion_exchange_capacity": {
+    "file": "backend/engineering_sizing/ion_exchange.py",
+    "earliest_add_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "earliest_blob_sha256": "91dec8e862162e94653df55e6752e9054b709de36892a3f50678fa8b746c1c8c",
+    "history": [
+      "5b3c0f4 Agent host session a3b0b382-41a6-42af-8f0e-5b5c44fdbda8 - baseline checkpoint",
+      "50e5bf4 Integrate equipment resolution, Monte Carlo studies and connected TEA workspaces"
+    ],
+    "bibliographic_citation_in_earliest_module": "NONE FOUND",
+    "original_publication_provenance": "NOT ESTABLISHED",
+    "first_registered_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "limits": "Local all-ref file/registry history only; earliest code/registration commit is not proof of an original scientific publication."
+  },
+  "vaporizer_area": {
+    "file": "backend/engineering_sizing/heat_exchangers.py",
+    "earliest_add_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "earliest_blob_sha256": "1266f326354b68ea25461e1d1f9134e86cc737da7400f2e9624a549e863243a4",
+    "history": [
+      "5b3c0f4 Agent host session a3b0b382-41a6-42af-8f0e-5b5c44fdbda8 - baseline checkpoint",
+      "50e5bf4 Integrate equipment resolution, Monte Carlo studies and connected TEA workspaces"
+    ],
+    "bibliographic_citation_in_earliest_module": "NONE FOUND",
+    "original_publication_provenance": "NOT ESTABLISHED",
+    "first_registered_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "limits": "Local all-ref file/registry history only; earliest code/registration commit is not proof of an original scientific publication."
+  },
+  "gas_compression": {
+    "file": "backend/engineering_sizing/compression.py",
+    "earliest_add_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "earliest_blob_sha256": "32dddc41f8f71d54c6d1f58b6d8ca95f171d1b1eccb2dae6e61b760ee86c74ef",
+    "history": [
+      "5b3c0f4 Agent host session a3b0b382-41a6-42af-8f0e-5b5c44fdbda8 - baseline checkpoint",
+      "50e5bf4 Integrate equipment resolution, Monte Carlo studies and connected TEA workspaces"
+    ],
+    "bibliographic_citation_in_earliest_module": "NONE FOUND",
+    "original_publication_provenance": "NOT ESTABLISHED",
+    "first_registered_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "limits": "Local all-ref file/registry history only; earliest code/registration commit is not proof of an original scientific publication."
+  },
+  "phase_change_duty": {
+    "file": "backend/engineering_sizing/thermal.py",
+    "earliest_add_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "earliest_blob_sha256": "2ea255a0633f37147b502624716ca34b2c73a2fe45249a31bc99c29f5f5813ee",
+    "history": [
+      "5b3c0f4 Agent host session a3b0b382-41a6-42af-8f0e-5b5c44fdbda8 - baseline checkpoint",
+      "50e5bf4 Integrate equipment resolution, Monte Carlo studies and connected TEA workspaces"
+    ],
+    "bibliographic_citation_in_earliest_module": "NONE FOUND",
+    "original_publication_provenance": "NOT ESTABLISHED",
+    "first_registered_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "limits": "Local all-ref file/registry history only; earliest code/registration commit is not proof of an original scientific publication."
+  },
+  "evaporated_water": {
+    "file": "backend/engineering_sizing/thermal.py",
+    "earliest_add_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "earliest_blob_sha256": "2ea255a0633f37147b502624716ca34b2c73a2fe45249a31bc99c29f5f5813ee",
+    "history": [
+      "5b3c0f4 Agent host session a3b0b382-41a6-42af-8f0e-5b5c44fdbda8 - baseline checkpoint",
+      "50e5bf4 Integrate equipment resolution, Monte Carlo studies and connected TEA workspaces"
+    ],
+    "bibliographic_citation_in_earliest_module": "NONE FOUND",
+    "original_publication_provenance": "NOT ESTABLISHED",
+    "first_registered_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "limits": "Local all-ref file/registry history only; earliest code/registration commit is not proof of an original scientific publication."
+  },
+  "ion_exchange_ebct": {
+    "file": "backend/engineering_sizing/ion_exchange.py",
+    "earliest_add_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "earliest_blob_sha256": "91dec8e862162e94653df55e6752e9054b709de36892a3f50678fa8b746c1c8c",
+    "history": [
+      "5b3c0f4 Agent host session a3b0b382-41a6-42af-8f0e-5b5c44fdbda8 - baseline checkpoint",
+      "50e5bf4 Integrate equipment resolution, Monte Carlo studies and connected TEA workspaces"
+    ],
+    "bibliographic_citation_in_earliest_module": "NONE FOUND",
+    "original_publication_provenance": "NOT ESTABLISHED",
+    "first_registered_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "limits": "Local all-ref file/registry history only; earliest code/registration commit is not proof of an original scientific publication."
+  },
+  "vessel_hold_up": {
+    "file": "backend/engineering_sizing/vessels.py",
+    "earliest_add_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "earliest_blob_sha256": "34f37d476e85897530e3067c7a37d067f7017f308e64ff2bd4ab5de6566120f0",
+    "history": [
+      "5b3c0f4 Agent host session a3b0b382-41a6-42af-8f0e-5b5c44fdbda8 - baseline checkpoint",
+      "50e5bf4 Integrate equipment resolution, Monte Carlo studies and connected TEA workspaces"
+    ],
+    "bibliographic_citation_in_earliest_module": "NONE FOUND",
+    "original_publication_provenance": "NOT ESTABLISHED",
+    "first_registered_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "limits": "Local all-ref file/registry history only; earliest code/registration commit is not proof of an original scientific publication."
+  },
+  "pump_duty": {
+    "file": "backend/engineering_sizing/pumps.py",
+    "earliest_add_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "earliest_blob_sha256": "7767811b3c3a1bbcdc3c13cc6d9defbf118e89dcaa98c05934b3b7d89472b2fd",
+    "history": [
+      "5b3c0f4 Agent host session a3b0b382-41a6-42af-8f0e-5b5c44fdbda8 - baseline checkpoint",
+      "50e5bf4 Integrate equipment resolution, Monte Carlo studies and connected TEA workspaces"
+    ],
+    "bibliographic_citation_in_earliest_module": "NONE FOUND",
+    "original_publication_provenance": "NOT ESTABLISHED",
+    "first_registered_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "limits": "Local all-ref file/registry history only; earliest code/registration commit is not proof of an original scientific publication."
+  },
+  "exchanger_area": {
+    "file": "backend/engineering_sizing/heat_exchangers.py",
+    "earliest_add_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "earliest_blob_sha256": "1266f326354b68ea25461e1d1f9134e86cc737da7400f2e9624a549e863243a4",
+    "history": [
+      "5b3c0f4 Agent host session a3b0b382-41a6-42af-8f0e-5b5c44fdbda8 - baseline checkpoint",
+      "50e5bf4 Integrate equipment resolution, Monte Carlo studies and connected TEA workspaces"
+    ],
+    "bibliographic_citation_in_earliest_module": "NONE FOUND",
+    "original_publication_provenance": "NOT ESTABLISHED",
+    "first_registered_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "limits": "Local all-ref file/registry history only; earliest code/registration commit is not proof of an original scientific publication."
+  },
+  "filter_area": {
+    "file": "backend/engineering_sizing/filters.py",
+    "earliest_add_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "earliest_blob_sha256": "119a40834a0bfce9611c2ee45f3b727dba6dbab4cf57d444f2fc9ab3b7b02fb8",
+    "history": [
+      "5b3c0f4 Agent host session a3b0b382-41a6-42af-8f0e-5b5c44fdbda8 - baseline checkpoint",
+      "50e5bf4 Integrate equipment resolution, Monte Carlo studies and connected TEA workspaces"
+    ],
+    "bibliographic_citation_in_earliest_module": "NONE FOUND",
+    "original_publication_provenance": "NOT ESTABLISHED",
+    "first_registered_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "limits": "Local all-ref file/registry history only; earliest code/registration commit is not proof of an original scientific publication."
+  },
+  "gas_volume": {
+    "file": "backend/engineering_sizing/gases.py",
+    "earliest_add_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "earliest_blob_sha256": "3455d104daa70d447210f754ddce45a6beb8843403ef141d5b1f4a87c3cc3a7d",
+    "history": [
+      "5b3c0f4 Agent host session a3b0b382-41a6-42af-8f0e-5b5c44fdbda8 - baseline checkpoint",
+      "50e5bf4 Integrate equipment resolution, Monte Carlo studies and connected TEA workspaces"
+    ],
+    "bibliographic_citation_in_earliest_module": "NONE FOUND",
+    "original_publication_provenance": "NOT ESTABLISHED",
+    "first_registered_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "limits": "Local all-ref file/registry history only; earliest code/registration commit is not proof of an original scientific publication."
+  },
+  "dryer_chamber": {
+    "file": "backend/engineering_sizing/dryers.py",
+    "earliest_add_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "earliest_blob_sha256": "9423e8de29bde799f08a4245ec0b4c9bcd2555304529c4a6bf83620330105bc1",
+    "history": [
+      "5b3c0f4 Agent host session a3b0b382-41a6-42af-8f0e-5b5c44fdbda8 - baseline checkpoint",
+      "50e5bf4 Integrate equipment resolution, Monte Carlo studies and connected TEA workspaces"
+    ],
+    "bibliographic_citation_in_earliest_module": "NONE FOUND",
+    "original_publication_provenance": "NOT ESTABLISHED",
+    "first_registered_commit": "50e5bf4720a6cc4857ddb2ae9cefcca181dbe75f",
+    "limits": "Local all-ref file/registry history only; earliest code/registration commit is not proof of an original scientific publication."
+  }
+}

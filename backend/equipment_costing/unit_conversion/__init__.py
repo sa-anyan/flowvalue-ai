@@ -8,6 +8,7 @@ from .models import (
     ResolvedInputs,
 )
 from .unit_conversion import UnitResolutionError, convert, identify_unit, resolve_inputs
+from .relationships import average_power, residence_time
 
 __all__ = [
     "ConversionContext",
@@ -19,4 +20,6 @@ __all__ = [
     "convert",
     "identify_unit",
     "resolve_inputs",
+    "average_power",
+    "residence_time",
 ]

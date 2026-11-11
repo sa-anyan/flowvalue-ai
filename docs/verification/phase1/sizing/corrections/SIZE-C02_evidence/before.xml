@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="0.246" timestamp="2026-11-10T23:31:24.711679+00:00" hostname="MacBookPro.lan"><testcase classname="backend.tests.test_sizing_independent_verification" name="test_required_boolean_heat_duty_rejection[exchanger_area]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">method = 'exchanger_area'
+
+    @pytest.mark.parametrize("method", ["exchanger_area", "vaporizer_area"])
+    def test_required_boolean_heat_duty_rejection(method):
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_sizing_independent_verification.py:106: Failed</failure></testcase><testcase classname="backend.tests.test_sizing_independent_verification" name="test_required_boolean_heat_duty_rejection[vaporizer_area]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">method = 'vaporizer_area'
+
+    @pytest.mark.parametrize("method", ["exchanger_area", "vaporizer_area"])
+    def test_required_boolean_heat_duty_rejection(method):
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_sizing_independent_verification.py:106: Failed</failure></testcase></testsuite></testsuites>

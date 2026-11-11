@@ -1,0 +1,4 @@
+id,family,supported_units,active_native_parameters,native_units,active_workflow,dimension,independent_basis,status,limitation
+A1,velocity,m/s;m/h;ft/s;ft/min,hydraulic_loading_m_h,m/h,filter_area; clarifier/filter bridge,L T^-1,ft=0.3048m; min=60s; h=3600s,PASS,m3/m2/h is equivalent loading velocity; never m3/h
+A2,heat_transfer_coefficient,W/m2/K;kW/m2/K;Btu_IT/(h*ft2*delta_degF);Btu_th/(h*ft2*delta_degF),overall_u_w_m2_k,W/m2/K,exchanger_area; vaporizer_area; thermal bridge,M T^-3 Theta^-1,U_SI=U_IP*Btu_J/(3600*0.3048^2*(5/9)),PASS,Same film/surface basis; Btu convention explicit; no absolute-temperature offset
+A3,time,s;min;h;day,service_cycle_h;empty_bed_contact_time_min;residence_time_h;gas_residence_time_s,h;min;h;s,capacity/EBCT; vessel; dryer,T,1min=60s;1h=3600s;1day=86400s,PASS,Converting supplied residence time is not inferring one; V/Q separate explicit helper

@@ -277,6 +277,10 @@ def read_book(content: bytes, name: str):
                             value = (
                                 xlrd.error_text_from_code.get(v.value, "#ERROR!")
                                 if v.ctype == xlrd.XL_CELL_ERROR
+                                # SIZE-XF01: xlrd stores BIFF Booleans as 0/1;
+                                # keep the type so it is never read as a measurement.
+                                else bool(v.value)
+                                if v.ctype == xlrd.XL_CELL_BOOLEAN
                                 else v.value
                             )
                             if isinstance(value, str) and len(value) > 4000:

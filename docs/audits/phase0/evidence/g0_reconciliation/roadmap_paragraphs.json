@@ -1,0 +1,2514 @@
+[
+  {
+    "paragraph": 1,
+    "text": "FlowValue AI \u2014 Industry-Standard Product Development Roadmap"
+  },
+  {
+    "paragraph": 2,
+    "text": "Engineering, AI, techno-economic modelling, validation and industrial adoption | Proposed roadmap, November 2026"
+  },
+  {
+    "paragraph": 3,
+    "text": "1. Development strategy"
+  },
+  {
+    "paragraph": 4,
+    "text": "I recommend converting the 14 recommendations into 10 structured development phases, supported by measurable milestones, testing protocols and mandatory acceptance gates."
+  },
+  {
+    "paragraph": 5,
+    "text": "The intention is to transform FlowValue from its existing development-stage platform into a validated engineering and techno-economic assessment system suitable for professional industrial use."
+  },
+  {
+    "paragraph": 6,
+    "text": "This roadmap builds on FlowValue\u2019s existing architecture rather than replacing it. It retains the established Python calculation engines, AI-assisted workflows, MECE Revenue Box, equipment-costing systems, financial modelling, source records and project-version controls."
+  },
+  {
+    "paragraph": 7,
+    "text": "Each phase should produce three outcomes: a working capability, documented evidence that it works, and a clear decision on whether it is ready for the next stage."
+  },
+  {
+    "paragraph": 8,
+    "text": "Proposed development sequence"
+  },
+  {
+    "paragraph": 9,
+    "text": "Phase 0 \u2014 Baseline audit and product requirements"
+  },
+  {
+    "paragraph": 10,
+    "text": "Phase 1 \u2014 Engineering calculation validation"
+  },
+  {
+    "paragraph": 11,
+    "text": "Phase 2 \u2014 Unified engineering data architecture"
+  },
+  {
+    "paragraph": 12,
+    "text": "Phase 3 \u2014 Equipment design, costing and CAPEX"
+  },
+  {
+    "paragraph": 13,
+    "text": "Phase 4 \u2014 OPEX, Revenue Box and financial modelling"
+  },
+  {
+    "paragraph": 14,
+    "text": "Phase 5 \u2014 AI engineering intelligence and review"
+  },
+  {
+    "paragraph": 15,
+    "text": "Phase 6 \u2014 Simulator interoperability and design visualisation"
+  },
+  {
+    "paragraph": 16,
+    "text": "Phase 7 \u2014 Uncertainty, benchmarking and professional outputs"
+  },
+  {
+    "paragraph": 17,
+    "text": "Phase 8 \u2014 Enterprise infrastructure and security"
+  },
+  {
+    "paragraph": 18,
+    "text": "Phase 9 \u2014 Independent industrial validation and commercial adoption"
+  },
+  {
+    "paragraph": 19,
+    "text": "The sequence describes the order of acceptance gates, not a requirement to develop everything sequentially. For example, security engineering, test automation, and external validation planning should begin in Phase 0 and continue throughout development."
+  },
+  {
+    "paragraph": 20,
+    "text": "2. How the 14 recommendations map to the phases"
+  },
+  {
+    "paragraph": 21,
+    "text": "Original recommendation"
+  },
+  {
+    "paragraph": 22,
+    "text": "Development phase"
+  },
+  {
+    "paragraph": 23,
+    "text": "1. Engineering calculation engine"
+  },
+  {
+    "paragraph": 24,
+    "text": "1"
+  },
+  {
+    "paragraph": 25,
+    "text": "2. Unified engineering data model"
+  },
+  {
+    "paragraph": 26,
+    "text": "2"
+  },
+  {
+    "paragraph": 27,
+    "text": "3. Equipment design and costing"
+  },
+  {
+    "paragraph": 28,
+    "text": "3"
+  },
+  {
+    "paragraph": 29,
+    "text": "4. Disciplined engineering AI"
+  },
+  {
+    "paragraph": 30,
+    "text": "5"
+  },
+  {
+    "paragraph": 31,
+    "text": "5. AACE-aligned estimating"
+  },
+  {
+    "paragraph": 32,
+    "text": "3"
+  },
+  {
+    "paragraph": 33,
+    "text": "6. Integrated financial modelling"
+  },
+  {
+    "paragraph": 34,
+    "text": "4"
+  },
+  {
+    "paragraph": 35,
+    "text": "7. Simulator interoperability"
+  },
+  {
+    "paragraph": 36,
+    "text": "6"
+  },
+  {
+    "paragraph": 37,
+    "text": "8. Enterprise engineering workspace"
+  },
+  {
+    "paragraph": 38,
+    "text": "8"
+  },
+  {
+    "paragraph": 39,
+    "text": "9. Independent benchmarking"
+  },
+  {
+    "paragraph": 40,
+    "text": "7 and 9"
+  },
+  {
+    "paragraph": 41,
+    "text": "10. Enterprise trust and reliability"
+  },
+  {
+    "paragraph": 42,
+    "text": "8"
+  },
+  {
+    "paragraph": 43,
+    "text": "11. Phased product delivery"
+  },
+  {
+    "paragraph": 44,
+    "text": "All phases"
+  },
+  {
+    "paragraph": 45,
+    "text": "12. Measurable quality targets"
+  },
+  {
+    "paragraph": 46,
+    "text": "All phases"
+  },
+  {
+    "paragraph": 47,
+    "text": "13. Initial GitHub engineering tasks"
+  },
+  {
+    "paragraph": 48,
+    "text": "0\u20132, then continuous"
+  },
+  {
+    "paragraph": 49,
+    "text": "14. Competitive positioning and adoption"
+  },
+  {
+    "paragraph": 50,
+    "text": "9"
+  },
+  {
+    "paragraph": 51,
+    "text": "3. Detailed development phases"
+  },
+  {
+    "paragraph": 52,
+    "text": "Phase 0 \u2014 Baseline audit, requirements and development controls"
+  },
+  {
+    "paragraph": 53,
+    "text": "Foundation gate"
+  },
+  {
+    "paragraph": 54,
+    "text": "Objective: Establish exactly what FlowValue currently does, what remains incomplete, and how every future development claim will be validated."
+  },
+  {
+    "paragraph": 55,
+    "text": "Proposed planning window: Weeks 1\u20134."
+  },
+  {
+    "paragraph": 56,
+    "text": "Implementation work"
+  },
+  {
+    "paragraph": 57,
+    "text": "Audit the existing backend, frontend, API, calculation modules, source ingestion and data-storage components."
+  },
+  {
+    "paragraph": 58,
+    "text": "Build a capability register classifying every feature as implemented, partially implemented, planned, unverified or deprecated."
+  },
+  {
+    "paragraph": 59,
+    "text": "Identify duplicate calculations, inconsistent data contracts, unsupported costing models and disconnected modules."
+  },
+  {
+    "paragraph": 60,
+    "text": "Document the existing engineering and financial data flow."
+  },
+  {
+    "paragraph": 61,
+    "text": "Establish a single, version-controlled requirements and acceptance register."
+  },
+  {
+    "paragraph": 62,
+    "text": "Create a continuous integration pipeline that checks the backend, frontend, APIs and calculation modules on every proposed code change."
+  },
+  {
+    "paragraph": 63,
+    "text": "Define standard rules for numerical precision, engineering units, missing data, evidence provenance, approvals and exceptions."
+  },
+  {
+    "paragraph": 64,
+    "text": "Establish an independent test-reference policy so project workbooks are not used to validate themselves."
+  },
+  {
+    "paragraph": 65,
+    "text": "Milestones"
+  },
+  {
+    "paragraph": 66,
+    "text": "Milestone"
+  },
+  {
+    "paragraph": 67,
+    "text": "Deliverable"
+  },
+  {
+    "paragraph": 68,
+    "text": "M0.1"
+  },
+  {
+    "paragraph": 69,
+    "text": "Complete current-system architecture map"
+  },
+  {
+    "paragraph": 70,
+    "text": "M0.2"
+  },
+  {
+    "paragraph": 71,
+    "text": "Feature implementation and gap register"
+  },
+  {
+    "paragraph": 72,
+    "text": "M0.3"
+  },
+  {
+    "paragraph": 73,
+    "text": "Versioned requirements and acceptance criteria"
+  },
+  {
+    "paragraph": 74,
+    "text": "M0.4"
+  },
+  {
+    "paragraph": 75,
+    "text": "Automated baseline test pipeline"
+  },
+  {
+    "paragraph": 76,
+    "text": "M0.5"
+  },
+  {
+    "paragraph": 77,
+    "text": "Agreed initial industrial reference project"
+  },
+  {
+    "paragraph": 78,
+    "text": "Testing and acceptance"
+  },
+  {
+    "paragraph": 79,
+    "text": "Reproduce the current application from a clean development environment."
+  },
+  {
+    "paragraph": 80,
+    "text": "Confirm that every supported application module loads and passes its existing tests."
+  },
+  {
+    "paragraph": 81,
+    "text": "Record baseline failures rather than suppressing them."
+  },
+  {
+    "paragraph": 82,
+    "text": "Confirm that saved project revisions can be reopened without modifying the original baseline."
+  },
+  {
+    "paragraph": 83,
+    "text": "Confirm that the test environment does not disclose credentials or confidential project data."
+  },
+  {
+    "paragraph": 84,
+    "text": "Verify that every planned feature has an accountable owner and a measurable acceptance criterion."
+  },
+  {
+    "paragraph": 85,
+    "text": "EXIT GATE \u2014 G0: The baseline can be reproduced, existing failures are documented, critical security issues are triaged, and implementation status is distinguishable from roadmap promises."
+  },
+  {
+    "paragraph": 86,
+    "text": "Phase 1 \u2014 Engineering calculation engine and independent verification"
+  },
+  {
+    "paragraph": 87,
+    "text": "Primary focus: Recommendation 1"
+  },
+  {
+    "paragraph": 88,
+    "text": "Objective: Ensure that FlowValue\u2019s numerical calculations are accurate, reproducible, physically appropriate and independently verifiable."
+  },
+  {
+    "paragraph": 89,
+    "text": "Proposed planning window: Weeks 3\u201310."
+  },
+  {
+    "paragraph": 90,
+    "text": "Implementation work"
+  },
+  {
+    "paragraph": 91,
+    "text": "Create a central calculation-method registry that contains the method identifier, governing equations, required inputs, units, applicability range, source, version and error behaviour."
+  },
+  {
+    "paragraph": 92,
+    "text": "Standardise numerical treatment across equipment sizing, unit conversions, costing, CAPEX, OPEX, revenue and finance."
+  },
+  {
+    "paragraph": 93,
+    "text": "Introduce strong dimensional validation so incompatible units cannot silently produce a result."
+  },
+  {
+    "paragraph": 94,
+    "text": "For example, equipment sizing calculations must distinguish mass flow from volumetric flow, gauge pressure from absolute pressure, and purchased equipment cost from installed equipment cost."
+  },
+  {
+    "paragraph": 95,
+    "text": "Implement a formal error-handling framework with distinct states for missing inputs, invalid inputs, unsupported methods, extrapolated results and completed calculations."
+  },
+  {
+    "paragraph": 96,
+    "text": "Keep the deterministic Python calculation engine independent of AI-generated numerical answers."
+  },
+  {
+    "paragraph": 97,
+    "text": "Milestones"
+  },
+  {
+    "paragraph": 98,
+    "text": "Milestone"
+  },
+  {
+    "paragraph": 99,
+    "text": "Deliverable"
+  },
+  {
+    "paragraph": 100,
+    "text": "M1.1"
+  },
+  {
+    "paragraph": 101,
+    "text": "Central calculation-method registry"
+  },
+  {
+    "paragraph": 102,
+    "text": "M1.2"
+  },
+  {
+    "paragraph": 103,
+    "text": "Engineering unit and dimensional validation"
+  },
+  {
+    "paragraph": 104,
+    "text": "M1.3"
+  },
+  {
+    "paragraph": 105,
+    "text": "Independent reference cases for each supported method"
+  },
+  {
+    "paragraph": 106,
+    "text": "M1.4"
+  },
+  {
+    "paragraph": 107,
+    "text": "Calculation error and applicability system"
+  },
+  {
+    "paragraph": 108,
+    "text": "M1.5"
+  },
+  {
+    "paragraph": 109,
+    "text": "Reproducible calculation audit reports"
+  },
+  {
+    "paragraph": 110,
+    "text": "Testing"
+  },
+  {
+    "paragraph": 111,
+    "text": "Unit tests: Compare each method against independently calculated examples."
+  },
+  {
+    "paragraph": 112,
+    "text": "Dimensional tests: Reject incompatible units and ambiguous measurement bases."
+  },
+  {
+    "paragraph": 113,
+    "text": "Boundary tests: Check zero, negative, missing, extreme and out-of-range inputs."
+  },
+  {
+    "paragraph": 114,
+    "text": "Regression tests: Verify that software changes do not alter previously correct calculations unexpectedly."
+  },
+  {
+    "paragraph": 115,
+    "text": "Reproducibility tests: Confirm that identical inputs, methods and software versions produce identical outputs."
+  },
+  {
+    "paragraph": 116,
+    "text": "Acceptance criteria"
+  },
+  {
+    "paragraph": 117,
+    "text": "100% of production-supported calculation methods have an identified verification reference and applicability statement."
+  },
+  {
+    "paragraph": 118,
+    "text": "100% of critical numerical tests pass."
+  },
+  {
+    "paragraph": 119,
+    "text": "No unsupported calculation is silently treated as valid."
+  },
+  {
+    "paragraph": 120,
+    "text": "All critical reported results can be traced to their inputs and method versions."
+  },
+  {
+    "paragraph": 121,
+    "text": "Numerical tolerances are defined independently for each method; one arbitrary percentage is not applied to every calculation."
+  },
+  {
+    "paragraph": 122,
+    "text": "EXIT GATE \u2014 G1: An independent reviewer can reproduce every designated critical reference calculation and identify its validity limits."
+  },
+  {
+    "paragraph": 123,
+    "text": "Phase 2 \u2014 Unified engineering data architecture"
+  },
+  {
+    "paragraph": 124,
+    "text": "Primary focus: Recommendation 2"
+  },
+  {
+    "paragraph": 125,
+    "text": "Objective: Establish one reliable engineering project model connecting every technical and economic module."
+  },
+  {
+    "paragraph": 126,
+    "text": "Proposed planning window: Weeks 6\u201314."
+  },
+  {
+    "paragraph": 127,
+    "text": "Implementation work"
+  },
+  {
+    "paragraph": 128,
+    "text": "Create a canonical project schema representing:"
+  },
+  {
+    "paragraph": 129,
+    "text": "Process units and physical equipment."
+  },
+  {
+    "paragraph": 130,
+    "text": "Material and energy streams."
+  },
+  {
+    "paragraph": 131,
+    "text": "Stream compositions and thermophysical properties."
+  },
+  {
+    "paragraph": 132,
+    "text": "Equipment design and operating conditions."
+  },
+  {
+    "paragraph": 133,
+    "text": "Production and operating schedules."
+  },
+  {
+    "paragraph": 134,
+    "text": "Engineering assumptions and source evidence."
+  },
+  {
+    "paragraph": 135,
+    "text": "Equipment and project costs."
+  },
+  {
+    "paragraph": 136,
+    "text": "Commercial contracts, revenue and avoided costs."
+  },
+  {
+    "paragraph": 137,
+    "text": "Financial assumptions and results."
+  },
+  {
+    "paragraph": 138,
+    "text": "Implement unique identifiers and relationships so each physical asset is counted only once, even when the workbook contains multiple names or aliases."
+  },
+  {
+    "paragraph": 139,
+    "text": "Create a dependency graph allowing FlowValue to identify which results require recalculation after changes."
+  },
+  {
+    "paragraph": 140,
+    "text": "For instance, changing an inlet flow should trigger applicable equipment-sizing and cost calculations, but it should not automatically overwrite approved equipment arrangements or fixed commercial reservations."
+  },
+  {
+    "paragraph": 141,
+    "text": "Milestones"
+  },
+  {
+    "paragraph": 142,
+    "text": "Milestone"
+  },
+  {
+    "paragraph": 143,
+    "text": "Deliverable"
+  },
+  {
+    "paragraph": 144,
+    "text": "M2.1"
+  },
+  {
+    "paragraph": 145,
+    "text": "Canonical project and stream schema"
+  },
+  {
+    "paragraph": 146,
+    "text": "M2.2"
+  },
+  {
+    "paragraph": 147,
+    "text": "Equipment identity and alias-resolution system"
+  },
+  {
+    "paragraph": 148,
+    "text": "M2.3"
+  },
+  {
+    "paragraph": 149,
+    "text": "Source provenance and assumption register"
+  },
+  {
+    "paragraph": 150,
+    "text": "M2.4"
+  },
+  {
+    "paragraph": 151,
+    "text": "Dependency graph and recalculation engine"
+  },
+  {
+    "paragraph": 152,
+    "text": "M2.5"
+  },
+  {
+    "paragraph": 153,
+    "text": "Project migration and version-compatibility system"
+  },
+  {
+    "paragraph": 154,
+    "text": "Testing"
+  },
+  {
+    "paragraph": 155,
+    "text": "Use at least three structurally different M&E workbooks and one manually defined process."
+  },
+  {
+    "paragraph": 156,
+    "text": "Test repeated equipment tags, missing stream properties, conflicting units, inconsistent operating schedules and changes to approved assumptions."
+  },
+  {
+    "paragraph": 157,
+    "text": "Perform controlled input mutations and independently calculate expected downstream changes."
+  },
+  {
+    "paragraph": 158,
+    "text": "Also test failed migrations and recovery of historical assessments."
+  },
+  {
+    "paragraph": 159,
+    "text": "Acceptance criteria"
+  },
+  {
+    "paragraph": 160,
+    "text": "Every critical engineering and commercial quantity has a documented source or assumption."
+  },
+  {
+    "paragraph": 161,
+    "text": "All supported dependencies recalculate correctly."
+  },
+  {
+    "paragraph": 162,
+    "text": "Approved assumptions are never silently overwritten."
+  },
+  {
+    "paragraph": 163,
+    "text": "Missing values remain distinguishable from zero."
+  },
+  {
+    "paragraph": 164,
+    "text": "Original workbooks remain unchanged after ingestion."
+  },
+  {
+    "paragraph": 165,
+    "text": "Existing saved projects survive schema migrations or receive a documented conversion route."
+  },
+  {
+    "paragraph": 166,
+    "text": "EXIT GATE \u2014 G2: One approved engineering change propagates correctly across the canonical project model without creating duplicate assets, stale results or hidden assumptions."
+  },
+  {
+    "paragraph": 167,
+    "text": "Phase 3 \u2014 Equipment design, costing and AACE-aligned capital estimation"
+  },
+  {
+    "paragraph": 168,
+    "text": "Primary focus: Recommendations 3 and 5"
+  },
+  {
+    "paragraph": 169,
+    "text": "Objective: Develop a reliable industrial equipment and capital-estimating system that explicitly reports its scope and estimate maturity."
+  },
+  {
+    "paragraph": 170,
+    "text": "Proposed planning window: Months 3\u20137."
+  },
+  {
+    "paragraph": 171,
+    "text": "Implementation work"
+  },
+  {
+    "paragraph": 172,
+    "text": "Equipment engineering: Expand the validated method library for selected equipment families, prioritising pumps, heat exchangers, storage vessels, reactors, compressors, separation equipment and utilities."
+  },
+  {
+    "paragraph": 173,
+    "text": "Cost correlations: Support documented, appropriately licensed cost correlations, purchased-versus-installed scopes, material factors, pressure factors, dated escalation, currency conversion and approved vendor quotations."
+  },
+  {
+    "paragraph": 174,
+    "text": "Scope completeness: Build a plant capital breakdown that considers equipment, installation, piping, instrumentation, electrical infrastructure, civil works, utilities, buildings, engineering, construction management, commissioning and owner costs."
+  },
+  {
+    "paragraph": 175,
+    "text": "Estimate maturity: Implement an AACE-aligned estimate-class assessment that considers the maturity of project definition and identifies missing deliverables. The software should propose the classification for review, not certify it automatically."
+  },
+  {
+    "paragraph": 176,
+    "text": "Uncertainty: Tie cost ranges to the actual estimate maturity, available quotations and applicable statistical or engineering evidence."
+  },
+  {
+    "paragraph": 177,
+    "text": "Milestones"
+  },
+  {
+    "paragraph": 178,
+    "text": "Milestone"
+  },
+  {
+    "paragraph": 179,
+    "text": "Deliverable"
+  },
+  {
+    "paragraph": 180,
+    "text": "M3.1"
+  },
+  {
+    "paragraph": 181,
+    "text": "Validated priority-equipment sizing library"
+  },
+  {
+    "paragraph": 182,
+    "text": "M3.2"
+  },
+  {
+    "paragraph": 183,
+    "text": "Expanded, source-controlled equipment costing catalogue"
+  },
+  {
+    "paragraph": 184,
+    "text": "M3.3"
+  },
+  {
+    "paragraph": 185,
+    "text": "Complete capital-cost breakdown structure"
+  },
+  {
+    "paragraph": 186,
+    "text": "M3.4"
+  },
+  {
+    "paragraph": 187,
+    "text": "Purchased/installed cost and installation-overlap controls"
+  },
+  {
+    "paragraph": 188,
+    "text": "M3.5"
+  },
+  {
+    "paragraph": 189,
+    "text": "AACE-aligned estimate maturity assessment"
+  },
+  {
+    "paragraph": 190,
+    "text": "M3.6"
+  },
+  {
+    "paragraph": 191,
+    "text": "Automated Basis of Estimate report"
+  },
+  {
+    "paragraph": 192,
+    "text": "Testing"
+  },
+  {
+    "paragraph": 193,
+    "text": "Use independently established equipment cases to compare purchased and installed costs, factors and escalation."
+  },
+  {
+    "paragraph": 194,
+    "text": "Run deliberate duplicate-tag tests, missing-equipment tests, historical cost-year tests and installed-versus-purchased boundary tests."
+  },
+  {
+    "paragraph": 195,
+    "text": "Test the capital breakdown against a reference project with independently established scope."
+  },
+  {
+    "paragraph": 196,
+    "text": "Critically, verify that adding installation costs does not double-count installation already embedded in a costing methodology."
+  },
+  {
+    "paragraph": 197,
+    "text": "Acceptance criteria"
+  },
+  {
+    "paragraph": 198,
+    "text": "All priority equipment models have independently tested calculations."
+  },
+  {
+    "paragraph": 199,
+    "text": "All material costing sources have valid scope, year, currency and method information."
+  },
+  {
+    "paragraph": 200,
+    "text": "The reference plant achieves the agreed equipment-pricing coverage target, provisionally 95% of verified equipment scope."
+  },
+  {
+    "paragraph": 201,
+    "text": "Every unpriced item is visible, with its potential significance assessed."
+  },
+  {
+    "paragraph": 202,
+    "text": "The reported estimate class is consistent with documented design maturity."
+  },
+  {
+    "paragraph": 203,
+    "text": "The Basis of Estimate identifies scope, exclusions, assumptions and uncertainty."
+  },
+  {
+    "paragraph": 204,
+    "text": "EXIT GATE \u2014 G3: FlowValue produces an independently reviewable preliminary plant capital estimate without concealing missing equipment or double-counting installed costs."
+  },
+  {
+    "paragraph": 205,
+    "text": "Phase 4 \u2014 Integrated OPEX, Revenue Box and financial modelling"
+  },
+  {
+    "paragraph": 206,
+    "text": "Primary focus: Recommendation 6"
+  },
+  {
+    "paragraph": 207,
+    "text": "Objective: Create a fully connected economic model where engineering operations, operating expenditure, commercial payments and financial results remain consistent across all project years."
+  },
+  {
+    "paragraph": 208,
+    "text": "Proposed planning window: Months 4\u20138."
+  },
+  {
+    "paragraph": 209,
+    "text": "Implementation work"
+  },
+  {
+    "paragraph": 210,
+    "text": "Operating expenditure: Develop a comprehensive operating cost ledger covering feedstocks, utilities, labour, maintenance, consumables, waste management, insurance, laboratory testing and overheads."
+  },
+  {
+    "paragraph": 211,
+    "text": "Each expense should have a clearly defined quantity, rate, escalation basis, payment owner, schedule and fixed/variable classification."
+  },
+  {
+    "paragraph": 212,
+    "text": "Revenue Box: Retain FlowValue\u2019s existing six MECE revenue categories and enforce their commercial rules."
+  },
+  {
+    "paragraph": 213,
+    "text": "Every revenue source must preserve your established 13-field structure, including the payment mechanism, workbook quantity source, billable units, payment conditions, operating years and missing inputs."
+  },
+  {
+    "paragraph": 214,
+    "text": "Avoided costs: Develop a counterfactual-cost framework that distinguishes operational savings from customer payments and reduces the appropriate existing OPEX line without counting the benefit twice."
+  },
+  {
+    "paragraph": 215,
+    "text": "Financial modelling: Connect CAPEX, OPEX and revenue to project and equity cash flows, depreciation, taxation, debt, working capital, NPV, IRR, payback and relevant levelised-cost metrics."
+  },
+  {
+    "paragraph": 216,
+    "text": "Milestones"
+  },
+  {
+    "paragraph": 217,
+    "text": "Milestone"
+  },
+  {
+    "paragraph": 218,
+    "text": "Deliverable"
+  },
+  {
+    "paragraph": 219,
+    "text": "M4.1"
+  },
+  {
+    "paragraph": 220,
+    "text": "Fully source-linked fixed and variable OPEX ledger"
+  },
+  {
+    "paragraph": 221,
+    "text": "M4.2"
+  },
+  {
+    "paragraph": 222,
+    "text": "Revenue Box commercial-authority and payment-validation system"
+  },
+  {
+    "paragraph": 223,
+    "text": "M4.3"
+  },
+  {
+    "paragraph": 224,
+    "text": "Multi-year operating and contract schedules"
+  },
+  {
+    "paragraph": 225,
+    "text": "M4.4"
+  },
+  {
+    "paragraph": 226,
+    "text": "Avoided-cost accounting and double-counting controls"
+  },
+  {
+    "paragraph": 227,
+    "text": "M4.5"
+  },
+  {
+    "paragraph": 228,
+    "text": "Integrated financial calculation engine"
+  },
+  {
+    "paragraph": 229,
+    "text": "M4.6"
+  },
+  {
+    "paragraph": 230,
+    "text": "Reconciled financial workbook and reporting outputs"
+  },
+  {
+    "paragraph": 231,
+    "text": "Testing"
+  },
+  {
+    "paragraph": 232,
+    "text": "Use your wastewater treatment project as one internal integration fixture."
+  },
+  {
+    "paragraph": 233,
+    "text": "Verify that the system distinguishes the following independently:"
+  },
+  {
+    "paragraph": 234,
+    "text": "$0.50/m\u00b3 wastewater treatment service revenue."
+  },
+  {
+    "paragraph": 235,
+    "text": "$0.15/m\u00b3/year capacity reservation payments."
+  },
+  {
+    "paragraph": 236,
+    "text": "$0.25/m\u00b3 pipeline usage revenue."
+  },
+  {
+    "paragraph": 237,
+    "text": "Environmental certificate income."
+  },
+  {
+    "paragraph": 238,
+    "text": "Technology licensing income."
+  },
+  {
+    "paragraph": 239,
+    "text": "Avoided wastewater treatment costs."
+  },
+  {
+    "paragraph": 240,
+    "text": "Then change one assumption at a time and verify the expected effect."
+  },
+  {
+    "paragraph": 241,
+    "text": "For example, increasing treated wastewater volume should update volume-based service revenue while leaving a separately contracted fixed capacity reservation unchanged."
+  },
+  {
+    "paragraph": 242,
+    "text": "Test contract expiry in 2027, renewal in 2028, partial-year operations, zero production, unsold products and conflicting billing units."
+  },
+  {
+    "paragraph": 243,
+    "text": "Acceptance criteria"
+  },
+  {
+    "paragraph": 244,
+    "text": "No revenue source exists without explicit Revenue Box authority or an approved user edit."
+  },
+  {
+    "paragraph": 245,
+    "text": "Every commercial payment is uniquely identified."
+  },
+  {
+    "paragraph": 246,
+    "text": "Different payments using the same physical stream are reviewed for double-counting."
+  },
+  {
+    "paragraph": 247,
+    "text": "Contracts do not extend beyond their supported dates without an explicit assumption."
+  },
+  {
+    "paragraph": 248,
+    "text": "Avoided costs cannot be recognised as both OPEX savings and independent revenue without a separate valid payment mechanism."
+  },
+  {
+    "paragraph": 249,
+    "text": "Python, financial exports and dashboard values reconcile within defined numerical tolerances."
+  },
+  {
+    "paragraph": 250,
+    "text": "EXIT GATE \u2014 G4: FlowValue can produce a complete, reproducible multi-year financial model for a supported reference project, with commercial assumptions and financial calculations fully traceable."
+  },
+  {
+    "paragraph": 251,
+    "text": "Phase 5 \u2014 AI engineering intelligence and controlled professional review"
+  },
+  {
+    "paragraph": 252,
+    "text": "Primary focus: Recommendation 4"
+  },
+  {
+    "paragraph": 253,
+    "text": "Objective: Develop AI capabilities that support engineering reasoning, identify missing information and coordinate multidisciplinary analysis without compromising numerical reliability."
+  },
+  {
+    "paragraph": 254,
+    "text": "Proposed planning window: Months 5\u201310."
+  },
+  {
+    "paragraph": 255,
+    "text": "Implementation work"
+  },
+  {
+    "paragraph": 256,
+    "text": "Develop a coordinated specialist architecture for process engineering, equipment design, equipment costing, operations, revenue strategy, financial interpretation and engineering review."
+  },
+  {
+    "paragraph": 257,
+    "text": "Each specialist should operate using restricted tools, validated schemas and defined authority boundaries."
+  },
+  {
+    "paragraph": 258,
+    "text": "The process engineering specialist should identify streams, equipment, assumptions and inconsistencies."
+  },
+  {
+    "paragraph": 259,
+    "text": "The equipment specialist should identify supported sizing methods and highlight missing or unsuitable data."
+  },
+  {
+    "paragraph": 260,
+    "text": "The cost specialist should propose applicable costing methods, never inventing a source-backed price."
+  },
+  {
+    "paragraph": 261,
+    "text": "The commercial specialist should interpret only authorised revenue mechanisms and generate reviewable assumptions."
+  },
+  {
+    "paragraph": 262,
+    "text": "The engineering review specialist should independently inspect the proposed analysis for contradictions, missing scope and unsupported decisions."
+  },
+  {
+    "paragraph": 263,
+    "text": "Introduce an approval workflow where engineer acceptance is tied to the exact assumption value, source basis and project version."
+  },
+  {
+    "paragraph": 264,
+    "text": "Milestones"
+  },
+  {
+    "paragraph": 265,
+    "text": "Milestone"
+  },
+  {
+    "paragraph": 266,
+    "text": "Deliverable"
+  },
+  {
+    "paragraph": 267,
+    "text": "M5.1"
+  },
+  {
+    "paragraph": 268,
+    "text": "Specialist AI architecture with defined responsibilities"
+  },
+  {
+    "paragraph": 269,
+    "text": "M5.2"
+  },
+  {
+    "paragraph": 270,
+    "text": "Grounded engineering-method selection"
+  },
+  {
+    "paragraph": 271,
+    "text": "M5.3"
+  },
+  {
+    "paragraph": 272,
+    "text": "Structured missing-information and conflict detection"
+  },
+  {
+    "paragraph": 273,
+    "text": "M5.4"
+  },
+  {
+    "paragraph": 274,
+    "text": "Assumption proposal and approval workflow"
+  },
+  {
+    "paragraph": 275,
+    "text": "M5.5"
+  },
+  {
+    "paragraph": 276,
+    "text": "Independent AI engineering evaluation suite"
+  },
+  {
+    "paragraph": 277,
+    "text": "M5.6"
+  },
+  {
+    "paragraph": 278,
+    "text": "AI decision provenance and reproducible audit logs"
+  },
+  {
+    "paragraph": 279,
+    "text": "Testing"
+  },
+  {
+    "paragraph": 280,
+    "text": "Create a controlled benchmark containing:"
+  },
+  {
+    "paragraph": 281,
+    "text": "Test scenario"
+  },
+  {
+    "paragraph": 282,
+    "text": "Expected behaviour"
+  },
+  {
+    "paragraph": 283,
+    "text": "Missing reactor residence time"
+  },
+  {
+    "paragraph": 284,
+    "text": "Ask for the required design input or retain unresolved status"
+  },
+  {
+    "paragraph": 285,
+    "text": "Unsupported costing correlation"
+  },
+  {
+    "paragraph": 286,
+    "text": "Reject the unsupported method"
+  },
+  {
+    "paragraph": 287,
+    "text": "Contradictory M&E data"
+  },
+  {
+    "paragraph": 288,
+    "text": "Identify and preserve the conflict"
+  },
+  {
+    "paragraph": 289,
+    "text": "Invented buyer or licence"
+  },
+  {
+    "paragraph": 290,
+    "text": "Flag as hypothetical, not verified"
+  },
+  {
+    "paragraph": 291,
+    "text": "Unknown tariff"
+  },
+  {
+    "paragraph": 292,
+    "text": "Preserve the missing price rather than inventing one"
+  },
+  {
+    "paragraph": 293,
+    "text": "Incorrect equipment aliases"
+  },
+  {
+    "paragraph": 294,
+    "text": "Prevent duplicate costing until identity is resolved"
+  },
+  {
+    "paragraph": 295,
+    "text": "AI service failure"
+  },
+  {
+    "paragraph": 296,
+    "text": "Preserve project data and allow deterministic operations to continue"
+  },
+  {
+    "paragraph": 297,
+    "text": "Attempted instruction injection in an uploaded file"
+  },
+  {
+    "paragraph": 298,
+    "text": "Treat file content as data, not executable instructions"
+  },
+  {
+    "paragraph": 299,
+    "text": "Use a fixed evaluation suite across AI model and prompt updates. Measure source attribution, grounded accuracy, unsupported numerical claims, critical omission rates and approval-boundary violations."
+  },
+  {
+    "paragraph": 300,
+    "text": "Acceptance criteria"
+  },
+  {
+    "paragraph": 301,
+    "text": "No AI-generated calculation formula executes outside the approved deterministic method library."
+  },
+  {
+    "paragraph": 302,
+    "text": "All consequential AI-proposed assumptions are reviewable before application."
+  },
+  {
+    "paragraph": 303,
+    "text": "No autonomous modification of approved project baselines."
+  },
+  {
+    "paragraph": 304,
+    "text": "Zero critical approval-bypass failures in the release evaluation suite."
+  },
+  {
+    "paragraph": 305,
+    "text": "Zero accepted fabricated source citations in the release evaluation suite."
+  },
+  {
+    "paragraph": 306,
+    "text": "Documented thresholds for noncritical errors, reviewed by engineering subject-matter experts."
+  },
+  {
+    "paragraph": 307,
+    "text": "EXIT GATE \u2014 G5: AI can reliably assist with supported engineering and commercial workflows while preserving reviewer authority, calculation integrity and source traceability."
+  },
+  {
+    "paragraph": 308,
+    "text": "Phase 6 \u2014 Simulator interoperability and engineering visualisation"
+  },
+  {
+    "paragraph": 309,
+    "text": "Primary focus: Recommendation 7"
+  },
+  {
+    "paragraph": 310,
+    "text": "Objective: Allow FlowValue to work alongside established engineering software and interpret engineering information supplied in different formats."
+  },
+  {
+    "paragraph": 311,
+    "text": "Proposed planning window: Months 7\u201312."
+  },
+  {
+    "paragraph": 312,
+    "text": "Implementation work"
+  },
+  {
+    "paragraph": 313,
+    "text": "Build versioned adapters for Excel/CSV, DWSIM exports, Aspen-compatible exported reports and structured engineering data."
+  },
+  {
+    "paragraph": 314,
+    "text": "Each adapter should preserve source units, stream names, property bases, equipment identifiers and provenance."
+  },
+  {
+    "paragraph": 315,
+    "text": "Develop an import preview showing mapped and unmapped data before accepting it into the canonical project model."
+  },
+  {
+    "paragraph": 316,
+    "text": "For process visualisation, distinguish between physical connectivity proven by imported data and schematic connections merely proposed by the system."
+  },
+  {
+    "paragraph": 317,
+    "text": "Introduce connected 2D process diagrams and progressively enhance 3D representations where reliable geometric information is available."
+  },
+  {
+    "paragraph": 318,
+    "text": "Do not automatically describe schematic or AI-generated representations as verified engineering drawings."
+  },
+  {
+    "paragraph": 319,
+    "text": "Milestones"
+  },
+  {
+    "paragraph": 320,
+    "text": "Milestone"
+  },
+  {
+    "paragraph": 321,
+    "text": "Deliverable"
+  },
+  {
+    "paragraph": 322,
+    "text": "M6.1"
+  },
+  {
+    "paragraph": 323,
+    "text": "Validated Excel and CSV import library"
+  },
+  {
+    "paragraph": 324,
+    "text": "M6.2"
+  },
+  {
+    "paragraph": 325,
+    "text": "Version-controlled DWSIM adapter"
+  },
+  {
+    "paragraph": 326,
+    "text": "M6.3"
+  },
+  {
+    "paragraph": 327,
+    "text": "Supported Aspen export adapter"
+  },
+  {
+    "paragraph": 328,
+    "text": "M6.4"
+  },
+  {
+    "paragraph": 329,
+    "text": "Interactive import mapping and reconciliation"
+  },
+  {
+    "paragraph": 330,
+    "text": "M6.5"
+  },
+  {
+    "paragraph": 331,
+    "text": "Source-linked 2D process representation"
+  },
+  {
+    "paragraph": 332,
+    "text": "M6.6"
+  },
+  {
+    "paragraph": 333,
+    "text": "Reviewed 3D visualisation for supported assets"
+  },
+  {
+    "paragraph": 334,
+    "text": "Testing"
+  },
+  {
+    "paragraph": 335,
+    "text": "Test each adapter against independently prepared files containing complex compositions, alternate units, nonstandard equipment tags and missing fields."
+  },
+  {
+    "paragraph": 336,
+    "text": "Check mass and energy balance consistency after import."
+  },
+  {
+    "paragraph": 337,
+    "text": "Verify that converting temperatures, pressures and flow rates preserves the correct physical quantities."
+  },
+  {
+    "paragraph": 338,
+    "text": "Compare imported results with the original engineering export."
+  },
+  {
+    "paragraph": 339,
+    "text": "Test false connectivity to ensure FlowValue never invents piping or material paths that are unsupported by the source."
+  },
+  {
+    "paragraph": 340,
+    "text": "Acceptance criteria"
+  },
+  {
+    "paragraph": 341,
+    "text": "100% of supported adapter test fixtures import and reconcile as specified."
+  },
+  {
+    "paragraph": 342,
+    "text": "Unmapped fields and unsupported source versions are disclosed."
+  },
+  {
+    "paragraph": 343,
+    "text": "No source data is silently altered or assigned an incorrect physical meaning."
+  },
+  {
+    "paragraph": 344,
+    "text": "Process diagrams distinguish verified connectivity from inferred or illustrative connectivity."
+  },
+  {
+    "paragraph": 345,
+    "text": "Users can reproduce an imported design basis from the original files."
+  },
+  {
+    "paragraph": 346,
+    "text": "EXIT GATE \u2014 G6: FlowValue reliably imports and interprets engineering data from its declared supported formats without losing critical information or fabricating process connections."
+  },
+  {
+    "paragraph": 347,
+    "text": "Phase 7 \u2014 Advanced uncertainty, benchmarking and professional deliverables"
+  },
+  {
+    "paragraph": 348,
+    "text": "Primary focus: Recommendation 9 and analytical completeness"
+  },
+  {
+    "paragraph": 349,
+    "text": "Objective: Make FlowValue capable of producing defensible risk assessments and professional-quality engineering investment reports."
+  },
+  {
+    "paragraph": 350,
+    "text": "Proposed planning window: Months 9\u201315."
+  },
+  {
+    "paragraph": 351,
+    "text": "Implementation work"
+  },
+  {
+    "paragraph": 352,
+    "text": "Expand scenario analysis into an auditable uncertainty framework."
+  },
+  {
+    "paragraph": 353,
+    "text": "Support justified input distributions, correlated variables, constrained scenarios, stochastic calculations and sensitivity analysis."
+  },
+  {
+    "paragraph": 354,
+    "text": "Uncertainty distributions must be based on evidence or clearly identified assumptions. A nominal \u00b120% range should never be treated as a calibrated probability distribution without justification."
+  },
+  {
+    "paragraph": 355,
+    "text": "Build independent numerical benchmarks for equipment costing, OPEX, revenue, depreciation, financial metrics and Monte Carlo calculations."
+  },
+  {
+    "paragraph": 356,
+    "text": "Create a unified reporting pipeline that generates a technical report, editable financial workbook, project-assumptions register, financial dashboards and presentation material from the same approved study revision."
+  },
+  {
+    "paragraph": 357,
+    "text": "Introduce visible estimate-completeness indicators, including critical missing items and their impact on the confidence of economic results."
+  },
+  {
+    "paragraph": 358,
+    "text": "Milestones"
+  },
+  {
+    "paragraph": 359,
+    "text": "Milestone"
+  },
+  {
+    "paragraph": 360,
+    "text": "Deliverable"
+  },
+  {
+    "paragraph": 361,
+    "text": "M7.1"
+  },
+  {
+    "paragraph": 362,
+    "text": "Validated deterministic scenario analysis"
+  },
+  {
+    "paragraph": 363,
+    "text": "M7.2"
+  },
+  {
+    "paragraph": 364,
+    "text": "Monte Carlo sampling and dependence controls"
+  },
+  {
+    "paragraph": 365,
+    "text": "M7.3"
+  },
+  {
+    "paragraph": 366,
+    "text": "Parameter sensitivity and risk attribution"
+  },
+  {
+    "paragraph": 367,
+    "text": "M7.4"
+  },
+  {
+    "paragraph": 368,
+    "text": "Independent engineering-economic benchmark library"
+  },
+  {
+    "paragraph": 369,
+    "text": "M7.5"
+  },
+  {
+    "paragraph": 370,
+    "text": "Unified version-controlled reporting engine"
+  },
+  {
+    "paragraph": 371,
+    "text": "M7.6"
+  },
+  {
+    "paragraph": 372,
+    "text": "Professional review and study-delivery package"
+  },
+  {
+    "paragraph": 373,
+    "text": "Testing"
+  },
+  {
+    "paragraph": 374,
+    "text": "Run reproducibility tests using fixed random seeds."
+  },
+  {
+    "paragraph": 375,
+    "text": "Compare Monte Carlo summary statistics with independently implemented statistical references."
+  },
+  {
+    "paragraph": 376,
+    "text": "Check that invalid samples, missing costs and incomplete equipment scope cannot silently contribute to claims about complete-project financial risk."
+  },
+  {
+    "paragraph": 377,
+    "text": "Confirm that every output uses the same cost basis, project year and operating schedule."
+  },
+  {
+    "paragraph": 378,
+    "text": "Perform dashboard, API, Excel and PDF reconciliation tests for the same approved assessment."
+  },
+  {
+    "paragraph": 379,
+    "text": "Acceptance criteria"
+  },
+  {
+    "paragraph": 380,
+    "text": "Repeated seeded uncertainty studies produce matching results within documented numerical tolerances."
+  },
+  {
+    "paragraph": 381,
+    "text": "Input distributions and correlations are fully documented."
+  },
+  {
+    "paragraph": 382,
+    "text": "Financial risk indicators are withheld or qualified when the underlying cost scope is incomplete."
+  },
+  {
+    "paragraph": 383,
+    "text": "All published project financial results reconcile across formats."
+  },
+  {
+    "paragraph": 384,
+    "text": "Every report discloses model limitations, uncertainty assumptions and unresolved material risks."
+  },
+  {
+    "paragraph": 385,
+    "text": "EXIT GATE \u2014 G7: FlowValue can deliver a professionally reviewable investment study with independently checked numerical results, transparent uncertainty and consistent reporting."
+  },
+  {
+    "paragraph": 386,
+    "text": "Phase 8 \u2014 Enterprise reliability, collaboration and security"
+  },
+  {
+    "paragraph": 387,
+    "text": "Primary focus: Recommendations 8 and 10"
+  },
+  {
+    "paragraph": 388,
+    "text": "Objective: Make FlowValue safe and reliable enough for industrial organisations to use with confidential engineering and financial information."
+  },
+  {
+    "paragraph": 389,
+    "text": "Proposed planning window: Months 10\u201318."
+  },
+  {
+    "paragraph": 390,
+    "text": "Implementation work"
+  },
+  {
+    "paragraph": 391,
+    "text": "Develop an enterprise project workspace with defined access permissions, team collaboration, project ownership, engineering approvals and version-controlled assessment records."
+  },
+  {
+    "paragraph": 392,
+    "text": "Strengthen the existing cloud infrastructure with robust authentication, tenant isolation, secret management, backup and recovery, monitoring, logging and deployment controls."
+  },
+  {
+    "paragraph": 393,
+    "text": "Separate development, testing and production environments."
+  },
+  {
+    "paragraph": 394,
+    "text": "Implement asynchronous job infrastructure for computationally demanding studies, including recoverable execution states, cancellation and job-history records."
+  },
+  {
+    "paragraph": 395,
+    "text": "Build a documented service architecture covering system availability, database integrity, engineering calculation integrity and operational incidents."
+  },
+  {
+    "paragraph": 396,
+    "text": "Establish security and AI governance processes using applicable standards such as ISO/IEC 27001, ISO/IEC 42001 and NIST guidance as reference frameworks. Formal conformity or certification would require separate assessment."
+  },
+  {
+    "paragraph": 397,
+    "text": "Milestones"
+  },
+  {
+    "paragraph": 398,
+    "text": "Milestone"
+  },
+  {
+    "paragraph": 399,
+    "text": "Deliverable"
+  },
+  {
+    "paragraph": 400,
+    "text": "M8.1"
+  },
+  {
+    "paragraph": 401,
+    "text": "Enterprise authentication and role-based permissions"
+  },
+  {
+    "paragraph": 402,
+    "text": "M8.2"
+  },
+  {
+    "paragraph": 403,
+    "text": "Collaborative engineering review and approvals"
+  },
+  {
+    "paragraph": 404,
+    "text": "M8.3"
+  },
+  {
+    "paragraph": 405,
+    "text": "Secure, version-controlled project storage"
+  },
+  {
+    "paragraph": 406,
+    "text": "M8.4"
+  },
+  {
+    "paragraph": 407,
+    "text": "Recoverable long-running calculation jobs"
+  },
+  {
+    "paragraph": 408,
+    "text": "M8.5"
+  },
+  {
+    "paragraph": 409,
+    "text": "Backup, disaster recovery and monitoring"
+  },
+  {
+    "paragraph": 410,
+    "text": "M8.6"
+  },
+  {
+    "paragraph": 411,
+    "text": "Independent security and reliability assessment"
+  },
+  {
+    "paragraph": 412,
+    "text": "Testing"
+  },
+  {
+    "paragraph": 413,
+    "text": "Perform automated and manual security assessments covering authentication, authorisation, cross-tenant access, malicious uploads, sensitive-data exposure and API security."
+  },
+  {
+    "paragraph": 414,
+    "text": "Test simultaneous project edits to ensure that conflicting revisions cannot silently overwrite one another."
+  },
+  {
+    "paragraph": 415,
+    "text": "Simulate backend failures, interrupted Monte Carlo studies, database unavailability and incomplete uploads."
+  },
+  {
+    "paragraph": 416,
+    "text": "Carry out backup restoration exercises and verify that the restored project retains its approved inputs, source records, method versions and calculation outputs."
+  },
+  {
+    "paragraph": 417,
+    "text": "Acceptance criteria"
+  },
+  {
+    "paragraph": 418,
+    "text": "Zero unresolved critical security vulnerabilities at release."
+  },
+  {
+    "paragraph": 419,
+    "text": "All cross-tenant access isolation tests pass."
+  },
+  {
+    "paragraph": 420,
+    "text": "Project approval and revision histories remain consistent under concurrent edits."
+  },
+  {
+    "paragraph": 421,
+    "text": "Interrupted calculations have a documented recovery or safe-restart mechanism."
+  },
+  {
+    "paragraph": 422,
+    "text": "Backup restoration passes defined recovery-point and recovery-time objectives."
+  },
+  {
+    "paragraph": 423,
+    "text": "Enterprise operational controls are documented and independently reviewed where appropriate."
+  },
+  {
+    "paragraph": 424,
+    "text": "EXIT GATE \u2014 G8: FlowValue satisfies the security, reliability and collaboration requirements agreed for its first industrial deployments."
+  },
+  {
+    "paragraph": 425,
+    "text": "Phase 9 \u2014 Industrial validation, professional recognition and commercial adoption"
+  },
+  {
+    "paragraph": 426,
+    "text": "Primary focus: Recommendations 9, 11 and 14"
+  },
+  {
+    "paragraph": 427,
+    "text": "Objective: Demonstrate that FlowValue delivers measurable value and reliable results in practical engineering environments."
+  },
+  {
+    "paragraph": 428,
+    "text": "Proposed planning window: Months 15\u201336 and continuing thereafter."
+  },
+  {
+    "paragraph": 429,
+    "text": "Implementation work"
+  },
+  {
+    "paragraph": 430,
+    "text": "Select independent industrial partners across supported engineering sectors."
+  },
+  {
+    "paragraph": 431,
+    "text": "I would begin with three practical use cases:"
+  },
+  {
+    "paragraph": 432,
+    "text": "A chemical or energy process-development project."
+  },
+  {
+    "paragraph": 433,
+    "text": "A water or wastewater treatment facility."
+  },
+  {
+    "paragraph": 434,
+    "text": "A bioprocess or emerging industrial technology project."
+  },
+  {
+    "paragraph": 435,
+    "text": "For each pilot, define the expected project scope, engineering inputs, required calculations, independent comparison method and intended decision."
+  },
+  {
+    "paragraph": 436,
+    "text": "Have practising engineers carry out structured comparisons between FlowValue and existing TEA workflows."
+  },
+  {
+    "paragraph": 437,
+    "text": "Measure not just numerical agreement but also workflow efficiency, engineering completeness, traceability and required manual intervention."
+  },
+  {
+    "paragraph": 438,
+    "text": "Submit identified defects and limitations to a controlled improvement process, then repeat the relevant validation tests."
+  },
+  {
+    "paragraph": 439,
+    "text": "Investigate professional recognition and collaboration opportunities with bodies such as IChemE and AACE, without assuming that a software accreditation route exists."
+  },
+  {
+    "paragraph": 440,
+    "text": "Milestones"
+  },
+  {
+    "paragraph": 441,
+    "text": "Milestone"
+  },
+  {
+    "paragraph": 442,
+    "text": "Deliverable"
+  },
+  {
+    "paragraph": 443,
+    "text": "M9.1"
+  },
+  {
+    "paragraph": 444,
+    "text": "First independently reviewed industrial pilot"
+  },
+  {
+    "paragraph": 445,
+    "text": "M9.2"
+  },
+  {
+    "paragraph": 446,
+    "text": "Three completed, independently assessed pilot studies"
+  },
+  {
+    "paragraph": 447,
+    "text": "M9.3"
+  },
+  {
+    "paragraph": 448,
+    "text": "Published or partner-approved validation evidence"
+  },
+  {
+    "paragraph": 449,
+    "text": "M9.4"
+  },
+  {
+    "paragraph": 450,
+    "text": "First agreed industrial deployment"
+  },
+  {
+    "paragraph": 451,
+    "text": "M9.5"
+  },
+  {
+    "paragraph": 452,
+    "text": "Established customer support and maintenance programme"
+  },
+  {
+    "paragraph": 453,
+    "text": "M9.6"
+  },
+  {
+    "paragraph": 454,
+    "text": "Documented professional recognition or independent assurance pathway"
+  },
+  {
+    "paragraph": 455,
+    "text": "Testing"
+  },
+  {
+    "paragraph": 456,
+    "text": "For each pilot, evaluate the following independently:"
+  },
+  {
+    "paragraph": 457,
+    "text": "Evaluation metric"
+  },
+  {
+    "paragraph": 458,
+    "text": "What to verify"
+  },
+  {
+    "paragraph": 459,
+    "text": "Numerical accuracy"
+  },
+  {
+    "paragraph": 460,
+    "text": "Agreement with independent validated calculations"
+  },
+  {
+    "paragraph": 461,
+    "text": "Estimate completeness"
+  },
+  {
+    "paragraph": 462,
+    "text": "All material scope and exclusions identified"
+  },
+  {
+    "paragraph": 463,
+    "text": "Engineering applicability"
+  },
+  {
+    "paragraph": 464,
+    "text": "Methods suitable for actual process conditions"
+  },
+  {
+    "paragraph": 465,
+    "text": "Time efficiency"
+  },
+  {
+    "paragraph": 466,
+    "text": "Study completion time against the existing workflow"
+  },
+  {
+    "paragraph": 467,
+    "text": "AI reliability"
+  },
+  {
+    "paragraph": 468,
+    "text": "Unsupported assumptions and reviewer corrections"
+  },
+  {
+    "paragraph": 469,
+    "text": "Reproducibility"
+  },
+  {
+    "paragraph": 470,
+    "text": "Independent engineer can reproduce the study"
+  },
+  {
+    "paragraph": 471,
+    "text": "Financial consistency"
+  },
+  {
+    "paragraph": 472,
+    "text": "Complete reconciliation across model outputs"
+  },
+  {
+    "paragraph": 473,
+    "text": "User acceptance"
+  },
+  {
+    "paragraph": 474,
+    "text": "Practising engineers can complete defined tasks without developer assistance"
+  },
+  {
+    "paragraph": 475,
+    "text": "Acceptance criteria"
+  },
+  {
+    "paragraph": 476,
+    "text": "At least three independently reviewed industrial pilots are completed."
+  },
+  {
+    "paragraph": 477,
+    "text": "Every critical pilot finding is resolved or explicitly retained as a limitation of the supported scope."
+  },
+  {
+    "paragraph": 478,
+    "text": "Product documentation matches demonstrated capabilities."
+  },
+  {
+    "paragraph": 479,
+    "text": "Customer engineering reviewers approve the software for their specified use cases."
+  },
+  {
+    "paragraph": 480,
+    "text": "There is evidence of repeatable value, rather than reliance on one successful demonstration."
+  },
+  {
+    "paragraph": 481,
+    "text": "No unsupported institutional accreditation or certification claims are made."
+  },
+  {
+    "paragraph": 482,
+    "text": "EXIT GATE \u2014 G9: FlowValue demonstrates credible engineering accuracy, practical usability and repeatable value within a clearly specified industrial scope."
+  },
+  {
+    "paragraph": 483,
+    "text": "4. Consolidated milestone and release plan"
+  },
+  {
+    "paragraph": 484,
+    "text": "The timeline below is a proposed planning baseline. It is not a delivery commitment; staffing, technical dependencies, development complexity and validation findings may change the schedule."
+  },
+  {
+    "paragraph": 485,
+    "text": "Development roadmap"
+  },
+  {
+    "paragraph": 486,
+    "text": "Phase"
+  },
+  {
+    "paragraph": 487,
+    "text": "Start month"
+  },
+  {
+    "paragraph": 488,
+    "text": "End month"
+  },
+  {
+    "paragraph": 489,
+    "text": "P0 \u00b7 Baseline audit"
+  },
+  {
+    "paragraph": 490,
+    "text": "0"
+  },
+  {
+    "paragraph": 491,
+    "text": "1"
+  },
+  {
+    "paragraph": 492,
+    "text": "P1 \u00b7 Calculation validation"
+  },
+  {
+    "paragraph": 493,
+    "text": "0.75"
+  },
+  {
+    "paragraph": 494,
+    "text": "2.5"
+  },
+  {
+    "paragraph": 495,
+    "text": "P2 \u00b7 Engineering data model"
+  },
+  {
+    "paragraph": 496,
+    "text": "1.5"
+  },
+  {
+    "paragraph": 497,
+    "text": "3.5"
+  },
+  {
+    "paragraph": 498,
+    "text": "P3 \u00b7 Equipment and CAPEX"
+  },
+  {
+    "paragraph": 499,
+    "text": "3"
+  },
+  {
+    "paragraph": 500,
+    "text": "7"
+  },
+  {
+    "paragraph": 501,
+    "text": "P4 \u00b7 Economics and finance"
+  },
+  {
+    "paragraph": 502,
+    "text": "4"
+  },
+  {
+    "paragraph": 503,
+    "text": "8"
+  },
+  {
+    "paragraph": 504,
+    "text": "P5 \u00b7 Engineering AI"
+  },
+  {
+    "paragraph": 505,
+    "text": "5"
+  },
+  {
+    "paragraph": 506,
+    "text": "10"
+  },
+  {
+    "paragraph": 507,
+    "text": "P6 \u00b7 Interoperability"
+  },
+  {
+    "paragraph": 508,
+    "text": "7"
+  },
+  {
+    "paragraph": 509,
+    "text": "12"
+  },
+  {
+    "paragraph": 510,
+    "text": "P7 \u00b7 Benchmarking and reports"
+  },
+  {
+    "paragraph": 511,
+    "text": "9"
+  },
+  {
+    "paragraph": 512,
+    "text": "15"
+  },
+  {
+    "paragraph": 513,
+    "text": "P8 \u00b7 Enterprise readiness"
+  },
+  {
+    "paragraph": 514,
+    "text": "10"
+  },
+  {
+    "paragraph": 515,
+    "text": "18"
+  },
+  {
+    "paragraph": 516,
+    "text": "P9 \u00b7 Industrial validation"
+  },
+  {
+    "paragraph": 517,
+    "text": "15"
+  },
+  {
+    "paragraph": 518,
+    "text": "36"
+  },
+  {
+    "paragraph": 519,
+    "text": "Overlapping phases indicate parallel development. Phase completion is determined by the acceptance gate, not the planned end date."
+  },
+  {
+    "paragraph": 520,
+    "text": "Product releases"
+  },
+  {
+    "paragraph": 521,
+    "text": "I would organise development into four externally meaningful releases rather than market every development phase as a new product."
+  },
+  {
+    "paragraph": 522,
+    "text": "Release"
+  },
+  {
+    "paragraph": 523,
+    "text": "Required gates"
+  },
+  {
+    "paragraph": 524,
+    "text": "Intended readiness"
+  },
+  {
+    "paragraph": 525,
+    "text": "Engineering Alpha"
+  },
+  {
+    "paragraph": 526,
+    "text": "G0\u2013G2"
+  },
+  {
+    "paragraph": 527,
+    "text": "Reproducible engineering foundation and reliable internal calculation workflows"
+  },
+  {
+    "paragraph": 528,
+    "text": "Validated TEA Beta"
+  },
+  {
+    "paragraph": 529,
+    "text": "G3\u2013G5"
+  },
+  {
+    "paragraph": 530,
+    "text": "Supported engineering-economic assessments with controlled AI review"
+  },
+  {
+    "paragraph": 531,
+    "text": "Professional Pilot Release"
+  },
+  {
+    "paragraph": 532,
+    "text": "G6\u2013G7, relevant security controls"
+  },
+  {
+    "paragraph": 533,
+    "text": "External pilot studies, supported imports and professional reports"
+  },
+  {
+    "paragraph": 534,
+    "text": "Industrial Release 1.0"
+  },
+  {
+    "paragraph": 535,
+    "text": "G8\u2013G9"
+  },
+  {
+    "paragraph": 536,
+    "text": "Demonstrated industrial use, security assurance and independent review within a declared scope"
+  },
+  {
+    "paragraph": 537,
+    "text": "An industrial release should not be claimed simply because development has reached month 18 or 36."
+  },
+  {
+    "paragraph": 538,
+    "text": "5. Master product-quality scorecard"
+  },
+  {
+    "paragraph": 539,
+    "text": "These metrics should be monitored continuously. The targets are proposed release criteria, not current performance claims."
+  },
+  {
+    "paragraph": 540,
+    "text": "Metric"
+  },
+  {
+    "paragraph": 541,
+    "text": "Proposed target"
+  },
+  {
+    "paragraph": 542,
+    "text": "Critical calculation tests"
+  },
+  {
+    "paragraph": 543,
+    "text": "100% pass"
+  },
+  {
+    "paragraph": 544,
+    "text": "Known calculation provenance"
+  },
+  {
+    "paragraph": 545,
+    "text": "100% of reported critical outputs"
+  },
+  {
+    "paragraph": 546,
+    "text": "Unsupported calculations silently accepted"
+  },
+  {
+    "paragraph": 547,
+    "text": "Zero"
+  },
+  {
+    "paragraph": 548,
+    "text": "Dashboard-to-export reconciliation"
+  },
+  {
+    "paragraph": 549,
+    "text": "100% of supported reference cases"
+  },
+  {
+    "paragraph": 550,
+    "text": "Material and energy balance reconciliation"
+  },
+  {
+    "paragraph": 551,
+    "text": "100% pass or explicitly unresolved"
+  },
+  {
+    "paragraph": 552,
+    "text": "Preliminary equipment-cost coverage"
+  },
+  {
+    "paragraph": 553,
+    "text": "\u226595% of verified reference-plant scope, with justified methods"
+  },
+  {
+    "paragraph": 554,
+    "text": "Critical security findings at release"
+  },
+  {
+    "paragraph": 555,
+    "text": "Zero unresolved"
+  },
+  {
+    "paragraph": 556,
+    "text": "Independently reviewed industrial pilot studies"
+  },
+  {
+    "paragraph": 557,
+    "text": "At least 3 before claiming broader industrial readiness"
+  },
+  {
+    "paragraph": 558,
+    "text": "Release acceptance dashboard"
+  },
+  {
+    "paragraph": 559,
+    "text": "Proposed targets. These bars illustrate required thresholds, not measured progress."
+  },
+  {
+    "paragraph": 560,
+    "text": "Metric"
+  },
+  {
+    "paragraph": 561,
+    "text": "Proposed target"
+  },
+  {
+    "paragraph": 562,
+    "text": "Explanation"
+  },
+  {
+    "paragraph": 563,
+    "text": "Critical numerical tests"
+  },
+  {
+    "paragraph": 564,
+    "text": "100%"
+  },
+  {
+    "paragraph": 565,
+    "text": "All required critical reference tests pass."
+  },
+  {
+    "paragraph": 566,
+    "text": "Critical source traceability"
+  },
+  {
+    "paragraph": 567,
+    "text": "100%"
+  },
+  {
+    "paragraph": 568,
+    "text": "Critical outputs retain source and method provenance."
+  },
+  {
+    "paragraph": 569,
+    "text": "Reference equipment coverage"
+  },
+  {
+    "paragraph": 570,
+    "text": "\u226595%"
+  },
+  {
+    "paragraph": 571,
+    "text": "Physical equipment scope priced with justified methods; residual materiality still reviewed."
+  },
+  {
+    "paragraph": 572,
+    "text": "Cross-output reconciliation"
+  },
+  {
+    "paragraph": 573,
+    "text": "100%"
+  },
+  {
+    "paragraph": 574,
+    "text": "Supported API, dashboard and export reference cases reconcile."
+  },
+  {
+    "paragraph": 575,
+    "text": "Release security blockers"
+  },
+  {
+    "paragraph": 576,
+    "text": "0"
+  },
+  {
+    "paragraph": 577,
+    "text": "No unresolved critical security findings at release."
+  },
+  {
+    "paragraph": 578,
+    "text": "Independent industrial pilots"
+  },
+  {
+    "paragraph": 579,
+    "text": "\u22653"
+  },
+  {
+    "paragraph": 580,
+    "text": "At least three externally reviewed project studies."
+  },
+  {
+    "paragraph": 581,
+    "text": "Quality gates should also include explicit severity thresholds. A critical defect that can materially alter project value, corrupt engineering data, misrepresent a cost estimate or bypass an approval should block the applicable release, regardless of the total number of passing tests."
+  },
+  {
+    "paragraph": 582,
+    "text": "6. GitHub execution and tracking structure"
+  },
+  {
+    "paragraph": 583,
+    "text": "To make this operational, I recommend creating one GitHub milestone per development phase, with issues organised into the following work types."
+  },
+  {
+    "paragraph": 584,
+    "text": "Issue type"
+  },
+  {
+    "paragraph": 585,
+    "text": "Required content"
+  },
+  {
+    "paragraph": 586,
+    "text": "Architecture"
+  },
+  {
+    "paragraph": 587,
+    "text": "Design specification, interfaces, dependencies and migration considerations"
+  },
+  {
+    "paragraph": 588,
+    "text": "Implementation"
+  },
+  {
+    "paragraph": 589,
+    "text": "Exact functional behaviour and affected components"
+  },
+  {
+    "paragraph": 590,
+    "text": "Engineering validation"
+  },
+  {
+    "paragraph": 591,
+    "text": "Reference methodology, independent expected values and numerical tolerances"
+  },
+  {
+    "paragraph": 592,
+    "text": "Integration"
+  },
+  {
+    "paragraph": 593,
+    "text": "Cross-module dependencies and data reconciliation"
+  },
+  {
+    "paragraph": 594,
+    "text": "Security/reliability"
+  },
+  {
+    "paragraph": 595,
+    "text": "Threat or failure scenario, test and required mitigation"
+  },
+  {
+    "paragraph": 596,
+    "text": "Documentation"
+  },
+  {
+    "paragraph": 597,
+    "text": "Technical evidence, limitations and usage guidance"
+  },
+  {
+    "paragraph": 598,
+    "text": "Release acceptance"
+  },
+  {
+    "paragraph": 599,
+    "text": "Completed test evidence, unresolved findings and approval decision"
+  },
+  {
+    "paragraph": 600,
+    "text": "Each development issue should contain a clear problem statement, planned deliverable, implementation constraints, dependencies, test cases and evidence required for closure."
+  },
+  {
+    "paragraph": 601,
+    "text": "A milestone should not be considered complete because all coding tasks are marked done. It should close only when its acceptance gate is passed."
+  },
+  {
+    "paragraph": 602,
+    "text": "Example: A complete Phase 4 development ticket"
+  },
+  {
+    "paragraph": 603,
+    "text": "FV-ECON-004 \u2014 Multi-year Revenue Box contract validation"
+  },
+  {
+    "paragraph": 604,
+    "text": "Phase 4 \u00b7 Revenue and financial modelling"
+  },
+  {
+    "paragraph": 605,
+    "text": "Objective: Ensure that commercial payments cannot be recognised outside their authorised contractual period without an explicit approved assumption."
+  },
+  {
+    "paragraph": 606,
+    "text": "Implementation scope: Introduce effective and expiry dates, renewal terms, operating-year reconciliation, billable annual quantities and corresponding revenue scheduling."
+  },
+  {
+    "paragraph": 607,
+    "text": "Test scenario: A wastewater treatment agreement applies to 2027, while the project operates in 2027 and 2028."
+  },
+  {
+    "paragraph": 608,
+    "text": "Expected behaviour: FlowValue calculates the 2027 arrangement, flags 2028 as unresolved, and requests an explicit renewal or replacement contract assumption before recognising corresponding 2028 income."
+  },
+  {
+    "paragraph": 609,
+    "text": "Acceptance tests:"
+  },
+  {
+    "paragraph": 610,
+    "text": "\u2610 A 2027-only agreement does not automatically create 2028 revenue."
+  },
+  {
+    "paragraph": 611,
+    "text": "\u2610 An approved renewal creates the correct 2028 schedule."
+  },
+  {
+    "paragraph": 612,
+    "text": "\u2610 Billing units and quantities reconcile to the approved operating schedule."
+  },
+  {
+    "paragraph": 613,
+    "text": "\u2610 Editing the agreement does not overwrite the earlier approved version."
+  },
+  {
+    "paragraph": 614,
+    "text": "\u2610 Financial outputs and exported workbooks match the approved schedule."
+  },
+  {
+    "paragraph": 615,
+    "text": "7. Team and governance recommendations"
+  },
+  {
+    "paragraph": 616,
+    "text": "The scope is substantial, so I would divide ownership into five technical responsibilities: process-engineering methods, backend/data architecture, AI and research workflows, frontend/product design, and quality/security engineering."
+  },
+  {
+    "paragraph": 617,
+    "text": "External practising engineers should participate in milestone reviews from the beginning, particularly for equipment design, capital costing, safety-relevant assumptions and industrial pilots."
+  },
+  {
+    "paragraph": 618,
+    "text": "A small team can combine roles initially. However, the person who implements a critical engineering calculation should not be its only validator."
+  },
+  {
+    "paragraph": 619,
+    "text": "Maintain a standing technical review board, even if initially only a few people, to approve method additions, critical model changes, acceptance criteria and releases."
+  },
+  {
+    "paragraph": 620,
+    "text": "8. What I would prioritise immediately"
+  },
+  {
+    "paragraph": 621,
+    "text": "Despite the scale of the roadmap, I would avoid starting ten major development streams simultaneously."
+  },
+  {
+    "paragraph": 622,
+    "text": "For FlowValue\u2019s next development cycle, I would focus on achieving G0, G1 and the core of G2."
+  },
+  {
+    "paragraph": 623,
+    "text": "That means first knowing exactly what the current system supports, independently verifying the existing calculations, making the engineering data model reliable and establishing the test framework that all subsequent features will use."
+  },
+  {
+    "paragraph": 624,
+    "text": "Once those foundations are demonstrated, equipment costing and integrated TEA development should become the central delivery priority."
+  },
+  {
+    "paragraph": 625,
+    "text": "The first product target should be an independently validated, end-to-end preliminary techno-economic assessment for one defined industrial process."
+  },
+  {
+    "paragraph": 626,
+    "text": "From there, expand the supported domain systematically, rather than assuming one successful workbook proves universal engineering applicability."
+  },
+  {
+    "paragraph": 627,
+    "text": "The roadmap\u2019s ultimate success criterion is straightforward: an industrial engineer should be able to use FlowValue to create a study, inspect every important assumption, reproduce its calculations, understand its limitations, and confidently defend the assessment during a technical or investment review."
+  },
+  {
+    "paragraph": 628,
+    "text": "That is the standard I would use to guide FlowValue\u2019s development toward industry adoption."
+  }
+]

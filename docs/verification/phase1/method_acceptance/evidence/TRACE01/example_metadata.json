@@ -1,0 +1,7 @@
+{
+  "method_id": "vessel_hold_up",
+  "method_version": "1.0.0",
+  "implementation_fingerprint": "sha256:a80de3fde95065fb44e815a2091e998eeeb019b27ce003ec9d6127f468b811d2",
+  "fingerprint_scheme": "flowvalue-loaded-engineering-v1",
+  "execution_layer": "native"
+}

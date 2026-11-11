@@ -1,0 +1,7 @@
+Search date 2026-11-11. References found; no standalone execution/acceptance report found.
+docs/verification/phase1/sizing/FV-P1-SIZE-001_final_report.md
+docs/verification/phase1/sizing/cross_file_compatibility_report.md
+docs/verification/phase1/sizing/applicability_and_boundary_review.md
+docs/verification/phase1/sizing/phase1_sizing_consolidated_status.md
+docs/verification/phase1/sizing/corrections/SIZE-C01_resolution.md
+docs/verification/phase1/sizing/corrections/SIZE-C02_resolution.md

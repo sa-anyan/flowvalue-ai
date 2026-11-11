@@ -1,0 +1,42 @@
+[
+  {
+    "test": "test_real_charlie_thirteen_cases_against_saved_engineering_register",
+    "status": "skipped",
+    "message": "Private real workbook fixture is not redistributed"
+  },
+  {
+    "test": "test_actual_charlie_register_when_available",
+    "status": "skipped",
+    "message": "Private Charlie snapshot not distributed"
+  },
+  {
+    "test": "test_installed_openpytea_321_reference_is_equivalent_with_an_explicit_calendar",
+    "status": "skipped",
+    "message": "Optional pinned OpenPyTEA reference not installed"
+  },
+  {
+    "test": "test_equivalent_real_workbook_inputs[pump_duty-0.22988950107343337-1000 US_gpm_psi-rows_units-xlsx]",
+    "status": "failure",
+    "message": "ValueError: An unambiguous source mass_flow is required"
+  },
+  {
+    "test": "test_equivalent_real_workbook_inputs[pump_duty-0.22988950107343337-1000 US_gpm_psi-rows_units-xlsm]",
+    "status": "failure",
+    "message": "ValueError: An unambiguous source mass_flow is required"
+  },
+  {
+    "test": "test_equivalent_real_workbook_inputs[pump_duty-0.22988950107343337-1000 US_gpm_psi-rows_units-xls]",
+    "status": "failure",
+    "message": "ValueError: An unambiguous source mass_flow is required"
+  },
+  {
+    "test": "test_boolean_heat_from_file_must_not_be_costed[exchanger_area-True-xls]",
+    "status": "failure",
+    "message": "Failed: DID NOT RAISE ValueError"
+  },
+  {
+    "test": "test_boolean_heat_from_file_must_not_be_costed[vaporizer_area-True-xls]",
+    "status": "failure",
+    "message": "Failed: DID NOT RAISE ValueError"
+  }
+]

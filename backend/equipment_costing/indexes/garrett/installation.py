@@ -15,7 +15,7 @@ def _policies():
         Path(__file__)
         .with_name("data")
         .joinpath("installation_policies.json")
-        .read_text()
+        .read_text(encoding="utf-8")
     )
 
 

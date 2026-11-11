@@ -1,0 +1,60 @@
+{
+  "reason": "Evidence-only ticket; no production or test edits. Reuse existing completed C03 suites rather than rerun unchanged tests. New bounded conversion probes fill row-level actual values.",
+  "scope_check": {
+    "difference_from_C03_before": [
+      "backend/engineering_sizing/pumps.py"
+    ],
+    "pump_patch_matches_C03_tested_patch": true
+  },
+  "reused": {
+    "native": {
+      "log": "docs/verification/phase1/sizing/corrections/SIZE-C03_evidence/new.txt",
+      "sha256": "a46c75f85eb55b326344b8b0284c764acb633d415a7bdfebf0415776f07430f8",
+      "summary": "304 passed in 0.74s",
+      "xml": "docs/verification/phase1/sizing/corrections/SIZE-C03_evidence/new.xml",
+      "xml_sha256": "7dc84670a9734ecb04b5673121ab11cab82b9f5f7d792249443298c74fad46e7"
+    },
+    "full_backend": {
+      "log": "docs/verification/phase1/sizing/corrections/SIZE-C03_evidence/full.txt",
+      "sha256": "1d0d8dcc98965980ab89a5e13ef4b0dc544cf6b26e510f95ac40d3774518cf0b",
+      "summary": "5 failed, 2305 passed, 3 skipped, 1 warning, 367 subtests passed in 200.51s (0:03:20)",
+      "xml": "docs/verification/phase1/sizing/corrections/SIZE-C03_evidence/full.xml",
+      "xml_sha256": "641bf055f615c8ea7b5735c850fa89bdf4c25bbd80129b8e9cdb49b7166bfb78"
+    },
+    "compressor": {
+      "log": "docs/verification/phase1/sizing/corrections/SIZE-C03_evidence/compressor.txt",
+      "sha256": "802173f034d5a4e22ce889ae55dc72a1ccb421af813f37e883fe89b13cb4921e",
+      "summary": "78 passed in 0.37s",
+      "xml": "docs/verification/phase1/sizing/corrections/SIZE-C03_evidence/compressor.xml",
+      "xml_sha256": "64bf43d806d60d888fad6b6188744e8da08c0c928da797af06f8251aa8deba03"
+    },
+    "heat": {
+      "log": "docs/verification/phase1/sizing/corrections/SIZE-C03_evidence/heat.txt",
+      "sha256": "57d92d2d49a03a088f7681163519fefc94583dd5a69e668e4ec1956555fef713",
+      "summary": "90 passed in 1.92s",
+      "xml": "docs/verification/phase1/sizing/corrections/SIZE-C03_evidence/heat.xml",
+      "xml_sha256": "ce5c6b247c5666cfc837d084b5207d9264ed635ff956ee38c9dbeb8eb5299d2a"
+    },
+    "pump": {
+      "log": "docs/verification/phase1/sizing/corrections/SIZE-C03_evidence/pump.txt",
+      "sha256": "17bfb7fe14d4c8f714299548364e27573160339fe79fe0f7b847d40ae6b5632f",
+      "summary": "68 passed in 1.24s",
+      "xml": "docs/verification/phase1/sizing/corrections/SIZE-C03_evidence/pump.xml",
+      "xml_sha256": "38f4689673b709f03cc487745bc5ff6b29b5cc0b884e2c25948562c2601abf52"
+    },
+    "targeted_R01": {
+      "log": "docs/verification/phase1/sizing/corrections/SIZE-C03_evidence/baseline.txt",
+      "sha256": "4fb5d4357b54d5e04aaad7deef11224833e3f3f1b1b4408c079116b368af9af8",
+      "summary": "66 passed in 7.29s",
+      "xml": "docs/verification/phase1/sizing/corrections/SIZE-C03_evidence/baseline.xml",
+      "xml_sha256": "0d07d9a121b4c35110e17527346a4e5f423fd706fc33f621eb084f3c3c1315ee"
+    },
+    "cross_file": {
+      "log": "docs/verification/phase1/sizing/corrections/SIZE-C03_evidence/cross.txt",
+      "sha256": "a1a2329a7e31bf3cb0ab1cc01bb4efbbd18d19b86cfa9150082b99e0559432b9",
+      "summary": "5 failed, 62 passed in 40.57s",
+      "xml": "docs/verification/phase1/sizing/corrections/SIZE-C03_evidence/cross.xml",
+      "xml_sha256": "3b99de56eeb659694d790b32acb82cd4fe9539efeb2b8c0c63a4c249aca296a4"
+    }
+  }
+}

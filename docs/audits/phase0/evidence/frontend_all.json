@@ -1,0 +1,19 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "tests/assessment-navigation.test.mjs",
+    "tests/cashflow-break-even.test.cjs",
+    "tests/cost-playground.test.cjs",
+    "tests/financial-dashboard.test.cjs",
+    "tests/monte-carlo-histogram.test.cjs",
+    "tests/revenue-assistant.test.cjs",
+    "tests/revenue-rates.test.cjs",
+    "tests/revenue-series.test.cjs",
+    "tests/revenue-simple-inputs.test.cjs",
+    "tests/stable-json.test.cjs"
+  ],
+  "cwd": "<AUDIT_SCRATCH>/baseline/frontend",
+  "exit_code": 0,
+  "seconds": 3.97
+}

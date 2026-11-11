@@ -1,0 +1,21 @@
+import os,subprocess,tempfile,json
+from pathlib import Path
+r=Path(__file__).resolve().parents[6];e=r/'docs/verification/phase1/units/corrections/UNIT-C01_evidence'
+py=Path((r/'docs/audits/phase0/evidence/FV-G0-R01/python_location.txt').read_text().strip())
+scratch=Path(tempfile.mkdtemp(prefix='flowvalue-unit-c01-')); guard=scratch/'guard';guard.mkdir(exist_ok=True)
+(guard/'sitecustomize.py').write_text('import socket\ndef blocked(*a,**k): raise RuntimeError("External network disabled for verification")\nsocket.socket.connect=blocked\nsocket.create_connection=blocked\n')
+env={k:v for k,v in os.environ.items() if not any(s in k.upper() for s in ['KEY','TOKEN','SECRET','PASSWORD','DATABASE','FLOWVALUE','OPENAI','SUPABASE','PYTHONPATH'])}
+env.update(AI_ENABLED='false',FLOWVALUE_CLOUD='false',FLOWVALUE_ASSESSMENT_DB=str(scratch/'test.sqlite'),PYTHONPATH=str(guard)+os.pathsep+str(r))
+import sys
+mode=sys.argv[1]
+if mode=='before':
+ files=['backend/tests/test_unit_acceptance.py::test_required_numpy_boolean_assumptions_rejected','backend/tests/test_unit_acceptance.py::test_required_numpy_boolean_source_observation_rejected']
+elif mode=='targeted':
+ files=['backend/tests/test_native_boolean_safety.py','backend/tests/test_unit_acceptance.py','backend/tests/test_sizing_independent_verification.py','backend/tests/test_compressor_numerical_stability.py','backend/tests/test_heat_duty_validation.py','backend/tests/test_pump_numerical_safety.py','backend/tests/test_engineering_sizing.py','backend/tests/test_gas_compression_bridge.py','backend/tests/test_heat_exchanger_basis.py','backend/tests/test_unit_conversion.py','backend/tests/test_unit_conversion_bridges.py','backend/tests/test_monte_carlo_horizon.py']
+else:
+ files=[x for x in subprocess.check_output(['git','ls-files','backend'],cwd=r,text=True).splitlines() if Path(x).name.startswith('test_') and x.endswith('.py')]
+ files += ['backend/tests/test_phase0_version_protection.py','backend/tests/test_monte_carlo_horizon.py','backend/tests/test_sizing_independent_verification.py','backend/tests/test_compressor_numerical_stability.py','backend/tests/test_heat_duty_validation.py','backend/tests/test_pump_numerical_safety.py','backend/tests/test_sizing_cross_file.py','backend/tests/test_unit_acceptance.py','backend/tests/test_native_boolean_safety.py']
+ files=list(dict.fromkeys(files))
+(e/(mode+'_files.json')).write_text(json.dumps(files,indent=2)+'\n')
+p=subprocess.run([str(py),'-m','pytest','-q',*files,'--junitxml='+str(e/(mode+'.xml'))],cwd=r,env=env,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+(e/(mode+'.txt')).write_text(p.stdout);print(p.stdout[-16000:]);print('EXIT',p.returncode)

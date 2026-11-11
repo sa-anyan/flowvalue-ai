@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="12" skipped="0" tests="295" time="0.971" timestamp="2026-11-11T00:25:29.536790+00:00" hostname="MacBookPro.lan"><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U001-kg]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U002-g]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U003-mg]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U004-lb]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U005-oz]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U006-tonne]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U007-short_ton]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U008-long_ton]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U009-m]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U010-cm]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U011-mm]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U012-in]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U013-ft]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U014-m2]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U015-cm2]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U016-mm2]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U017-in2]" time="0.021" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U018-ft2]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U019-m3]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U020-cm3]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U021-mm3]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U022-in3]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U023-ft3]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U024-L]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U025-mL]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U026-US_gal]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U027-Imp_gal]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U028-kg/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U029-kg/min]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U030-kg/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U031-kg/day]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U032-g/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U033-g/min]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U034-g/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U035-g/day]" time="0.005" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U036-mg/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U037-mg/min]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U038-mg/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U039-mg/day]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U040-lb/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U041-lb/min]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U042-lb/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U043-lb/day]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U044-oz/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U045-oz/min]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U046-oz/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U047-oz/day]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U048-tonne/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U049-tonne/min]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U050-tonne/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U051-tonne/day]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U052-short_ton/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U053-short_ton/min]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U054-short_ton/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U055-short_ton/day]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U056-long_ton/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U057-long_ton/min]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U058-long_ton/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U059-long_ton/day]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U060-m3/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U061-m3/min]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U062-m3/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U063-m3/day]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U064-cm3/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U065-cm3/min]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U066-cm3/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U067-cm3/day]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U068-mm3/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U069-mm3/min]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U070-mm3/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U071-mm3/day]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U072-in3/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U073-in3/min]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U074-in3/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U075-in3/day]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U076-ft3/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U077-ft3/min]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U078-ft3/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U079-ft3/day]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U080-L/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U081-L/min]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U082-L/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U083-L/day]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U084-mL/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U085-mL/min]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U086-mL/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U087-mL/day]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U088-US_gal/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U089-US_gal/min]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U090-US_gal/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U091-US_gal/day]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U092-Imp_gal/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U093-Imp_gal/min]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U094-Imp_gal/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U095-Imp_gal/day]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U096-Pa]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U097-kPa]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U098-MPa]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U099-bar]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U100-mbar]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U101-psi]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U102-atm]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U103-Torr]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U104-mmHg]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U105-barg]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U106-bara]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U107-psig]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U108-psia]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U109-kPag]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U110-kPaa]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U111-barg]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U112-psia]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U113-degC]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U114-K]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U115-degF]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U116-degC]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U117-delta_degF]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U118-delta_degC]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U119-degR]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U120-J]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U121-kJ]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U122-MJ]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U123-GJ]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U124-kWh]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U125-Btu_IT]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U126-Btu_th]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U127-W]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U128-kW]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U129-MW]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U130-mW]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U131-hp]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U132-metric_hp]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U133-refrigeration_ton]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U134-kWh/day]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U135-kg/m3]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U136-g/cm3]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U137-lb/ft3]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U138-cfm]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U139-US_gpm]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U140-Imp_gpm]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U141-1000 US_gpm_psi]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U142-1000 ft2]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U143-1000 gal]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U144-ton/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U145-scfm]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_independent_supported_unit[U146-kmol/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A001-kilogram]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A002-kilograms]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A003-gram]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A004-grams]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A005-lbs]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A006-lbm]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A007-pound]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A008-pounds]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A009-metre]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A010-metres]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A011-meter]" time="0.019" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A012-meters]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A013-centimetre]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A014-centimeter]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A015-millimetre]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A016-millimeter]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A017-inch]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A018-inches]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A019-foot]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A020-feet]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A021-m\xb2]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A022-m^2]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A023-sq m]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A024-ft\xb2]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A025-ft^2]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A026-sq ft]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A027-m\xb3]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A028-m^3]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A029-cu m]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A030-ft\xb3]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A031-ft^3]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A032-l]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A033-litre]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A034-liter]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A035-litres]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A036-liters]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A037-ml]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A038-millilitre]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A039-milliliter]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A040-US gal]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A041-gal_US]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A042-US gallon]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A043-US gallons]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A044-Imperial gal]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A045-gal_Imp]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A046-imperial gallon]" time="0.002" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A047-UK gallons]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A048-\xb0C]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A049-C]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A050-celsius]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A051-degrees Celsius]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A052-\xb0F]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A053-F]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A054-fahrenheit]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A055-degrees Fahrenheit]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A056-kelvin]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A057-kelvins]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A058-delta_C]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A059-delta_\xb0C]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A060-delta_F]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A061-delta_\xb0F]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A062-bar_abs]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A063-bar_absolute]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A064-bar_gauge]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A065-psi_abs]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A066-psi_absolute]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A067-psi_gauge]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A068-kg/hr]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A069-kg/hour]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A070-kilograms per hour]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A071-m\xb3/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A072-m^3/hr]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A073-m3/hour]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A074-L/minute]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A075-litres per minute]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_explicit_alias_semantics[A076-kJ/s]" time="0.015" /><testcase classname="backend.tests.test_unit_acceptance" name="test_non_supported_numeric_representations_are_not_silently_coerced[True]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_non_supported_numeric_representations_are_not_silently_coerced[False]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_non_supported_numeric_representations_are_not_silently_coerced[value2]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_non_supported_numeric_representations_are_not_silently_coerced[value3]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_non_supported_numeric_representations_are_not_silently_coerced[None]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_non_supported_numeric_representations_are_not_silently_coerced[nan]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_non_supported_numeric_representations_are_not_silently_coerced[inf]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_non_supported_numeric_representations_are_not_silently_coerced[-inf]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_non_supported_numeric_representations_are_not_silently_coerced[1]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_non_supported_numeric_representations_are_not_silently_coerced[1,000]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_non_supported_numeric_representations_are_not_silently_coerced[not numeric]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_non_supported_numeric_representations_are_not_silently_coerced[value11]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_non_supported_numeric_representations_are_not_silently_coerced[value12]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_non_supported_numeric_representations_are_not_silently_coerced[value13]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_non_supported_numeric_representations_are_not_silently_coerced[value14]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_supported_numeric_representations_and_signed_duty[1]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_supported_numeric_representations_and_signed_duty[1.0_0]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_supported_numeric_representations_and_signed_duty[1.0_1]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_supported_numeric_representations_and_signed_duty[-1]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_supported_numeric_representations_and_signed_duty[-1.0_0]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_supported_numeric_representations_and_signed_duty[-1.0_1]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_absent_conversion_families_stay_explicitly_unresolved[m/s-ft/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_absent_conversion_families_stay_explicitly_unresolved[cP-Pa*s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_absent_conversion_families_stay_explicitly_unresolved[cSt-m2/s]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_absent_conversion_families_stay_explicitly_unresolved[Btu_IT/(h*ft2*delta_degF)-W/m2/K]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_absent_conversion_families_stay_explicitly_unresolved[min-h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_absent_conversion_families_stay_explicitly_unresolved[specific_gravity-kg/m3]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_required_context_or_dimensions_not_invented[kg/h-m3/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_required_context_or_dimensions_not_invented[kWh-kW]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_required_context_or_dimensions_not_invented[delta_degC-degF]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_required_context_or_dimensions_not_invented[psig-psia]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_required_context_or_dimensions_not_invented[gal-L]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_required_context_or_dimensions_not_invented[ton-kg]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_required_context_or_dimensions_not_invented[scfm-m3/h]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_mass_to_volume_uses_explicit_density" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_actual_to_reference_volume_requires_explicit_states" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_pressure_role_is_not_inferred_from_symbol" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[0-ion_exchange_capacity]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[0-vaporizer_area]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[0-gas_compression]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[0-phase_change_duty]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[0-evaporated_water]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[0-ion_exchange_ebct]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[0-vessel_hold_up]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[0-pump_duty]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[0-exchanger_area]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[0-filter_area]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[0-gas_volume]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[0-dryer_chamber]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[1-ion_exchange_capacity]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[1-vaporizer_area]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[1-gas_compression]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[1-phase_change_duty]" time="0.021" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[1-evaporated_water]" time="0.002" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[1-ion_exchange_ebct]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[1-vessel_hold_up]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[1-pump_duty]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[1-exchanger_area]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[1-filter_area]" time="0.002" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[1-gas_volume]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_complete_bounded_source_to_native_dispatch[1-dryer_chamber]" time="0.001" /><testcase classname="backend.tests.test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[ion_exchange_capacity]" time="0.007"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'ion_exchange_capacity', 'value': 10, 'parameters': {'ionic_load_mol_equiv_m3': 2, 'service_cycle_h': 8, 'working_resin_capacity_mol_equiv_m3': 1000, 'resin_bed_fraction': 0.5}, 'expected': '.32', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="backend.tests.test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[vaporizer_area]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'vaporizer_area', 'value': 250, 'parameters': {'overall_u_w_m2_k': 1000, 'lmtd_k': 25, 'lmtd_correction': 0.8}, 'expected': '12.5', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="backend.tests.test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[gas_compression]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'gas_compression', 'value': 3600, 'parameters': {'molecular_weight_kg_kmol': 28, 'temperature_k': 300, 'absolute_pressure_bar': 1, 'discharge_pressure_bar': 8, ...}, 'expected': '356.3341122065674285714285714', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="backend.tests.test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[phase_change_duty]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'phase_change_duty', 'value': 360, 'parameters': {'latent_heat_kj_kg': 2000, 'phase_change_fraction': 0.5, 'sensible_enthalpy_change_kj_kg': 100}, 'expected': '110', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="backend.tests.test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[evaporated_water]" time="0.005"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'evaporated_water', 'value': 1000, 'parameters': {'feed_water_mass_fraction': 0.8, 'product_water_mass_fraction': 0.1}, 'expected': '777.7777777777777777777777778', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="backend.tests.test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[ion_exchange_ebct]" time="0.003"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'ion_exchange_ebct', 'value': 12, 'parameters': {'empty_bed_contact_time_min': 5, 'resin_bed_fraction': 0.5}, 'expected': '2', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="backend.tests.test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[vessel_hold_up]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'vessel_hold_up', 'value': 10, 'parameters': {'residence_time_h': 2, 'working_fraction': 0.8}, 'expected': '25', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="backend.tests.test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[pump_duty]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'pump_duty', 'value': 3.6, 'parameters': {'differential_pressure_bar': 1, 'efficiency': 0.5}, 'expected': '0.2298895010734333601697918125', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="backend.tests.test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[exchanger_area]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'exchanger_area', 'value': 100, 'parameters': {'overall_u_w_m2_k': 500, 'lmtd_k': 20, 'lmtd_correction': 1}, 'expected': '10', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="backend.tests.test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[filter_area]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'filter_area', 'value': 20, 'parameters': {'hydraulic_loading_m_h': 5}, 'expected': '4', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="backend.tests.test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[gas_volume]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'gas_volume', 'value': 28, 'parameters': {'molecular_weight_kg_kmol': 28, 'temperature_k': 300, 'absolute_pressure_bar': 1, 'compressibility_z': 1}, 'expected': '24.94338785445972', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase><testcase classname="backend.tests.test_unit_acceptance" name="test_required_numpy_boolean_assumptions_rejected[dryer_chamber]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">r = {'method': 'dryer_chamber', 'value': 3600, 'parameters': {'gas_residence_time_s': 10}, 'expected': '10', ...}
+
+    @pytest.mark.parametrize("r", NATIVE, ids=lambda r: r["method"])
+    def test_required_numpy_boolean_assumptions_rejected(r):
+        key, value = BOOL_PARAMETER[r["method"]]
+        params = {**r["parameters"], key: np.bool_(value)}
+        definition = METHODS[r["method"]]
+        report = {
+            "entities": [
+                {
+                    "key": "s",
+                    "values": [
+                        {
+                            "id": "source",
+                            "property": definition["input"],
+                            "normalized_value": r["value"],
+                            "normalized_unit": definition["unit"],
+                            "status": "verified",
+                        }
+                    ],
+                }
+            ]
+        }
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_unit_acceptance.py:214: Failed</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,10 @@
+{
+  "production_files_checked": 529,
+  "production_files_changed": [
+    "backend/engineering_sizing/compression.py"
+  ],
+  "preserved_original_assertion_file_and_parent_report": {
+    "backend/tests/test_sizing_independent_verification.py": true,
+    "docs/verification/phase1/sizing/FV-P1-SIZE-001_final_report.md": true
+  }
+}

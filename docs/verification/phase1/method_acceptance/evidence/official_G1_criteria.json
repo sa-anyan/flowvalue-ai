@@ -1,0 +1,26 @@
+[
+  {
+    "paragraph": 117,
+    "text": "100% of production-supported calculation methods have an identified verification reference and applicability statement."
+  },
+  {
+    "paragraph": 118,
+    "text": "100% of critical numerical tests pass."
+  },
+  {
+    "paragraph": 119,
+    "text": "No unsupported calculation is silently treated as valid."
+  },
+  {
+    "paragraph": 120,
+    "text": "All critical reported results can be traced to their inputs and method versions."
+  },
+  {
+    "paragraph": 121,
+    "text": "Numerical tolerances are defined independently for each method; one arbitrary percentage is not applied to every calculation."
+  },
+  {
+    "paragraph": 122,
+    "text": "EXIT GATE \u2014 G1: An independent reviewer can reproduce every designated critical reference calculation and identify its validity limits."
+  }
+]

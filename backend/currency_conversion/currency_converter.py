@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 def rate_snapshot():
-    return json.loads(Path(__file__).with_name("rates.json").read_text())
+    return json.loads(Path(__file__).with_name("rates.json").read_text(encoding="utf-8"))
 
 
 def number(value):

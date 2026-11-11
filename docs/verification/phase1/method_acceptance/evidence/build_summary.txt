@@ -1,0 +1,35 @@
+{
+  "historical_candidates": 248,
+  "scope_rows": 268,
+  "registered_sizing_ids": 12,
+  "additional_active_estimators": 3,
+  "additional_legacy_engineering_branches": 2,
+  "distinct_P1_method_ids": 17,
+  "unique_core_callables": 11,
+  "replacement_reference_acceptances": {
+    "PASS": 17
+  },
+  "applicability_record_acceptances": {
+    "PASS": 15,
+    "PARTIAL": 2
+  },
+  "reproduction_cases": 20,
+  "new_focused_passed": 99,
+  "runtime_version_missing_method_ids": [
+    "ion_exchange_capacity",
+    "vaporizer_area",
+    "gas_compression",
+    "phase_change_duty",
+    "evaporated_water",
+    "ion_exchange_ebct",
+    "vessel_hold_up",
+    "pump_duty",
+    "exchanger_area",
+    "filter_area",
+    "gas_volume",
+    "dryer_chamber"
+  ],
+  "legacy_boundary_failures": 2,
+  "combined_G1": "FAIL / not ready; Engineer1 readiness PARTIAL; shared integration blockers remain"
+}
+

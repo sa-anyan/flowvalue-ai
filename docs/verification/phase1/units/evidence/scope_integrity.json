@@ -1,0 +1,8 @@
+{
+  "existing_files_protected": 757,
+  "changed_existing_files": [],
+  "production_changes": false,
+  "original_tests_unchanged": true,
+  "new_failures": 13,
+  "full_suite_rerun": false
+}

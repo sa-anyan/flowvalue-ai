@@ -1,0 +1,51 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+.................................................................... [ 12%]
+........................................................................ [ 16%]
+.......................................F....s........................... [ 20%]
+...................... [ 21%]
+..................................................... [ 25%]
+........................................................................ [ 29%]
+.........s.............................................................. [ 33%]
+........................................................................ [ 37%]
+........................................................................ [ 41%]
+........................................................................ [ 45%]
+........................................................................ [ 50%]
+........................................................................ [ 54%]
+........................................................................ [ 58%]
+........................................................................ [ 62%]
+........................................................................ [ 66%]
+........................................................................ [ 71%]
+........................................................................ [ 75%]
+........................................................................ [ 79%]
+........................................................................ [ 83%]
+........................................................................ [ 87%]
+.................................................................. [ 91%]
+........................................................................ [ 95%]
+.......................................................................  [100%]
+=================================== FAILURES ===================================
+_________ test_manual_price_monte_carlo_reconciles_same_canonical_run __________
+backend/tests/test_equipment_resolution.py:375: in test_manual_price_monte_carlo_reconciles_same_canonical_run
+    assert output["status"] == "complete"
+E   AssertionError: assert 'partial' == 'complete'
+E     
+E     - complete
+E     + partial
+=============================== warnings summary ===============================
+backend/tests/test_revenue_rates.py::test_installed_openpytea_321_reference_is_equivalent_with_an_explicit_calendar
+backend/tests/test_revenue_rates.py::test_installed_openpytea_321_reference_is_equivalent_with_an_explicit_calendar
+backend/tests/test_revenue_rates.py::test_installed_openpytea_321_reference_is_equivalent_with_an_explicit_calendar
+backend/tests/test_revenue_rates.py::test_installed_openpytea_321_reference_is_equivalent_with_an_explicit_calendar
+backend/tests/test_revenue_rates.py::test_installed_openpytea_321_reference_is_equivalent_with_an_explicit_calendar
+backend/tests/test_revenue_rates.py::test_installed_openpytea_321_reference_is_equivalent_with_an_explicit_calendar
+  <AUDITED_PYTHON_ENV>/lib/python3.12/site-packages/scienceplots/styles_discovery.py:31: MatplotlibDeprecationWarning: The read_style_directory function was deprecated in Matplotlib 3.11 and will be removed in 3.13.
+    new_stylesheets = read_style_directory(folder)
+
+backend/tests/test_revenue_rates.py::test_installed_openpytea_321_reference_is_equivalent_with_an_explicit_calendar
+  <AUDITED_PYTHON_ENV>/lib/python3.12/site-packages/scienceplots/__init__.py:24: MatplotlibDeprecationWarning: The update_nested_dict function was deprecated in Matplotlib 3.11 and will be removed in 3.13.
+    update_nested_dict(plt.style.library, stylesheets)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_equipment_resolution.py::test_manual_price_monte_carlo_reconciles_same_canonical_run
+1 failed, 1717 passed, 2 skipped, 7 warnings, 367 subtests passed in 189.16s (0:03:09)

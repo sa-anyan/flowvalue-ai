@@ -1,0 +1,14 @@
+{
+  "existing_files_checked": 1124,
+  "changed_existing_files": [
+    "backend/engineering_sizing/compression.py",
+    "backend/equipment_costing/unit_conversion/bridges/liquid.py",
+    "docs/verification/phase1/sizing/sizing_methods_register.csv"
+  ],
+  "unexpected_changes": [],
+  "unchanged_existing_files": 1121,
+  "production_equations_changed": false,
+  "Engineer2_ingestion_schema_API_frontend_persistence_changed": false,
+  "push_merge_deploy": false,
+  "historical_reports_and_failure_evidence_preserved": true
+}

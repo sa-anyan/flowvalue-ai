@@ -1,0 +1,4 @@
+[
+  "backend/tests/test_unit_acceptance.py::test_required_numpy_boolean_assumptions_rejected",
+  "backend/tests/test_unit_acceptance.py::test_required_numpy_boolean_source_observation_rejected"
+]

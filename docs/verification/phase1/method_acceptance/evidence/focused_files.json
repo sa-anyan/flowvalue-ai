@@ -1,0 +1,5 @@
+[
+  "backend/tests/test_method_acceptance.py",
+  "backend/tests/test_compressor_numerical_stability.py",
+  "backend/tests/test_unit_conversion_bridges.py"
+]

@@ -1,0 +1,81 @@
+--- a/backend/engineering_sizing/common.py
++++ b/backend/engineering_sizing/common.py
+@@ -3,9 +3,21 @@
+ from math import isfinite
+ 
+ 
++def reject_boolean(value, name):
++    """Reject Boolean semantics before coercion, without importing NumPy.
++
++    NumPy and compatible Boolean dtypes advertise kind "b". Numeric integer and
++    floating scalar dtypes retain their existing handling in the caller.
++    """
++    boolean_dtype = getattr(getattr(value, "dtype", None), "kind", None) == "b"
++    if isinstance(value, bool) or boolean_dtype:
++        raise ValueError(
++            name + " cannot be boolean"
++        )  # noqa: TRY004 -- uniform engineering validation
++
++
+ def positive(value, name, zero=False):
+-    if isinstance(value, bool):
+-        raise ValueError(name + " cannot be boolean")  # noqa: TRY004 -- uniform engineering validation
++    reject_boolean(value, name)
+     try:
+         value = float(value)
+     except (ValueError, TypeError):
+--- a/backend/engineering_sizing/adapter.py
++++ b/backend/engineering_sizing/adapter.py
+@@ -2,9 +2,8 @@
+ 
+ from itertools import product
+ 
+-from .common import positive
++from .common import positive, reject_boolean
+ from .gases import calculate as gas_volume
+-from .heat_exchangers import validate_heat_duty_type
+ from .registry import METHODS, PARAMETER_UNITS, calculate
+ 
+ 
+@@ -23,10 +22,7 @@
+     unique = {(str(v["normalized_value"]), v.get("normalized_unit")) for v in rows}
+     if len(unique) != 1:
+         raise ValueError("An unambiguous source " + prop + " is required")
+-    if prop == "heat_duty":
+-        validate_heat_duty_type(rows[0]["normalized_value"])
+-    if isinstance(rows[0]["normalized_value"], bool):
+-        raise ValueError("A boolean cannot be a physical observation")  # noqa: TRY004 -- per-item engineering validation
++    reject_boolean(rows[0]["normalized_value"], "physical observation " + prop)
+     return float(rows[0]["normalized_value"]), rows[0]["normalized_unit"], rows[0]["id"]
+ 
+ 
+@@ -39,6 +35,9 @@
+             raise ValueError("Unknown sizing parameter: " + key)
+         if isinstance(record, dict) and record.get("unit") not in PARAMETER_UNITS[key]:
+             raise ValueError("Sizing parameter unit mismatch: " + key)
++        if isinstance(record, dict):
++            for endpoint in ("low", "high"):
++                reject_boolean(record.get(endpoint), key + " " + endpoint)
+         positive(
+             inputs[key],
+             key,
+--- a/backend/engineering_sizing/heat_exchangers.py
++++ b/backend/engineering_sizing/heat_exchangers.py
+@@ -1,15 +1,11 @@
+ """Area = abs(duty)/(U * positive temperature-driving-force * correction)."""
+ 
+-from .common import positive as p
++from .common import positive as p, reject_boolean
+ 
+ 
+ def validate_heat_duty_type(duty):
+     """Check before abs/float can erase a Python or NumPy boolean type."""
+-    # NumPy scalar/array boolean dtypes advertise kind "b". Inspect the dtype
+-    # without making NumPy a dependency of the stdlib-only sizing engine.
+-    boolean_dtype = getattr(getattr(duty, "dtype", None), "kind", None) == "b"
+-    if isinstance(duty, bool) or boolean_dtype:
+-        raise ValueError("heat duty kW cannot be boolean")
++    reject_boolean(duty, "heat duty kW")
+ 
+ 
+ def calculate(duty, inputs):

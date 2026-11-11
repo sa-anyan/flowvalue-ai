@@ -1,8 +1,10 @@
 """Canonical, source-traceable user-input conversion previews and costing handoff."""
 
+import copy
 import math
 from dataclasses import asdict, replace
 from backend.equipment_costing.registry import list_equipment_models
+from backend.engineering_sizing.versioning import method_metadata
 from .. import ConversionContext, ConversionResult, Measurement, convert, identify_unit
 from . import liquid, gas, thermal, mechanical, heat_exchanger, production_sizing
 
@@ -443,6 +445,48 @@ def evaluate(report, equipment_key, spec):
     method = spec.get("method", "direct")
     if method not in RECIPES:
         raise ValueError("Unsupported conversion equation")
+    from ..sizing_parameters import normalize_parameters, TARGETS
+    from .derivations import derive
+    from .basis_validation import validate_bulk_liquid_basis
+    from .drying import water_evaporation
+    from .observation_selection import select_observation
+
+    # Engineering families only: unit-only recipes do not acquire a fabricated
+    # engineering method ID. Preserve the recipe to distinguish execution paths.
+    method_id = {
+        "vessel_mass": "vessel_mass",
+        "vessel_productivity": "vessel_productivity",
+        "mixing_power": "mixing_power",
+        "gas_compression": "gas_compression",
+        "gas_flow": "gas_volume",
+        "standard_gas_flow": "gas_volume",
+        "dryer_volume": "dryer_chamber",
+        "dryer_evaporation": "evaporated_water",
+        "vessel_volume": "vessel_hold_up",
+        "filter_area": "filter_area",
+        "clarifier_area": "filter_area",
+        "exchanger_area": "exchanger_area",
+        "pump_power": "pump_duty",
+        "pump_coordinate": "pump_duty",
+        "pump_hydraulic_power": "pump_duty",
+    }.get(method)
+    engineering_metadata = (
+        method_metadata(
+            method_id,
+            evaluate,
+            execution_layer="equipment_bridge",
+            contract={"recipe_id": method},
+            dependencies=(
+                normalize_parameters,
+                derive,
+                validate_bulk_liquid_basis,
+                water_evaporation,
+                select_observation,
+            ),
+        )
+        if method_id
+        else None
+    )
     if RECIPES[method][1] not in (None, size["quantity"]):
         raise ValueError("Equation output dimension does not match this model")
     if model["id"] == "fermenter_reactor_turton_2001" and method != "direct":
@@ -457,6 +501,14 @@ def evaluate(report, equipment_key, spec):
     inputs = spec.get("inputs") or {}
     if not isinstance(inputs, dict) or set(inputs) - set(PARAMETERS):
         raise ValueError("Unknown user input")
+    context = ConversionContext(**(spec.get("unit_context") or {}))
+    inputs, parameter_conversions = normalize_parameters(inputs, context=context)
+    inputs = {
+        name: (
+            record["value"] if name in TARGETS and isinstance(record, dict) else record
+        )
+        for name, record in inputs.items()
+    }
     for k, v in inputs.items():
         if v is not None and (
             isinstance(v, bool)
@@ -464,7 +516,6 @@ def evaluate(report, equipment_key, spec):
             or not math.isfinite(v)
         ):
             raise ValueError("User inputs must be finite numbers")
-    context = ConversionContext(**(spec.get("unit_context") or {}))
     if method == "standard_gas_flow":
         required = [
             "reference_temperature_k",
@@ -485,8 +536,6 @@ def evaluate(report, equipment_key, spec):
             context, input_gas_reference=reference, target_gas_reference=reference
         )
     sources = {v["id"]: v for v in measurements(report, equipment_key)}
-    from .derivations import derive
-
     inputs, derived_inputs = derive(
         spec.get("derivations") or [],
         list(sources.values()),
@@ -508,8 +557,6 @@ def evaluate(report, equipment_key, spec):
 
     evidence = []
     if method == "dryer_evaporation":
-        from .drying import water_evaporation
-
         if "evapor" not in str(size.get("role", "")).lower():
             raise ValueError(
                 "Net water evaporation is not this model's sizing coordinate"
@@ -540,8 +587,6 @@ def evaluate(report, equipment_key, spec):
             raise ValueError(
                 "Select a supported measurement from this equipment or its linked streams"
             )
-        from .basis_validation import validate_bulk_liquid_basis
-
         validate_bulk_liquid_basis(report, equipment_key, source, method)
         evidence.append(source)
         value, unit = source["value"], source["unit"]
@@ -738,6 +783,9 @@ def evaluate(report, equipment_key, spec):
         }
     return {
         **(second or {}),
+        **(
+            {"engineering_method": engineering_metadata} if engineering_metadata else {}
+        ),
         "validation": {
             "dimensional_consistency": "checked_by_python",
             "physical_checks": "basic_equation_constraints_only",
@@ -747,6 +795,7 @@ def evaluate(report, equipment_key, spec):
             "notice": "Observed chart bounds are not certified design limits; canonical costing applies its own validity and extrapolation rules.",
         },
         "derived_inputs": derived_inputs,
+        "parameter_unit_conversions": parameter_conversions,
         "input_provenance": spec.get("input_provenance", {}),
         "auxiliary_conversions": auxiliaries,
         "status": "ready",
@@ -759,6 +808,7 @@ def evaluate(report, equipment_key, spec):
         "conversion": asdict(result),
         "source_measurements": evidence,
         "user_inputs": inputs,
+        "original_user_inputs": copy.deepcopy(spec.get("inputs") or {}),
         "unit_context": asdict(context),
         "rationale": spec.get("rationale", ""),
         "notice": "User-input sizing scenario, not a validated design. No costing equation or workbook observation changed.",

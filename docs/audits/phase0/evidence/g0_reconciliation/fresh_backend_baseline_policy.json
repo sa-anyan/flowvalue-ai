@@ -1,0 +1,15 @@
+{
+  "command": [
+    "<G0_SCRATCH>/fresh/bin/python",
+    "-m",
+    "pytest",
+    "backend",
+    "-q",
+    "--tb=short"
+  ],
+  "exit_code": 1,
+  "seconds": 162.39,
+  "source": "74f364d plus two Phase0 synthetic version tests",
+  "cache_policy": "FLOWVALUE_AI_RESPONSE_CACHE absent, baseline default; synthetic test-owned SQLite caches only",
+  "network": "external Python sockets blocked; no provider/cloud credentials"
+}

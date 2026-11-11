@@ -252,6 +252,40 @@ add("US_MGD", "volume_flow", 1e6 * US_GALLON / 86400, aliases=("US MGD", "MGD_US
 
 add("Sm3/s", "standard_volume_flow", 1)
 
-add("US_gpm_sqrt_ft", "flow_sqrt_head", US_GALLON/60 * FOOT**0.5)
-add("Imp_gpm_sqrt_ft", "flow_sqrt_head", IMP_GALLON/60 * FOOT**0.5)
-add("m3/h_sqrt_m", "flow_sqrt_head", 1/3600)
+add("US_gpm_sqrt_ft", "flow_sqrt_head", US_GALLON / 60 * FOOT**0.5)
+add("Imp_gpm_sqrt_ft", "flow_sqrt_head", IMP_GALLON / 60 * FOOT**0.5)
+add("m3/h_sqrt_m", "flow_sqrt_head", 1 / 3600)
+
+# Active native-parameter interfaces (UNIT-003). These are finite units, not
+# permission to evaluate arbitrary compound expressions. Hydraulic loading is
+# a velocity, never a volumetric flow. Heat-transfer coefficients use intervals.
+add("m/s", "velocity", 1)
+add("m/h", "velocity", 1 / 3600, aliases=("m3/m2/h",))
+add("ft/s", "velocity", FOOT)
+add("ft/min", "velocity", FOOT / 60)
+for symbol, seconds, spellings in [
+    ("s", 1, ("sec", "second", "seconds")),
+    ("min", 60, ("minute", "minutes")),
+    ("h", 3600, ("hr", "hour", "hours")),
+    ("day", 86400, ("d", "days")),
+]:
+    add(symbol, "time", seconds, words=spellings)
+add(
+    "W/m2/K",
+    "heat_transfer_coefficient",
+    1,
+    aliases=("W/(m2 K)", "W/(m2*K)", "W/(m2*delta_K)"),
+)
+add(
+    "kW/m2/K",
+    "heat_transfer_coefficient",
+    1000,
+    aliases=("kW/(m2 K)", "kW/(m2*K)"),
+)
+for symbol, energy in [("Btu_IT", BTU_IT), ("Btu_th", 1054.35026444)]:
+    add(
+        symbol + "/(h*ft2*delta_degF)",
+        "heat_transfer_coefficient",
+        energy / (3600 * FOOT**2 * (5 / 9)),
+        aliases=(symbol + "/(h ft2 °F)", symbol + "/(h*ft2*°F)"),
+    )

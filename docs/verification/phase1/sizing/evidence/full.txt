@@ -1,0 +1,111 @@
+........................................................................ [  3%]
+........................................................................ [  7%]
+.................................................................... [ 10%]
+........................................................................ [ 13%]
+............................................s........................... [ 17%]
+...................... [ 18%]
+..................................................... [ 21%]
+........................................................................ [ 24%]
+.........s.............................................................. [ 28%]
+........................................................................ [ 31%]
+........................................................................ [ 35%]
+........................................................................ [ 38%]
+........................................................................ [ 42%]
+........................................................................ [ 45%]
+........................................................................ [ 49%]
+........................................................................ [ 52%]
+........................................................................ [ 56%]
+........................................................................ [ 59%]
+........................................................................ [ 63%]
+........................................................................ [ 66%]
+........................................................................ [ 70%]
+........................................................................ [ 73%]
+.................................................................. [ 77%]
+.............................................s.......................... [ 80%]
+........................................................................ [ 84%]
+........................................................................ [ 87%]
+........................................................................ [ 91%]
+..........................FFFF.......................................... [ 94%]
+........................................................................ [ 98%]
+....................................                                     [100%]
+=================================== FAILURES ===================================
+__________ test_required_boolean_heat_duty_rejection[exchanger_area] ___________
+
+method = 'exchanger_area'
+
+    @pytest.mark.parametrize("method", ["exchanger_area", "vaporizer_area"])
+    def test_required_boolean_heat_duty_rejection(method):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_sizing_independent_verification.py:106: Failed
+__________ test_required_boolean_heat_duty_rejection[vaporizer_area] ___________
+
+method = 'vaporizer_area'
+
+    @pytest.mark.parametrize("method", ["exchanger_area", "vaporizer_area"])
+    def test_required_boolean_heat_duty_rejection(method):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_sizing_independent_verification.py:106: Failed
+_____________ test_required_compression_stability_near_unity_gamma _____________
+
+    def test_required_compression_stability_near_unity_gamma():
+        k = math.nextafter(1.0, 2.0)
+        with localcontext() as ctx:
+            ctx.prec = 100
+            gamma = Decimal.from_float(k)
+            r = Decimal("1.380649e-23") * Decimal("6.02214076e23")
+            # Independent high-precision ideal enthalpy change, evaluated with exp/ln.
+            t2 = Decimal(300) * (Decimal(2).ln() * ((gamma - 1) / gamma)).exp()
+            cp = r / 28 * gamma / (gamma - 1)
+            expected = float(cp * (t2 - 300) / Decimal(".75"))
+        p = dict(
+            molecular_weight_kg_kmol=28,
+            temperature_k=300,
+            absolute_pressure_bar=1,
+            discharge_pressure_bar=2,
+            heat_capacity_ratio=k,
+            efficiency=0.75,
+            compressibility_z=1,
+        )
+>       assert calculate("gas_compression", 3600, p)[0] == pytest.approx(
+            expected, rel=5e-12
+        )
+E       assert 118.77803740218916 == 82.33066173777114 ± 4.1e-10
+E         
+E         comparison failed
+E         Obtained: 118.77803740218916
+E         Expected: 82.33066173777114 ± 4.1e-10
+
+backend/tests/test_sizing_independent_verification.py:131: AssertionError
+_________________ test_required_finite_pump_auxiliary_outputs __________________
+
+    def test_required_finite_pump_auxiliary_outputs():
+        try:
+            _, _, details = calculate(
+                "pump_duty", 3.6, {"differential_pressure_bar": 1, "efficiency": 1e-320}
+            )
+        except ValueError:
+            return
+>       assert math.isfinite(details["shaft_power_kw"])
+E       assert False
+E        +  where False = <built-in function isfinite>(inf)
+E        +    where <built-in function isfinite> = math.isfinite
+
+backend/tests/test_sizing_independent_verification.py:143: AssertionError
+=============================== warnings summary ===============================
+../../../../../private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_sizing_independent_verification.py::test_required_boolean_heat_duty_rejection[exchanger_area]
+FAILED backend/tests/test_sizing_independent_verification.py::test_required_boolean_heat_duty_rejection[vaporizer_area]
+FAILED backend/tests/test_sizing_independent_verification.py::test_required_compression_stability_near_unity_gamma
+FAILED backend/tests/test_sizing_independent_verification.py::test_required_finite_pump_auxiliary_outputs
+4 failed, 2038 passed, 3 skipped, 1 warning, 367 subtests passed in 175.62s (0:02:55)

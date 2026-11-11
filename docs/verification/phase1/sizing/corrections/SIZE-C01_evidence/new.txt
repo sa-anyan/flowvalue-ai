@@ -1,0 +1,48 @@
+........................................................................ [ 23%]
+........................................................................ [ 47%]
+......FF.F.............................................................. [ 71%]
+........................................................................ [ 94%]
+................                                                         [100%]
+=================================== FAILURES ===================================
+__________ test_required_boolean_heat_duty_rejection[exchanger_area] ___________
+
+method = 'exchanger_area'
+
+    @pytest.mark.parametrize("method", ["exchanger_area", "vaporizer_area"])
+    def test_required_boolean_heat_duty_rejection(method):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_sizing_independent_verification.py:106: Failed
+__________ test_required_boolean_heat_duty_rejection[vaporizer_area] ___________
+
+method = 'vaporizer_area'
+
+    @pytest.mark.parametrize("method", ["exchanger_area", "vaporizer_area"])
+    def test_required_boolean_heat_duty_rejection(method):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_sizing_independent_verification.py:106: Failed
+_________________ test_required_finite_pump_auxiliary_outputs __________________
+
+    def test_required_finite_pump_auxiliary_outputs():
+        try:
+            _, _, details = calculate(
+                "pump_duty", 3.6, {"differential_pressure_bar": 1, "efficiency": 1e-320}
+            )
+        except ValueError:
+            return
+>       assert math.isfinite(details["shaft_power_kw"])
+E       assert False
+E        +  where False = <built-in function isfinite>(inf)
+E        +    where <built-in function isfinite> = math.isfinite
+
+backend/tests/test_sizing_independent_verification.py:143: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_sizing_independent_verification.py::test_required_boolean_heat_duty_rejection[exchanger_area]
+FAILED backend/tests/test_sizing_independent_verification.py::test_required_boolean_heat_duty_rejection[vaporizer_area]
+FAILED backend/tests/test_sizing_independent_verification.py::test_required_finite_pump_auxiliary_outputs
+3 failed, 301 passed in 0.73s

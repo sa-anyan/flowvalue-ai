@@ -1,0 +1,60 @@
+{
+  "fixture_operating_years": 3,
+  "fixture_commercial_years": [
+    [
+      1,
+      2,
+      3
+    ]
+  ],
+  "settings_operating_years": 20,
+  "prepared_operating_years": 20,
+  "prepared_commercial_years": [
+    [
+      1,
+      2,
+      3
+    ]
+  ],
+  "output_status": "partial",
+  "unpriced": [],
+  "issues": [
+    {
+      "stage": "operating_economics",
+      "status": "partial",
+      "issues": [
+        "Commercial annual schedule must match operating years in order"
+      ]
+    },
+    {
+      "stage": "revenue",
+      "status": "partial",
+      "issues": [
+        "Commercial annual schedule must match operating years in order"
+      ]
+    },
+    {
+      "stage": "opex",
+      "status": "partial",
+      "issues": [
+        "garrett:administration: Missing named calculation base: annual_revenue",
+        "garrett:packaging_storage: Missing named calculation base: annual_revenue",
+        "garrett:research_development: Missing named calculation base: annual_revenue",
+        "garrett:royalties: Missing named calculation base: annual_revenue",
+        "Missing assumption or explicit exclusion: royalties",
+        "Missing assumption or explicit exclusion: packaging_storage",
+        "Missing assumption or explicit exclusion: administration",
+        "Missing assumption or explicit exclusion: research_development"
+      ]
+    },
+    {
+      "stage": "financial",
+      "status": "pending_dependencies",
+      "issues": [
+        "Investment metrics pending; independent revenue and expense cells remain available.",
+        "Complete cash flow and investment metrics await resolved revenue, operating costs, capital and financial policy."
+      ]
+    }
+  ],
+  "synthetic_original_unchanged": true
+}

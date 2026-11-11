@@ -1,0 +1,534 @@
+[
+  {
+    "id": "A001",
+    "source": "kilogram",
+    "destination": "kg",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A002",
+    "source": "kilograms",
+    "destination": "kg",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A003",
+    "source": "gram",
+    "destination": "g",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A004",
+    "source": "grams",
+    "destination": "g",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A005",
+    "source": "lbs",
+    "destination": "lb",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A006",
+    "source": "lbm",
+    "destination": "lb",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A007",
+    "source": "pound",
+    "destination": "lb",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A008",
+    "source": "pounds",
+    "destination": "lb",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A009",
+    "source": "metre",
+    "destination": "m",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A010",
+    "source": "metres",
+    "destination": "m",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A011",
+    "source": "meter",
+    "destination": "m",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A012",
+    "source": "meters",
+    "destination": "m",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A013",
+    "source": "centimetre",
+    "destination": "cm",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A014",
+    "source": "centimeter",
+    "destination": "cm",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A015",
+    "source": "millimetre",
+    "destination": "mm",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A016",
+    "source": "millimeter",
+    "destination": "mm",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A017",
+    "source": "inch",
+    "destination": "in",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A018",
+    "source": "inches",
+    "destination": "in",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A019",
+    "source": "foot",
+    "destination": "ft",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A020",
+    "source": "feet",
+    "destination": "ft",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A021",
+    "source": "m\u00b2",
+    "destination": "m2",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A022",
+    "source": "m^2",
+    "destination": "m2",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A023",
+    "source": "sq m",
+    "destination": "m2",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A024",
+    "source": "ft\u00b2",
+    "destination": "ft2",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A025",
+    "source": "ft^2",
+    "destination": "ft2",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A026",
+    "source": "sq ft",
+    "destination": "ft2",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A027",
+    "source": "m\u00b3",
+    "destination": "m3",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A028",
+    "source": "m^3",
+    "destination": "m3",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A029",
+    "source": "cu m",
+    "destination": "m3",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A030",
+    "source": "ft\u00b3",
+    "destination": "ft3",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A031",
+    "source": "ft^3",
+    "destination": "ft3",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A032",
+    "source": "l",
+    "destination": "L",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A033",
+    "source": "litre",
+    "destination": "L",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A034",
+    "source": "liter",
+    "destination": "L",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A035",
+    "source": "litres",
+    "destination": "L",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A036",
+    "source": "liters",
+    "destination": "L",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A037",
+    "source": "ml",
+    "destination": "mL",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A038",
+    "source": "millilitre",
+    "destination": "mL",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A039",
+    "source": "milliliter",
+    "destination": "mL",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A040",
+    "source": "US gal",
+    "destination": "US_gal",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A041",
+    "source": "gal_US",
+    "destination": "US_gal",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A042",
+    "source": "US gallon",
+    "destination": "US_gal",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A043",
+    "source": "US gallons",
+    "destination": "US_gal",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A044",
+    "source": "Imperial gal",
+    "destination": "Imp_gal",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A045",
+    "source": "gal_Imp",
+    "destination": "Imp_gal",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A046",
+    "source": "imperial gallon",
+    "destination": "Imp_gal",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A047",
+    "source": "UK gallons",
+    "destination": "Imp_gal",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A048",
+    "source": "\u00b0C",
+    "destination": "degC",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A049",
+    "source": "C",
+    "destination": "degC",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A050",
+    "source": "celsius",
+    "destination": "degC",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A051",
+    "source": "degrees Celsius",
+    "destination": "degC",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A052",
+    "source": "\u00b0F",
+    "destination": "degF",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A053",
+    "source": "F",
+    "destination": "degF",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A054",
+    "source": "fahrenheit",
+    "destination": "degF",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A055",
+    "source": "degrees Fahrenheit",
+    "destination": "degF",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A056",
+    "source": "kelvin",
+    "destination": "K",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A057",
+    "source": "kelvins",
+    "destination": "K",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A058",
+    "source": "delta_C",
+    "destination": "delta_degC",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A059",
+    "source": "delta_\u00b0C",
+    "destination": "delta_degC",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A060",
+    "source": "delta_F",
+    "destination": "delta_degF",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A061",
+    "source": "delta_\u00b0F",
+    "destination": "delta_degF",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A062",
+    "source": "bar_abs",
+    "destination": "bara",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A063",
+    "source": "bar_absolute",
+    "destination": "bara",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A064",
+    "source": "bar_gauge",
+    "destination": "barg",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A065",
+    "source": "psi_abs",
+    "destination": "psia",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A066",
+    "source": "psi_absolute",
+    "destination": "psia",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A067",
+    "source": "psi_gauge",
+    "destination": "psig",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A068",
+    "source": "kg/hr",
+    "destination": "kg/h",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A069",
+    "source": "kg/hour",
+    "destination": "kg/h",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A070",
+    "source": "kilograms per hour",
+    "destination": "kg/h",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A071",
+    "source": "m\u00b3/h",
+    "destination": "m3/h",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A072",
+    "source": "m^3/hr",
+    "destination": "m3/h",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A073",
+    "source": "m3/hour",
+    "destination": "m3/h",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A074",
+    "source": "L/minute",
+    "destination": "L/min",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A075",
+    "source": "litres per minute",
+    "destination": "L/min",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  },
+  {
+    "id": "A076",
+    "source": "kJ/s",
+    "destination": "kW",
+    "expected": "1",
+    "relationship": "Explicit synonymous unit spelling, same physical coordinate"
+  }
+]

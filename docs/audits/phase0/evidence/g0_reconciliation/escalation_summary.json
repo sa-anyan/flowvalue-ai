@@ -1,0 +1,21 @@
+{
+  "by_library": {
+    "additional_models": {
+      "general_inflation_proxy": 4
+    },
+    "garrett": {
+      "general_inflation_proxy": 154
+    },
+    "nottingham": {
+      "general_inflation_proxy": 15
+    },
+    "openpytea": {
+      "general_inflation_proxy": 421
+    }
+  },
+  "registered_series": [
+    "US_CPI_U_NSA_1982_84",
+    "UK_CPI_ALL_ITEMS_2015_100"
+  ],
+  "total": 594
+}

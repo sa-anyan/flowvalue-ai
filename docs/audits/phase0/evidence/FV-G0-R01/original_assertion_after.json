@@ -1,0 +1,13 @@
+{
+  "command": [
+    "python3.12",
+    "-m",
+    "pytest",
+    "backend/tests/test_equipment_resolution.py::test_manual_price_monte_carlo_reconciles_same_canonical_run",
+    "-q",
+    "--tb=short"
+  ],
+  "exit_code": 0,
+  "seconds": 4.07,
+  "original_test_module_unchanged": true
+}

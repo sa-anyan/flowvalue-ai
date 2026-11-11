@@ -1,0 +1,31 @@
+{
+  "runs": {
+    "targeted": {
+      "tests": 2932,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "legacy": {
+      "tests": 296,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "handoff": {
+      "tests": 1059,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "aliases": {
+      "tests": 32,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "executed_cases": 4319,
+  "distinct_case_ids": 3293,
+  "scope": "Affected suites only; historical UNIT-002 evidence unchanged; no full backend rerun"
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "doe2",
+    "url": "https://www.energy.gov/documents/doe-hdbk-1012-92vol2",
+    "sha256": "1261936f3985477e85c694f27dd8ffd56ca95130e44f3f1bbc64d30de540e2b2",
+    "pdf_page_1based": 61,
+    "image": "/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-sizing-9vv4t9tt/doe2.png",
+    "status": "retrieved; equation page rendered and visually inspected; full PDF not vendored"
+  },
+  {
+    "id": "doe1",
+    "url": "https://www.energy.gov/sites/default/files/2026-04/DOE-HDBK-1012-92_VOL1.pdf",
+    "sha256": "3c4ef4ad700cfd64444677404956ec2237bb5e24e31f7e591b1767526ec0b2c9",
+    "pdf_page_1based": 70,
+    "image": "/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-sizing-9vv4t9tt/doe1.png",
+    "status": "retrieved; equation page rendered and visually inspected; full PDF not vendored"
+  },
+  {
+    "id": "epa",
+    "url": "https://www.epa.gov/system/files/documents/2024-05/epa-sdws-pfas-regtrmt-webinar_slides_april-30-2024.pdf",
+    "sha256": "72ee13d46df8b33a4c6064f5a307a9854306bfa90fe3a4a1d5e57eeba63e0342",
+    "pdf_page_1based": 52,
+    "image": "/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-sizing-9vv4t9tt/epa.png",
+    "status": "retrieved; equation page rendered and visually inspected; full PDF not vendored"
+  }
+]

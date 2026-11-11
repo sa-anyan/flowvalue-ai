@@ -1,0 +1,12 @@
+{
+  "command": [
+    "npm",
+    "run",
+    "build"
+  ],
+  "cwd": "<G0_SCRATCH>/clean-source/frontend",
+  "exit_code": 0,
+  "seconds": 46.43,
+  "environment": "fresh Python3.12 venv/public-index installed dependencies; fresh git-archived source; no production/provider credentials",
+  "source": "74f364d"
+}

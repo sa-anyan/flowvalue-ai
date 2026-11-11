@@ -1,0 +1,13 @@
+F....................................................................... [ 82%]
+...............                                                          [100%]
+=================================== FAILURES ===================================
+_________ test_manual_price_monte_carlo_reconciles_same_canonical_run __________
+backend/tests/test_equipment_resolution.py:375: in test_manual_price_monte_carlo_reconciles_same_canonical_run
+    assert output["status"] == "complete"
+E   AssertionError: assert 'partial' == 'complete'
+E     
+E     - complete
+E     + partial
+=========================== short test summary info ============================
+FAILED backend/tests/test_equipment_resolution.py::test_manual_price_monte_carlo_reconciles_same_canonical_run
+1 failed, 86 passed in 5.75s

@@ -1,0 +1,40 @@
+........................................................................ [  7%]
+........................................................................ [ 14%]
+........................................................................ [ 21%]
+........................................................................ [ 28%]
+........................................................................ [ 35%]
+........................................................................ [ 42%]
+........................................................................ [ 49%]
+........................................................................ [ 56%]
+........................................................................ [ 63%]
+........................................................................ [ 70%]
+........................................................................ [ 77%]
+........................................................................ [ 84%]
+........................................................................ [ 91%]
+........................................................................ [ 98%]
+................F.                                                       [100%]
+=================================== FAILURES ===================================
+_____ test_bridge_uses_same_parameter_normalizer_and_costing_receives_area _____
+
+    def test_bridge_uses_same_parameter_normalizer_and_costing_receives_area():
+        # Actual existing model; no synthetic price/model or changed equation.
+        from backend.equipment_costing.registry import list_equipment_models, estimate_from_parsed_inputs
+        models=list_equipment_models('openpytea')
+        model=next(m for m in models if m['category']=='Filters' and m['input_requirements'][0]['quantity']=='area' and m['status']!='disabled')
+        spec={'model_id':model['id'],'method':'filter_area','measurement_id':'Balance!D7','inputs':{'hydraulic_loading_m_h':{'value':.001,'unit':'m/s','source':{'cell':'C8'}}}}
+        before=copy.deepcopy(spec)
+        preview=evaluate(report(), 'e', spec)
+        target=model['input_requirements'][0]['unit']
+        expected=10/3.6
+        assert preview['intermediate']['value']==pytest.approx(expected)
+        assert preview['parameter_unit_conversions'][0]['conversion']['original']['source']=={'cell':'C8'}
+        priced=estimate_from_parsed_inputs(model['id'],{'size':Measurement(preview['size'],preview['size_unit'],{'unit003':preview['parameter_unit_conversions']})},allow_unverified=True)
+        native=estimate_from_parsed_inputs(model['id'],{'size':Measurement(expected,'m2')},allow_unverified=True)
+>       assert priced.estimate.equipment_cost==pytest.approx(native.estimate.equipment_cost)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'CostEstimate' object has no attribute 'equipment_cost'
+
+backend/tests/test_unit003_active_conversions.py:205: AttributeError
+=========================== short test summary info ============================
+FAILED backend/tests/test_unit003_active_conversions.py::test_bridge_uses_same_parameter_normalizer_and_costing_receives_area
+1 failed, 1025 passed in 4.37s

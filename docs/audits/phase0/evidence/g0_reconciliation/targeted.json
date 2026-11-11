@@ -1,0 +1,20 @@
+{
+  "command": [
+    "python3.12",
+    "-m",
+    "pytest",
+    "backend/tests/test_equipment_resolution.py::test_manual_price_monte_carlo_reconciles_same_canonical_run",
+    "backend/tests/test_financial_modelling.py",
+    "backend/tests/test_cost_translation.py",
+    "backend/tests/test_currency_conversion.py",
+    "backend/tests/test_revenue_authority.py",
+    "backend/tests/test_cloud_runtime.py",
+    "backend/tests/test_phase0_version_protection.py",
+    "-q",
+    "--tb=short"
+  ],
+  "exit_code": 1,
+  "seconds": 7.0,
+  "source_commit": "74f364d2ebdcbc67bd0732937f59ef6a3704dce3",
+  "network": "External sockets blocked; fake provider/API tests only"
+}

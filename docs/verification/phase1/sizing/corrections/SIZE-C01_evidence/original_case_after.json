@@ -1,0 +1,16 @@
+{
+  "inputs": {
+    "molecular_weight_kg_kmol": 28,
+    "temperature_k": 300,
+    "absolute_pressure_bar": 1,
+    "discharge_pressure_bar": 2,
+    "heat_capacity_ratio": 1.0000000000000002,
+    "efficiency": 0.75,
+    "compressibility_z": 1
+  },
+  "mass_kg_h": 3600,
+  "expected_kw": 82.33066173777114,
+  "before_kw": 118.77803740218916,
+  "after_kw": 82.33066173777112,
+  "relative_error_after": 1.7260707511940765e-16
+}

@@ -1,0 +1,6 @@
+{
+  "node": "v24.21.0",
+  "npm": "11.19.0",
+  "frontend_lock_source": "frontend/package-lock.json at74f364d",
+  "notice": "Fresh install proof for this platform/runtime only; hosted CI node22 and Ubuntu not executed"
+}

@@ -1,0 +1,88 @@
+{
+  "canonical": 191,
+  "prior_units": 143,
+  "new_units": 48,
+  "physical_numerically_verified": 190,
+  "primary_dispositions": {
+    "PASS": 190,
+    "PARTIAL": 1
+  },
+  "aliases": 495,
+  "words": 67,
+  "alias_statuses": {
+    "ALIASES": {
+      "PASS": 494,
+      "PARTIAL": 1
+    },
+    "WORDS": {
+      "PARTIAL": 1,
+      "PASS": 66
+    }
+  },
+  "checks": 3637,
+  "failed_checks": [],
+  "costing_models": 594,
+  "costing_status": {
+    "PARTIAL": 583,
+    "BLOCKED": 11
+  },
+  "source_counts": {
+    "garrett": 154,
+    "nottingham": 15,
+    "additional_models": 4,
+    "openpytea": 421
+  },
+  "sizing_methods": 12,
+  "units_with_direct_sizing_usage": 8,
+  "units_with_direct_costing_usage": 48,
+  "remaining_new_numeric_units": [
+    "Btu_IT/day",
+    "Btu_IT/h",
+    "Btu_IT/min",
+    "Btu_IT/s",
+    "Btu_th/day",
+    "Btu_th/h",
+    "Btu_th/min",
+    "Btu_th/s",
+    "GJ/day",
+    "GJ/h",
+    "GJ/min",
+    "GJ/s",
+    "Imp_gpm_psi",
+    "Imp_gpm_sqrt_ft",
+    "J/day",
+    "J/h",
+    "J/min",
+    "J/s",
+    "MJ/day",
+    "MJ/h",
+    "MJ/min",
+    "MJ/s",
+    "Nm3/h",
+    "Sm3/s",
+    "US_MGD",
+    "US_gpm_sqrt_ft",
+    "boiler_hp",
+    "item",
+    "kJ/day",
+    "kJ/h",
+    "kJ/min",
+    "kJ/s",
+    "kWh/h",
+    "kWh/min",
+    "kWh/s",
+    "kg/h/mmHg_abs",
+    "kmol",
+    "kmol/day",
+    "kmol/min",
+    "kmol/s",
+    "lb/h/mmHg_abs",
+    "m3/h_sqrt_m",
+    "m3/s_Pa",
+    "mol",
+    "mol/day",
+    "mol/h",
+    "mol/min",
+    "tray"
+  ]
+}

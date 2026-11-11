@@ -1,0 +1,8 @@
+[
+  "backend/tests/test_engineering_sizing.py",
+  "backend/tests/test_gas_compression_bridge.py",
+  "backend/tests/test_heat_exchanger_basis.py",
+  "backend/tests/test_drying_balance.py",
+  "backend/tests/test_unit_conversion_bridges.py",
+  "backend/tests/test_monte_carlo_horizon.py"
+]

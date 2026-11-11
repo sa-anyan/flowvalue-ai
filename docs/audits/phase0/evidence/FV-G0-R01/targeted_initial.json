@@ -1,0 +1,20 @@
+{
+  "command": [
+    "python3.12",
+    "-m",
+    "pytest",
+    "backend/tests/test_monte_carlo_horizon.py",
+    "backend/tests/test_equipment_resolution.py",
+    "backend/tests/test_monte_carlo.py",
+    "backend/tests/test_operating_economics.py",
+    "backend/tests/test_revenue_mece.py",
+    "backend/tests/test_revenue_authority.py",
+    "backend/tests/test_financial_modelling.py",
+    "-q",
+    "--tb=short"
+  ],
+  "exit_code": 1,
+  "seconds": 22.62,
+  "environment": "Fresh Python3.12 environment from G0 reconciliation; no provider/cloud credentials; temporary store; cache policy unset/default; external Python sockets blocked",
+  "scope": "Canonical tracked test paths plus two Phase0 tests and new R01 tests; untracked duplicates excluded"
+}

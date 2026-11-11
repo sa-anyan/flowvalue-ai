@@ -1,0 +1,18 @@
+{
+  "command": [
+    "<G0_SCRATCH>/fresh/bin/python",
+    "-m",
+    "pytest",
+    "backend/tests/test_analyst_workflow.py::SpecialistTests::test_independent_roles_are_cached_and_ownership_disclosed",
+    "backend/tests/test_automatic_equipment_inputs.py::test_llm_routes_input_then_python_derives_size_and_caches",
+    "backend/tests/test_equipment_matching.py::test_only_equipment_names_and_separate_non_numeric_context",
+    "backend/tests/test_orchestration.py::OrchestrationTests::test_ai_cache_failure_and_manual_priority",
+    "-q",
+    "--tb=short"
+  ],
+  "exit_code": 0,
+  "seconds": 7.53,
+  "source": "74f364d plus two Phase0 synthetic version tests",
+  "cache_policy": "FLOWVALUE_AI_RESPONSE_CACHE absent, baseline default; synthetic test-owned SQLite caches only",
+  "network": "external Python sockets blocked; no provider/cloud credentials"
+}

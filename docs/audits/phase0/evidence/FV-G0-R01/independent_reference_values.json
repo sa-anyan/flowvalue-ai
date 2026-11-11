@@ -1,0 +1,46 @@
+{
+  "constant_fee": {
+    "capital": 100,
+    "working_capital": 10,
+    "annual_billable_quantity": 100,
+    "unit_fee": [
+      2,
+      2,
+      2
+    ],
+    "administration_fraction": "0.1",
+    "tax_rate": 0,
+    "construction_years": 0,
+    "expected_project_cash_flows": [
+      -110,
+      180,
+      180,
+      190
+    ],
+    "discount_rate": "0.1",
+    "expected_project_npv": "345.1465063861758076634109691960931630353",
+    "oracle": "Independently specified inputs and direct discounted-sum arithmetic; no production calculator used for expected values"
+  },
+  "authorised_zero_year2": {
+    "capital": 100,
+    "working_capital": 10,
+    "annual_billable_quantity": 100,
+    "unit_fee": [
+      2,
+      0,
+      2
+    ],
+    "administration_fraction": "0.1",
+    "tax_rate": 0,
+    "construction_years": 0,
+    "expected_project_cash_flows": [
+      -110,
+      180,
+      0,
+      190
+    ],
+    "discount_rate": "0.1",
+    "expected_project_npv": "196.3861758076634109691960931630353117956",
+    "oracle": "Independently specified inputs and direct discounted-sum arithmetic; no production calculator used for expected values"
+  }
+}

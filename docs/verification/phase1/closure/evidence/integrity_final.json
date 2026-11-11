@@ -1,0 +1,12 @@
+{
+  "protected_files_checked": 737,
+  "changed_existing_files": [],
+  "production_or_test_changes": false,
+  "registers": {
+    "source": 12,
+    "applicability": 12,
+    "physical_compatibility": 12,
+    "named_unit_checks": 36
+  },
+  "historical_reports_preserved": true
+}

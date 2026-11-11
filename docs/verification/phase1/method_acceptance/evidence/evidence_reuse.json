@@ -1,0 +1,40 @@
+{
+  "native304": {
+    "path": "docs/verification/phase1/units/UNIT-003/evidence/targeted.xml",
+    "sha256": "1fa05759efa860e55eb92aaec5ac61c36983e038f6ad5720bc661ca70f41bfe4",
+    "tests": 304,
+    "failures": 0,
+    "scope": "Retained native 304 assertions. Arithmetic unchanged; compressor metadata-only annotation independently AST-checked and focused compressor rerun."
+  },
+  "UNIT003": {
+    "path": "docs/verification/phase1/units/UNIT-003/evidence/regression_summary.json",
+    "sha256": "69e145eb09ab454b49162fb41d3291c52784106a6d84281cbeaf6d0b75546402",
+    "distinct_passed_tests": 3293,
+    "scope": "Units and unmodified heat/pump/Boolean/R01: reused, not rerun"
+  },
+  "current_source_vs_UNIT003_before": {
+    "backend/engineering_sizing/gases.py": true,
+    "backend/engineering_sizing/thermal.py": true,
+    "backend/engineering_sizing/dryers.py": true,
+    "backend/engineering_sizing/registry.py": true,
+    "backend/engineering_sizing/adapter.py": false,
+    "backend/engineering_sizing/compression.py": false,
+    "backend/engineering_sizing/__init__.py": true,
+    "backend/engineering_sizing/pumps.py": true,
+    "backend/engineering_sizing/heat_exchangers.py": true,
+    "backend/engineering_sizing/common.py": true,
+    "backend/engineering_sizing/vessels.py": true,
+    "backend/engineering_sizing/ion_exchange.py": true,
+    "backend/engineering_sizing/filters.py": true
+  },
+  "fresh_tests": 99,
+  "fresh_failures": 0,
+  "fresh_errors": 0,
+  "fresh_skips": 0,
+  "historical_full_backend": "UNIT-C01:3056 passed,5 Engineer2 failed,3 skips,367 subtests; not rerun or assumed corrected",
+  "deferred_engineer2_findings": [
+    "SIZE-XF01: XLS Boolean type lost in2 cases",
+    "SIZE-XF02: L/s reader normalization in3 cases"
+  ],
+  "note": "No complete backend rerun; no external reviewer signoff asserted"
+}
