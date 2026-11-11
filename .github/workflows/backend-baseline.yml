@@ -11,7 +11,9 @@ jobs:
     timeout-minutes: 25
     env:
       FLOWVALUE_CLOUD: 'false'
-      FLOWVALUE_AI_RESPONSE_CACHE: 'false'
+      # R-17: no job-wide cache override. Four tests verify the AI response
+      # cache contract; no provider credentials exist here, so the cache can
+      # only hold test-owned synthetic responses in the temporary database.
       FLOWVALUE_ASSESSMENT_DB: /tmp/flowvalue-ci-synthetic.sqlite3
     steps:
       - uses: actions/checkout@v4
