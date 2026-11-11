@@ -50,7 +50,7 @@ def audit():
             }
         )
     return {
-        "source": json.loads((ROOT / "sources.json").read_text()),
+        "source": json.loads((ROOT / "sources.json").read_text(encoding="utf-8")),
         "counts": {
             "imported": len(models),
             "categories": len({m["category"] for m in models}),

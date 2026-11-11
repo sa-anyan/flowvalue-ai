@@ -12,7 +12,7 @@ from .audit import audit
 
 def import_snapshot(folder):
     source = Path(folder)
-    manifest = json.loads((ROOT / "sources.json").read_text())
+    manifest = json.loads((ROOT / "sources.json").read_text(encoding="utf-8"))
     destinations = {
         "LICENSE": "LICENSE_NOTICE.md",
         "cost_correlations.csv": "correlations.csv",

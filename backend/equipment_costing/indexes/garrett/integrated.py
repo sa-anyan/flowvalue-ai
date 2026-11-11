@@ -28,9 +28,9 @@ DATA = Path(__file__).with_name("data")
 
 @lru_cache(maxsize=8)
 def _read(name):
-    data = json.loads((DATA / name).read_text())
+    data = json.loads((DATA / name).read_text(encoding="utf-8"))
     if name == "review_curves.json":
-        corrections = json.loads((DATA / "source_corrections.json").read_text())
+        corrections = json.loads((DATA / "source_corrections.json").read_text(encoding="utf-8"))
         for curve in data["curves"]:
             correction = corrections["models"].get(curve["id"])
             if not correction:continue

@@ -15,7 +15,7 @@ DEFAULT_POLICY = {"target_period": "2026-09", "allow_general_inflation_proxy": T
 
 
 def catalogue():
-    return json.loads(Path(__file__).with_name("index_catalogue.json").read_text())
+    return json.loads(Path(__file__).with_name("index_catalogue.json").read_text(encoding="utf-8"))
 
 
 def numeric(value, *, positive=False):

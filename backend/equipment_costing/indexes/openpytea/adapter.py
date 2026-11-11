@@ -112,7 +112,7 @@ def estimate_cost(
                 "supplied": asdict(p),
             }
     base = evaluate(m["raw"], value, v2, allow_missing_bounds=allow_unverified)
-    factors = json.loads((ROOT / "adjustment_factors.json").read_text())
+    factors = json.loads((ROOT / "adjustment_factors.json").read_text(encoding="utf-8"))
     ratio = 1.0
     factor_details = {}
     if material is not None and material != m["default_material"]:
@@ -189,7 +189,7 @@ def estimate_cost(
             "Underlying source applicability, materials, pressure, temperature and auxiliaries require engineering review; mathematical parity is not design validation.",
         ]
     )
-    manifest = json.loads((ROOT / "sources.json").read_text())
+    manifest = json.loads((ROOT / "sources.json").read_text(encoding="utf-8"))
     estimate = CostEstimate(
         m["equipment"],
         m["configuration"],
