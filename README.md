@@ -22,18 +22,44 @@ Python performs the calculations. Independent industrial validation is outstandi
 
 ## Local development
 
-Use Python3.12 and Node24. Install backend requirements from
-`backend/requirements-orchestration.txt` in a virtual environment and run from the
-repository root:
+Use Python 3.12 and Node 24. In a virtual environment, run these commands from
+the repository root:
 
 ```sh
-python -m uvicorn backend.api.app:app --host 127.0.0.1 --port 8000 --env-file backend/.env
+python -m pip install -r backend/requirements-monte-carlo.txt
+python -m uvicorn backend.api.app:app --host 127.0.0.1 --port 8000
 ```
+
+Set optional AI settings in the server process environment before starting
+Uvicorn. Uvicorn's optional `--env-file` flag separately requires python-dotenv.
 
 In `frontend`, run `npm ci` and `npm run dev`. Open `http://localhost:3000/entry`.
 Server-only AI configuration is described in `backend/orchestration/.env.example`;
 never commit keys. The local SQLite assessment store and uploaded workbooks are in
 ignored `outputs/`; they are not published to GitHub.
+
+## Local test baseline
+
+Use a fresh checkout or a scratch copy of the committed source for the full
+backend suite. Some tests write fixtures beneath `outputs/`. In a fresh Python
+3.12 virtual environment, run:
+
+```sh
+python -m pip install -r backend/requirements-phase0-tests.txt
+python -m pip check
+AI_ENABLED=false FLOWVALUE_CLOUD=false FLOWVALUE_ASSESSMENT_DB=outputs/test.sqlite3 python -X utf8 -m pytest backend/tests -q -ra
+```
+
+In PowerShell, set `$env:AI_ENABLED='false'`, `$env:FLOWVALUE_CLOUD='false'`
+and `$env:FLOWVALUE_ASSESSMENT_DB='outputs/test.sqlite3'` before running the
+pytest command. UTF-8 mode keeps catalogue decoding consistent across Windows
+and CI. Use a test shell without provider or hosted credentials.
+Private workbook fixtures and the optional OpenPyTEA 3.2.1 cross-check skip when
+their inputs are unavailable.
+
+From `frontend/` after `npm ci`, run `node --test`, `npm run typecheck`, and
+`npm run build`. See the [Phase 0 test evidence](docs/phase-0/06-testing-and-security-audit.md)
+for known failures and the audit environment.
 
 ## Hosted deployment
 
