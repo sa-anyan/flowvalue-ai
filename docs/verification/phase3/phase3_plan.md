@@ -13,6 +13,21 @@
 | **M3.5** AACE estimate class | Propose a class from the documented design maturity, for review rather than automatic certification | E1 | Needs the AACE 18R-97 guidance |
 | **M3.6** Basis of Estimate report | Scope, exclusions, assumptions, sources and uncertainty, generated from the saved study | E1 with E2 | Last |
 
+## Progress (11 November 2026)
+
+| Item | Status |
+|---|---|
+| GARRETT-V01: verify Charlie's 13 Garrett curves | Done: 6 pass, 1 marginal, 6 fail (PR #7) |
+| GARRETT-C01: correct the failing curves | Done: digitised and validated against printed exponents; merged mixed/axial pump curve blocked (PR #7) |
+| **Library preference: OpenPyTEA over Garrett for the same equipment** | Founder rule, enforced in the matcher (PR #8). Garrett is now used only where OpenPyTEA has no usable model of that family |
+| **Next: Charlie coverage map** | For all 32 Charlie items: applicable OpenPyTEA and Garrett models, whether Charlie's size is inside each model's range, and the price. Measures G3 coverage and sets the order of the work below |
+
+**Effect of the OpenPyTEA preference on this plan:**
+
+- Source checks now start with OpenPyTEA's cited textbooks (Seider 2016: 200 models; Turton 2018: 94; Towler & Sinnott 2010: 52; Perry 1997: 46). They are not yet available locally.
+- The remaining 141 Garrett curves are checked only where Charlie or another reference study still relies on Garrett after the preference, rather than all of them.
+- Small equipment priced far below the Garrett charts (Charlie's pumps sit 20–500× below) moves to OpenPyTEA correlations valid at that size where they exist.
+
 ## Escalation (needed before CAPEX totals mean anything)
 
 Garrett prices are at CE Index 320 (early 1987). The code currently escalates with a CPI proxy where no native index observation exists (Phase 0 finding R-03). Phase 3 needs dated CEPCI values up to the study year from a cited source; until then every escalated Garrett price stays labelled as proxy-escalated.
@@ -23,7 +38,7 @@ Garrett prices are at CE Index 320 (early 1987). The code currently escalates wi
 - Nottingham CEEDG501 *Cost Estimation* Rev 3.
 - Charlie M&E workbook and the Charlie economics study. The study is a comparison made after independent calculation, never a price source.
 
-**Still needed from the founder:** current CEPCI values; Turton, Peters & Timmerhaus or Towler & Sinnott for cross-checks; AACE 18R-97; an electrolyser cost source or vendor quote.
+**Still needed from the founder:** current CEPCI values; Seider (2016) and Turton (2018) first, then Towler & Sinnott and Perry, for OpenPyTEA source checks; AACE 18R-97; an electrolyser cost source or vendor quote.
 
 ## G3 acceptance targets (from the roadmap)
 
