@@ -1,0 +1,12 @@
+{
+  "command": [
+    "python3.12",
+    "-m",
+    "venv",
+    "<G0_SCRATCH>/fresh"
+  ],
+  "exit_code": 0,
+  "seconds": 4.72,
+  "source_commit": "74f364d2ebdcbc67bd0732937f59ef6a3704dce3",
+  "network": "External sockets blocked; fake provider/API tests only"
+}

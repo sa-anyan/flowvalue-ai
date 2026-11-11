@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python3.12",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "backend/tests",
+    "-v"
+  ],
+  "cwd": "<AUDIT_SCRATCH>/baseline",
+  "exit_code": 0,
+  "seconds": 41.84
+}

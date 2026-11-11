@@ -1,0 +1,2906 @@
+{
+  "capex_models": [
+    {
+      "id": "garrett",
+      "title": "Garrett detailed factorial",
+      "process_types": [
+        "solids",
+        "mixed",
+        "fluids"
+      ],
+      "requires_delivered_equipment": false,
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 29,
+        "pdf_page": 41,
+        "note": ""
+      },
+      "method": "detailed",
+      "notes": [
+        "Installation is embedded in the whole-plant direct factors, not a separate equipment installation addition (pp.29\u201330).",
+        "Source ranges are not separate solid/mixed/fluid factor profiles; classification informs review only.",
+        "Offsite and startup fractions use core plant cost before additional requirements; no self-referential total."
+      ],
+      "default": true,
+      "activation": "offline_only"
+    },
+    {
+      "id": "nottingham",
+      "title": "Nottingham detailed factorial",
+      "process_types": [
+        "solids",
+        "mixed",
+        "fluids"
+      ],
+      "requires_delivered_equipment": true,
+      "source": {
+        "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+        "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+        "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+        "printed_page": 5,
+        "pdf_page": 5,
+        "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+      },
+      "method": "detailed",
+      "notes": [
+        "Published table uses rounded percentages of delivered purchase cost; approximate subtotal relationships are separately selectable.",
+        "No separate source factor for insulation/foundations/environmental/startup is invented; these require scope review, not an added Garrett percentage."
+      ],
+      "default": false,
+      "activation": "offline_only"
+    },
+    {
+      "id": "nottingham_lang",
+      "title": "Nottingham Lang overall factor",
+      "process_types": [
+        "solids",
+        "mixed",
+        "fluids",
+        "bioprocessing",
+        "water_treatment"
+      ],
+      "requires_delivered_equipment": true,
+      "source": {
+        "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+        "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+        "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+        "printed_page": 5,
+        "pdf_page": 5,
+        "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+      },
+      "method": "lang",
+      "notes": [
+        "Alternative overall installed-plant estimate; never add the detailed factorial charges on top."
+      ],
+      "default": false,
+      "activation": "offline_only"
+    }
+  ],
+  "capex": {
+    "garrett": {
+      "solids": [
+        {
+          "id": "equipment_installation",
+          "minimum": null,
+          "maximum": null,
+          "base": "embedded_in_direct_factors",
+          "stage": "direct",
+          "formula": "not additive; installation included in other direct cost categories",
+          "applicability": "Whole-plant estimate only; equipment-specific installation is not added again.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [
+            {
+              "reference_average": ".63",
+              "base": "purchased_equipment",
+              "source_page": 30,
+              "condition": "Reference average across equipment charts; not an additive whole-plant factor"
+            }
+          ],
+          "additive": false
+        },
+        {
+          "id": "piping",
+          "minimum": ".15",
+          "maximum": ".70",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Lower allowances suit solids conveying; fluids with recycling and heat exchange tend toward the upper range (p.30).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "electrical",
+          "minimum": ".10",
+          "maximum": ".15",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Plant wiring, switching, distribution and hookups; distinguish upstream utility supply facilities (p.30).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "instrumentation_controls",
+          "minimum": ".10",
+          "maximum": ".35",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Automation and control complexity influence allowance; includes installed controls rather than equipment purchase alone (p.30).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "utilities_services",
+          "minimum": ".30",
+          "maximum": ".75",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Utility generation/supply and water-system scope varies; separate shared offsite facilities to avoid overlap (p.33).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "foundations",
+          "minimum": ".07",
+          "maximum": ".12",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Equipment support and local ground/structural requirements; source percentage is a preliminary allowance.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "insulation",
+          "minimum": ".02",
+          "maximum": ".08",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Thermal duty, process temperature and conservation requirements determine scope (p.30).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "painting_fire_safety",
+          "minimum": ".02",
+          "maximum": ".10",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Protective finishes, fire protection and safety provisions appropriate to project hazards (p.32).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "yard_improvements",
+          "minimum": ".05",
+          "maximum": ".15",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Site grading, access, drainage and related works; reconcile items also classified as offsite (p.32).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "environmental_controls",
+          "minimum": ".10",
+          "maximum": ".30",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Applicable treatment, monitoring and permitting scope; requirements depend on location and process (p.32).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "buildings",
+          "minimum": ".05",
+          "maximum": "1.00",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Housing, storage, laboratory and support-building needs; climate and containment strongly affect allowance (p.32).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "land",
+          "minimum": "0",
+          "maximum": ".10",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Land is conditional on purchase; zero is permitted by Table 3-4. Prose p.33 gives 3\u201310% when purchased.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [
+            {
+              "minimum": ".03",
+              "maximum": ".10",
+              "base": "purchased_equipment",
+              "condition": "land purchase required",
+              "source_page": 33
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "construction_engineering",
+          "minimum": ".30",
+          "maximum": ".75",
+          "base": "purchased_equipment",
+          "stage": "indirect",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Choose one complete indirect basis; optional subtotal column is not an extra charge.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [
+            {
+              "minimum": ".10",
+              "maximum": ".40",
+              "base": "direct_costs",
+              "formula": "fraction * direct_costs"
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "contractor_fee",
+          "minimum": ".10",
+          "maximum": ".45",
+          "base": "purchased_equipment",
+          "stage": "indirect",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Choose one complete indirect basis; optional subtotal column is not an extra charge.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [
+            {
+              "minimum": ".03",
+              "maximum": ".10",
+              "base": "direct_costs",
+              "formula": "fraction * direct_costs"
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "contingency",
+          "minimum": ".15",
+          "maximum": ".80",
+          "base": "purchased_equipment",
+          "stage": "indirect",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Choose one complete indirect basis; optional subtotal column is not an extra charge.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [
+            {
+              "minimum": ".05",
+              "maximum": ".20",
+              "base": "direct_costs",
+              "formula": "fraction * direct_costs"
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "offsite_facilities",
+          "minimum": "0",
+          "maximum": ".30",
+          "base": "plant_cost",
+          "stage": "offsite",
+          "formula": "fraction * plant_cost",
+          "applicability": "Only facilities not already in the battery-limits estimate. Require explicit non-overlap scope confirmation.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "startup_expenses",
+          "minimum": ".05",
+          "maximum": ".10",
+          "base": "plant_cost",
+          "stage": "startup",
+          "formula": "fraction * plant_cost",
+          "applicability": "Additional capitalized startup expense, separate from fixed plant hardware.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "working_capital",
+          "minimum": ".10",
+          "maximum": ".20",
+          "base": "plant_cost",
+          "stage": "working_capital",
+          "formula": "fraction * plant_cost",
+          "applicability": "Alternative: 10\u201335% of annual manufacturing/operating cost (p.41).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [
+            {
+              "minimum": ".10",
+              "maximum": ".35",
+              "base": "annual_opex",
+              "formula": "fraction * annual_opex",
+              "source_page": 41
+            },
+            {
+              "minimum": ".50",
+              "maximum": ".50",
+              "base": "installed_equipment",
+              "formula": "fraction * installed_equipment",
+              "source_page": 41,
+              "condition": "Rough alternative requiring a separately supplied installed-equipment total"
+            }
+          ],
+          "additive": true
+        }
+      ],
+      "mixed": [
+        {
+          "id": "equipment_installation",
+          "minimum": null,
+          "maximum": null,
+          "base": "embedded_in_direct_factors",
+          "stage": "direct",
+          "formula": "not additive; installation included in other direct cost categories",
+          "applicability": "Whole-plant estimate only; equipment-specific installation is not added again.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [
+            {
+              "reference_average": ".63",
+              "base": "purchased_equipment",
+              "source_page": 30,
+              "condition": "Reference average across equipment charts; not an additive whole-plant factor"
+            }
+          ],
+          "additive": false
+        },
+        {
+          "id": "piping",
+          "minimum": ".15",
+          "maximum": ".70",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Lower allowances suit solids conveying; fluids with recycling and heat exchange tend toward the upper range (p.30).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "electrical",
+          "minimum": ".10",
+          "maximum": ".15",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Plant wiring, switching, distribution and hookups; distinguish upstream utility supply facilities (p.30).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "instrumentation_controls",
+          "minimum": ".10",
+          "maximum": ".35",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Automation and control complexity influence allowance; includes installed controls rather than equipment purchase alone (p.30).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "utilities_services",
+          "minimum": ".30",
+          "maximum": ".75",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Utility generation/supply and water-system scope varies; separate shared offsite facilities to avoid overlap (p.33).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "foundations",
+          "minimum": ".07",
+          "maximum": ".12",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Equipment support and local ground/structural requirements; source percentage is a preliminary allowance.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "insulation",
+          "minimum": ".02",
+          "maximum": ".08",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Thermal duty, process temperature and conservation requirements determine scope (p.30).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "painting_fire_safety",
+          "minimum": ".02",
+          "maximum": ".10",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Protective finishes, fire protection and safety provisions appropriate to project hazards (p.32).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "yard_improvements",
+          "minimum": ".05",
+          "maximum": ".15",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Site grading, access, drainage and related works; reconcile items also classified as offsite (p.32).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "environmental_controls",
+          "minimum": ".10",
+          "maximum": ".30",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Applicable treatment, monitoring and permitting scope; requirements depend on location and process (p.32).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "buildings",
+          "minimum": ".05",
+          "maximum": "1.00",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Housing, storage, laboratory and support-building needs; climate and containment strongly affect allowance (p.32).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "land",
+          "minimum": "0",
+          "maximum": ".10",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Land is conditional on purchase; zero is permitted by Table 3-4. Prose p.33 gives 3\u201310% when purchased.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [
+            {
+              "minimum": ".03",
+              "maximum": ".10",
+              "base": "purchased_equipment",
+              "condition": "land purchase required",
+              "source_page": 33
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "construction_engineering",
+          "minimum": ".30",
+          "maximum": ".75",
+          "base": "purchased_equipment",
+          "stage": "indirect",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Choose one complete indirect basis; optional subtotal column is not an extra charge.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [
+            {
+              "minimum": ".10",
+              "maximum": ".40",
+              "base": "direct_costs",
+              "formula": "fraction * direct_costs"
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "contractor_fee",
+          "minimum": ".10",
+          "maximum": ".45",
+          "base": "purchased_equipment",
+          "stage": "indirect",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Choose one complete indirect basis; optional subtotal column is not an extra charge.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [
+            {
+              "minimum": ".03",
+              "maximum": ".10",
+              "base": "direct_costs",
+              "formula": "fraction * direct_costs"
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "contingency",
+          "minimum": ".15",
+          "maximum": ".80",
+          "base": "purchased_equipment",
+          "stage": "indirect",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Choose one complete indirect basis; optional subtotal column is not an extra charge.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [
+            {
+              "minimum": ".05",
+              "maximum": ".20",
+              "base": "direct_costs",
+              "formula": "fraction * direct_costs"
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "offsite_facilities",
+          "minimum": "0",
+          "maximum": ".30",
+          "base": "plant_cost",
+          "stage": "offsite",
+          "formula": "fraction * plant_cost",
+          "applicability": "Only facilities not already in the battery-limits estimate. Require explicit non-overlap scope confirmation.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "startup_expenses",
+          "minimum": ".05",
+          "maximum": ".10",
+          "base": "plant_cost",
+          "stage": "startup",
+          "formula": "fraction * plant_cost",
+          "applicability": "Additional capitalized startup expense, separate from fixed plant hardware.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "working_capital",
+          "minimum": ".10",
+          "maximum": ".20",
+          "base": "plant_cost",
+          "stage": "working_capital",
+          "formula": "fraction * plant_cost",
+          "applicability": "Alternative: 10\u201335% of annual manufacturing/operating cost (p.41).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [
+            {
+              "minimum": ".10",
+              "maximum": ".35",
+              "base": "annual_opex",
+              "formula": "fraction * annual_opex",
+              "source_page": 41
+            },
+            {
+              "minimum": ".50",
+              "maximum": ".50",
+              "base": "installed_equipment",
+              "formula": "fraction * installed_equipment",
+              "source_page": 41,
+              "condition": "Rough alternative requiring a separately supplied installed-equipment total"
+            }
+          ],
+          "additive": true
+        }
+      ],
+      "fluids": [
+        {
+          "id": "equipment_installation",
+          "minimum": null,
+          "maximum": null,
+          "base": "embedded_in_direct_factors",
+          "stage": "direct",
+          "formula": "not additive; installation included in other direct cost categories",
+          "applicability": "Whole-plant estimate only; equipment-specific installation is not added again.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [
+            {
+              "reference_average": ".63",
+              "base": "purchased_equipment",
+              "source_page": 30,
+              "condition": "Reference average across equipment charts; not an additive whole-plant factor"
+            }
+          ],
+          "additive": false
+        },
+        {
+          "id": "piping",
+          "minimum": ".15",
+          "maximum": ".70",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Lower allowances suit solids conveying; fluids with recycling and heat exchange tend toward the upper range (p.30).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "electrical",
+          "minimum": ".10",
+          "maximum": ".15",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Plant wiring, switching, distribution and hookups; distinguish upstream utility supply facilities (p.30).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "instrumentation_controls",
+          "minimum": ".10",
+          "maximum": ".35",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Automation and control complexity influence allowance; includes installed controls rather than equipment purchase alone (p.30).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "utilities_services",
+          "minimum": ".30",
+          "maximum": ".75",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Utility generation/supply and water-system scope varies; separate shared offsite facilities to avoid overlap (p.33).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "foundations",
+          "minimum": ".07",
+          "maximum": ".12",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Equipment support and local ground/structural requirements; source percentage is a preliminary allowance.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "insulation",
+          "minimum": ".02",
+          "maximum": ".08",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Thermal duty, process temperature and conservation requirements determine scope (p.30).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "painting_fire_safety",
+          "minimum": ".02",
+          "maximum": ".10",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Protective finishes, fire protection and safety provisions appropriate to project hazards (p.32).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "yard_improvements",
+          "minimum": ".05",
+          "maximum": ".15",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Site grading, access, drainage and related works; reconcile items also classified as offsite (p.32).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "environmental_controls",
+          "minimum": ".10",
+          "maximum": ".30",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Applicable treatment, monitoring and permitting scope; requirements depend on location and process (p.32).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "buildings",
+          "minimum": ".05",
+          "maximum": "1.00",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Housing, storage, laboratory and support-building needs; climate and containment strongly affect allowance (p.32).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "land",
+          "minimum": "0",
+          "maximum": ".10",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Land is conditional on purchase; zero is permitted by Table 3-4. Prose p.33 gives 3\u201310% when purchased.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [
+            {
+              "minimum": ".03",
+              "maximum": ".10",
+              "base": "purchased_equipment",
+              "condition": "land purchase required",
+              "source_page": 33
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "construction_engineering",
+          "minimum": ".30",
+          "maximum": ".75",
+          "base": "purchased_equipment",
+          "stage": "indirect",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Choose one complete indirect basis; optional subtotal column is not an extra charge.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [
+            {
+              "minimum": ".10",
+              "maximum": ".40",
+              "base": "direct_costs",
+              "formula": "fraction * direct_costs"
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "contractor_fee",
+          "minimum": ".10",
+          "maximum": ".45",
+          "base": "purchased_equipment",
+          "stage": "indirect",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Choose one complete indirect basis; optional subtotal column is not an extra charge.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [
+            {
+              "minimum": ".03",
+              "maximum": ".10",
+              "base": "direct_costs",
+              "formula": "fraction * direct_costs"
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "contingency",
+          "minimum": ".15",
+          "maximum": ".80",
+          "base": "purchased_equipment",
+          "stage": "indirect",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Choose one complete indirect basis; optional subtotal column is not an extra charge.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [
+            {
+              "minimum": ".05",
+              "maximum": ".20",
+              "base": "direct_costs",
+              "formula": "fraction * direct_costs"
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "offsite_facilities",
+          "minimum": "0",
+          "maximum": ".30",
+          "base": "plant_cost",
+          "stage": "offsite",
+          "formula": "fraction * plant_cost",
+          "applicability": "Only facilities not already in the battery-limits estimate. Require explicit non-overlap scope confirmation.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "startup_expenses",
+          "minimum": ".05",
+          "maximum": ".10",
+          "base": "plant_cost",
+          "stage": "startup",
+          "formula": "fraction * plant_cost",
+          "applicability": "Additional capitalized startup expense, separate from fixed plant hardware.",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "working_capital",
+          "minimum": ".10",
+          "maximum": ".20",
+          "base": "plant_cost",
+          "stage": "working_capital",
+          "formula": "fraction * plant_cost",
+          "applicability": "Alternative: 10\u201335% of annual manufacturing/operating cost (p.41).",
+          "source": {
+            "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.3 Table 3-4",
+            "filename": "Chemical Engineering Economics for me.pdf",
+            "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+            "printed_page": 29,
+            "pdf_page": 41,
+            "note": ""
+          },
+          "alternatives": [
+            {
+              "minimum": ".10",
+              "maximum": ".35",
+              "base": "annual_opex",
+              "formula": "fraction * annual_opex",
+              "source_page": 41
+            },
+            {
+              "minimum": ".50",
+              "maximum": ".50",
+              "base": "installed_equipment",
+              "formula": "fraction * installed_equipment",
+              "source_page": 41,
+              "condition": "Rough alternative requiring a separately supplied installed-equipment total"
+            }
+          ],
+          "additive": true
+        }
+      ]
+    },
+    "nottingham": {
+      "solids": [
+        {
+          "id": "equipment_installation",
+          "minimum": "0.45",
+          "maximum": "0.45",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published solids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "instrumentation_controls",
+          "minimum": "0.09",
+          "maximum": "0.09",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published solids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "piping",
+          "minimum": "0.16",
+          "maximum": "0.16",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published solids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "electrical",
+          "minimum": "0.10",
+          "maximum": "0.10",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published solids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "buildings",
+          "minimum": "0.25",
+          "maximum": "0.25",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published solids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "yard_improvements",
+          "minimum": "0.13",
+          "maximum": "0.13",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published solids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "utilities_services",
+          "minimum": "0.40",
+          "maximum": "0.40",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published solids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "land",
+          "minimum": "0.06",
+          "maximum": "0.06",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published solids profile; exact table number is rounded. Land only if required.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "engineering_supervision",
+          "minimum": "0.33",
+          "maximum": "0.33",
+          "base": "purchased_equipment",
+          "stage": "indirect",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published solids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "construction_expenses",
+          "minimum": "0.39",
+          "maximum": "0.39",
+          "base": "purchased_equipment",
+          "stage": "indirect",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published solids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "contractor_fee",
+          "minimum": "0.17",
+          "maximum": "0.17",
+          "base": "purchased_equipment",
+          "stage": "fees",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published solids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [
+            {
+              "minimum": ".05",
+              "maximum": ".05",
+              "base": "direct_and_indirect",
+              "formula": "fraction * direct_and_indirect",
+              "condition": "about-value relationship, not the rounded printed percentage"
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "contingency",
+          "minimum": "0.34",
+          "maximum": "0.34",
+          "base": "purchased_equipment",
+          "stage": "fees",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published solids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [
+            {
+              "minimum": ".10",
+              "maximum": ".10",
+              "base": "direct_and_indirect",
+              "formula": "fraction * direct_and_indirect",
+              "condition": "about-value relationship, not the rounded printed percentage"
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "working_capital",
+          "minimum": "0.68",
+          "maximum": "0.68",
+          "base": "purchased_equipment",
+          "stage": "working_capital",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published solids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [
+            {
+              "minimum": ".15",
+              "maximum": ".15",
+              "base": "total_investment",
+              "formula": "fixed_capital * fraction / (1 - fraction)",
+              "condition": "about 15% of total capital investment; printed column rounded"
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "foundations",
+          "minimum": null,
+          "maximum": null,
+          "base": "not_separately_published",
+          "stage": "information",
+          "formula": "no standalone factor in this profile; review scope before adding costs",
+          "applicability": "Not separately itemized on page 5; no Garrett percentage substituted and no zero actual cost asserted.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": false
+        },
+        {
+          "id": "insulation",
+          "minimum": null,
+          "maximum": null,
+          "base": "not_separately_published",
+          "stage": "information",
+          "formula": "no standalone factor in this profile; review scope before adding costs",
+          "applicability": "Not separately itemized on page 5; no Garrett percentage substituted and no zero actual cost asserted.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": false
+        },
+        {
+          "id": "environmental_controls",
+          "minimum": null,
+          "maximum": null,
+          "base": "not_separately_published",
+          "stage": "information",
+          "formula": "no standalone factor in this profile; review scope before adding costs",
+          "applicability": "Not separately itemized on page 5; no Garrett percentage substituted and no zero actual cost asserted.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": false
+        },
+        {
+          "id": "painting_fire_safety",
+          "minimum": null,
+          "maximum": null,
+          "base": "not_separately_published",
+          "stage": "information",
+          "formula": "no standalone factor in this profile; review scope before adding costs",
+          "applicability": "Not separately itemized on page 5; no Garrett percentage substituted and no zero actual cost asserted.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": false
+        },
+        {
+          "id": "offsite_facilities",
+          "minimum": null,
+          "maximum": null,
+          "base": "not_separately_published",
+          "stage": "information",
+          "formula": "no standalone factor in this profile; review scope before adding costs",
+          "applicability": "Not separately itemized on page 5; no Garrett percentage substituted and no zero actual cost asserted.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": false
+        },
+        {
+          "id": "startup_expenses",
+          "minimum": null,
+          "maximum": null,
+          "base": "not_separately_published",
+          "stage": "information",
+          "formula": "no standalone factor in this profile; review scope before adding costs",
+          "applicability": "Not separately itemized on page 5; no Garrett percentage substituted and no zero actual cost asserted.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": false
+        }
+      ],
+      "mixed": [
+        {
+          "id": "equipment_installation",
+          "minimum": "0.39",
+          "maximum": "0.39",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published mixed profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "instrumentation_controls",
+          "minimum": "0.13",
+          "maximum": "0.13",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published mixed profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "piping",
+          "minimum": "0.31",
+          "maximum": "0.31",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published mixed profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "electrical",
+          "minimum": "0.10",
+          "maximum": "0.10",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published mixed profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "buildings",
+          "minimum": "0.29",
+          "maximum": "0.29",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published mixed profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "yard_improvements",
+          "minimum": "0.10",
+          "maximum": "0.10",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published mixed profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "utilities_services",
+          "minimum": "0.55",
+          "maximum": "0.55",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published mixed profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "land",
+          "minimum": "0.06",
+          "maximum": "0.06",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published mixed profile; exact table number is rounded. Land only if required.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "engineering_supervision",
+          "minimum": "0.32",
+          "maximum": "0.32",
+          "base": "purchased_equipment",
+          "stage": "indirect",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published mixed profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "construction_expenses",
+          "minimum": "0.34",
+          "maximum": "0.34",
+          "base": "purchased_equipment",
+          "stage": "indirect",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published mixed profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "contractor_fee",
+          "minimum": "0.18",
+          "maximum": "0.18",
+          "base": "purchased_equipment",
+          "stage": "fees",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published mixed profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [
+            {
+              "minimum": ".05",
+              "maximum": ".05",
+              "base": "direct_and_indirect",
+              "formula": "fraction * direct_and_indirect",
+              "condition": "about-value relationship, not the rounded printed percentage"
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "contingency",
+          "minimum": "0.36",
+          "maximum": "0.36",
+          "base": "purchased_equipment",
+          "stage": "fees",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published mixed profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [
+            {
+              "minimum": ".10",
+              "maximum": ".10",
+              "base": "direct_and_indirect",
+              "formula": "fraction * direct_and_indirect",
+              "condition": "about-value relationship, not the rounded printed percentage"
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "working_capital",
+          "minimum": "0.74",
+          "maximum": "0.74",
+          "base": "purchased_equipment",
+          "stage": "working_capital",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published mixed profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [
+            {
+              "minimum": ".15",
+              "maximum": ".15",
+              "base": "total_investment",
+              "formula": "fixed_capital * fraction / (1 - fraction)",
+              "condition": "about 15% of total capital investment; printed column rounded"
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "foundations",
+          "minimum": null,
+          "maximum": null,
+          "base": "not_separately_published",
+          "stage": "information",
+          "formula": "no standalone factor in this profile; review scope before adding costs",
+          "applicability": "Not separately itemized on page 5; no Garrett percentage substituted and no zero actual cost asserted.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": false
+        },
+        {
+          "id": "insulation",
+          "minimum": null,
+          "maximum": null,
+          "base": "not_separately_published",
+          "stage": "information",
+          "formula": "no standalone factor in this profile; review scope before adding costs",
+          "applicability": "Not separately itemized on page 5; no Garrett percentage substituted and no zero actual cost asserted.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": false
+        },
+        {
+          "id": "environmental_controls",
+          "minimum": null,
+          "maximum": null,
+          "base": "not_separately_published",
+          "stage": "information",
+          "formula": "no standalone factor in this profile; review scope before adding costs",
+          "applicability": "Not separately itemized on page 5; no Garrett percentage substituted and no zero actual cost asserted.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": false
+        },
+        {
+          "id": "painting_fire_safety",
+          "minimum": null,
+          "maximum": null,
+          "base": "not_separately_published",
+          "stage": "information",
+          "formula": "no standalone factor in this profile; review scope before adding costs",
+          "applicability": "Not separately itemized on page 5; no Garrett percentage substituted and no zero actual cost asserted.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": false
+        },
+        {
+          "id": "offsite_facilities",
+          "minimum": null,
+          "maximum": null,
+          "base": "not_separately_published",
+          "stage": "information",
+          "formula": "no standalone factor in this profile; review scope before adding costs",
+          "applicability": "Not separately itemized on page 5; no Garrett percentage substituted and no zero actual cost asserted.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": false
+        },
+        {
+          "id": "startup_expenses",
+          "minimum": null,
+          "maximum": null,
+          "base": "not_separately_published",
+          "stage": "information",
+          "formula": "no standalone factor in this profile; review scope before adding costs",
+          "applicability": "Not separately itemized on page 5; no Garrett percentage substituted and no zero actual cost asserted.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": false
+        }
+      ],
+      "fluids": [
+        {
+          "id": "equipment_installation",
+          "minimum": "0.47",
+          "maximum": "0.47",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published fluids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "instrumentation_controls",
+          "minimum": "0.18",
+          "maximum": "0.18",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published fluids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "piping",
+          "minimum": "0.66",
+          "maximum": "0.66",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published fluids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "electrical",
+          "minimum": "0.11",
+          "maximum": "0.11",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published fluids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "buildings",
+          "minimum": "0.18",
+          "maximum": "0.18",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published fluids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "yard_improvements",
+          "minimum": "0.10",
+          "maximum": "0.10",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published fluids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "utilities_services",
+          "minimum": "0.70",
+          "maximum": "0.70",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published fluids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "land",
+          "minimum": "0.06",
+          "maximum": "0.06",
+          "base": "purchased_equipment",
+          "stage": "direct",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published fluids profile; exact table number is rounded. Land only if required.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "engineering_supervision",
+          "minimum": "0.33",
+          "maximum": "0.33",
+          "base": "purchased_equipment",
+          "stage": "indirect",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published fluids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "construction_expenses",
+          "minimum": "0.41",
+          "maximum": "0.41",
+          "base": "purchased_equipment",
+          "stage": "indirect",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published fluids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        },
+        {
+          "id": "contractor_fee",
+          "minimum": "0.21",
+          "maximum": "0.21",
+          "base": "purchased_equipment",
+          "stage": "fees",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published fluids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [
+            {
+              "minimum": ".05",
+              "maximum": ".05",
+              "base": "direct_and_indirect",
+              "formula": "fraction * direct_and_indirect",
+              "condition": "about-value relationship, not the rounded printed percentage"
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "contingency",
+          "minimum": "0.42",
+          "maximum": "0.42",
+          "base": "purchased_equipment",
+          "stage": "fees",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published fluids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [
+            {
+              "minimum": ".10",
+              "maximum": ".10",
+              "base": "direct_and_indirect",
+              "formula": "fraction * direct_and_indirect",
+              "condition": "about-value relationship, not the rounded printed percentage"
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "working_capital",
+          "minimum": "0.86",
+          "maximum": "0.86",
+          "base": "purchased_equipment",
+          "stage": "working_capital",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Published fluids profile; do not infer a min/max range from the three categories.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [
+            {
+              "minimum": ".15",
+              "maximum": ".15",
+              "base": "total_investment",
+              "formula": "fixed_capital * fraction / (1 - fraction)",
+              "condition": "about 15% of total capital investment; printed column rounded"
+            }
+          ],
+          "additive": true
+        },
+        {
+          "id": "foundations",
+          "minimum": null,
+          "maximum": null,
+          "base": "not_separately_published",
+          "stage": "information",
+          "formula": "no standalone factor in this profile; review scope before adding costs",
+          "applicability": "Not separately itemized on page 5; no Garrett percentage substituted and no zero actual cost asserted.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": false
+        },
+        {
+          "id": "insulation",
+          "minimum": null,
+          "maximum": null,
+          "base": "not_separately_published",
+          "stage": "information",
+          "formula": "no standalone factor in this profile; review scope before adding costs",
+          "applicability": "Not separately itemized on page 5; no Garrett percentage substituted and no zero actual cost asserted.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": false
+        },
+        {
+          "id": "environmental_controls",
+          "minimum": null,
+          "maximum": null,
+          "base": "not_separately_published",
+          "stage": "information",
+          "formula": "no standalone factor in this profile; review scope before adding costs",
+          "applicability": "Not separately itemized on page 5; no Garrett percentage substituted and no zero actual cost asserted.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": false
+        },
+        {
+          "id": "painting_fire_safety",
+          "minimum": null,
+          "maximum": null,
+          "base": "not_separately_published",
+          "stage": "information",
+          "formula": "no standalone factor in this profile; review scope before adding costs",
+          "applicability": "Not separately itemized on page 5; no Garrett percentage substituted and no zero actual cost asserted.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": false
+        },
+        {
+          "id": "offsite_facilities",
+          "minimum": null,
+          "maximum": null,
+          "base": "not_separately_published",
+          "stage": "information",
+          "formula": "no standalone factor in this profile; review scope before adding costs",
+          "applicability": "Not separately itemized on page 5; no Garrett percentage substituted and no zero actual cost asserted.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": false
+        },
+        {
+          "id": "startup_expenses",
+          "minimum": null,
+          "maximum": null,
+          "base": "not_separately_published",
+          "stage": "information",
+          "formula": "no standalone factor in this profile; review scope before adding costs",
+          "applicability": "Not separately itemized on page 5; no Garrett percentage substituted and no zero actual cost asserted.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": false
+        }
+      ]
+    },
+    "nottingham_lang": {
+      "solids": [
+        {
+          "id": "lang_factor",
+          "minimum": "3.1",
+          "maximum": "3.1",
+          "base": "purchased_equipment",
+          "stage": "lang",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Overall installed cost/purchase cost; no detailed factorial additions.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        }
+      ],
+      "mixed": [
+        {
+          "id": "lang_factor",
+          "minimum": "3.6",
+          "maximum": "3.6",
+          "base": "purchased_equipment",
+          "stage": "lang",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Overall installed cost/purchase cost; no detailed factorial additions.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        }
+      ],
+      "fluids": [
+        {
+          "id": "lang_factor",
+          "minimum": "4.7",
+          "maximum": "4.7",
+          "base": "purchased_equipment",
+          "stage": "lang",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Overall installed cost/purchase cost; no detailed factorial additions.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        }
+      ],
+      "bioprocessing": [
+        {
+          "id": "lang_factor",
+          "minimum": "7.8",
+          "maximum": "7.8",
+          "base": "purchased_equipment",
+          "stage": "lang",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Overall installed cost/purchase cost; no detailed factorial additions.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        }
+      ],
+      "water_treatment": [
+        {
+          "id": "lang_factor",
+          "minimum": "3.5",
+          "maximum": "3.5",
+          "base": "purchased_equipment",
+          "stage": "lang",
+          "formula": "fraction * purchased_equipment",
+          "applicability": "Overall installed cost/purchase cost; no detailed factorial additions.",
+          "source": {
+            "reference": "University of Nottingham CEE Design Consultants, CEEDG501 Cost Estimation Rev 3, section 3.2",
+            "filename": "CEEDG501 Cost Estimation Rev 3 (1).pdf",
+            "sha256": "9b626ffe656fdde1c857a978393380f971070dcfaca500927626e7c962584b57",
+            "printed_page": 5,
+            "pdf_page": 5,
+            "note": "Revision history says Rev 3 (7 Nov 2017); body footer still says Revision 2 / September 2017. Both retained."
+          },
+          "alternatives": [],
+          "additive": true
+        }
+      ]
+    }
+  },
+  "opex": [
+    {
+      "id": "raw_materials",
+      "minimum": null,
+      "maximum": null,
+      "base": null,
+      "applicability": "Itemize annual feed, additives, catalyst makeup/regeneration and losses from engineering evidence. Initial catalyst is CAPEX; inventories are working capital (p.46).",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "cash",
+      "required": true,
+      "note": "",
+      "formula": "itemized annual cost"
+    },
+    {
+      "id": "utilities",
+      "minimum": null,
+      "maximum": null,
+      "base": null,
+      "applicability": "Itemize power, fuel, steam, water, air and other services from balances, operating hours and local tariffs (pp.47\u201348). No automatic historical tariff.",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "cash",
+      "required": true,
+      "note": "",
+      "formula": "itemized annual cost"
+    },
+    {
+      "id": "operating_labor",
+      "minimum": null,
+      "maximum": null,
+      "base": null,
+      "applicability": "Itemize operating staff only; exclude maintenance, supervisors, laboratory and support staff recovered elsewhere (pp.47\u201351).",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "cash",
+      "required": true,
+      "note": "",
+      "formula": "itemized annual cost"
+    },
+    {
+      "id": "interest",
+      "minimum": null,
+      "maximum": null,
+      "base": null,
+      "applicability": "Itemize interest on borrowing if applicable; declare no debt explicitly otherwise (p.60). Not unlevered cash OPEX.",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "financing",
+      "required": true,
+      "note": "",
+      "formula": "itemized annual cost"
+    },
+    {
+      "id": "payroll_overhead",
+      "minimum": ".22",
+      "maximum": ".45",
+      "base": "category:operating_labor",
+      "applicability": "Benefits and employer payroll charges; do not add to already loaded salaries (p.53).",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "cash",
+      "required": true,
+      "note": "",
+      "formula": "annual_cost = fraction \u00d7 base"
+    },
+    {
+      "id": "supervision",
+      "minimum": ".10",
+      "maximum": ".30",
+      "base": "category:operating_labor",
+      "applicability": "Supervision and support labor; avoid separate engineering/clerical labor already charged here (p.53).",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "cash",
+      "required": true,
+      "note": "",
+      "formula": "annual_cost = fraction \u00d7 base"
+    },
+    {
+      "id": "laboratory",
+      "minimum": ".10",
+      "maximum": ".20",
+      "base": "category:operating_labor",
+      "applicability": "Includes laboratory labor and supplies, not only consumables (p.57).",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "cash",
+      "required": true,
+      "note": "",
+      "formula": "annual_cost = fraction \u00d7 base"
+    },
+    {
+      "id": "maintenance",
+      "minimum": ".02",
+      "maximum": ".10",
+      "base": "plant_including_startup_excluding_working_capital",
+      "applicability": "Includes maintenance materials, labor and services. Condition, corrosion, wear and automation affect allowance (pp.53\u201356).",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "cash",
+      "required": true,
+      "note": "",
+      "formula": "annual_cost = fraction \u00d7 base"
+    },
+    {
+      "id": "operating_supplies",
+      "minimum": ".005",
+      "maximum": ".03",
+      "base": "plant_including_startup_excluding_working_capital",
+      "applicability": "Other unlisted plant supplies; exclude supplies already recovered in laboratory/maintenance (p.57).",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "cash",
+      "required": true,
+      "note": "",
+      "formula": "annual_cost = fraction \u00d7 base"
+    },
+    {
+      "id": "environmental",
+      "minimum": ".005",
+      "maximum": ".05",
+      "base": "plant_including_startup_excluding_working_capital",
+      "applicability": "Environmental, safety and hazardous-waste functions; significant hazardous duties may require detailed estimates beyond historical range (pp.57\u201358).",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "cash",
+      "required": true,
+      "note": "",
+      "formula": "annual_cost = fraction \u00d7 base"
+    },
+    {
+      "id": "depreciation",
+      "minimum": ".05",
+      "maximum": ".10",
+      "base": "plant_including_startup_excluding_working_capital",
+      "applicability": "Table allowance for preliminary estimates only, not a tax depreciation schedule; land is not depreciable. Straight-line asset estimate available separately (pp.58\u201359).",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "noncash",
+      "required": true,
+      "note": "",
+      "formula": "annual_cost = fraction \u00d7 base"
+    },
+    {
+      "id": "taxes_insurance",
+      "minimum": ".03",
+      "maximum": ".05",
+      "base": "plant_including_startup_excluding_working_capital",
+      "applicability": "Combined local taxes, permits/fees and insurance; income tax is excluded. Separate quotes must replace, not supplement, this combined allowance (pp.59\u201360).",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "cash",
+      "required": true,
+      "note": "",
+      "formula": "annual_cost = fraction \u00d7 base"
+    },
+    {
+      "id": "plant_overhead",
+      "minimum": ".01",
+      "maximum": ".05",
+      "base": "plant_including_startup_excluding_working_capital",
+      "applicability": "Plant-level overhead only; reconcile corporate administration and support staff to avoid duplicates.",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "cash",
+      "required": true,
+      "note": "",
+      "formula": "annual_cost = fraction \u00d7 base"
+    },
+    {
+      "id": "royalties",
+      "minimum": "0",
+      "maximum": ".05",
+      "base": "annual_revenue",
+      "applicability": "Recurring patents/royalties if applicable; lump-sum licence acquisition is not recurring OPEX. Text p.57 gives narrower indicative .25\u20132% guidance.",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "cash",
+      "required": true,
+      "note": "",
+      "formula": "annual_cost = fraction \u00d7 base"
+    },
+    {
+      "id": "packaging_storage",
+      "minimum": "0",
+      "maximum": ".07",
+      "base": "annual_revenue",
+      "applicability": "Product packaging and storage. Detail costs when significant; bulk-shipping costs may be allocated elsewhere (p.57).",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "cash",
+      "required": true,
+      "note": "",
+      "formula": "annual_cost = fraction \u00d7 base"
+    },
+    {
+      "id": "administration",
+      "minimum": ".02",
+      "maximum": ".10",
+      "base": "annual_revenue",
+      "applicability": "Allocated corporate/general administration; reconcile plant overhead (pp.61\u201362).",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "cash",
+      "required": true,
+      "note": "",
+      "formula": "annual_cost = fraction \u00d7 base"
+    },
+    {
+      "id": "distribution_sales",
+      "minimum": ".02",
+      "maximum": ".10",
+      "base": "annual_revenue",
+      "applicability": "Outbound distribution, selling and marketing expenses; reconcile freight and packaging (pp.61\u201362).",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "cash",
+      "required": true,
+      "note": "",
+      "formula": "annual_cost = fraction \u00d7 base"
+    },
+    {
+      "id": "research_development",
+      "minimum": ".005",
+      "maximum": ".04",
+      "base": "annual_revenue",
+      "applicability": "Allocated ongoing R&D and technical service (pp.61\u201362).",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "cash",
+      "required": true,
+      "note": "Table 4-4 upper bound is 4%; prose p.62 says 5%. Table is default; a 5% proposal requires a documented override.",
+      "formula": "annual_cost = fraction \u00d7 base"
+    },
+    {
+      "id": "other_manufacturing",
+      "minimum": null,
+      "maximum": null,
+      "base": null,
+      "applicability": "Itemize project-specific costs omitted from allowances, with unique cost scopes (Table 4-1 p.45). Explicitly review applicability.",
+      "source": {
+        "reference": "Donald E. Garrett, Chemical Engineering Economics (1989), Ch.4 Table 4-4",
+        "filename": "Chemical Engineering Economics for me.pdf",
+        "sha256": "fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff",
+        "printed_page": 52,
+        "pdf_page": 64,
+        "note": "Visually checked against PDF p.64. Capital base includes startup and offsite; excludes working capital."
+      },
+      "accounting": "cash",
+      "required": false,
+      "note": "",
+      "formula": "itemized annual cost"
+    }
+  ]
+}

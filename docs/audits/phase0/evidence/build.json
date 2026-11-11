@@ -1,0 +1,10 @@
+{
+  "command": [
+    "npm",
+    "run",
+    "build"
+  ],
+  "cwd": "<AUDIT_SCRATCH>/baseline/frontend",
+  "exit_code": 0,
+  "seconds": 49.1
+}

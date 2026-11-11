@@ -1,0 +1,13 @@
+{
+  "full_suite": "1738 passed,3 skipped,367 subtests passed",
+  "targeted": "144 passed,2 skipped,6 subtests passed",
+  "original_failing_assertion": "1 passed; original test module byte-identical to HEAD",
+  "historical_audit_markdown_hashes": "unchanged",
+  "prior_register_snapshots": "match prior reconciliation hashes",
+  "duplicate_files_retained": 127,
+  "costing_equations_coefficients_and_revenue_schema": "unchanged",
+  "new_evidence_narrow_secret_scan": "0 findings",
+  "git_diff_check": "passed",
+  "R01": "closed in tested scope",
+  "G0": "not passed; separate blockers remain"
+}

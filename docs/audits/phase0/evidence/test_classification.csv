@@ -1,0 +1,720 @@
+location,name,classification,classification_basis,independent_reference
+backend/tests/test_additional_models.py:39,test_registry_and_independent_equations,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_additional_models.py:65,test_invalid_input,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_additional_models.py:71,test_fermenter_strict_range,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_additional_models.py:77,test_clarifier_guard_and_explicit_provisional_acceptance,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_additional_models.py:124,test_flow_and_clarifier_conversion_traceability,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_additional_models.py:141,test_fermenter_mode_and_residence,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_additional_models.py:161,test_fermenter_explicit_productivity_basis_is_not_rejected_as_missing_broth,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_additional_models.py:179,test_dimensions_pressure_and_parser_adapter,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_additional_models.py:206,test_escalation_and_no_double_escalation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_additional_models.py:223,test_explicit_native_indices_override,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_additional_models.py:263,test_quantity_and_capital_factor_boundary,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_additional_models.py:304,test_capital_only_and_no_generic_installation,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_additional_models.py:322,test_matching_aliases_not_tag_prefix,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_additional_models.py:336,test_connected_parser_to_twenty_year_financial_ledger,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:93,test_reference_data_stays_out_and_original_is_unchanged,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:103,test_duplicate_same_source_is_coalesced_and_links_remapped,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:116,test_distinct_cases_not_silently_merged,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:123,test_supporting_properties_only_supplement_unique_identity,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:152,test_invalid_scope_rejected,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:163,test_independent_roles_are_cached_and_ownership_disclosed,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:183,test_fabricated_evidence_does_not_enter_review,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:224,test_discount_is_explicit_and_basis_preserved,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:246,test_no_default_discount_and_invalid_observation_rejected,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:278,test_comparable_scaling_converts_units_without_escalating,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:296,test_reviewed_quote_uses_canonical_total_and_keeps_installation_unknown,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:376,test_research_retains_sources_and_never_applies_drafts,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:387,test_no_unknown_target_or_unsourced_result,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:396,test_lang_is_separate_screening_never_the_selected_capex,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:409,test_adjusted_price_flows_into_revenue_and_finance,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:421,test_research_requires_consent_and_review_checks_revision,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:436,test_explicit_research_action_saves_draft_without_changing_plan,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:456,test_source_and_component_charges_cannot_overlap,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:465,test_scope_alternatives_do_not_remove_valid_purchase_component,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:477,test_zero_separate_staffing_does_not_delete_garrett_category,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:486,test_zero_ramp_keeps_staffing_method_not_blanket_factor,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_analyst_workflow.py:498,test_comparable_invalid_numbers_and_missing_fields_are_explained,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_assumption_completion.py:43,test_only_missing_parameter_added_and_accepted_inputs_unchanged,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_assumption_completion.py:62,test_completion_cannot_override_existing_parameter,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_assumption_completion.py:74,test_no_missing_parameters_makes_no_ai_call,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_assumption_completion.py:87,test_phase_change_contract_requires_explicit_sensible_allowance,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_assumption_completion.py:106,test_canonical_resolver_completes_one_parameter_without_reselecting_sources,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:69,test_highest_explicit_equipment_dimension_and_no_ai,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:98,test_llm_routes_input_then_python_derives_size_and_caches,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:127,test_missing_model_and_bad_item_do_not_discard_good_item,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:152,test_unknown_model_and_hallucinated_source_are_not_accepted,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:166,test_user_inputs_and_locked_sections_not_overridden,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:187,test_meb_ratios_state_and_lmtd_use_source_references,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:241,test_maximum_ignores_stream_flow_as_vessel_dimension,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:251,test_different_workbooks_feed_same_input_and_price_path,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:326,test_state_and_molecular_weight_are_derived_not_llm_arithmetic,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:398,test_bad_unit_context_does_not_crash_other_equipment,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:429,test_provisional_graph_policy_flows_to_costing_and_can_be_disabled,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:452,test_one_bounded_repair_pass_for_missing_source,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:488,test_pricing_repair_is_bounded_and_preserves_user_inputs,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:527,test_strict_domain_failure_reopens_reviewed_models_without_touching_neighbor,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:590,test_non_garrett_extrapolation_options_rejected_before_cost_handoff,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:615,test_alternative_volume_model_keeps_physical_assumptions,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:652,test_ai_conceptual_first_choice_does_not_hide_reviewed_alternatives,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:683,test_prompt_requires_all_five_conversion_matching_skills,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:707,test_semantic_throughput_synonym_requires_correct_physical_dimension,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:729,test_gauge_pressure_difference_and_absolute_gas_pressure,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:787,test_ambiguous_configuration_with_candidates_can_receive_assumptions,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:811,test_stream_descriptions_and_required_conventions_reach_planner,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:845,test_bound_schema_has_independent_identifier_fields_and_valid_source_ids,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:884,test_invalid_source_on_one_equipment_does_not_clear_good_neighbor,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:917,test_failed_batch_retries_individually_without_losing_neighbor,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:949,test_no_measurements_produces_valid_schema_not_empty_enum,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:979,test_thermal_adapter_owns_lmtd_and_retains_redundant_ai_binding_audit,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:1066,test_stream_composition_reaches_engineer_with_component_identity_and_lineage,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:1103,test_binding_repairs_preserve_failed_proposal_and_stop_at_three_attempts,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_automatic_equipment_inputs.py:1135,test_third_binding_attempt_can_recover_without_restarting_the_register,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:44,test_registry_default_and_unsupported_method,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:57,test_garrett_minimum_and_maximum_source_arithmetic,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:77,test_garrett_optional_subtotal_basis_is_not_purchase_basis,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:95,test_garrett_installation_is_embedded_not_extra_63_percent,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:106,test_garrett_all_categories_and_midpoints_are_explicit_assumptions,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:122,test_selected_factors_and_out_of_range_overrides,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:163,test_unknown_and_conflicting_factors_not_silently_ignored,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:177,test_exclusions_with_reasons_and_offsite_scope,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:197,test_garrett_working_capital_bases,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:231,test_nottingham_profiles_reproduce_published_rounded_table,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:248,test_nottingham_relationship_formulas_preserve_different_bases,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:261,test_nottingham_months_of_opex_and_source_page,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:289,test_lang_is_alternative_not_added_to_factorial,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:317,test_installed_module_delivery_and_mixed_basis_guards,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:338,test_overlap_and_duplicate_equipment,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:356,test_missing_information_and_invalid_values,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:388,test_switching_models_keeps_input_and_source_independent,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:408,test_connector_uses_quantity_extended_purchase_component_and_is_inactive,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:448,test_connector_blocks_unresolved_purchase_split,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:469,test_each_source_factor_range_and_nottingham_profile_entry,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:503,test_unpublished_nottingham_factors_remain_unavailable,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:519,test_conflicting_working_capital_inputs_and_month_defaults,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:543,test_quantity_multiplied_once_and_zero_override_is_preserved,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:560,test_garrett_installed_equipment_working_capital_alternative,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_capex.py:581,test_future_advisor_draft_only_and_range_validation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cashflow_break_even.py:21,test_marker_uses_canonical_interpolated_payback_with_initial_investment,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cashflow_break_even.py:27,test_first_recovery_is_not_a_guarantee_of_permanent_profit,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cashflow_break_even.py:33,test_missing_no_recovery_and_no_investment_are_distinct,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cashflow_break_even.py:45,test_invalid_metric_is_not_plotted,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cashflow_cost_phasing.py:16,test_cost_timing_is_validated_without_silent_normalization,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cashflow_cost_phasing.py:29,test_fixed_and_variable_opex_have_separate_timing_and_reconcile,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cashflow_cost_phasing.py:63,test_saved_stage_pipeline_spends_capital_once_with_overlapping_operation,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cashflow_cost_phasing.py:78,test_repeating_percentage_rounding_spends_complete_budget,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cashflow_schedule.py:19,test_calendar_bounds_and_unknown_sources,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cashflow_schedule.py:32,test_factors_are_annual_and_approval_bound,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cashflow_schedule.py:46,test_canonical_ledger_and_year_edit,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cashflow_schedule.py:74,test_commercial_source_factor_and_horizon_extension,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cashflow_schedule.py:115,test_default_plateau_and_preservation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cashflow_schedule.py:126,test_browser_number_serialization_does_not_invalidate_approval,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cloud_runtime.py:9,test_proxy_fails_closed_without_tenant,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cloud_runtime.py:11,test_worker_preserves_its_own_tenant,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cloud_runtime.py:17,test_store_revision_conflict,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cloud_runtime.py:21,test_no_foreign_record_fallback,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cloud_runtime.py:25,test_hosted_api_rejects_missing_session,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cloud_runtime.py:30,test_hosted_request_uses_verified_owner_store,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cloud_runtime.py:37,test_invalid_token_is_not_local_access,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_intent.py:39,test_service_only_no_product_income,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_intent.py:64,test_hybrid_retains_both_user_sources,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_intent.py:81,test_product_assumption_cannot_replace_service_method,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_intent.py:90,test_invented_output_sales_are_blocked,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_intent.py:99,test_all_stated_methods_must_be_represented,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_intent.py:111,test_missing_method_is_question_not_assumed_zero_or_sale,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_intent.py:127,test_fake_quote_not_accepted,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_intent.py:136,test_multiple_lines_and_non_product_categories,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_intent.py:160,test_explicit_manual_changes_can_revise_method,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_intent.py:169,test_revenue_description_is_saved_as_user_context,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_intent.py:185,test_legacy_saved_baseline_not_silently_reclassified,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_intent.py:189,test_initial_advisor_contract_requires_intent,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_intent.py:214,test_entry_upload_passes_commercial_context_into_assessment,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_intent.py:252,test_initial_advisor_corrects_wrong_category_once,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_strategy_agent.py:75,test_python_basis_math,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_strategy_agent.py:87,test_unretrieved_and_mismatched_basis,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_strategy_agent.py:109,test_missing_candidate_not_zero,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_strategy_agent.py:119,test_preserve_previous_product_without_model_numbers,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_strategy_agent.py:129,test_no_research_without_consent,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_strategy_agent.py:173,test_agent_driver_selects_and_routes_without_touching_cost_inputs,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_strategy_agent.py:231,test_failure_retains_audit_not_stale_results,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_strategy_agent.py:243,test_reference_volume_must_match_source,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_strategy_agent.py:261,test_api_creates_separate_scenario,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_strategy_agent.py:301,test_memory_is_project_description_and_time_scoped,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_commercial_strategy_agent.py:353,test_split_billing_unit_fields,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cost_translation.py:35,test_official_proxy_is_same_cpi_series_not_cpi_divided_by_cepci,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cost_translation.py:47,test_native_series_has_priority,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cost_translation.py:67,test_method_name_does_not_hardcode_year,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cost_translation.py:73,test_2018_uses_its_own_price_year,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cost_translation.py:81,test_invalid_money,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cost_translation.py:86,test_zero_preserved,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cost_translation.py:90,test_already_2026_is_not_escalated_or_relabelled,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cost_translation.py:98,test_unsupported_years_are_not_invented,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cost_translation.py:103,test_wrong_currency_and_missing_proxy_consent,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cost_translation.py:112,test_bad_index_and_missing_source,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cost_translation.py:121,test_equipment_installation_and_capex_are_scaled_once,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cost_translation.py:158,test_unsupported_source_is_retained_as_unpriced_not_fake_2026,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cost_translation.py:168,test_operating_prices_quantities_percentages_and_input_preservation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cost_translation.py:216,test_different_native_indices_aggregate_on_one_dated_currency_basis,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_cost_translation.py:255,test_missing_operating_basis_and_cost_plus_observation_are_rejected,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_currency_conversion.py:12,test_cross_rates_signed_amounts_and_inverse,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_currency_conversion.py:25,test_invalid_amounts,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_currency_conversion.py:31,test_missing_or_ambiguous_currency,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_currency_conversion.py:36,test_explicit_missing_date_and_invalid_rate,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_currency_conversion.py:45,test_quote_keeps_units_price_period_uncertainty_and_evidence,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_currency_conversion.py:63,test_reporting_preserves_physical_values_percentages_and_source_evidence,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_currency_conversion.py:133,test_missing_financial_inputs_cannot_silently_change_npv,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_currency_conversion.py:146,test_financial_ledger_recomputed_and_dimensionless_metrics_unchanged,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_currency_conversion.py:184,test_service_revenue_deductions_and_explicit_money_assumptions,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_currency_conversion.py:228,test_currency_preference_does_not_block_new_or_running_assessments,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_current_prices.py:6,test_current_view_recalculates_once_and_preserves_inputs,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_current_prices.py:21,test_explicit_historical_policy_is_respected,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_current_prices.py:27,test_missing_report_and_running_studies_are_not_fabricated,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_design_handoff.py:14,test_ion_exchange_example_is_python_calculated,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_design_handoff.py:31,test_edited_parameters_supersede_legacy_scalar,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_design_handoff.py:73,test_design_handoff_retries_missing_record_and_preserves_priced_units,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_design_handoff.py:151,test_locked_equipment_cannot_be_rewritten,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_drying_balance.py:55,test_water_removal_is_cost_coordinate_and_has_lineage,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_drying_balance.py:69,test_invalid_drying_boundaries_are_rejected,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_drying_balance.py:81,test_total_wet_feed_cannot_be_used_as_evaporation_rate,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_economic_planning_payload.py:8,test_economic_context_keeps_costs_and_bases_without_equipment_audit,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_economic_planning_payload.py:57,test_operating_context_does_not_include_capital_factor_catalogue,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_economic_planning_payload.py:69,test_typed_capital_adapter_requires_bridge_fields_and_published_factors,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_economic_saved_results.py:6,test_capex_stale_and_failed_rerun_retain_last_saved_result,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_review.py:405,test_timeout_retries_only_source_region_once,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_review.py:429,test_all_regions_keep_primary_process_identity_and_source_evidence,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_review.py:450,test_disconnected_supporting_process_is_retained_for_scope_review,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_review.py:474,test_connected_supporting_equipment_and_primary_sheet_recovery_allowed,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_review.py:508,test_placeholder_is_not_a_physical_equipment_identity,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_review.py:522,test_raw_secondary_stream_is_not_proof_of_primary_plant_scope,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_review.py:108,test_new_records_units_components_and_connections_outside_python_tables,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_review.py:132,test_bad_source_does_not_discard_other_records,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_review.py:146,test_source_correction_keeps_original_and_recalculates,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_review.py:184,test_interpretations_not_erased_and_source_claims_checked,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_review.py:204,test_python_residence_sizing,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_review.py:235,test_full_lifecycle_uses_review_before_model_selection,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_review.py:283,test_engineering_revenue_scenario_keeps_default_review_policy,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_review.py:317,test_one_correction_uses_python_errors_and_does_not_stack_factors,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_sizing.py:9,test_equipment_equations_and_units,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_sizing.py:42,test_source_and_assumption_ranges_are_traceable,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_sizing.py:100,test_invalid_physical_assumptions_rejected,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_sizing.py:105,test_source_corrected_dryer_coordinates_remain_provisional,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_sizing.py:116,test_pump_sizing_flows_into_canonical_cost_model,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_sizing.py:131,test_preliminary_alias_is_not_costed_twice,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_sizing.py:140,test_candidate_without_size_is_reinvestigated,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_workflow.py:10,test_entry_runs_data_then_prices_equipment_only,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_workflow.py:35,test_failed_extraction_does_not_run_equipment,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_workflow.py:50,test_polling_remains_active_between_connected_stages,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_engineering_workflow.py:57,test_initial_run_populates_assumptions_and_prices_in_one_pass,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_duplicates.py:24,test_plain_tag_removed_when_ab_present_with_source_references_retained,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_duplicates.py:35,test_normalized_duplicates_but_not_similar_names_or_separate_a_b,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_duplicates.py:40,test_restore_persists_and_exclude_again,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_duplicates.py:51,test_duplicate_ab_records_resolve_to_single_pair,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_duplicates.py:57,test_restored_duplicate_does_not_lose_existing_prices_or_overrides,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_duplicates.py:74,test_matching_receives_reconciled_ab_inlet_and_outlet_before_sizing,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_edit_preservation.py:12,test_one_out_of_100_assumptions_changed_and_other_rows_retained,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_edit_preservation.py:49,test_quantity_edit_keeps_prices_visible_and_preserves_sizing_without_ai,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_edit_preservation.py:86,test_failed_python_rerun_retains_previous_output_as_stale,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_edit_preservation.py:101,test_previously_hidden_stale_equipment_is_recovered_without_execution,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_edit_preservation.py:125,test_save_prices_only_changed_equipment_and_never_runs_ai_or_other_stages,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_matching.py:85,test_only_equipment_names_and_separate_non_numeric_context,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_matching.py:105,test_unavailable_does_not_clear_previous_model,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_matching.py:117,test_missing_decision_not_silently_dropped,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_matching.py:127,test_family_match_is_separate_from_selected_configuration,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_matching.py:139,test_component_only_is_not_complete_match,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_matching.py:149,test_bad_reference_does_not_establish_match,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_matching.py:159,test_changed_model_cannot_reuse_old_coordinate_or_invent_size,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_matching.py:177,test_family_only_review_preserves_existing_compatible_configuration,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_matching.py:215,test_source_words_add_tank_hint_without_tag_guessing,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_matching.py:231,test_upstream_name_is_not_an_exact_match_for_target_tag,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_matching.py:255,test_separate_name_cell_still_supplies_exact_word_hint,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_matching.py:263,test_catalogue_exposes_unusable_coordinates_without_source_prices,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_missing_coordinate.py:6,test_missing_size_does_not_discard_valid_equipment,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_missing_coordinate.py:24,test_nottingham_native_handoff_keeps_conversion_context_out_of_correlation,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_pair_quantity.py:11,test_pair_count,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_pair_quantity.py:16,test_other_tags_not_pairs,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_pair_quantity.py:20,test_explicit_quantity_preserved,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_pair_quantity.py:27,test_canonical_pricing_extends_purchase_installation_but_not_size,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_proposal_handoff.py:14,test_real_equipment_calculator_accepts_both_ai_envelopes,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_proposal_handoff.py:33,test_invalid_individual_rows_do_not_discard_valid_equipment,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_proposal_handoff.py:55,test_invalid_top_level_shape_has_clear_error,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_proposal_handoff.py:60,test_duplicate_key_cannot_create_duplicate_proposal,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:42,test_manual_purchase_and_installation_extend_once,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:54,test_installed_split_and_unsplit_boundaries,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:83,test_invalid_manual_price_retained_unresolved,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:89,test_fx_uses_canonical_converter_and_preserves_source,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:101,test_physical_split_and_alias_no_tag_suffix_guess,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:141,test_alias_confirmation_and_cycle,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:177,test_phase_change_and_drying_independent_hand_checks,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:198,test_phase_change_enters_existing_area_path,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:231,test_compressor_positive_and_limits,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:248,test_user_price_propagates_equipment_capex_and_finance,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:268,test_capacity_based_resin_sizing,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:284,test_conflicting_plan_keys_and_split_streams_are_rejected,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:306,test_vaporizer_does_not_substitute_sensible_heat,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:343,test_manual_price_monte_carlo_reconciles_same_canonical_run,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:378,test_comparison_retains_missing_vs_zero,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:387,test_phase_change_choice_preserves_conflicting_enthalpy_as_alternative,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:450,test_specialist_refresh_cannot_replace_approved_cost_or_scope,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:477,test_resolution_api_reuses_store_and_unknown_parent_404,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:507,test_real_charlie_thirteen_cases_against_saved_engineering_register,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_equipment_resolution.py:553,test_split_cannot_assign_all_parent_measurements_or_connections_by_default,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:226,test_independent_unlevered_cash_and_metrics,Independent numerical reference,Reviewed synthetic specified cash series and separate discounted-sum expected value,Analytic synthetic case only; no industrial source
+backend/tests/test_financial_modelling.py:243,test_multi_year_construction_three_years_then_production,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:258,test_financing_tax_shield_and_project_independence,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:286,test_debt_grace_construction_interest_and_annuity,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:307,test_balloon_and_insufficient_equity,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:336,test_working_capital_changes_partial_recovery,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:351,test_loss_carry_expiry_offsets_and_no_refund,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:360,test_depreciation_methods_non_depreciable_and_replacement,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:406,test_disposal_gain_closure_and_tax_policy,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:416,test_startup_expensed_not_invested_and_depreciated_twice,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:438,test_actual_opex_not_ramped_again_and_explicit_driver,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:481,test_inflation_fx_missing_units_and_missing_assumptions,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:535,test_zero_production_period_and_negative_cash,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:557,test_irr_multiple_tangent_undefined_and_mirr,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:575,test_garrett_table_6_3_matching_uniform_convention,Independent numerical reference — source transcription unverified,Reviewed fixed expected table NPV constants; original table not rechecked,SOURCE NOT VERIFIED
+backend/tests/test_financial_modelling.py:601,test_scenarios_snapshots_no_paid_calls_and_existing_baseline,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:630,test_real_upstream_outputs_integrate_without_double_counting,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:746,test_midyear_production_reuses_revenue_math_once,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:804,test_multiple_products_do_not_receive_arbitrary_lcop_allocation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:818,test_nonrefundable_credits_cap_liability_and_require_policy_source,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:840,test_historical_actual_prices_and_missing_fx_are_not_silently_relabelled,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:862,test_capital_double_counting_driver_unit_and_instantaneous_depreciation,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:900,test_three_year_construction_then_twenty_percent_and_full_production,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_financial_modelling.py:940,test_unit_costs_break_even_and_lcop_have_explicit_common_basis,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_fresh_equipment_audit.py:11,test_repeat_campaign_does_not_count_skipped_runs_as_passes,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_fresh_equipment_audit.py:52,test_openpytea_audit_blocks_other_catalogues_and_calculation_routes,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_fresh_equipment_audit.py:81,test_audit_detects_duplicate_tags_and_ab_quantity,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_fresh_equipment_audit.py:94,test_audit_ignores_preexisting_response_cache,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_fresh_equipment_audit.py:106,test_local_cache_off_ignores_existing_responses_and_never_writes,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_boundary_extrapolation.py:15,test_cyclone_lower_and_upper_boundary,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_boundary_extrapolation.py:27,test_strict_policy_and_graph_permission_remain_available,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_boundary_extrapolation.py:37,test_explicit_exponent_preserves_precedence_and_requires_rationale,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_boundary_extrapolation.py:53,test_in_range_results_unchanged_and_missing_models_not_invented,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_boundary_extrapolation.py:65,test_shared_policy_applies_beyond_cyclone,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_final_equipment.py:181,test_all_final_variants_against_independent_decimal_scaling,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_final_equipment.py:218,test_invalid_sizes_scopes_units_and_variants_fail,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_final_equipment.py:233,test_graph_only_variants_are_not_silently_priced,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_final_equipment.py:251,test_installed_and_unit_price_references_cannot_be_treated_as_purchase_totals,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_final_equipment.py:277,test_catalogue_covers_every_equipment_page_exactly_once,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_first_ten.py:42,test_general_scaling_not_linear_or_inflation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_first_ten.py:47,test_direct_adsorber_equations_independent_decimal_results,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_first_ten.py:64,test_strict_printed_adsorber_limits_and_gap,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_first_ten.py:69,test_each_scaling_module_uses_its_printed_exponent,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_first_ten.py:125,test_alternate_variants_and_distinct_boiler_units,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_first_ten.py:168,test_agitator_bands_and_unsupported_variable_exponent,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_first_ten.py:206,test_metadata_units_and_extrapolation_guards,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_first_ten.py:225,test_reference_currency_and_index_not_implicitly_converted,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_first_ten.py:240,test_adsorber_boundary_anchor_extrapolation,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_first_ten.py:258,test_shared_boundary_scaling_preserves_reference_basis,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_first_ten.py:276,test_invalid_general_inputs_fail_closed,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_integration.py:36,test_registry_all_51_groups_154_configurations_with_cell_lineage,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_integration.py:51,test_direct_equations_are_authoritative_despite_bad_graph_readings,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_integration.py:71,test_graph_requires_provisional_opt_in,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_integration.py:80,test_power_fit_independent_known_curve_and_holdout_exclusion,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_integration.py:90,test_invalid_duplicate_and_nonfinite_graph_data_rejected,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_integration.py:102,test_fitted_extrapolation_requires_justification,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_integration.py:121,test_printed_exponent_boundary_and_lower_anchor,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_integration.py:130,test_direct_affine_extrapolation_requires_caller_basis,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_integration.py:141,test_conflicting_units_missing_points_and_branch_gap_are_explicit,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_integration.py:155,test_unit_and_source_validation,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_integration.py:166,test_factor_selection_confirmation_scopes_and_no_double_counting,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_integration.py:204,test_module_and_index_pipeline_reconciles,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_integration.py:223,test_index_series_and_missing_provenance_rejected,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_integration.py:248,test_all_groups_have_at_least_one_usable_configuration,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_integration.py:260,test_agitator_power_bands_never_mix_reference_points,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_integration.py:271,test_fit_diagnostics_cannot_mutate_cached_results,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_integration.py:278,test_factor_catalogue_all_ids_unique_and_scoped,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_next_ten.py:73,test_reference_methods_and_both_boundary_directions,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_next_ten.py:95,test_columns_use_weight_and_printed_range,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_next_ten.py:113,test_packing_is_scoped_unit_price_and_negative_exponent,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_next_ten.py:138,test_source_variant_exponents,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_next_ten.py:181,test_cooler_and_quencher_explicit_equations,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_next_ten.py:192,test_direct_equation_extrapolates_from_top_and_bottom,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_next_ten.py:216,test_dryer_volume_is_not_graph_axis_coordinate,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_next_ten.py:226,test_unknown_variants_and_invalid_inputs_remain_blocked,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_third_ten.py:84,test_all_reference_variants_and_both_boundary_directions,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_third_ten.py:123,test_duct_equations_are_per_foot_not_total_or_thousands,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_third_ten.py:141,test_duct_extrapolation_uses_boundary_not_affine_target,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_third_ten.py:153,test_heat_exchanger_direct_equations_against_decimal,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_third_ten.py:169,test_heat_exchanger_boundary_anchors,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_third_ten.py:185,test_reference_scope_unit_and_configuration_guards,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_garrett_third_ten.py:200,test_direct_methods_reject_invalid_inputs_and_nonpositive_anchor_prices,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_gas_compression_bridge.py:15,test_mass_and_molar_flow_use_same_canonical_compression_calculation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_gas_compression_bridge.py:36,test_discharge_absolute_pressure_binding_preserves_source_and_gauge_basis,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_heat_exchanger_basis.py:60,test_balanced_duty_lmtd_area_and_cell_lineage,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_heat_exchanger_basis.py:72,test_conflicting_side_retained_and_strict_policy_rejects,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_heat_exchanger_basis.py:82,test_wrong_sign_not_silently_absoluted,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_heat_exchanger_basis.py:89,test_unknown_roles_and_unconfirmed_enthalpy_rejected,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_heat_exchanger_basis.py:100,test_temperature_cross_rejected,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_heat_exchanger_basis.py:107,test_equal_terminal_differences_stable,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_heat_exchanger_basis.py:113,test_sensible_and_latent_routes,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_heat_exchanger_basis.py:131,test_shared_utility_requires_allocation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_heat_exchanger_basis.py:142,test_missing_terminal_requires_explicit_assumption,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_heat_exchanger_basis.py:151,test_bad_dimensions_and_nonfinite_rejected,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_heat_exchanger_basis.py:162,test_canonical_model_unit_handoff_and_automatic_resolver,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_heat_exchanger_basis.py:257,test_direct_cell_temperature_survives_competing_ai_interpretation_with_audit,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_heat_exchanger_basis.py:283,test_explicit_thermal_cell_choice_resolves_conflicting_direct_sources_without_editing_them,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_heat_exchanger_basis.py:334,test_thermal_source_choices_cannot_cross_streams_properties_or_omit_rationale,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_heat_exchanger_basis.py:344,test_malformed_thermal_source_choices_return_validation_errors,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_incremental_economics.py:11,test_missing_energy_keeps_independent_sales_and_known_expenses,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_incremental_economics.py:30,test_invalid_second_sale_does_not_erase_first_or_opex,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_incremental_economics.py:43,test_revenue_does_not_require_capital_and_cost_plus_is_pending,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_incremental_economics.py:55,test_pipeline_exposes_partial_results_without_capex,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_incremental_economics.py:67,test_healthy_expenses_survive_a_bad_material_and_no_duplicate_charge,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_incremental_economics.py:79,test_partial_currency_view_preserves_pending_and_converts_known_cells,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_incremental_economics.py:103,test_missing_operating_hours_keeps_fixed_labour,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_incremental_economics.py:113,test_partial_report_does_not_require_investment_metrics,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_incremental_economics.py:125,test_price_update_recalculates_revenue_and_dependent_sales_factors,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_installation_costs.py:34,test_autoclave_100_gallons_1500_psi_independent_source_factor,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_installation_costs.py:44,test_configuration_specific_tanks_and_agitators,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_installation_costs.py:62,test_plate_frame_material_specific_factor_not_borrowed_for_spiral,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_installation_costs.py:85,test_pump_subtypes_and_ambiguous_merged_curve,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_installation_costs.py:103,test_explicit_installation_factor_not_applied_twice,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_installation_costs.py:124,test_missing_source_factor_is_unknown_not_zero_or_module,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_installation_costs.py:136,test_already_installed_source_prices_not_double_counted_or_reverse_inferred,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_installation_costs.py:146,test_all_three_components_escalate_together,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_installation_costs.py:166,test_total_cost_shows_three_separate_reconciled_totals,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_installation_costs.py:187,test_unit_quantities_extend_each_component,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_installation_costs.py:197,test_partial_missing_installation_does_not_hide_equipment_total,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_installation_costs.py:207,test_mixed_index_and_unresolved_items_suppress_complete_component_totals,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_installation_costs.py:221,test_every_curve_has_explicit_installation_metadata,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_isolated_stages.py:31,test_equipment_without_data_does_not_run_data_or_ai,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_isolated_stages.py:47,test_data_runs_alone_and_reading_page_executes_nothing,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_isolated_stages.py:61,test_revenue_has_no_capex_or_opex_dependency,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_isolated_stages.py:78,test_revenue_uses_explicitly_selected_project_price_basis,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_isolated_stages.py:99,test_opex_preparation_fills_missing_fields_without_overwriting_locked_revenue,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_isolated_stages.py:127,test_manual_stage_order_and_finance_only_consumes_saved_inputs,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_isolated_stages.py:167,test_equipment_edit_marks_dependents_stale_but_does_not_run_them,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_isolated_stages.py:188,test_itemized_opex_can_run_without_capex_or_revenue,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_isolated_stages.py:223,test_currency_and_price_views_never_run_any_stage,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_isolated_stages.py:241,test_api_upload_is_idle_and_old_full_run_endpoint_is_disabled,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_isolated_stages.py:286,test_revenue_ai_ignores_large_equipment_outputs,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_manual_revenue_routing.py:16,test_manual_type_routes_to_python_without_ai,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_method_specific_revenue_forms.py:63,test_method_form_routes_to_existing_engine_with_independent_expected_amount,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_method_specific_revenue_forms.py:69,test_each_required_field_is_checked_before_calculation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_method_specific_revenue_forms.py:75,test_storage_billed_monthly_does_not_multiply_annual_pallet_days_by_twelve,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_method_specific_revenue_forms.py:80,test_monthly_reserved_capacity_uses_twelve_periods,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_method_specific_revenue_forms.py:84,test_throughput_cannot_replace_contracted_capacity,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_method_specific_revenue_forms.py:88,test_capacity_fixed_fee_requires_separate_scope,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo.py:88,test_distributions_reproduce_and_respect_limits,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo.py:106,test_method_ranges_and_approved_commercial_draws,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo.py:136,test_correlations_and_constraints_cannot_be_bypassed,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo.py:174,test_alias_cycles_rejected_and_baseline_preserved,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo.py:207,test_canonical_financials_and_reproducible_simulation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo.py:243,test_unpriced_equipment_never_counts_as_success,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo.py:278,test_all_thirteen_charlie_exceptions_are_explicit,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo.py:304,test_actual_charlie_register_when_available,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo.py:318,test_boolean_quantity_and_unknown_target_are_rejected,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo.py:329,test_failed_iterations_do_not_enter_probability_denominators,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo.py:343,test_confirmed_alias_is_not_charged_twice,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo.py:366,test_engineering_proposals_are_separate_and_require_enablement,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo.py:400,test_api_freezes_baseline_and_rejects_stale_and_wrong_parent,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo.py:457,test_user_locked_parameters_do_not_auto_enable,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo.py:481,test_marginal_moments_are_consistent_with_definitions,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo.py:491,test_preflight_uses_reviewed_central_assumptions,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo.py:517,test_zero_weight_discrete_alternative_is_never_selected,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo.py:526,test_input_fingerprint_includes_source_values,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo_uncertainty_discovery.py:11,test_default_capital_factors_have_published_ranges_and_recalculate,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo_uncertainty_discovery.py:40,test_ai_ranges_are_preserved_without_inventing_bounds_for_other_guesses,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo_uncertainty_discovery.py:70,test_fixed_source_observations_and_non_numeric_metadata_are_not_sample_targets,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo_uncertainty_discovery.py:80,test_ai_proposals_cannot_replace_saved_central_value_or_enable_locked_inputs,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_monte_carlo_uncertainty_discovery.py:92,test_all_eligible_factors_complete_without_inventing_offsite_scope,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_nottingham_parser.py:63,test_nested_headers_reference_columns_blank_rows_and_repeated_blocks,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_nottingham_parser.py:93,test_review_batches_cover_all_source_cells_and_keep_small_contexts,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_nottingham_parser.py:111,test_review_keeps_successful_sections_after_failure,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_nottingham_parser.py:147,test_review_manifest_exposes_existing_equipment_names_for_supporting_sheets,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_observation_selection.py:17,test_direct_measurement_precedes_inferred_conflict_and_retains_all_evidence,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_observation_selection.py:30,test_equivalent_direct_readings_converted_without_duplicate_charge,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_observation_selection.py:38,test_conflicting_direct_measurements_remain_unresolved,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_openpytea_catalogue.py:41,test_every_imported_equation_parity,Regression / independent software parity,"Pinned upstream evaluator; shared dataset, not independent engineering source",Not industrial or independently transcribed textbook reference
+backend/tests/test_openpytea_catalogue.py:70,test_every_available_adapter_preserves_source_and_units,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_openpytea_catalogue.py:91,test_import_audit_and_idempotency,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_openpytea_catalogue.py:124,test_disabled_rows_are_visible_and_not_automatically_priced,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_openpytea_catalogue.py:136,test_invalid_size,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_openpytea_catalogue.py:141,test_no_extrapolation_parallelisation_or_silent_missing_range,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_openpytea_catalogue.py:149,test_quartic_optional_coefficients_and_overflow,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_openpytea_catalogue.py:169,test_two_independent_inputs_and_conversion_source,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_openpytea_catalogue.py:186,test_generic_material_installation_are_explicit_and_relative,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_openpytea_catalogue.py:237,test_installed_scope_and_capex_no_purchase_factor_uplift,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_openpytea_catalogue.py:281,test_two_variable_bridge_uses_independent_sources_and_preserves_assumptions,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_openpytea_catalogue.py:341,test_pump_flow_head_derivation_and_explicit_gallon_basis,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_openpytea_catalogue.py:363,test_monte_carlo_uses_canonical_scoped_costs_without_llm,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_openpytea_catalogue.py:393,test_published_pressure_limit_is_checked_when_condition_is_supplied,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_openpytea_catalogue.py:423,test_per_foot_cost_quantity_is_physical_not_item_count,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_openpytea_catalogue.py:446,test_shaft_and_electrical_power_need_efficiency_conversion,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_openpytea_catalogue.py:484,test_pinned_import_is_idempotent_without_changing_manifest,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_openpytea_catalogue.py:519,test_approved_twenty_year_monte_carlo_is_reproducible,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_operating_economics.py:150,test_quantities_use_314_day_schedule_and_ramp_once,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_operating_economics.py:171,test_cost_plus_solves_sales_dependent_opex_mutually,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_operating_economics.py:188,test_explicit_product_statement_required_but_not_a_fake_sale,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_operating_economics.py:198,test_changes_propagate_and_original_stays_unchanged,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_operating_economics.py:215,test_hydraulic_and_shaft_energy_are_python_physics,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_operating_economics.py:252,test_detail_replaces_factor_and_duplicates_blocked,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_operating_economics.py:273,test_invalid_cost_plus_assumptions_do_not_make_invented_profit,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_operating_economics.py:280,test_price_basis_not_silently_relabelled,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_operating_economics.py:288,test_saved_shared_assumptions_recalculate_without_ai_and_preserve_baseline,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_operating_economics.py:366,test_shared_study_report_is_escaped_and_contains_complete_schedules,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_operating_economics.py:406,test_revenue_deductions_have_one_cost_owner,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:105,test_source_ranges_and_exact_bases,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:136,test_minimum_full_structure_independent_total,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:153,test_maximum_full_structure_no_group_double_charge,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:163,test_selected_factors_and_all_boundaries,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:184,test_wrong_capital_base_requires_explicit_override,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:213,test_no_default_factors_or_missing_costs_as_zero,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:219,test_explicit_exclusions_and_conflicts,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:243,test_category_completeness_must_be_reviewed,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:248,test_quantity_price_and_headcount_salary,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:273,test_incompatible_quantity_units_blocked,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:286,test_multiple_detailed_lines_and_factor_replacement,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:309,test_loaded_salary_and_maintenance_labor_overlap,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:334,test_percentage_component_dependency,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:353,test_cycle_and_missing_dependencies,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:396,test_capital_wc_do_not_enter_cash_opex,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:420,test_unsupported_numerical_inputs,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:437,test_duplicate_ids_and_bases,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:452,test_currency_and_price_period_no_implicit_escalation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:469,test_freeze_restore_scenario_and_decimal_context,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:491,test_market_and_engineering_evidence,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:503,test_registry_independence_and_legacy_not_default,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:517,test_engineering_helpers,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:557,test_canonical_capex_adapter_excludes_wc,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex.py:595,test_financial_handoff_and_draft_advisor,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex_cost_register.py:181,test_existing_engine_arithmetic_unchanged_and_lineage_retained,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex_cost_register.py:192,test_inactive_methods_not_added_and_comparisons_do_not_mutate,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex_cost_register.py:207,test_method_switch_requires_review_and_preserves_baseline,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex_cost_register.py:221,test_packaging_without_storage_cannot_replace_combined_allowance,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex_cost_register.py:236,test_unresolved_inactive_price_does_not_block_baseline,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex_cost_register.py:256,test_one_owner_per_expense_scope,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex_cost_register.py:268,test_missing_selection_unknown_method_and_duplicate_options,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex_cost_register.py:293,test_missing_shared_value_reference_duplicate_and_unit_mismatch,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex_cost_register.py:322,test_evidence_dates_types_and_quotes_are_not_verification,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex_cost_register.py:338,test_no_shadow_numeric_values_or_duplicate_bindings,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex_cost_register.py:356,test_annual_consumption_shared_hours_and_tariff,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex_cost_register.py:430,test_shared_labor_change_invalidates_related_factor_reviews,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex_cost_register.py:445,test_labor_method_change_recalculates_dependencies_and_invalidates_reviews,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex_cost_register.py:491,test_initial_capital_does_not_replace_annual_expense_coverage,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex_cost_register.py:512,test_freeze_restore_hash_determinism_and_stale_revision,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex_cost_register.py:537,test_named_base_kind_validation_and_engine_exclusions_still_apply,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_opex_cost_register.py:548,test_unused_bases_do_not_require_prices_but_duplicate_bindings_are_rejected,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_orchestration.py:140,test_actual_workbook_streams_and_partial_exclusions,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_orchestration.py:152,test_complete_chain_with_explicit_synthetic_assumptions,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_orchestration.py:175,test_numeric_text_from_browser_uses_canonical_converter,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_orchestration.py:184,test_rerun_user_lock_persistence_and_comparison,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_orchestration.py:240,test_unknown_source_and_model_do_not_invent_data,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_orchestration.py:258,test_ai_cache_failure_and_manual_priority,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_orchestration.py:307,test_bad_files,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_orchestration.py:316,test_no_dynamic_types_and_invalid_json_numbers,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_orchestration.py:338,test_source_backed_recovery_and_conflict_preservation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_orchestration.py:392,test_ai_cannot_self_verify_physical_values_or_product_quality,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_orchestration.py:408,test_local_api_invalid_upload_and_origin_guards,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_orchestration.py:441,test_missing_value_recovers_only_from_aligned_explicit_source,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_orchestration.py:502,test_fresh_upload_publishes_capital_before_operating_advice,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_orchestration.py:537,test_missing_financial_result_is_incomplete_not_success,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pending_revenue.py:36,test_all_four_statements_are_preserved_and_pending_entries_are_not_income,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pending_revenue.py:47,test_pending_opportunity_cannot_also_be_calculated_payment,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pending_revenue.py:54,test_pending_opportunities_require_real_quotes_and_matching_categories,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pressure_adjustment.py:43,test_105_bar_power_proxy_independent_ratio_and_components,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pressure_adjustment.py:64,test_table_nodes_and_linear_interpolation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pressure_adjustment.py:76,test_identity_and_return_to_original_do_not_change_baseline,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pressure_adjustment.py:85,test_pressure_basis_is_explicit_and_atmosphere_not_assumed,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pressure_adjustment.py:96,test_proxy_requires_approval_and_justification,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pressure_adjustment.py:104,test_open_tank_and_other_equipment_do_not_accept_vessel_proxy,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pressure_adjustment.py:119,test_native_column_ratio_and_no_double_pressure_factor,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pressure_adjustment.py:147,test_vessel_reference_uses_factor_ratio_not_absolute_factor,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pressure_adjustment.py:169,test_outside_table_envelope_requires_justified_power_extrapolation,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pressure_adjustment.py:197,test_totals_and_index_apply_once_to_all_components,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pressure_adjustment.py:221,test_parsed_design_pressure_must_match_selected_scenario,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pressure_adjustment.py:250,test_dropdown_metadata_marks_proxy_and_default_unchanged,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pricing_handoff.py:12,test_planning_keeps_design_totals_and_full_original_evidence,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pricing_handoff.py:53,test_mass_residence_and_volume_throughput_use_explicit_density,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pricing_handoff.py:88,test_partial_equipment_batch_failure_preserves_other_selections,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pricing_handoff.py:124,test_correction_batches_only_target_failed_equipment,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pricing_provenance.py:23,test_seeded_approval_does_not_establish_user_price,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pricing_provenance.py:28,test_explicit_user_reapproval_is_recorded_by_edit_endpoint,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pricing_provenance.py:58,test_previous_capex_cannot_be_an_automatic_equipment_price,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_pricing_provenance.py:69,test_editing_notes_does_not_silently_approve_an_imported_price,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_product_quantity_basis.py:4,test_explicit_tonne_quote_resolves_legacy_t,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_product_quantity_basis.py:7,test_unspecified_ton_is_not_guessed,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_product_quantity_basis.py:11,test_component_basis_reads_biomass_not_carried_water,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_production_sizing_bridge.py:41,test_productivity_scenario_without_invented_flow_or_connection,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_production_sizing_bridge.py:64,test_invalid_productivity_scenarios_rejected,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_quantity_role_validation.py:7,test_oxygen_feed_does_not_become_broth_inventory_even_with_liquid_density_assumption,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_quick_equipment_override.py:11,test_override_save_recalculate_and_return_to_model_without_ai,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_reference_repair.py:6,test_reference_repair_retains_values_and_records_inference,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_reference_repair.py:30,test_reference_repair_cannot_invent_key,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_reference_repair.py:43,test_missing_energy_is_not_fabricated,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:157,test_independent_quantity_and_revenue_arithmetic,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:168,test_multiyear_ramp_up_and_explicit_unsold_production,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:186,test_byproducts_separate_and_allocation_blocks_duplicate_sales,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:205,test_outlets_not_automatically_sold,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:213,test_specifications_missing_stream_and_physical_llm_data_blocked,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:230,test_review_and_exclusions,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:248,test_net_fob_deductions_premiums_and_no_compounding,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:266,test_included_freight_not_deducted_twice,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:281,test_opex_classification_never_reduces_revenue_and_deduction_needs_scope,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:300,test_duplicate_and_hierarchical_adjustments_negative_price,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:319,test_market_share_and_growth_are_explicit_and_10_percent_not_cap,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:354,test_sales_cannot_exceed_production_or_market,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:380,test_unit_conversion_and_unsupported_mass_volume,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:397,test_missing_numeric_and_metadata_bounds,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:417,test_duplicate_ids_and_mismatched_years,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:429,test_zero_sales_is_not_unknown_and_zero_output_year,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:440,test_saved_overrides_recalculate_without_model_call,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:482,test_saved_input_results_and_opex_adapter,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:502,test_canonical_measurement_bridge_and_no_raw_parser_changes,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:524,test_decimal_context_independence,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:531,test_llm_physical_fractions_require_user_engineering_resolution,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:543,test_justified_premium_is_not_artificially_limited_to_100_percent,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:552,test_explicit_model_call_draft_and_stale_proposal,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:583,test_invented_stream_sources_and_contract_probability_rejected,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:603,test_unknown_price_stays_unknown_and_research_permission_no_calls,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:617,test_provider_disabled_and_sanitized_network_error,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue.py:632,test_provider_structured_payload_refusal_incomplete_and_malformed,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_authority.py:48,test_box_cannot_be_replaced_by_process_description_or_manual_rationale,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_authority.py:58,test_missing_prices_and_source_mappings_ask_instead_of_inventing,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_authority.py:71,test_one_or_multiple_user_approved_sources_feed_real_finance,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_authority.py:90,test_price_schedule_and_workbook_changes_invalidate_approval_but_opex_does_not,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_authority.py:106,test_partial_fallback_cannot_send_unapproved_income_to_finance,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_authority.py:124,test_only_explicit_server_approval_and_current_revision_are_accepted,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_authority.py:162,test_saved_historical_outputs_do_not_bypass_live_approval_view,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_authority.py:182,test_uncertainty_plan_cannot_drop_revenue_authority,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_authority.py:198,test_clarification_draft_cannot_be_approved_as_zero_income,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:93,test_each_category,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:101,test_six_categories_plus_existing_products,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:113,test_multiple_lines_same_category,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:121,test_multiple_products_preserve_allocations,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:131,test_duplicate_payment_cross_categories_rejected,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:136,test_duplicate_with_legacy_product_rejected,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:140,test_unknown_price_is_unresolved_not_zero,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:147,test_no_identified_income_unresolved,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:150,test_fixed_plus_variable_and_minimum_floor,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:163,test_annual_and_monthly_capacity_with_availability,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:178,test_changes_and_escalation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:198,test_environmental_eligibility_not_automatic,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:205,test_fixed_income_no_physical_sales,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:219,test_snapshot_and_recalculation_dont_call_llm,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:225,test_negative_nonfinite_wrong_units,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:231,test_excluded_income_keeps_reason,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:239,test_treatment_only_all_the_way_to_finance,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:271,test_fixed_payment_finance_validation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:286,test_savings_only_reduces_target_not_revenue,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:314,test_savings_wrong_target_and_over_reduction,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:334,test_structured_interpreter_calls_existing_provider_only,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:343,test_capacity_not_annualized_from_stream_flow,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:352,test_fake_llm_sources_are_not_market_evidence,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece.py:362,test_mixed_income_offsets_cost_plus_and_reconciles,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece_review.py:53,test_all_nonproduct_mece_forms_reach_existing_python_ledger,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece_review.py:92,test_product_coproduct_ranges_and_timeline_share_one_schedule,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece_review.py:175,test_research_chooses_only_returned_prices_and_python_bounds,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece_review.py:196,test_missing_or_incompatible_evidence_never_gets_a_fake_range,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece_review.py:215,test_research_opt_in_saves_only_a_review_proposal,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_mece_review.py:258,test_price_research_draft_does_not_require_inventing_a_physical_rate,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_method_forms.py:25,test_every_production_form_computes_independent_expected_income,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_method_forms.py:37,test_required_fields_checked_by_backend,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_method_forms.py:44,test_invalid_numbers_are_not_unknown_or_zero,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_method_forms.py:48,test_additional_fee_requires_distinct_scope,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_method_forms.py:56,test_form_tag_does_not_bypass_save_validation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_method_forms.py:62,test_storage_annual_usage_uses_one_period_even_when_invoiced_monthly,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_method_forms.py:66,test_method_inputs_cannot_leak_into_another_method,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_method_forms.py:71,test_preview_api_uses_shared_schema_without_saving_or_calling_ai,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_pending_research.py:9,test_research_explicit_pending_source_keeps_plan_unchanged,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_pending_research.py:31,test_pending_opportunity_without_user_intent_cannot_trigger_research,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_preflight.py:21,test_ready_revenue_has_no_optional_override_question,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_preflight.py:34,test_collects_price_source_fraction_and_schedule_in_one_pass,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_preflight.py:45,test_cross_source_duplicates_are_caught_before_approval,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_preflight.py:53,test_missing_price_and_sold_fraction_are_one_complete_review,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_preflight.py:64,test_later_year_preview_preserves_known_terms_and_measured_quantity,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_price_edits.py:30,test_price_only_change_updates_price_and_both_exact_quotes,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_price_edits.py:42,test_semantic_currency_unit_and_multiple_price_changes_are_not_rebound,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_price_edits.py:47,test_ambiguous_products_and_preconverted_prices_are_not_overwritten,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_price_edits.py:56,test_resaving_repairs_a_box_that_already_has_stale_quotes,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_price_edits.py:64,test_save_and_reapprove_price_change_works_without_ai_or_recreating_sale,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_price_edits.py:81,test_structured_price_edit_keeps_its_source_quote_and_requires_reapproval,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_rates.py:32,test_rate_normalization_time_and_upstream_convention,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_rates.py:79,test_full_rate_revenue_handoff_and_no_workbook_fabrication,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_rates.py:106,test_missing_rate_or_incompatible_units_do_not_commit_an_approved_model,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_rates.py:123,test_user_rate_extraction_is_literal_and_never_a_price_or_batch_quantity,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_rates.py:131,test_installed_openpytea_321_reference_is_equivalent_with_an_explicit_calendar,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_rates.py:151,test_llm_can_select_only_literal_user_rates_and_cannot_approve_them,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_rates.py:223,test_simple_edits_preserve_existing_deductions_and_other_income,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_rates.py:256,test_explicit_revenue_period_is_not_relabelled_as_historical_opex,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_refresh.py:17,test_entry_and_saved_box_produce_the_same_commercial_draft,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_refresh.py:50,test_reinterpretation_bypasses_cache_and_locks_only_for_commercial_inputs,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_refresh.py:74,test_failed_ai_keeps_previous_inputs_and_releases_running_state,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_refresh.py:87,test_save_endpoint_queues_ai_but_approval_does_not,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_refresh.py:106,test_clarification_batch_over_description_limit_reaches_revenue_interpretation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_workflow.py:19,test_balance_and_process_description_are_both_required,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_workflow.py:26,test_approved_revenue_runs_without_capex_opex_or_financials_and_stays_scoped_on_rerun,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_workflow.py:49,test_unapproved_revenue_remains_a_draft,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_workflow.py:59,test_revenue_ai_contract_omits_costs_and_financial_assumptions,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_workflow.py:80,test_ai_planning_requests_revenue_only_and_retains_review_gate,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_revenue_workflow.py:100,test_upload_api_rejects_blank_process_before_starting_work,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_review_before_calculation.py:13,test_entry_prepares_without_pricing_then_explicit_run_prices,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_review_before_calculation.py:34,test_register_edits_persist_without_replacing_workbook,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_review_before_calculation.py:80,test_register_rejects_duplicates_and_old_revisions,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_review_before_calculation.py:104,test_capex_preparation_does_not_run_calculations,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_review_before_calculation.py:122,test_opex_preparation_preserves_revenue_and_does_not_price,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_review_before_calculation.py:141,test_api_defaults_to_review_and_cost_factor_catalogues,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_review_before_calculation.py:149,test_opex_retains_proposed_draft_when_calculation_dependencies_are_missing,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_shared_pipeline.py:16,test_legacy_and_current_sources_follow_same_fresh_pipeline,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_shared_pipeline.py:38,test_old_results_are_history_not_calculation_inputs,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_shared_pipeline.py:69,test_both_http_run_urls_dispatch_same_coordinator,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_shared_pipeline.py:103,test_historical_http_view_never_recalculates_even_with_currency,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_source_display.py:28,test_bounded_regex_display_masks,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_source_display.py:40,test_component_cell_retains_exact_value_and_source,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_specialist_batching.py:6,test_large_specialist_contexts_are_bounded_and_retry_independently,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_stage_connections.py:128,test_review_source_ids_survive_sorted_json,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_stage_connections.py:137,test_scalar_and_typed_sizing_parameters_share_one_calculation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_stage_connections.py:172,test_saved_edits_recalculate_every_stage_without_ai,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_stage_workflow.py:12,test_requires_review_before_batch,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_stage_workflow.py:19,test_approval_is_source_bound_and_edits_invalidate_it,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_stage_workflow.py:33,test_approve_rejects_missing_data_and_stale_revision,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_stage_workflow.py:42,test_all_stages_use_existing_runners_and_saved_revenue_approval,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_stage_workflow.py:60,test_batch_never_auto_approves_revenue_or_hides_partial_results,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_stage_workflow.py:73,test_polling_stays_active_between_stages,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_stage_workflow.py:82,test_economics_group_reuses_fresh_equipment_and_refreshes_finance,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_stage_workflow.py:103,test_all_economic_api_triggers_use_the_same_group,Integration test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_stage_workflow.py:115,test_group_preserves_approved_revenue_when_ai_is_requested,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_standard_gas_flow_bridge.py:51,test_reference_state_flow_and_reference_provenance_reach_cost_model,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_standard_gas_flow_bridge.py:81,test_reference_state_cannot_be_omitted_or_silently_assumed,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_thermal_screening.py:6,test_equal_outlets_have_positive_countercurrent_approach_not_parallel,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_thermal_screening.py:44,test_missing_or_conflicting_temperatures_do_not_become_invented_facts,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_thermal_screening.py:66,test_negative_enthalpies_have_signed_heat_release_not_negative_flow_claim,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_total_equipment_cost.py:18,test_routing_counts_and_source_evidence,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_total_equipment_cost.py:30,test_unit_prices_require_physical_quantities,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_total_equipment_cost.py:46,test_unresolved_equipment_is_never_silently_dropped,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_total_equipment_cost.py:53,test_distinct_cost_bases_and_scopes_not_added,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_total_equipment_cost.py:77,test_duplicate_tags_invalid_counts_and_empty_input,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_total_equipment_cost.py:88,test_graph_opt_in_and_bad_mapping,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion.py:25,test_mass_aliases_and_flow_time_bases,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion.py:35,test_ton_ambiguity_not_confused_with_refrigeration,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion.py:46,test_volume_gallon_definitions_are_explicit,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion.py:57,test_length_area_and_volume_dimensions,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion.py:65,test_temperature_absolute_and_difference_separate,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion.py:74,test_pressure_unit_scaling_preserves_basis,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion.py:90,test_power_thermal_basis_and_symbol_case,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion.py:109,test_gas_flows_do_not_assume_reference_states,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion.py:124,test_density_molar_flow_and_compound_coordinate,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion.py:134,test_provenance_and_no_silent_number_parsing,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion.py:145,test_resolver_never_uses_operating_pressure_for_design,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion.py:157,test_registry_normalizes_size_and_preserves_all_three_prices,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion.py:184,test_refrigeration_and_area_chart_scaling,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion.py:197,test_parsed_adapter_optional_pressure_and_ambiguity,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion.py:215,test_total_cost_inherits_shared_conversion,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion.py:247,test_physical_quantities_are_converted_before_all_cost_components,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion.py:267,test_round_trips_and_native_source_compatibility,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion.py:289,test_all_models_declare_requirements_and_do_not_expose_cache,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion_bridges.py:83,test_direct_flow_preserves_source_and_trace,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion_bridges.py:91,test_liquid_and_vessel_volume_require_user_density_and_residence,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion_bridges.py:114,test_pump_coordinate_and_power,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion_bridges.py:138,test_gas_molar_and_dryer_routes,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion_bridges.py:154,test_heat_area_uses_difference_and_confirmation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion_bridges.py:166,test_filter_mixing_and_vessel_mass,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion_bridges.py:207,test_no_unlinked_source_or_wrong_output_dimension,Unit or dimensional test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion_bridges.py:216,test_unresolved_models_and_inputs_are_visible,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion_bridges.py:227,test_saved_equation_flows_into_canonical_equipment_calculation,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion_bridges.py:256,test_standalone_enthalpy_is_not_equipment_power,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_unit_conversion_bridges.py:261,test_conditional_dryer_volume_preserves_explicit_reported_pressure_scenario,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_upload_limits.py:27,test_eight_mib_workbook_is_parsed_in_isolated_worker,Regression test,Name-based discovery; oracle review pending,Not established by name
+backend/tests/test_upload_limits.py:34,test_workbook_over_twenty_mib_is_rejected_before_decoding,Boundary or invalid-input test,Name-based discovery; oracle review pending,Not established by name

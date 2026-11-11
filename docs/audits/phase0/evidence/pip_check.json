@@ -1,0 +1,11 @@
+{
+  "command": [
+    "python3.12",
+    "-m",
+    "pip",
+    "check"
+  ],
+  "cwd": "<AUDIT_SCRATCH>/baseline",
+  "exit_code": 0,
+  "seconds": 1.53
+}

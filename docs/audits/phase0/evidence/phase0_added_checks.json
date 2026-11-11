@@ -1,0 +1,11 @@
+{
+  "synthetic_version_tests": "2 passed (rerun after formatting: 0.17s)",
+  "tracked_ast_and_narrow_secret_guard": "545 Python files parsed; 0 findings",
+  "frontend_typecheck": "exit 0",
+  "new_files_format": "Black check passed for two new Python files",
+  "artifact_validation": "13 required files; CSVs parse; capability source/test references exist; workflow YAML parses; git diff --check passed",
+  "original_failures": "Unchanged; existing test_equipment_resolution.py failure retained",
+  "application_changes": "None",
+  "cloud_or_paid_calls": "None",
+  "hosted_ci": "Not run"
+}

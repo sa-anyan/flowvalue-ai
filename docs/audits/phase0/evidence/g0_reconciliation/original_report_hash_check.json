@@ -1,0 +1,10 @@
+{
+  "baseline_test_report.md": true,
+  "capability_register.md": true,
+  "data_flow_and_dependencies.md": true,
+  "opex_revenue_finance_audit.md": true,
+  "phase0_final_report.md": true,
+  "phase1_execution_backlog.md": true,
+  "reference_project_recommendation.md": true,
+  "system_architecture.md": true
+}

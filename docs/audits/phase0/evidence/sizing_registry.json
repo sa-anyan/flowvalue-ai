@@ -1,0 +1,123 @@
+{
+  "ion_exchange_capacity": {
+    "input": "volume_flow",
+    "unit": "m3/h",
+    "calculator": "backend.engineering_sizing.ion_exchange.capacity_sizing",
+    "parameters": [
+      "ionic_load_mol_equiv_m3",
+      "service_cycle_h",
+      "working_resin_capacity_mol_equiv_m3",
+      "resin_bed_fraction"
+    ]
+  },
+  "vaporizer_area": {
+    "input": "heat_duty",
+    "unit": "kW",
+    "calculator": "backend.engineering_sizing.heat_exchangers.calculate",
+    "parameters": [
+      "latent_heat_kj_kg",
+      "phase_change_fraction",
+      "sensible_enthalpy_change_kj_kg",
+      "overall_u_w_m2_k",
+      "lmtd_k",
+      "lmtd_correction"
+    ]
+  },
+  "gas_compression": {
+    "input": "mass_flow",
+    "unit": "kg/h",
+    "calculator": "backend.engineering_sizing.compression.calculate",
+    "parameters": [
+      "molecular_weight_kg_kmol",
+      "temperature_k",
+      "absolute_pressure_bar",
+      "discharge_pressure_bar",
+      "heat_capacity_ratio",
+      "efficiency",
+      "compressibility_z"
+    ]
+  },
+  "phase_change_duty": {
+    "input": "mass_flow",
+    "unit": "kg/h",
+    "calculator": "backend.engineering_sizing.thermal.phase_change_duty",
+    "parameters": [
+      "latent_heat_kj_kg",
+      "phase_change_fraction",
+      "sensible_enthalpy_change_kj_kg"
+    ]
+  },
+  "evaporated_water": {
+    "input": "mass_flow",
+    "unit": "kg/h",
+    "calculator": "backend.engineering_sizing.thermal.evaporated_water",
+    "parameters": [
+      "feed_water_mass_fraction",
+      "product_water_mass_fraction"
+    ]
+  },
+  "ion_exchange_ebct": {
+    "input": "volume_flow",
+    "unit": "m3/h",
+    "calculator": "backend.engineering_sizing.ion_exchange.calculate",
+    "parameters": [
+      "empty_bed_contact_time_min",
+      "resin_bed_fraction"
+    ]
+  },
+  "vessel_hold_up": {
+    "input": "volume_flow",
+    "unit": "m3/h",
+    "calculator": "backend.engineering_sizing.vessels.calculate",
+    "parameters": [
+      "residence_time_h",
+      "working_fraction"
+    ]
+  },
+  "pump_duty": {
+    "input": "volume_flow",
+    "unit": "m3/h",
+    "calculator": "backend.engineering_sizing.pumps.calculate",
+    "parameters": [
+      "differential_pressure_bar",
+      "efficiency"
+    ]
+  },
+  "exchanger_area": {
+    "input": "heat_duty",
+    "unit": "kW",
+    "calculator": "backend.engineering_sizing.heat_exchangers.calculate",
+    "parameters": [
+      "overall_u_w_m2_k",
+      "lmtd_k",
+      "lmtd_correction"
+    ]
+  },
+  "filter_area": {
+    "input": "volume_flow",
+    "unit": "m3/h",
+    "calculator": "backend.engineering_sizing.filters.calculate",
+    "parameters": [
+      "hydraulic_loading_m_h"
+    ]
+  },
+  "gas_volume": {
+    "input": "mass_flow",
+    "unit": "kg/h",
+    "calculator": "backend.engineering_sizing.gases.calculate",
+    "parameters": [
+      "molecular_weight_kg_kmol",
+      "temperature_k",
+      "absolute_pressure_bar",
+      "compressibility_z"
+    ]
+  },
+  "dryer_chamber": {
+    "input": "volume_flow",
+    "unit": "m3/h",
+    "calculator": "backend.engineering_sizing.dryers.calculate",
+    "parameters": [
+      "gas_residence_time_s"
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "numerical_candidates": 236,
+  "catalogue_configurations": 594,
+  "libraries": {
+    "garrett": 154,
+    "nottingham": 15,
+    "additional_models": 4,
+    "openpytea": 421
+  },
+  "cost_status": {
+    "metadata_only": 173,
+    "available_provisional": 403,
+    "disabled": 18
+  },
+  "sizing_registry_methods": 12,
+  "tracked_python_files": 545,
+  "test_functions": 719,
+  "commercial_line_fields": [
+    "id",
+    "name",
+    "category",
+    "payment_id",
+    "quantity_unit",
+    "rate_period",
+    "arrangement",
+    "rationale",
+    "source_references",
+    "years",
+    "stream_id",
+    "included",
+    "fixed_variable_distinct",
+    "eligibility_basis",
+    "exclusion_reason"
+  ],
+  "openpytea_disabled": 18,
+  "openpytea_missing_primary_bounds": 55,
+  "engineering_register_rows": 248,
+  "reviewed_sizing_contract_rows": 12,
+  "garrett_direct_dispatch_configurations": 7,
+  "garrett_graph_fit_configurations": 147
+}

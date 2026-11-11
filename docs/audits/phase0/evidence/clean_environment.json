@@ -1,0 +1,7 @@
+{
+  "command": "python3.12 -m venv; pip install --no-index -r backend/requirements-monte-carlo.txt",
+  "exit_code": 1,
+  "seconds": 5.27,
+  "scope": "Clean isolated environment; no network packages downloaded",
+  "cwd": ""
+}

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "<G0_SCRATCH>/fresh/bin/python",
+    "-m",
+    "pytest",
+    "backend",
+    "-q",
+    "--tb=short"
+  ],
+  "cwd": "<G0_SCRATCH>/clean-source",
+  "exit_code": 1,
+  "seconds": 246.65,
+  "environment": "fresh Python3.12 venv/public-index installed dependencies; fresh git-archived source; no production/provider credentials",
+  "source": "74f364d + two separately identified synthetic Phase0 version tests"
+}

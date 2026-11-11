@@ -1,0 +1,13 @@
+{
+  "command": [
+    "python3.12",
+    "-m",
+    "pytest",
+    "backend",
+    "-q",
+    "--tb=short"
+  ],
+  "cwd": "<AUDIT_SCRATCH>/baseline",
+  "exit_code": 1,
+  "seconds": 191.8
+}

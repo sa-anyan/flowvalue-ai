@@ -1,0 +1,10 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "tests/*.mjs"
+  ],
+  "cwd": "<AUDIT_SCRATCH>/baseline/frontend",
+  "exit_code": 0,
+  "seconds": 1.69
+}

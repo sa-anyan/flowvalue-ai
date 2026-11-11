@@ -1,0 +1,15 @@
+{
+  "required_files": 13,
+  "csv_rows": {
+    "engineering_methods_register.csv": 248,
+    "requirements_register.csv": 26,
+    "capability_register.csv": 19,
+    "costing_methods_register.csv": 594,
+    "engineering_risk_register.csv": 16
+  },
+  "new_python_ast": "passed",
+  "workflow_yaml_parse": "passed (not hosted execution)",
+  "audit_evidence_narrow_secret_patterns": "0 findings",
+  "tracked_application_diff": "none",
+  "tracked_existing_test_diff": "none"
+}

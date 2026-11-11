@@ -1,0 +1,6 @@
+{
+  "command": "fresh Python3.12 venv pip --isolated install --index-url https://pypi.org/simple --only-binary=:all: --retries 0 --timeout 10 -r backend/requirements-phase0-tests.txt",
+  "exit_code": 0,
+  "seconds": 34.68,
+  "network": "Public package index only; no credentials/provider/cloud API"
+}
