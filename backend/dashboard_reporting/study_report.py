@@ -46,6 +46,12 @@ def equipment_rows(rows):
         }
 
 
+def equipment_status(stage):
+    if stage.get("result_is_stale") or stage.get("status") == "stale":
+        return '<p role="status">Saved changes await recalculation</p>'
+    return ""
+
+
 def render_partial(state):
     """Report resolved cells and pending dependencies without requiring a full DCF."""
     stages = (state.get("results") or {}).get("stages", {})
@@ -87,6 +93,7 @@ def render_partial(state):
     ]
     parts += [
         "<h2>Equipment register</h2>",
+        equipment_status(stages.get("equipment") or {}),
         partial_table(
             [
                 ("equipment_tag", "Equipment"),
@@ -229,6 +236,7 @@ def render_study(state):
     equipment = stages["equipment"]["result"]["equipment"]
     blocks += [
         "<h2>Equipment and capital scope</h2>",
+        equipment_status(stages["equipment"]),
         table(
             [
                 ("equipment_tag", "Equipment"),
