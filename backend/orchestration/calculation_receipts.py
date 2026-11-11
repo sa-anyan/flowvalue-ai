@@ -1,20 +1,40 @@
 """Versioned execution receipts and read-only assessment dependency checks."""
 
+from dataclasses import fields, is_dataclass
+from decimal import Decimal
 from hashlib import sha256
 import json
 from typing import Annotated, Literal, Self
 
-from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, model_validator
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, TypeAdapter, model_validator
 
 from backend.blocks.registry import dependencies, list_blocks
 from backend.orchestration.codec import plain
 
 Identifier = Annotated[str, Field(min_length=1, strict=True)]
-Digest = Annotated[str, Field(pattern=r"^sha256:[0-9a-f]{64}$")]
+Digest = Annotated[str, Field(strict=True, pattern=r"\Asha256:[0-9a-f]{64}\z")]
+CURRENT_INPUTS = TypeAdapter(dict[Identifier, tuple[Digest, Digest | None]])
+
+
+def _reject_non_finite_decimals(value):
+    # The wire codec converts Decimal to text before JSON can validate it.
+    if isinstance(value, Decimal) and not value.is_finite():
+        raise ValueError("Semantic input must contain only finite decimals")
+    if is_dataclass(value):
+        children = (getattr(value, field.name) for field in fields(value))
+    elif isinstance(value, dict):
+        children = value.values()
+    elif isinstance(value, (list, tuple)):
+        children = value
+    else:
+        return
+    for child in children:
+        _reject_non_finite_decimals(child)
 
 
 def semantic_digest(payload) -> str:
     """Hash the existing FlowValue wire representation, with a versioned domain."""
+    _reject_non_finite_decimals(payload)
     encoded = json.dumps(
         plain(payload), sort_keys=True, separators=(",", ":"), ensure_ascii=False,
         allow_nan=False,
@@ -92,6 +112,7 @@ def evaluate_dependencies(
     Receipt IDs bind the original lineage. A rerun yielding the same upstream
     output digest does not invalidate downstream solely because its ID changed.
     """
+    current_inputs = CURRENT_INPUTS.validate_python(current_inputs)
     selected = {}
     for receipt in receipts:
         if receipt.scope != scope:
@@ -123,6 +144,8 @@ def evaluate_dependencies(
                 state="unknown" if stage in legacy else "missing",
                 reasons=("Legacy output has no versioned receipt",) if stage in legacy else ("No receipt",),
             )
+        elif stage not in graph:
+            status = DependencyStatus(state="unknown", reasons=("Stage is not registered in the supplied graph",))
         elif receipt.output_digest is None:
             status = DependencyStatus(
                 state="unknown" if stage in legacy else "missing",
@@ -172,6 +195,9 @@ class StageLifecycle(Contract):
     active_completeness: Literal["complete", "partial"] | None = None
     previous_complete_receipt_id: Identifier | None = None
     superseded_receipt_ids: tuple[Identifier, ...] = ()
+    active_methods: tuple[MethodIdentity, ...] = ()
+    latest_attempt_methods: tuple[MethodIdentity, ...] = ()
+    current_methods: tuple[MethodIdentity, ...] | None = None
     freshness: DependencyStatus
     provenance: ProvenanceStatus
     approval_status: Literal["unknown"] = "unknown"
@@ -203,20 +229,30 @@ def evaluate_lifecycle(
         by_id[item.receipt_id] = item
         attempts[item.stage].append(item)
 
+    positions = {receipt_id: index for index, receipt_id in enumerate(by_id)}
+    for item in by_id.values():
+        for ref in item.upstream:
+            original = by_id.get(ref.receipt_id)
+            if original is not None and (
+                original.stage != ref.stage
+                or original.output_digest != ref.output_digest
+                or positions[ref.receipt_id] >= positions[item.receipt_id]
+            ):
+                raise ValueError(f"Invalid upstream receipt {ref.receipt_id} for {item.receipt_id}")
+
     latest = {stage: runs[-1] for stage, runs in attempts.items()}
     outputs = {
         stage: [item for item in runs if item.output_digest is not None]
         for stage, runs in attempts.items()
     }
     active = {stage: runs[-1] for stage, runs in outputs.items() if runs}
+    current_methods = current_methods or {}
     provenance = {}
     uncertainty = defaultdict(list)
     for stage, item in active.items():
         changed = []
         unknown = []
-        expected = (current_methods or {}).get(stage)
-        if expected is None and latest[stage] != item:
-            expected = latest[stage].methods
+        expected = current_methods.get(stage)
         if not _known_methods(item.methods) or not _known_methods(expected):
             unknown.append("Current or recorded method identity unavailable")
             if latest[stage] != item:
@@ -227,7 +263,7 @@ def evaluate_lifecycle(
         for ref in item.upstream:
             original = by_id.get(ref.receipt_id)
             replacement = active.get(ref.stage)
-            if original is None or original.stage != ref.stage or original.output_digest != ref.output_digest:
+            if original is None:
                 unknown.append(f"{ref.stage}: original receipt unavailable")
                 continue
             if replacement is None or original == replacement:
@@ -267,6 +303,9 @@ def evaluate_lifecycle(
             active_completeness=("complete" if item.outcome == "ready" else "partial") if item else None,
             previous_complete_receipt_id=previous_complete,
             superseded_receipt_ids=tuple(prior.receipt_id for prior in superseded),
+            active_methods=item.methods if item else (),
+            latest_attempt_methods=attempt.methods if attempt else (),
+            current_methods=current_methods.get(stage),
             freshness=status,
             provenance=provenance.get(stage, ProvenanceStatus(state="unknown", reasons=("No active receipt",))),
         )

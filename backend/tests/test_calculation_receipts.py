@@ -285,3 +285,87 @@ def test_lifecycle_fork_keeps_parent_receipt_as_original_lineage(tmp_path):
     assert views["equipment"].active_receipt_id is None
     assert views["equipment"].freshness.state == "unknown"
     assert store.get(saved["id"]) == saved
+
+@pytest.mark.parametrize("later_version", ["1", "2", None])
+def test_later_attempt_never_certifies_current_method(later_version):
+    from backend.orchestration.calculation_receipts import evaluate_lifecycle
+
+    active = receipt("engineering_data", methods=(method(),))
+    later = receipt("engineering_data", receipt_id="later", outcome="failed", output_digest=None,
+                    methods=(method(later_version),) if later_version else ())
+    views = evaluate_lifecycle(SCOPE, required_stage_graph({}), (active, later), inputs(active))
+    result = views["engineering_data"]
+    assert result.freshness.state == "unknown"
+    assert result.provenance.state == "unknown"
+    assert result.active_methods == active.methods
+    assert result.latest_attempt_methods == later.methods
+    assert result.current_methods is None
+
+
+def test_incomplete_independent_method_evidence_cannot_fall_back_to_attempt():
+    from backend.orchestration.calculation_receipts import evaluate_lifecycle
+
+    active = receipt("engineering_data", methods=(method(),))
+    later = receipt("engineering_data", receipt_id="later", outcome="blocked", output_digest=None,
+                    methods=active.methods)
+    incomplete = method().model_copy(update={"method_version": None})
+    result = evaluate_lifecycle(SCOPE, required_stage_graph({}), (active, later), inputs(active),
+                                current_methods={"engineering_data": (incomplete,)})["engineering_data"]
+    assert result.provenance.state == "unknown"
+    assert result.freshness.state == "unknown"
+    assert result.current_methods == (incomplete,)
+
+
+@pytest.mark.parametrize("invalid", ["stage", "digest", "order"])
+def test_present_upstream_reference_must_match_earlier_history(invalid):
+    from backend.orchestration.calculation_receipts import evaluate_lifecycle
+
+    upstream = receipt("engineering_data")
+    downstream = receipt("equipment", upstream)
+    if invalid == "order":
+        history = (downstream, upstream)
+    else:
+        changes = {"stage": "revenue"} if invalid == "stage" else {"output_digest": semantic_digest("wrong")}
+        wrong = downstream.upstream[0].model_copy(update=changes)
+        history = (upstream, downstream.model_copy(update={"upstream": (wrong,)}))
+    with pytest.raises(ValueError, match="Invalid upstream receipt"):
+        evaluate_lifecycle(SCOPE, required_stage_graph({}), history, inputs(upstream, downstream))
+
+
+def test_unknown_stage_requires_explicit_graph_registration():
+    from backend.orchestration.calculation_receipts import evaluate_lifecycle
+
+    future = receipt("future_stage")
+    graph = required_stage_graph({})
+    result = evaluate_lifecycle(SCOPE, graph, (future,), inputs(future))["future_stage"]
+    assert result.freshness.state == "unknown"
+    assert result.active_receipt_id == future.receipt_id
+    registered = evaluate_lifecycle(SCOPE, {**graph, "future_stage": ()}, (future,), inputs(future))
+    assert registered["future_stage"].freshness.state == "current"
+
+
+@pytest.mark.parametrize("value", [Decimal("NaN"), Decimal("Infinity"), Decimal("-Infinity")])
+def test_wire_digest_rejects_non_finite_decimals(value):
+    with pytest.raises(ValueError, match="finite"):
+        semantic_digest({"nested": [value]})
+
+
+@pytest.mark.parametrize("bad", ["sha256:short", "sha512:" + "0" * 64, "sha256:" + "0" * 64 + "\n"])
+def test_receipts_and_current_observations_reject_malformed_digests(bad):
+    with pytest.raises(ValidationError):
+        receipt("engineering_data", input_digest=bad)
+    with pytest.raises(ValidationError):
+        evaluate_dependencies(SCOPE, required_stage_graph({}), (), {"engineering_data": (bad, None)})
+
+
+def test_lifecycle_partial_replacement_does_not_certify_complete_dependency():
+    from backend.orchestration.calculation_receipts import evaluate_lifecycle
+
+    complete = receipt("engineering_data", methods=(method(),))
+    downstream = receipt("equipment", complete, methods=(method(),))
+    partial = complete.model_copy(update={"receipt_id": "partial-2", "outcome": "partial"})
+    views = evaluate_lifecycle(SCOPE, required_stage_graph({}), (complete, downstream, partial),
+                               inputs(partial, downstream), current_methods={"equipment": downstream.methods})
+    assert views["engineering_data"].active_completeness == "partial"
+    assert views["equipment"].freshness.state == "unknown"
+    assert "partial output" in " ".join(views["equipment"].freshness.reasons)
