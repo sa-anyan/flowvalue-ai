@@ -1,0 +1,137 @@
+[
+  {
+    "id": "MECH-SHELL",
+    "method": "vessel_mass",
+    "inputs": {
+      "inside_diameter_m": 1,
+      "wall_thickness_m": 0.1,
+      "straight_length_m": 2,
+      "material_density_kg_m3": 1000,
+      "heads_and_auxiliaries_kg": 50
+    },
+    "expected": "741.1503837897545124617815443214906345234",
+    "unit": "kg",
+    "derivation": "Annular area pi*(0.6^2-0.5^2)=0.11*pi m2; *2m*1000kg/m3+50kg. Thickness and head mass are supplied, not designed.",
+    "rtol": 2e-12,
+    "atol": 1e-12
+  },
+  {
+    "id": "PROD-VESSEL",
+    "method": "vessel_productivity",
+    "inputs": {
+      "product_rate_kg_h": 200,
+      "volumetric_productivity_kg_m3_h": 2,
+      "production_allocation_fraction": 0.5,
+      "working_fraction": 0.8
+    },
+    "expected": "62.5",
+    "unit": "m3",
+    "derivation": "200kg/h*.5/(2kg/m3/h)=50m3 working volume; /.8=62.5m3 gross. Productivity is a supplied scenario, not predicted kinetics.",
+    "rtol": 1e-13,
+    "atol": 1e-14
+  },
+  {
+    "id": "MIX-POWER",
+    "method": "mixing_power",
+    "value": 10,
+    "source_unit": "m3/h",
+    "inputs": {
+      "residence_time_h": 2,
+      "working_fraction": 0.8,
+      "power_density_kw_m3": 0.5
+    },
+    "expected": "12.5",
+    "unit": "kW",
+    "derivation": "10m3/h*2h/.8=25m3 design-volume basis; *.5kW/m3=12.5kW. Power density must use that same volume basis; not an agitator performance prediction.",
+    "rtol": 1e-13,
+    "atol": 1e-14
+  },
+  {
+    "id": "COMP-Z08",
+    "method": "gas_compression",
+    "value": 3600,
+    "inputs": {
+      "molecular_weight_kg_kmol": 28,
+      "temperature_k": 300,
+      "absolute_pressure_bar": 1,
+      "discharge_pressure_bar": 8,
+      "heat_capacity_ratio": 1.5,
+      "efficiency": 0.75,
+      "compressibility_z": 0.8
+    },
+    "expected": "285.06728976525394285714285712",
+    "unit": "kW",
+    "derivation": "Independent frozen-property integral int(v dP), v(P)=v1*(P1/P)^(2/3). For pressure ratio8, pressure term=1; work=1kg/s*(R/28)*300*.8*3/.75. A synthetic Z, not real-gas validation.",
+    "rtol": 5e-12,
+    "atol": 1e-14
+  },
+  {
+    "id": "COMP-Z12",
+    "method": "gas_compression",
+    "value": 3600,
+    "inputs": {
+      "molecular_weight_kg_kmol": 28,
+      "temperature_k": 300,
+      "absolute_pressure_bar": 1,
+      "discharge_pressure_bar": 8,
+      "heat_capacity_ratio": 1.5,
+      "efficiency": 0.75,
+      "compressibility_z": 1.2
+    },
+    "expected": "427.60093464788091428571428568",
+    "unit": "kW",
+    "derivation": "Same independent integral; pressure ratio8 gives exact pressure term1; supplied representative Z1.2. Does not assert any gas has this constant Z path.",
+    "rtol": 5e-12,
+    "atol": 1e-14
+  },
+  {
+    "id": "COMP-PUBLISHED",
+    "method": "gas_compression",
+    "value": 100.8,
+    "inputs": {
+      "molecular_weight_kg_kmol": 28,
+      "temperature_k": 300,
+      "absolute_pressure_bar": 1,
+      "discharge_pressure_bar": 10,
+      "heat_capacity_ratio": 1.4,
+      "efficiency": 0.78,
+      "compressibility_z": 1
+    },
+    "expected": "10.416876986384483",
+    "unit": "kW",
+    "derivation": "Fluids author documentation isentropic_work_compression example:10416.876986384483 J/mol.100.8kg/h at28kg/kmol=1mol/s, so10.416876986384483kW. Documentation used as independent reference, no source code imported.",
+    "rtol": 5e-12,
+    "atol": 1e-14
+  },
+  {
+    "id": "LEGACY-VOLUME",
+    "method": "volume_residence",
+    "value": 10,
+    "source_unit": "m3/h",
+    "inputs": {
+      "residence_time_h": 2,
+      "working_fraction": 0.8
+    },
+    "expected": "25",
+    "unit": "m3",
+    "derivation": "Existing reachable legacy route, same independent V=Q*t/f reference as vessel_hold_up:10*2/.8=25m3. Separate validation/lineage contract is not assumed from that equation.",
+    "rtol": 1e-13,
+    "atol": 1e-14
+  },
+  {
+    "id": "LEGACY-MASS",
+    "method": "mass_residence",
+    "value": 1000,
+    "source_unit": "kg/h",
+    "inputs": {
+      "density_kg_m3": 800,
+      "residence_time_h": 2,
+      "working_fraction": 0.8
+    },
+    "expected": "3.125",
+    "unit": "m3",
+    "derivation": "Explicit density converts1000kg/h to1.25m3/h; *2h/.8=3.125m3. Same-state density and residence assumptions required.",
+    "rtol": 1e-13,
+    "atol": 1e-14
+  }
+]

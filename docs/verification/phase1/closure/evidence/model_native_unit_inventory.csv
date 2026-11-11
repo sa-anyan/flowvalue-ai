@@ -1,0 +1,1064 @@
+model_id,source,category,coordinate,quantity,unit,required,manual_coordinate,cost_year,currency,status
+G256-001,garrett,,size,mass,1000 lb,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G256-001,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G256-001,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G256-001,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G257-002,garrett,,size,power,hp,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G257-002,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G257-002,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G257-002,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G257-003,garrett,,size,power,hp,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G257-003,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G257-003,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G257-003,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-004,garrett,,size,volume,gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-004,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-004,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-004,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-005,garrett,,size,volume,gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-005,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-005,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-005,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-006,garrett,,size,volume,gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-006,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-006,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-006,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-007,garrett,,size,volume,gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-007,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-007,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-007,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-008,garrett,,size,volume,gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-008,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-008,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G258-008,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G259-009,garrett,,size,power,refrigeration_ton,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G259-009,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G259-009,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G259-009,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G260-010,garrett,,size,volume,ft3,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G260-010,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G260-010,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G260-010,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G260-011,garrett,,size,volume,ft3,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G260-011,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G260-011,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G260-011,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G260-012,garrett,,size,volume,ft3,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G260-012,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G260-012,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G260-012,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G260-013,garrett,,size,volume,ft3,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G260-013,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G260-013,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G260-013,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G261-014,garrett,,size,volume_flow,cfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G261-014,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G261-014,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G261-014,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G261-015,garrett,,size,volume_flow,cfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G261-015,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G261-015,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G261-015,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G261-016,garrett,,size,volume_flow,cfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G261-016,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G261-016,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G261-016,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G261-017,garrett,,size,volume_flow,cfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G261-017,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G261-017,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G261-017,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G262-018,garrett,,size,boiler_power,boiler_hp,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G262-018,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G262-018,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G262-018,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G262-019,garrett,,size,mass_flow,lb/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G262-019,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G262-019,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G262-019,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G262-020,garrett,,size,mass_flow,lb/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G262-020,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G262-020,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G262-020,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G263-021,garrett,,size,standard_volume_flow,1000 scfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G263-021,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G263-021,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G263-021,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G264-022,garrett,,size,area,ft2,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G264-022,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G264-022,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G264-022,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G265-023,garrett,,size,mass_flow,ton/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G265-023,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G265-023,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G265-023,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-024,garrett,,size,length,ft,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-024,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-024,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-024,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-025,garrett,,size,length,ft,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-025,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-025,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-025,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-026,garrett,,size,length,ft,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-026,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-026,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-026,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-027,garrett,,size,length,ft,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-027,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-027,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-027,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-028,garrett,,size,length,ft,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-028,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-028,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-028,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-029,garrett,,size,length,ft,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-029,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-029,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G266-029,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G267-030,garrett,,size,mass_flow,ton/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G267-030,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G267-030,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G267-030,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G268-031,garrett,,size,length,ft,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G268-031,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G268-031,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G268-031,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G268-032,garrett,,size,mass,lb,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G268-032,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G268-032,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G268-032,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G269-033,garrett,,size,length,ft,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G269-033,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G269-033,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G269-033,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G269-034,garrett,,size,length,ft,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G269-034,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G269-034,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G269-034,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-035,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-035,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-035,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-035,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-036,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-036,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-036,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-036,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-037,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-037,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-037,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-037,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-038,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-038,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-038,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-038,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-039,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-039,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-039,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-039,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-040,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-040,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-040,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G270-040,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G271-041,garrett,,size,standard_volume_flow,scfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G271-041,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G271-041,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G271-041,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G271-042,garrett,,size,standard_volume_flow,scfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G271-042,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G271-042,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G271-042,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G271-043,garrett,,size,standard_volume_flow,scfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G271-043,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G271-043,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G271-043,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G271-044,garrett,,size,standard_volume_flow,scfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G271-044,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G271-044,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G271-044,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G272-045,garrett,,size,power,hp,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G272-045,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G272-045,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G272-045,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-046,garrett,,size,length,ft,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-046,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-046,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-046,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-047,garrett,,size,length,ft,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-047,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-047,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-047,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-048,garrett,,size,length,ft,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-048,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-048,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-048,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-049,garrett,,size,length,ft,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-049,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-049,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-049,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-050,garrett,,size,length,ft,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-050,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-050,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-050,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-051,garrett,,size,length,ft,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-051,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-051,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G273-051,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G274-052,garrett,,size,area,ft2,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G274-052,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G274-052,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G274-052,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G274-053,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G274-053,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G274-053,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G274-053,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G274-054,garrett,,size,volume_flow,1000 cfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G274-054,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G274-054,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G274-054,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G274-055,garrett,,size,volume_flow,1000 cfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G274-055,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G274-055,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G274-055,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G275-056,garrett,,size,volume_flow,1000 gpm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G275-056,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G275-056,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G275-056,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G276-057,garrett,,size,mass_flow,ton/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G276-057,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G276-057,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G276-057,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G276-058,garrett,,size,mass_flow,ton/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G276-058,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G276-058,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G276-058,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G276-059,garrett,,size,mass_flow,ton/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G276-059,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G276-059,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G276-059,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G277-060,garrett,,size,volume,ft3,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G277-060,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G277-060,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G277-060,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G277-061,garrett,,size,area,ft2,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G277-061,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G277-061,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G277-061,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G277-062,garrett,,size,volume,ft3,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G277-062,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G277-062,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G277-062,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G278-063,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G278-063,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G278-063,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G278-063,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G278-064,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G278-064,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G278-064,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G278-064,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G279-065,garrett,,size,volume_flow,1000 cfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G279-065,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G279-065,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G279-065,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G279-066,garrett,,size,volume_flow,1000 cfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G279-066,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G279-066,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G279-066,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G279-067,garrett,,size,volume_flow,1000 cfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G279-067,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G279-067,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G279-067,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G279-068,garrett,,size,volume_flow,1000 cfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G279-068,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G279-068,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G279-068,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G280-069,garrett,,size,area,ft2,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G280-069,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G280-069,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G280-069,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G280-070,garrett,,size,area,ft2,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G280-070,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G280-070,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G280-070,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G280-071,garrett,,size,area,ft2,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G280-071,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G280-071,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G280-071,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G281-072,garrett,,size,volume_flow,1000 cfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G281-072,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G281-072,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G281-072,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G281-073,garrett,,size,volume_flow,1000 cfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G281-073,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G281-073,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G281-073,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G281-074,garrett,,size,volume_flow,1000 cfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G281-074,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G281-074,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G281-074,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G281-075,garrett,,size,volume_flow,1000 cfm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G281-075,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G281-075,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G281-075,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-076,garrett,,size,area,ft2,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-076,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-076,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-076,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-077,garrett,,size,area,ft2,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-077,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-077,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-077,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-078,garrett,,size,area,ft2,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-078,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-078,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-078,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-079,garrett,,size,area,ft2,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-079,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-079,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-079,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-080,garrett,,size,area,ft2,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-080,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-080,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-080,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-081,garrett,,size,area,ft2,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-081,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-081,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G282-081,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G283-082,garrett,,size,mass_flow,lb/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G283-082,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G283-082,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G283-082,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G283-083,garrett,,size,mass_flow,lb/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G283-083,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G283-083,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G283-083,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G284-084,garrett,,size,power,million Btu/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G284-084,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G284-084,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G284-084,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G284-085,garrett,,size,power,million Btu/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G284-085,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G284-085,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G284-085,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G284-086,garrett,,size,power,million Btu/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G284-086,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G284-086,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G284-086,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G285-087,garrett,,size,power,kW,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G285-087,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G285-087,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G285-087,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G285-088,garrett,,size,power,kW,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G285-088,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G285-088,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G285-088,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G286-089,garrett,,size,area,1000 ft2,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G286-089,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G286-089,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G286-089,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G286-090,garrett,,size,area,10 ft2,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G286-090,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G286-090,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G286-090,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G286-091,garrett,,size,area,1000 ft2,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G286-091,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G286-091,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G286-091,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G287-092,garrett,,size,area,ft2,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G287-092,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G287-092,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G287-092,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G287-093,garrett,,size,area,ft2,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G287-093,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G287-093,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G287-093,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G288-094,garrett,,size,power,million Btu/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G288-094,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G288-094,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G288-094,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G288-095,garrett,,size,power,million Btu/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G288-095,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G288-095,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G288-095,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G288-096,garrett,,size,power,million Btu/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G288-096,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G288-096,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G288-096,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G288-097,garrett,,size,power,million Btu/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G288-097,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G288-097,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G288-097,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-098,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-098,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-098,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-098,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-099,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-099,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-099,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-099,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-100,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-100,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-100,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-100,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-101,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-101,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-101,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-101,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-102,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-102,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-102,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-102,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-103,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-103,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-103,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G289-103,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G290-104,garrett,,size,volume_flow,gpm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G290-104,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G290-104,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G290-104,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G291-105,garrett,,size,mass_flow,ton/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G291-105,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G291-105,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G291-105,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G291-106,garrett,,size,mass_flow,ton/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G291-106,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G291-106,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G291-106,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G291-107,garrett,,size,mass_flow,ton/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G291-107,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G291-107,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G291-107,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G292-108,garrett,,size,mass_flow,ton/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G292-108,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G292-108,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G292-108,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G292-109,garrett,,size,mass_flow,ton/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G292-109,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G292-109,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G292-109,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G292-110,garrett,,size,mass_flow,ton/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G292-110,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G292-110,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G292-110,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-111,garrett,,size,power,hp,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-111,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-111,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-111,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-112,garrett,,size,power,hp,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-112,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-112,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-112,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-113,garrett,,size,power,hp,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-113,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-113,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-113,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-114,garrett,,size,power,hp,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-114,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-114,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-114,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-115,garrett,,size,power,hp,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-115,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-115,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G293-115,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G294-116,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G294-116,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G294-116,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G294-116,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G294-117,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G294-117,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G294-117,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G294-117,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G294-118,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G294-118,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G294-118,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G294-118,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G294-119,garrett,,size,length,in,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G294-119,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G294-119,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G294-119,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G295-120,garrett,,size,mass_flow,ton/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G295-120,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G295-120,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G295-120,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G295-121,garrett,,size,mass_flow,ton/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G295-121,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G295-121,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G295-121,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G296-122,garrett,,size,flow_pressure_product,1000 gpm_psi,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G296-122,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G296-122,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G296-122,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G296-123,garrett,,size,flow_pressure_product,1000 gpm_psi,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G296-123,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G296-123,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G296-123,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G296-124,garrett,,size,flow_pressure_product,1000 gpm_psi,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G296-124,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G296-124,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G296-124,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G297-125,garrett,,size,unresolved,,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G297-125,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G297-125,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G297-125,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G297-126,garrett,,size,unresolved,,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G297-126,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G297-126,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G297-126,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G297-127,garrett,,size,flow_pressure_product,1000 gpm_psi,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G297-127,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G297-127,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G297-127,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G297-128,garrett,,size,flow_pressure_product,1000 gpm_psi,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G297-128,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G297-128,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G297-128,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G298-129,garrett,,size,mass,lb,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G298-129,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G298-129,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G298-129,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G298-130,garrett,,size,mass,lb,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G298-130,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G298-130,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G298-130,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G298-131,garrett,,size,volume,1000 gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G298-131,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G298-131,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G298-131,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G298-132,garrett,,size,volume,1000 gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G298-132,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G298-132,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G298-132,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G299-133,garrett,,size,volume,1000 gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G299-133,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G299-133,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G299-133,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G300-134,garrett,,size,power,refrigeration_ton,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G300-134,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G300-134,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G300-134,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G301-135,garrett,,size,area,ft2,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G301-135,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G301-135,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G301-135,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G302-136,garrett,,size,mass_flow,ton/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G302-136,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G302-136,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G302-136,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G302-137,garrett,,size,mass_flow,ton/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G302-137,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G302-137,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G302-137,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G302-138,garrett,,size,mass_flow,ton/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G302-138,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G302-138,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G302-138,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G302-139,garrett,,size,mass_flow,ton/h,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G302-139,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G302-139,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G302-139,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-140,garrett,,size,volume,1000 gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-140,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-140,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-140,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-141,garrett,,size,volume,1000 gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-141,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-141,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-141,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-142,garrett,,size,volume,1000 gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-142,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-142,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-142,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-143,garrett,,size,volume,1000 gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-143,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-143,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-143,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-144,garrett,,size,volume,1000 gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-144,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-144,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-144,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-145,garrett,,size,volume,1000 gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-145,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-145,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G303-145,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-146,garrett,,size,volume,1000 gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-146,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-146,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-146,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-147,garrett,,size,volume,1000 gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-147,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-147,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-147,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-148,garrett,,size,volume,1000 gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-148,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-148,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-148,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-149,garrett,,size,volume,1000 gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-149,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-149,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-149,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-150,garrett,,size,volume,1000 gal,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-150,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-150,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G304-150,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G305-151,garrett,,size,length,ft,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G305-151,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G305-151,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G305-151,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G306-152,garrett,,size,volume_flow,1000 gpm,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G306-152,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G306-152,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G306-152,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G306-153,garrett,,size,unresolved,,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G306-153,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G306-153,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G306-153,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G306-154,garrett,,size,unresolved,,True,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G306-154,garrett,,design_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G306-154,garrett,,operating_pressure,pressure,psi,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+G306-154,garrett,,temperature,temperature,degF,False,False,,,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+N501-PUMP-CAST_IRON,nottingham,Pump,size,power,kW,True,False,2015,GBP,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+N501-PUMP-CAST_STEEL,nottingham,Pump,size,power,kW,True,False,2015,GBP,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+N501-PUMP-STAINLESS_316,nottingham,Pump,size,power,kW,True,False,2015,GBP,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+N501-PUMP-API610,nottingham,Pump,size,power,kW,True,False,2015,GBP,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+N501-PUMP-MONEL,nottingham,Pump,size,power,kW,True,False,2015,GBP,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+N501-PUMP-NICKEL,nottingham,Pump,size,power,kW,True,False,2015,GBP,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+N501-PUMP-HASTELLOY,nottingham,Pump,size,power,kW,True,False,2015,GBP,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+N501-STEEL-CARBON_STEEL,nottingham,Fabricated steel / vessel,size,mass,t,True,False,2016,GBP,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+N501-STEEL-LINED_CARBON_STEEL,nottingham,Fabricated steel / vessel,size,mass,t,True,False,2016,GBP,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+N501-STEEL-STAINLESS_STEEL,nottingham,Fabricated steel / vessel,size,mass,t,True,False,2016,GBP,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+N501-PIPE-PVC_ABS,nottingham,Pipe supply,size,diameter,in,True,False,2017,GBP,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+N501-PIPE-CARBON_STEEL,nottingham,Pipe supply,size,diameter,in,True,False,2017,GBP,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+N501-PIPE-STAINLESS_STEEL,nottingham,Pipe supply,size,diameter,in,True,False,2017,GBP,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+N501-WATER-ION_EXCHANGE_TWO_STAGE,nottingham,Water treatment package,size,volume_flow,m3/h,True,False,2012,GBP,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+N501-WATER-PACKAGED_RO,nottingham,Water treatment package,size,volume_flow,m3/h,True,False,2012,GBP,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+epa_ph_adjustment_1989,additional_models,Wastewater pH adjustment system,size,volume_flow,US_MGD,True,False,1989,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+fermenter_reactor_turton_2001,additional_models,Fermenter / fungal bioreactor,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+watertap_circular_clarifier_2011,additional_models,Mechanically equipped clarifier,size,area,ft2,True,False,2011,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+watertap_rectangular_clarifier_2011,additional_models,Mechanically equipped clarifier,size,area,ft2,True,False,2011,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:gas_permeation_seider_2013,openpytea,Adsorption & membrane separation,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pervaporation_seider_2013,openpytea,Adsorption & membrane separation,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:osmosis_brackish_seider_2013,openpytea,Adsorption & membrane separation,size,volume_flow,US_MGD,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:osmosis_seawater_seider_2013,openpytea,Adsorption & membrane separation,size,volume_flow,US_MGD,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:ultrafiltration_high_seider_2013,openpytea,Adsorption & membrane separation,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:ultrafiltration_low_seider_2013,openpytea,Adsorption & membrane separation,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:agitator_propeller_closed_vessel_seider_2013,openpytea,"Agitators, blenders, & mixers",size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:agitator_propeller_open_tank_seider_2013,openpytea,"Agitators, blenders, & mixers",size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:agitator_turbine_closed_vessel_seider_2013,openpytea,"Agitators, blenders, & mixers",size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:agitator_turbine_open_tank_seider_2013,openpytea,"Agitators, blenders, & mixers",size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:agitator_turbine_top_entry_closed_perry_1996,openpytea,"Agitators, blenders, & mixers",size,power,kW,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:agitator_turbine_top_entry_open_perry_1996,openpytea,"Agitators, blenders, & mixers",size,power,kW,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:impeller_mixer_turton_2001,openpytea,"Agitators, blenders, & mixers",size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:kneader_blender_turton_2001,openpytea,"Agitators, blenders, & mixers",size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:kneader_sigma_double_arm_seider_2013,openpytea,"Agitators, blenders, & mixers",size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:kneader_tilting_double_arm_seider_2013,openpytea,"Agitators, blenders, & mixers",size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:muller_mixer_seider_2013,openpytea,"Agitators, blenders, & mixers",size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:propeller_mixer_towler_2010,openpytea,"Agitators, blenders, & mixers",size,power,kW,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:propeller_mixer_turton_2001,openpytea,"Agitators, blenders, & mixers",size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:ribbon_blender_turton_2001,openpytea,"Agitators, blenders, & mixers",size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:ribbon_mixer_seider_2013,openpytea,"Agitators, blenders, & mixers",size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:rotary_blender_turton_2001,openpytea,"Agitators, blenders, & mixers",size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:spiral_ribbon_mixer_towler_2010,openpytea,"Agitators, blenders, & mixers",size,power,kW,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:static_mixer_towler_2010,openpytea,"Agitators, blenders, & mixers",size,volume_flow,L/s,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:tumbler_double_cone_seider_2013,openpytea,"Agitators, blenders, & mixers",size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:tumbler_twin_shell_seider_2013,openpytea,"Agitators, blenders, & mixers",size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:turbine_mixer_turton_2001,openpytea,"Agitators, blenders, & mixers",size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:boilers_erected_towler_2010,openpytea,"Boilers, heaters, & furnaces",size,mass_flow,kg/h,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:boilers_packaged_towler_2010,openpytea,"Boilers, heaters, & furnaces",size,mass_flow,kg/h,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:burner_parkinson_2016,openpytea,"Boilers, heaters, & furnaces",size,volume,m3,True,False,2016,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:diphenyl_heater_turton_2001,openpytea,"Boilers, heaters, & furnaces",size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:dowtherm_a_heater_seider_2013,openpytea,"Boilers, heaters, & furnaces",size,power,Btu_IT/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:electric_arc_furnace_parkinson_2016,openpytea,"Boilers, heaters, & furnaces",size,power,MW,True,False,2016,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:box_furnace_towler_2010,openpytea,"Boilers, heaters, & furnaces",size,power,kW,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cylindrical_furnace_towler_2010,openpytea,"Boilers, heaters, & furnaces",size,power,kW,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:gas-fired_heater_seider_2013,openpytea,"Boilers, heaters, & furnaces",size,power,Btu_IT/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:hot_water_heater_turton_2001,openpytea,"Boilers, heaters, & furnaces",size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:hot_water_heater_fired_seider_2013,openpytea,"Boilers, heaters, & furnaces",size,power,Btu_IT/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:kettle_jacketed_glass_lined_perry_1996,openpytea,"Boilers, heaters, & furnaces",size,volume,m3,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:molten_salt_heater_turton_2001,openpytea,"Boilers, heaters, & furnaces",size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:molten_salt_silicon_oil_heater_seider_2013,openpytea,"Boilers, heaters, & furnaces",size,power,Btu_IT/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:nonreactive_fired_heater_turton_2001,openpytea,"Boilers, heaters, & furnaces",size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pyrolysis_furnace_turton_2001,openpytea,"Boilers, heaters, & furnaces",size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pyrolysis_furnace_ulrich_2003,openpytea,"Boilers, heaters, & furnaces",size,power,kW,True,False,2003,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pyrolysis_furnace_seider_2013,openpytea,"Boilers, heaters, & furnaces",size,power,Btu_IT/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:reformer_furnace_turton_2001,openpytea,"Boilers, heaters, & furnaces",size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:reformer_furnace_seider_2013,openpytea,"Boilers, heaters, & furnaces",size,power,Btu_IT/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:steam_boiler_turton_2001,openpytea,"Boilers, heaters, & furnaces",size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:steam_boiler_seider_2013,openpytea,"Boilers, heaters, & furnaces",size,power,Btu_IT/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:atmospheric_suspended_basket_centrifuge_towler_2010,openpytea,Centrifuges,size,power,kW,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:auto_batch_separator_turton_2001,openpytea,Centrifuges,size,length,m,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:automatic_batch_horizontal_perry_1996,openpytea,Centrifuges,size,area,m2,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:batch_bottom_drive_vert_basket_seider_2013,openpytea,Centrifuges,size,length,in,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:batch_top_drive_vert_basket_seider_2013,openpytea,Centrifuges,size,length,in,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_separator_turton_2001,openpytea,Centrifuges,size,length,m,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:continuous_reciprocating_pusher_seider_2013,openpytea,Centrifuges,size,mass_flow,ton/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:continuous_scroll_solid_bowl_seider_2013,openpytea,Centrifuges,size,mass_flow,ton/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:high_speed_disk_centrifuge_towler_2010,openpytea,Centrifuges,size,length,m,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:horizontal_auto_batch_seider_2013,openpytea,Centrifuges,size,length,in,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:oscillating_screen_turton_2001,openpytea,Centrifuges,size,length,m,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:solid_bowl_centrifuge_without_motor_turton_2001,openpytea,Centrifuges,size,length,m,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vertical_auto_batch_seider_2013,openpytea,Centrifuges,size,length,in,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:mea_ccs_technology_2011,openpytea,CO2 capture,size,mass_flow,kg/s,True,False,2011,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:air_blower_manzolini_2006,openpytea,"Compressors, fans, & blowers",size,power,MW,True,False,2006,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_turbo_blower_seider_2013,openpytea,"Compressors, fans, & blowers",size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_compressor_electric_motor_seider_2013,openpytea,"Compressors, fans, & blowers",size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_compressor_gas_turbine_seider_2013,openpytea,"Compressors, fans, & blowers",size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_compressor_steam_turbine_seider_2013,openpytea,"Compressors, fans, & blowers",size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_backward_curved_fan_head_16-30_seider_2013,openpytea,"Compressors, fans, & blowers",size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_backward_curved_fan_head_31-40_seider_2013,openpytea,"Compressors, fans, & blowers",size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_backward_curved_fan_head__5-8_seider_2013,openpytea,"Compressors, fans, & blowers",size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_backward_curved_fan_head_9-15_seider_2013,openpytea,"Compressors, fans, & blowers",size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_backward_curved_fan_head_less_4_seider_2013,openpytea,"Compressors, fans, & blowers",size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_straight_radial_fan_head_16-30_seider_2013,openpytea,"Compressors, fans, & blowers",size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_straight_radial_fan_head__5-8_seider_2013,openpytea,"Compressors, fans, & blowers",size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_straight_radial_fan_head_9-15_seider_2013,openpytea,"Compressors, fans, & blowers",size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_straight_radial_fan_head_less_4_seider_2013,openpytea,"Compressors, fans, & blowers",size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:co2_compressor_manzolini_2011,openpytea,"Compressors, fans, & blowers",size,power,MW,True,False,2011,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:h2_compressor_pandolfo_1987,openpytea,"Compressors, fans, & blowers",size,power,MW,True,False,1987,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:propeller_fan_seider_2023,openpytea,"Compressors, fans, & blowers",size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:reciprocating_compressor_electric_motor_seider_2013,openpytea,"Compressors, fans, & blowers",size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:reciprocating_compressor_gas_turbine_seider_2013,openpytea,"Compressors, fans, & blowers",size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:reciprocating_compressor_steam_turbine_seider_2013,openpytea,"Compressors, fans, & blowers",size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:rotary_straight_lobe_seider_2013,openpytea,"Compressors, fans, & blowers",size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:screw_compressor_electric_motor_seider_2013,openpytea,"Compressors, fans, & blowers",size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:screw_compressor_gas_turbine_seider_2013,openpytea,"Compressors, fans, & blowers",size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:screw_compressor_steam_turbine_seider_2013,openpytea,"Compressors, fans, & blowers",size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vane_axial_fan_head__5-8_seider_2013,openpytea,"Compressors, fans, & blowers",size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vane_axial_fan_head_9-15_seider_2013,openpytea,"Compressors, fans, & blowers",size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vane_axial_fan_head_less_4_seider_2013,openpytea,"Compressors, fans, & blowers",size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:axial_tube_fan_turton_2001,openpytea,"Compressors, fans, & blowers",size,volume_flow,m3/s,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:axial_vane_fan_turton_2001,openpytea,"Compressors, fans, & blowers",size,volume_flow,m3/s,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:backward_curve_fan_turton_2001,openpytea,"Compressors, fans, & blowers",size,volume_flow,m3/s,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:blower_towler_2010,openpytea,"Compressors, fans, & blowers",size,volume_flow,m3/h,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:blower_centrifugal_excluding_motor_perry_1996,openpytea,"Compressors, fans, & blowers",size,standard_volume_flow,Sm3/s,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_radial_fan_turton_2001,openpytea,"Compressors, fans, & blowers",size,volume_flow,m3/s,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_compressor_towler_2010,openpytea,"Compressors, fans, & blowers",size,power,kW,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:compressor_all_turton_2001,openpytea,"Compressors, fans, & blowers",size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:reciprocating_compressor_towler_2010,openpytea,"Compressors, fans, & blowers",size,power,kW,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:compressor_reciprocating_including_motor_perry_1996,openpytea,"Compressors, fans, & blowers",size,power,kW,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:compressor_rotary_turton_2001,openpytea,"Compressors, fans, & blowers",size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:liquid_ring_vacuum_pump_seider_2013,openpytea,"Compressors, fans, & blowers",size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:screw_compressor_vacuum_seider_2013,openpytea,"Compressors, fans, & blowers",size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:three_stage_claw_vacuum_pump_seider_2013,openpytea,"Compressors, fans, & blowers",size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:three_stage_lobe_vacuum_pump_seider_2013,openpytea,"Compressors, fans, & blowers",size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:apron_conveyor_turton_2001,openpytea,Conveyors,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:belt_conveyor_turton_2001,openpytea,Conveyors,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:belt_conveyor_seider_2013,openpytea,Conveyors,size,length,in,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:belt_conveyor_seider_2013,openpytea,Conveyors,second_size,length,ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:belt_conveyor_05m_towler_2010,openpytea,Conveyors,size,length,m,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:belt_conveyor_10m_towler_2010,openpytea,Conveyors,size,length,m,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:belt_excluding_motor_perry_1996,openpytea,Conveyors,size,area,m2,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:bucket_elevator_seider_2013,openpytea,Conveyors,size,length,in,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:bucket_elevator_seider_2013,openpytea,Conveyors,second_size,length,ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:bucket_elevator_05m_towler_2010,openpytea,Conveyors,size,length,m,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pneumatic_conveyor_turton_2001,openpytea,Conveyors,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pneumatic_conveyor_seider_2013,openpytea,Conveyors,size,mass_flow,lb/s,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pneumatic_conveyor_seider_2013,openpytea,Conveyors,second_size,length,ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:screw_conveyor_turton_2001,openpytea,Conveyors,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:screw_conveyor_seider_2013,openpytea,Conveyors,size,length,in,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:screw_conveyor_seider_2013,openpytea,Conveyors,second_size,length,ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:screw_excluding_motor_perry_1996,openpytea,Conveyors,size,source_coordinate,m x mm diameter,True,True,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vibratory_conveyor_seider_2013,openpytea,Conveyors,size,length,in,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vibratory_conveyor_seider_2013,openpytea,Conveyors,second_size,length,ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:ball_mill_towler_2010,openpytea,Crushers,size,mass_flow,t/h,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:ball_mills_seider_2013,openpytea,Crushers,size,mass_flow,ton/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cone_crushers_seider_2013,openpytea,Crushers,size,mass_flow,ton/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cone_crusher_only_perry_1996,openpytea,Crushers,size,power,kW,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:gyratory_crusher_towler_2010,openpytea,Crushers,size,mass_flow,t/h,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:gyratory_crushers_seider_2013,openpytea,Crushers,size,mass_flow,ton/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:hammer_mills_seider_2013,openpytea,Crushers,size,mass_flow,ton/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:jaw_crusher_towler_2010,openpytea,Crushers,size,mass_flow,t/h,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:jaw_crushers_seider_2013,openpytea,Crushers,size,mass_flow,ton/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:jaw_excluding_motor_perry_1996,openpytea,Crushers,size,power,kW,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:jaw_including_motor_perry_1996,openpytea,Crushers,size,power,kW,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:jet_mills_seider_2013,openpytea,Crushers,size,mass_flow,ton/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pulverizer_towler_2010,openpytea,Crushers,size,mass_flow,kg/h,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:reversible_hammer_mill_towler_2010,openpytea,Crushers,size,mass_flow,t/h,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:batch_crystallizer_turton_2001,openpytea,Crystallizers,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:batch_evaporative_crystallizer_seider_2013,openpytea,Crystallizers,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:draft_tube_baffled_crystallizer_seider_2013,openpytea,Crystallizers,size,mass_flow,ton/day,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:forced_circulation_perry_1996,openpytea,Crystallizers,size,mass_flow,tonne/day,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:forced_circulation_crystallizer_seider_2013,openpytea,Crystallizers,size,mass_flow,ton/day,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:jacketed_scraped_wall_crystallizer_seider_2013,openpytea,Crystallizers,size,length,ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:scraped_surface_crystallizer_towler_2010,openpytea,Crystallizers,size,length,m,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:atmospheric_tray_batch_dryer_towler_2010,openpytea,Dryers,size,area,m2,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:batch_tray_dryer_seider_2013,openpytea,Dryers,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:direct_contact_rotary_dryer_towler_2010,openpytea,Dryers,size,area,m2,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:direct_heat_rotary_dryer_seider_2013,openpytea,Dryers,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:drum_dryer_turton_2001,openpytea,Dryers,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:drum_dryer_seider_2013,openpytea,Dryers,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:drum_excluding_motor_perry_1996,openpytea,Dryers,size,area,m2,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:indirect_heat_steam_tube_rotary_dryer_seider_2013,openpytea,Dryers,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:rotary_gas_dryer_turton_2001,openpytea,Dryers,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:spray_dryer_seider_2013,openpytea,Dryers,size,mass_flow,lb/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:spray_dryer_towler_2010,openpytea,Dryers,size,mass_flow,kg/h,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:tray_dryer_turton_2001,openpytea,Dryers,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vacuum_shelf_excluding_trays_n_vacuum_equipment_perry_1996,openpytea,Dryers,size,area,m2,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:bag_filters_seider_2013,openpytea,Dust collectors,size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:baghouse_dust_collector_turton_2001,openpytea,Dust collectors,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cloth_shaker_type_including_motors_perry_1996,openpytea,Dust collectors,size,volume_flow,m3/s,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cyclone_scrubber_turton_2001,openpytea,Dust collectors,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cyclones_seider_2013,openpytea,Dust collectors,size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:electrostatic_precipitator_turton_2001,openpytea,Dust collectors,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:electrostatic_precipitator_perry_1996,openpytea,Dust collectors,size,volume_flow,m3/s,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:electrostatic_precipitators_seider_2013,openpytea,Dust collectors,size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:gas_multi_cyclone_ulrich_2003,openpytea,Dust collectors,size,volume_flow,m3/s,True,False,2003,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:multicyclones_perry_1996,openpytea,Dust collectors,size,volume_flow,m3/s,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:multicyclones_at_40_celcius_perry_1996,openpytea,Dust collectors,size,volume_flow,m3/s,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:venturi_scrubber_turton_2001,openpytea,Dust collectors,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:venturi_scrubbers_seider_2013,openpytea,Dust collectors,size,volume_flow,cfm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:multistage_including_condenser_n_piping_perry_1996,openpytea,Ejectors,size,source_coordinate,kg/h/(N/m^2),True,True,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:one_stage_jet_seider_2013,openpytea,Ejectors,size,source_coordinate,"(lb/hr) / (suction pressure, torr)",True,True,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:single_stage_100_psig_steam_perry_1996,openpytea,Ejectors,size,source_coordinate,kg/h/(N/m^2),True,True,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:two_stage_including_condenser_n_piping_perry_1996,openpytea,Ejectors,size,source_coordinate,kg/h/(N/m^2),True,True,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:agitated_falling_film_evaporator_towler_2010,openpytea,Evaporators,size,area,m2,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:agitated_film_evaporator_turton_2001,openpytea,Evaporators,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:falling_film_evaporator_turton_2001,openpytea,Evaporators,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:falling_film_evaporator_seider_2013,openpytea,Evaporators,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:forced_circulation_evaporator_seider_2013,openpytea,Evaporators,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:forced_circulation_evaporator_turton_2001,openpytea,Evaporators,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:horizontal_tube_evaporator_seider_2013,openpytea,Evaporators,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:long_tube_evaporator_turton_2001,openpytea,Evaporators,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:long_tube_vertical_evaporator_seider_2013,openpytea,Evaporators,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:short_tube_evaporator_turton_2001,openpytea,Evaporators,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vertical_tube_evaporator_towler_2010,openpytea,Evaporators,size,area,m2,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:roll_presses_expression_seider_2013,openpytea,Expression,size,mass_flow,lb/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:screw_presses_expression_seider_2013,openpytea,Expression,size,mass_flow,lb/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:bent_filter_turton_2001,openpytea,Filters,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cartridge_filter_turton_2001,openpytea,Filters,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:disc_n_drum_filter_turton_2001,openpytea,Filters,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:gravity_filter_turton_2001,openpytea,Filters,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:leaf_filter_turton_2001,openpytea,Filters,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pan_filter_turton_2001,openpytea,Filters,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:plate_n_frame_filter_towler_2010,openpytea,Filters,size,volume,m3,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:plate_frame_filter_turton_2001,openpytea,Filters,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:plate_frame_filter_seider_2013,openpytea,Filters,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:plate_n_frame_perry_1996,openpytea,Filters,size,area,m2,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pressure_leaf_filter_seider_2013,openpytea,Filters,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:rotary_pan_filter_seider_2013,openpytea,Filters,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:rotary_drum_vacuum_filter_seider_2013,openpytea,Filters,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:table_filter_turton_2001,openpytea,Filters,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:tube_filter_turton_2001,openpytea,Filters,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vacuum_drum_filter_towler_2010,openpytea,Filters,size,area,m2,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vacuum_rotary_drum_including_motor_perry_1996,openpytea,Filters,size,area,m2,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vertical_pressure_leaf_perry_1996,openpytea,Filters,size,area,m2,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:air_cooler_hx_turton_2001,openpytea,Heat exchangers,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:air_cooled_finfan_seider_2013,openpytea,Heat exchangers,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:bayonet_hx_turton_2001,openpytea,Heat exchangers,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:double_pipe_hx_towler_2010,openpytea,Heat exchangers,size,area,m2,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:double_pipe_hx_turton_2001,openpytea,Heat exchangers,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:double_pipe_seider_2013,openpytea,Heat exchangers,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:fixed_tube_hx_turton_2001,openpytea,Heat exchangers,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:flat_plate_hx_turton_2001,openpytea,Heat exchangers,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:floating_head_hx_turton_2001,openpytea,Heat exchangers,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:floating_head_shell_tube_hx_towler_2010,openpytea,Heat exchangers,size,area,m2,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:hx_nexant_2006,openpytea,Heat exchangers,size,power,million Btu_IT/h,True,False,2006,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:kettle_reboiler_hx_turton_2001,openpytea,Heat exchangers,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:multiple_pipe_hx_turton_2001,openpytea,Heat exchangers,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:plate_fin_3streams_hx_esdu_1997,openpytea,Heat exchangers,size,volume,m3,True,False,1997,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:plate_fin_4to6_streams_hx_esdu_1997,openpytea,Heat exchangers,size,volume,m3,True,False,1997,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:plate_frame_hx_towler_2010,openpytea,Heat exchangers,size,area,m2,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:plate_frame_hx_seider_2013,openpytea,Heat exchangers,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:scraped_wall_hx_turton_2001,openpytea,Heat exchangers,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:shell_tube_fixed_head_seider_2013,openpytea,Heat exchangers,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:shell_tube_floating_head_seider_2013,openpytea,Heat exchangers,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:shell_tube_kettle_vaporized_seider_2013,openpytea,Heat exchangers,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:shell_tube_u-tube_seider_2013,openpytea,Heat exchangers,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:shell_tube_fixed_tube_perry_1996,openpytea,Heat exchangers,size,area,m2,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:shell_tube_floating_head_perry_1996,openpytea,Heat exchangers,size,area,m2,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:shell_tube_kettle_perry_1996,openpytea,Heat exchangers,size,area,m2,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:shell_tube_u_tube_perry_1996,openpytea,Heat exchangers,size,area,m2,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:spiral_plate_hx_turton_2001,openpytea,Heat exchangers,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:spiral_plate_hx_seider_2013,openpytea,Heat exchangers,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:spiral_tube_hx_turton_2001,openpytea,Heat exchangers,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:spiral_tube_hx_seider_2013,openpytea,Heat exchangers,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:teflon_tube_hx_turton_2001,openpytea,Heat exchangers,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:thermal_screw_including_motor_perry_1996,openpytea,Heat exchangers,size,area,m2,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:thermosiphon_reboiler_towler_2010,openpytea,Heat exchangers,size,area,m2,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:u-tube_hx_turton_2001,openpytea,Heat exchangers,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:u_tube_kettle_reboiler_towler_2010,openpytea,Heat exchangers,size,area,m2,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:u_shell_tube_hx_towler_2010,openpytea,Heat exchangers,size,area,m2,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:rdc_extractor_seider_2013,openpytea,Liquid-liquid extractors,size,source_coordinate,"S = height x diameter^1.5, ft^2.5",True,True,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:electric_motor_explosion_proof_1800_seider_2013,openpytea,Motors & generators,size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:electric_motor_explosion_proof_3600_seider_2013,openpytea,Motors & generators,size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:electric_motor_open_drip_1800_seider_2013,openpytea,Motors & generators,size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:electric_motor_open_drip_3600_seider_2013,openpytea,Motors & generators,size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:electric_motor_totally_enclosed_fan_cooled_1800_seider_2013,openpytea,Motors & generators,size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:electric_motor_totally_enclosed_fan_cooled_3600_seider_2013,openpytea,Motors & generators,size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:explosion-proof_turton_2001,openpytea,Motors & generators,size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:explosion_proof_motor_towler_2010,openpytea,Motors & generators,size,power,kW,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:explosion_proof_motor_ulrich_2003,openpytea,Motors & generators,size,power,kW,True,False,2003,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:internal_combustion_engine_turton_2001,openpytea,Motors & generators,size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:internal_combustion_engine_seider_2013,openpytea,Motors & generators,size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:large_motors_ac_induction_wound_rotor_tefc_perry_1996,openpytea,Motors & generators,size,power,kW,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:open%2Fdried-proof_turton_2001,openpytea,Motors & generators,size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:small_motors_ac_induction_wound_rotor_tefc_perry_1996,openpytea,Motors & generators,size,power,kW,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:totally_enclosed_turton_2001,openpytea,Motors & generators,size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:totally_enclosed_motor_ulrich_2003,openpytea,Motors & generators,size,power,kW,True,False,2003,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:activated_alumina_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:activated_carbon_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:berl_saddles_ce_1in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:berl_saddles_ce_1.5in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:berl_saddles_ce_2in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cascade_minirings_ce_1in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cascade_minirings_ce_2in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cascade_minirings_ce_3in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cascade_minirings_%20pp_1in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cascade_minirings_%20pp_2in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cascade_minirings_%20pp_3in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cascade_minirings_%20ss_1in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cascade_minirings_%20ss_1.5in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cascade_minirings_%20ss_2in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cascade_minirings_%20ss_3in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cascade_minirings_%20ss_4in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:intalox_saddles_ce_1-1.5in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:intalox_saddles_ce_2in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:intalox_saddles_ce_3in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:intalox_saddles_%20pp_1in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:intalox_saddles_%20pp_2in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:intalox_saddles_%20pp_3in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:loose_packing_turton_2001,openpytea,Packings & adsorbents,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:molecular_sieves_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pall_rings_%20cs_1in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pall_rings_%20cs_1.5in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pall_rings_%20cs_2in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pall_rings_%20pp_1in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pall_rings_%20pp_1.5in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pall_rings_%20pp_2in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pall_rings_%20pp_3in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pall_rings_%20ss_1in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pall_rings_%20ss_1.5in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pall_rings_%20ss_2in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:raschig_rings_%20cs_1-1.5in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:raschig_rings_%20cs_2-3in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:raschig_rings_ce_1-3in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:raschig_rings_%20ss_1in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:raschig_rings_%20ss_1.5in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:raschig_rings_%20ss_2-3in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:silica_gel_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:structured_packing_corrugated-sheet_ss_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:tellerettes_%20pe_1in_seider_2013,openpytea,Packings & adsorbents,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:complex_network_fob_perry_1996,openpytea,Piping,size,length,mm,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:complex_network_inst_perry_1996,openpytea,Piping,size,length,mm,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:typical_straight_run_fob_perry_1996,openpytea,Piping,size,length,mm,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:typical_straight_run_inst_perry_1996,openpytea,Piping,size,length,mm,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:horizontal_vessel_turton_2001,openpytea,Pressure vessels,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:horizontal_304ss_press_vessel_towler_2010,openpytea,Pressure vessels,size,mass,kg,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:horizontal_cs_press_vessel_towler_2010,openpytea,Pressure vessels,size,mass,kg,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:horizontal_drum_150_psig_perry_1996,openpytea,Pressure vessels,size,volume,m3,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:horizontal_vessel_seider_2013,openpytea,Pressure vessels,size,mass,lb,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:horizontal_vessel_platform_ladder_seider_2013,openpytea,Pressure vessels,size,length,ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vertical_vessel_turton_2001,openpytea,Pressure vessels,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vertical_304ss_press_vessel_towler_2010,openpytea,Pressure vessels,size,mass,kg,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vertical_cs_press_vessel_towler_2010,openpytea,Pressure vessels,size,mass,kg,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vertical_vessel_seider_2013,openpytea,Pressure vessels,size,mass,lb,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vertical_vessel_platform_ladder_seider_2013,openpytea,Pressure vessels,size,length,ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vertical_vessel_platform_ladder_seider_2013,openpytea,Pressure vessels,second_size,length,ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_pump_turton_2001,openpytea,Pumps,size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_1-stage_1800_HSC_seider_2013,openpytea,Pumps,size,flow_sqrt_head,gpm_sqrt_ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_1-stage_1800_VSC_seider_2013,openpytea,Pumps,size,flow_sqrt_head,gpm_sqrt_ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_1-stage_3600_HSC_seider_2013,openpytea,Pumps,size,flow_sqrt_head,gpm_sqrt_ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_1-stage_3600_VSC_seider_2013,openpytea,Pumps,size,flow_sqrt_head,gpm_sqrt_ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_2%2B-stage_3600_VSC_seider_2013,openpytea,Pumps,size,flow_sqrt_head,gpm_sqrt_ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:centrifugal_2-stage_3600_VSC_seider_2013,openpytea,Pumps,size,flow_sqrt_head,gpm_sqrt_ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:external_gear_pump_seider_2013,openpytea,Pumps,size,volume_flow,gpm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:large_centrifugal_including_motor_perry_1996,openpytea,Pumps,size,power,kW,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:positive_displacement_pump_turton_2001,openpytea,Pumps,size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:reciprocating_pump_turton_2001,openpytea,Pumps,size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:reciprocating_plunger_pump_seider_2013,openpytea,Pumps,size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:single_stage_centrifugal_pump_towler_2010,openpytea,Pumps,size,volume_flow,L/s,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:small_centrifugal_excluding_motor_perry_1996,openpytea,Pumps,size,power,kW,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:autoclave_reactor_turton_2001,openpytea,Reactors,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:autoclave_glass_lined_seider_2013,openpytea,Reactors,size,volume,gal,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:autoclave_stainless_steel_seider_2013,openpytea,Reactors,size,volume,gal,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:autoclave_steel_seider_2013,openpytea,Reactors,size,volume,gal,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:fermenter_reactor_turton_2001,openpytea,Reactors,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:jacketed_agitated_glass_lined_reactor_towler_2010,openpytea,Reactors,size,volume,m3,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:indirect_fluidbed_ulrich_2003,openpytea,Reactors,size,volume,m3,True,False,2003,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:inoculum_tank_reactor_turton_2001,openpytea,Reactors,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:jacketed_agitated_reactor_towler_2010,openpytea,Reactors,size,volume,m3,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:jacketed_agitated_reactor_turton_2001,openpytea,Reactors,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:jacketed_nonagitated_reactor_turton_2001,openpytea,Reactors,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:jacketed_including_mixer_perry_1996,openpytea,Reactors,size,volume,m3,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:mixers%2Fsettler_reactor_turton_2001,openpytea,Reactors,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:tubular_fixed_bed_reactor_towler_2010,openpytea,Reactors,size,mass,kg,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:dsm_screen_turton_2001,openpytea,Screens,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:rotary_screen_turton_2001,openpytea,Screens,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:stationary_screen_turton_2001,openpytea,Screens,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vibrating_screen_turton_2001,openpytea,Screens,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vibrating_grizzlies_seider_2013,openpytea,Screens,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vibrating_screen_1deck_seider_2013,openpytea,Screens,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vibrating_screen_2deck_seider_2013,openpytea,Screens,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vibrating_screen_3deck_seider_2013,openpytea,Screens,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vibrating_single_deck_including_motor_perry_1996,openpytea,Screens,size,area,m2,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:disk_agglomerators_seider_2013,openpytea,Size enlargement,size,mass_flow,lb/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:drum_agglomerators_seider_2013,openpytea,Size enlargement,size,mass_flow,lb/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pellet_mills_seider_2013,openpytea,Size enlargement,size,mass_flow,lb/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:pug_mill_extruders_seider_2013,openpytea,Size enlargement,size,mass_flow,lb/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:roll_type_presses_seider_2013,openpytea,Size enlargement,size,mass_flow,lb/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:screw_extruders_seider_2013,openpytea,Size enlargement,size,mass_flow,lb/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:tableting_presses_seider_2013,openpytea,Size enlargement,size,mass_flow,lb/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:clarifier_concrete_seider_2013,openpytea,Solid-liquid separators,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:clarifier_steel_seider_2013,openpytea,Solid-liquid separators,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:hydroclone_seider_2013,openpytea,Solid-liquid separators,size,volume_flow,gpm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:thickener_concrete_seider_2013,openpytea,Solid-liquid separators,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:thickener_steel_seider_2013,openpytea,Solid-liquid separators,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:wet_classifier_seider_2013,openpytea,Solid-liquid separators,size,mass_flow,lb/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:bins_seider_2013,openpytea,Solids-handling systems,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:feeder_belt_seider_2013,openpytea,Solids-handling systems,size,volume_flow,ft3/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:feeder_screw_seider_2013,openpytea,Solids-handling systems,size,volume_flow,ft3/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:feeder_vibratory_seider_2013,openpytea,Solids-handling systems,size,volume_flow,ft3/h,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:api-fixed_roof_tank_turton_2001,openpytea,Tanks,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:api-floating_roof_tank_turton_2001,openpytea,Tanks,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:atmospheric_horizontal_cylinder_perry_1996,openpytea,Tanks,size,volume,m3,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cone_roof_tank_seider_2013,openpytea,Tanks,size,volume,gal,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cone_roof_tank_towler_2010,openpytea,Tanks,size,volume,m3,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:floating_roof_tank_seider_2013,openpytea,Tanks,size,volume,gal,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:floating_roof_tank_towler_2010,openpytea,Tanks,size,volume,m3,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:gas_holder_seider_2013,openpytea,Tanks,size,volume,ft3,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:open_tank_fiberglass_seider_2013,openpytea,Tanks,size,volume,gal,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:spherical_tank_low_p_seider_2013,openpytea,Tanks,size,volume,gal,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:spherical_tank_high_p_seider_2013,openpytea,Tanks,size,volume,gal,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vertical_agitated_excluding_motor_perry_1996,openpytea,Tanks,size,volume,m3,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vertical_cylinder_perry_1996,openpytea,Tanks,size,volume,m3,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vertical_jacketed_perry_1996,openpytea,Tanks,size,volume,m3,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:distillation_including_internals_trays_perry_1996,openpytea,Towers,size,source_coordinate,"(feed, lb/year / 10^6)^0.65",True,True,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:tower_platform_ladder_seider_2013,openpytea,Towers,size,length,ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:tower_platform_ladder_seider_2013,openpytea,Towers,second_size,length,ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:tower_tray_n_packed_turton_2001,openpytea,Towers,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:vertical_pressure_vessel_for_separation_seider_2013,openpytea,Towers,size,mass,lb,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:bubble_cap_tray_towler_2010,openpytea,Trays,size,length,m,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:bubble_cap_tray_seider_2013,openpytea,Trays,size,length,ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:trays_demisters_turton_2001,openpytea,Trays,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:liquid_distributor_seider_2013,openpytea,Trays,size,area,ft2,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:sieve_tray_towler_2010,openpytea,Trays,size,length,m,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:trays_sieve_turton_2001,openpytea,Trays,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:sieve_tray_seider_2013,openpytea,Trays,size,length,ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:valve_tray_towler_2010,openpytea,Trays,size,length,m,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:trays_valve_turton_2001,openpytea,Trays,size,area,m2,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:valve_tray_seider_2013,openpytea,Trays,size,length,ft,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:axial_gas_turbine_ulrich_2003,openpytea,Turbines,size,power,kW,True,False,2003,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:axial_gas_turbines_turton_2001,openpytea,Turbines,size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:condensing_steam_turbine_towler_2010,openpytea,Turbines,size,power,kW,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:gas_expander_pressure_discharge_seider_2013,openpytea,Turbines,size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:gas_expander_vacuum_discharge_seider_2013,openpytea,Turbines,size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:gas_turbine_turton_2001,openpytea,Turbines,size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:gas_turbine_seider_2013,openpytea,Turbines,size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:liquid_expander_seider_2013,openpytea,Turbines,size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:radial_expander_ulrich_2003,openpytea,Turbines,size,power,kW,True,False,2003,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:radial_gas_liquid_expanders_turton_2001,openpytea,Turbines,size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:steam_turbine_kreutz_2002,openpytea,Turbines,size,power,MW,True,False,2002,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:steam_turbine_turton_2001,openpytea,Turbines,size,power,kW,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:steam_turbine_condensing_seider_2013,openpytea,Turbines,size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:steam_turbine_noncondensing_seider_2013,openpytea,Turbines,size,power,hp,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:cooling_tower_n_pumps_towler_2010,openpytea,Utilities,size,volume_flow,L/s,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:packaged_mechanical_refrigerator_towler_2010,openpytea,Utilities,size,power,kW,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:refrigeration_package_mechanical_perry_1996,openpytea,Utilities,size,power,kW,True,False,1996,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:wastewater_primary_seider_2013,openpytea,Utilities,size,volume_flow,gpm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:wastewater_primary_secondary_seider_2013,openpytea,Utilities,size,volume_flow,gpm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:wastewater_primary_secondary_tertiary_seider_2013,openpytea,Utilities,size,volume_flow,gpm,True,False,2013,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:water_ion_exchange_plant_towler_2010,openpytea,Utilities,size,volume_flow,m3/h,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:internal_coils_vaporizers_turton_2001,openpytea,Vaporizers,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:jacketed_vessels_vaporizers_turton_2001,openpytea,Vaporizers,size,volume,m3,True,False,2001,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:electrolyzer_pem_current_doe_2016,openpytea,Electrolysis,size,mass_flow,kg/day,True,False,2016,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:electrolyzer_pem_future_doe_2016,openpytea,Electrolysis,size,mass_flow,kg/day,True,False,2016,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:biomass_cfb_chp_irena_2012,openpytea,Biomass combustion,size,power,MW,True,False,2010,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance
+openpytea:electrolyzer_nrel_2008,openpytea,Electrolysis,size,mass_flow,kg/h,True,False,2008,USD,IMPLEMENTED METADATA ONLY; not universal independent conversion/model-suitability acceptance

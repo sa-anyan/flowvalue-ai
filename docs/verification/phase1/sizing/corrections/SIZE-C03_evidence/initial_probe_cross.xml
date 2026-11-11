@@ -1,0 +1,755 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="11" skipped="0" tests="67" time="49.934" timestamp="2026-11-10T23:51:51.062197+00:00" hostname="MacBookPro.lan"><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[gas_compression-82.33066173777114-kW-rows-xlsx]" time="1.151" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[gas_compression-82.33066173777114-kW-rows-xlsm]" time="0.795" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[gas_compression-82.33066173777114-kW-rows-xls]" time="0.835" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[gas_compression-82.33066173777114-kW-columns-xlsx]" time="0.680" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[gas_compression-82.33066173777114-kW-columns-xlsm]" time="0.686" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[gas_compression-82.33066173777114-kW-columns-xls]" time="0.867" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[gas_compression-82.33066173777114-kW-rows_units-xlsx]" time="0.825" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[gas_compression-82.33066173777114-kW-rows_units-xlsm]" time="0.787" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[gas_compression-82.33066173777114-kW-rows_units-xls]" time="0.809" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[pump_duty-0.22988950107343337-1000 US_gpm_psi-rows-xlsx]" time="0.845"><failure message="KeyError: 'hydraulic_power_kw'">ext = 'xlsx', variant = 'rows', method = 'pump_duty'
+expected = 0.22988950107343337, unit = '1000 US_gpm_psi'
+
+    @pytest.mark.parametrize("ext", FORMATS)
+    @pytest.mark.parametrize("variant", VARIANTS)
+    @pytest.mark.parametrize(
+        "method,expected,unit",
+        [
+            ("gas_compression", 82.33066173777114, "kW"),
+            ("pump_duty", 0.2298895010734333601697918125, "1000 US_gpm_psi"),
+            ("exchanger_area", 10, "m2"),
+            ("vaporizer_area", 12.5, "m2"),
+        ],
+    )
+    def test_equivalent_real_workbook_inputs(ext, variant, method, expected, unit):
+        report = load(variant + "." + ext)
+        proposal = {"sizing": sizing(report, method)}
+        # Existing orchestration dispatcher, not a duplicate equation implementation.
+        value, actual_unit, audit = derive_size(proposal, report)
+        assert value == pytest.approx(expected, rel=5e-12, abs=0)
+        assert actual_unit == unit and audit["source_evidence"]
+        equipment = {
+            e["identifier"] for e in report["entities"] if e["kind"] == "equipment"
+        }
+        assert {"C-101", "P-101", "HE-101", "V-101"} &lt;= equipment
+        if method == "pump_duty":
+&gt;           assert audit["hydraulic_power_kw"] == pytest.approx(0.1)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'hydraulic_power_kw'
+
+backend/tests/test_sizing_cross_file.py:83: KeyError</failure></testcase><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[pump_duty-0.22988950107343337-1000 US_gpm_psi-rows-xlsm]" time="0.856"><failure message="KeyError: 'hydraulic_power_kw'">ext = 'xlsm', variant = 'rows', method = 'pump_duty'
+expected = 0.22988950107343337, unit = '1000 US_gpm_psi'
+
+    @pytest.mark.parametrize("ext", FORMATS)
+    @pytest.mark.parametrize("variant", VARIANTS)
+    @pytest.mark.parametrize(
+        "method,expected,unit",
+        [
+            ("gas_compression", 82.33066173777114, "kW"),
+            ("pump_duty", 0.2298895010734333601697918125, "1000 US_gpm_psi"),
+            ("exchanger_area", 10, "m2"),
+            ("vaporizer_area", 12.5, "m2"),
+        ],
+    )
+    def test_equivalent_real_workbook_inputs(ext, variant, method, expected, unit):
+        report = load(variant + "." + ext)
+        proposal = {"sizing": sizing(report, method)}
+        # Existing orchestration dispatcher, not a duplicate equation implementation.
+        value, actual_unit, audit = derive_size(proposal, report)
+        assert value == pytest.approx(expected, rel=5e-12, abs=0)
+        assert actual_unit == unit and audit["source_evidence"]
+        equipment = {
+            e["identifier"] for e in report["entities"] if e["kind"] == "equipment"
+        }
+        assert {"C-101", "P-101", "HE-101", "V-101"} &lt;= equipment
+        if method == "pump_duty":
+&gt;           assert audit["hydraulic_power_kw"] == pytest.approx(0.1)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'hydraulic_power_kw'
+
+backend/tests/test_sizing_cross_file.py:83: KeyError</failure></testcase><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[pump_duty-0.22988950107343337-1000 US_gpm_psi-rows-xls]" time="0.861"><failure message="KeyError: 'hydraulic_power_kw'">ext = 'xls', variant = 'rows', method = 'pump_duty'
+expected = 0.22988950107343337, unit = '1000 US_gpm_psi'
+
+    @pytest.mark.parametrize("ext", FORMATS)
+    @pytest.mark.parametrize("variant", VARIANTS)
+    @pytest.mark.parametrize(
+        "method,expected,unit",
+        [
+            ("gas_compression", 82.33066173777114, "kW"),
+            ("pump_duty", 0.2298895010734333601697918125, "1000 US_gpm_psi"),
+            ("exchanger_area", 10, "m2"),
+            ("vaporizer_area", 12.5, "m2"),
+        ],
+    )
+    def test_equivalent_real_workbook_inputs(ext, variant, method, expected, unit):
+        report = load(variant + "." + ext)
+        proposal = {"sizing": sizing(report, method)}
+        # Existing orchestration dispatcher, not a duplicate equation implementation.
+        value, actual_unit, audit = derive_size(proposal, report)
+        assert value == pytest.approx(expected, rel=5e-12, abs=0)
+        assert actual_unit == unit and audit["source_evidence"]
+        equipment = {
+            e["identifier"] for e in report["entities"] if e["kind"] == "equipment"
+        }
+        assert {"C-101", "P-101", "HE-101", "V-101"} &lt;= equipment
+        if method == "pump_duty":
+&gt;           assert audit["hydraulic_power_kw"] == pytest.approx(0.1)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'hydraulic_power_kw'
+
+backend/tests/test_sizing_cross_file.py:83: KeyError</failure></testcase><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[pump_duty-0.22988950107343337-1000 US_gpm_psi-columns-xlsx]" time="0.815"><failure message="KeyError: 'hydraulic_power_kw'">ext = 'xlsx', variant = 'columns', method = 'pump_duty'
+expected = 0.22988950107343337, unit = '1000 US_gpm_psi'
+
+    @pytest.mark.parametrize("ext", FORMATS)
+    @pytest.mark.parametrize("variant", VARIANTS)
+    @pytest.mark.parametrize(
+        "method,expected,unit",
+        [
+            ("gas_compression", 82.33066173777114, "kW"),
+            ("pump_duty", 0.2298895010734333601697918125, "1000 US_gpm_psi"),
+            ("exchanger_area", 10, "m2"),
+            ("vaporizer_area", 12.5, "m2"),
+        ],
+    )
+    def test_equivalent_real_workbook_inputs(ext, variant, method, expected, unit):
+        report = load(variant + "." + ext)
+        proposal = {"sizing": sizing(report, method)}
+        # Existing orchestration dispatcher, not a duplicate equation implementation.
+        value, actual_unit, audit = derive_size(proposal, report)
+        assert value == pytest.approx(expected, rel=5e-12, abs=0)
+        assert actual_unit == unit and audit["source_evidence"]
+        equipment = {
+            e["identifier"] for e in report["entities"] if e["kind"] == "equipment"
+        }
+        assert {"C-101", "P-101", "HE-101", "V-101"} &lt;= equipment
+        if method == "pump_duty":
+&gt;           assert audit["hydraulic_power_kw"] == pytest.approx(0.1)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'hydraulic_power_kw'
+
+backend/tests/test_sizing_cross_file.py:83: KeyError</failure></testcase><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[pump_duty-0.22988950107343337-1000 US_gpm_psi-columns-xlsm]" time="0.818"><failure message="KeyError: 'hydraulic_power_kw'">ext = 'xlsm', variant = 'columns', method = 'pump_duty'
+expected = 0.22988950107343337, unit = '1000 US_gpm_psi'
+
+    @pytest.mark.parametrize("ext", FORMATS)
+    @pytest.mark.parametrize("variant", VARIANTS)
+    @pytest.mark.parametrize(
+        "method,expected,unit",
+        [
+            ("gas_compression", 82.33066173777114, "kW"),
+            ("pump_duty", 0.2298895010734333601697918125, "1000 US_gpm_psi"),
+            ("exchanger_area", 10, "m2"),
+            ("vaporizer_area", 12.5, "m2"),
+        ],
+    )
+    def test_equivalent_real_workbook_inputs(ext, variant, method, expected, unit):
+        report = load(variant + "." + ext)
+        proposal = {"sizing": sizing(report, method)}
+        # Existing orchestration dispatcher, not a duplicate equation implementation.
+        value, actual_unit, audit = derive_size(proposal, report)
+        assert value == pytest.approx(expected, rel=5e-12, abs=0)
+        assert actual_unit == unit and audit["source_evidence"]
+        equipment = {
+            e["identifier"] for e in report["entities"] if e["kind"] == "equipment"
+        }
+        assert {"C-101", "P-101", "HE-101", "V-101"} &lt;= equipment
+        if method == "pump_duty":
+&gt;           assert audit["hydraulic_power_kw"] == pytest.approx(0.1)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'hydraulic_power_kw'
+
+backend/tests/test_sizing_cross_file.py:83: KeyError</failure></testcase><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[pump_duty-0.22988950107343337-1000 US_gpm_psi-columns-xls]" time="0.703"><failure message="KeyError: 'hydraulic_power_kw'">ext = 'xls', variant = 'columns', method = 'pump_duty'
+expected = 0.22988950107343337, unit = '1000 US_gpm_psi'
+
+    @pytest.mark.parametrize("ext", FORMATS)
+    @pytest.mark.parametrize("variant", VARIANTS)
+    @pytest.mark.parametrize(
+        "method,expected,unit",
+        [
+            ("gas_compression", 82.33066173777114, "kW"),
+            ("pump_duty", 0.2298895010734333601697918125, "1000 US_gpm_psi"),
+            ("exchanger_area", 10, "m2"),
+            ("vaporizer_area", 12.5, "m2"),
+        ],
+    )
+    def test_equivalent_real_workbook_inputs(ext, variant, method, expected, unit):
+        report = load(variant + "." + ext)
+        proposal = {"sizing": sizing(report, method)}
+        # Existing orchestration dispatcher, not a duplicate equation implementation.
+        value, actual_unit, audit = derive_size(proposal, report)
+        assert value == pytest.approx(expected, rel=5e-12, abs=0)
+        assert actual_unit == unit and audit["source_evidence"]
+        equipment = {
+            e["identifier"] for e in report["entities"] if e["kind"] == "equipment"
+        }
+        assert {"C-101", "P-101", "HE-101", "V-101"} &lt;= equipment
+        if method == "pump_duty":
+&gt;           assert audit["hydraulic_power_kw"] == pytest.approx(0.1)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'hydraulic_power_kw'
+
+backend/tests/test_sizing_cross_file.py:83: KeyError</failure></testcase><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[pump_duty-0.22988950107343337-1000 US_gpm_psi-rows_units-xlsx]" time="0.673"><failure message="ValueError: An unambiguous source mass_flow is required">values = {'differential_pressure_bar': 1, 'efficiency': 0.5}
+
+    def compute(values):
+        thermal_basis = None
+        alternatives = []
+        if (
+            definition["input"] == "heat_duty"
+            and method == "vaporizer_area"
+            and values.get("latent_heat_kj_kg") is not None
+            and sizing.get("duty_basis", "phase_change") == "phase_change"
+        ):
+            from .thermal import phase_change_duty
+    
+            mass, mass_unit = read("mass_flow")
+            if mass_unit != "kg/h":
+                raise ValueError("Phase change requires canonical mass flow kg/h")
+            value, _, thermal_basis = phase_change_duty(mass, values)
+            thermal_basis = {
+                **thermal_basis,
+                "selected_basis": "explicit_phase_change_assumptions",
+                "heat_duty_kw": value,
+                "status": "assumption_based_not_verified",
+            }
+            for basis in ("source_duty", "enthalpy_difference"):
+                try:
+                    if basis == "source_duty":
+                        observed, unit = read("heat_duty")
+                    else:
+                        if not sizing.get("outlet_stream_key"):
+                            continue
+                        a, unit = read("enthalpy_flow")
+                        b, other_unit = read(
+                            "enthalpy_flow", sizing["outlet_stream_key"]
+                        )
+                        if other_unit != unit:
+                            continue
+                        observed = b - a
+                    if unit == "kW":
+                        alternatives.append(
+                            {
+                                "basis": basis,
+                                "heat_duty_kw": abs(observed),
+                                "difference_from_selected_kw": abs(observed) - value,
+                                "status": "unreconciled_alternative; common-reference/phase/pressure applicability requires review",
+                            }
+                        )
+                except ValueError:
+                    pass
+        elif definition["input"] == "heat_duty":
+            try:
+                value, unit = read("heat_duty")
+                if unit != "kW":
+                    raise ValueError("Heat duty must normalize to kW")
+            except ValueError:
+                if sizing.get("outlet_stream_key"):
+                    a, ua = read("enthalpy_flow")
+                    b, ub = read("enthalpy_flow", sizing["outlet_stream_key"])
+                    if ua != "kW" or ub != "kW":
+                        raise ValueError("Enthalpy rates must share kW basis")
+                    value = abs(b - a)
+                else:
+                    mass, unit = read("mass_flow")
+                    if unit != "kg/h":
+                        raise ValueError("Sensible duty needs mass flow kg/h")
+                    if values.get("latent_heat_kj_kg") is not None:
+                        from .thermal import phase_change_duty
+    
+                        value = phase_change_duty(mass, values)[0]
+                    else:
+                        if method == "vaporizer_area":
+                            raise ValueError(
+                                "Vaporiser requires common-reference enthalpy flow difference or explicit latent heat and phase fraction; sensible Cp alone is insufficient"
+                            )
+                        value = (
+                            mass
+                            * positive(
+                                values.get("specific_heat_kj_kg_k"),
+                                "explicit sensible Cp",
+                            )
+                            * positive(
+                                values.get("temperature_change_k"),
+                                "explicit temperature change",
+                            )
+                            / 3600
+                        )
+        elif definition["input"] == "mass_flow":
+            value, unit = read("mass_flow")
+            if unit != "kg/h":
+                raise ValueError("Mass flow must normalize to kg/h")
+        else:
+            try:
+&gt;               value, unit = read("volume_flow")
+                              ^^^^^^^^^^^^^^^^^^^
+
+backend/engineering_sizing/adapter.py:164: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/engineering_sizing/adapter.py:52: in read
+    value, unit, eid = observation(report, key or sizing.get("stream_key"), prop)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+report = {'schema_version': 'flowvalue-balance-v1', 'parser_version': 'workbook-pipeline-3.0', 'extracted_on': '2026-11-10', 'filename': 'rows_units.xlsx', ...}
+key = 'material:007dae198dd9077bd47dc19bfd704eb7', prop = 'volume_flow'
+
+    def observation(report, key, prop):
+        stream = next((e for e in report["entities"] if e["key"] == key), None)
+        if stream is None:
+            raise ValueError("Sizing stream is absent from register")
+        rows = [
+            v
+            for v in stream["values"]
+            if v["property"] == prop
+            and not v.get("component")
+            and v.get("status") != "unresolved"
+            and v.get("normalized_value") is not None
+        ]
+        unique = {(str(v["normalized_value"]), v.get("normalized_unit")) for v in rows}
+        if len(unique) != 1:
+&gt;           raise ValueError("An unambiguous source " + prop + " is required")
+E           ValueError: An unambiguous source volume_flow is required
+
+backend/engineering_sizing/adapter.py:25: ValueError
+
+During handling of the above exception, another exception occurred:
+
+ext = 'xlsx', variant = 'rows_units', method = 'pump_duty'
+expected = 0.22988950107343337, unit = '1000 US_gpm_psi'
+
+    @pytest.mark.parametrize("ext", FORMATS)
+    @pytest.mark.parametrize("variant", VARIANTS)
+    @pytest.mark.parametrize(
+        "method,expected,unit",
+        [
+            ("gas_compression", 82.33066173777114, "kW"),
+            ("pump_duty", 0.2298895010734333601697918125, "1000 US_gpm_psi"),
+            ("exchanger_area", 10, "m2"),
+            ("vaporizer_area", 12.5, "m2"),
+        ],
+    )
+    def test_equivalent_real_workbook_inputs(ext, variant, method, expected, unit):
+        report = load(variant + "." + ext)
+        proposal = {"sizing": sizing(report, method)}
+        # Existing orchestration dispatcher, not a duplicate equation implementation.
+&gt;       value, actual_unit, audit = derive_size(proposal, report)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_sizing_cross_file.py:75: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/orchestration/sizing.py:84: in derive_size
+    return derive(sizing, report)
+           ^^^^^^^^^^^^^^^^^^^^^^
+backend/engineering_sizing/adapter.py:194: in derive
+    size, unit, details = compute(inputs)
+                          ^^^^^^^^^^^^^^^
+backend/engineering_sizing/adapter.py:168: in compute
+    mass, unit = read("mass_flow")
+                 ^^^^^^^^^^^^^^^^^
+backend/engineering_sizing/adapter.py:52: in read
+    value, unit, eid = observation(report, key or sizing.get("stream_key"), prop)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+report = {'schema_version': 'flowvalue-balance-v1', 'parser_version': 'workbook-pipeline-3.0', 'extracted_on': '2026-11-10', 'filename': 'rows_units.xlsx', ...}
+key = 'material:007dae198dd9077bd47dc19bfd704eb7', prop = 'mass_flow'
+
+    def observation(report, key, prop):
+        stream = next((e for e in report["entities"] if e["key"] == key), None)
+        if stream is None:
+            raise ValueError("Sizing stream is absent from register")
+        rows = [
+            v
+            for v in stream["values"]
+            if v["property"] == prop
+            and not v.get("component")
+            and v.get("status") != "unresolved"
+            and v.get("normalized_value") is not None
+        ]
+        unique = {(str(v["normalized_value"]), v.get("normalized_unit")) for v in rows}
+        if len(unique) != 1:
+&gt;           raise ValueError("An unambiguous source " + prop + " is required")
+E           ValueError: An unambiguous source mass_flow is required
+
+backend/engineering_sizing/adapter.py:25: ValueError</failure></testcase><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[pump_duty-0.22988950107343337-1000 US_gpm_psi-rows_units-xlsm]" time="0.671"><failure message="ValueError: An unambiguous source mass_flow is required">values = {'differential_pressure_bar': 1, 'efficiency': 0.5}
+
+    def compute(values):
+        thermal_basis = None
+        alternatives = []
+        if (
+            definition["input"] == "heat_duty"
+            and method == "vaporizer_area"
+            and values.get("latent_heat_kj_kg") is not None
+            and sizing.get("duty_basis", "phase_change") == "phase_change"
+        ):
+            from .thermal import phase_change_duty
+    
+            mass, mass_unit = read("mass_flow")
+            if mass_unit != "kg/h":
+                raise ValueError("Phase change requires canonical mass flow kg/h")
+            value, _, thermal_basis = phase_change_duty(mass, values)
+            thermal_basis = {
+                **thermal_basis,
+                "selected_basis": "explicit_phase_change_assumptions",
+                "heat_duty_kw": value,
+                "status": "assumption_based_not_verified",
+            }
+            for basis in ("source_duty", "enthalpy_difference"):
+                try:
+                    if basis == "source_duty":
+                        observed, unit = read("heat_duty")
+                    else:
+                        if not sizing.get("outlet_stream_key"):
+                            continue
+                        a, unit = read("enthalpy_flow")
+                        b, other_unit = read(
+                            "enthalpy_flow", sizing["outlet_stream_key"]
+                        )
+                        if other_unit != unit:
+                            continue
+                        observed = b - a
+                    if unit == "kW":
+                        alternatives.append(
+                            {
+                                "basis": basis,
+                                "heat_duty_kw": abs(observed),
+                                "difference_from_selected_kw": abs(observed) - value,
+                                "status": "unreconciled_alternative; common-reference/phase/pressure applicability requires review",
+                            }
+                        )
+                except ValueError:
+                    pass
+        elif definition["input"] == "heat_duty":
+            try:
+                value, unit = read("heat_duty")
+                if unit != "kW":
+                    raise ValueError("Heat duty must normalize to kW")
+            except ValueError:
+                if sizing.get("outlet_stream_key"):
+                    a, ua = read("enthalpy_flow")
+                    b, ub = read("enthalpy_flow", sizing["outlet_stream_key"])
+                    if ua != "kW" or ub != "kW":
+                        raise ValueError("Enthalpy rates must share kW basis")
+                    value = abs(b - a)
+                else:
+                    mass, unit = read("mass_flow")
+                    if unit != "kg/h":
+                        raise ValueError("Sensible duty needs mass flow kg/h")
+                    if values.get("latent_heat_kj_kg") is not None:
+                        from .thermal import phase_change_duty
+    
+                        value = phase_change_duty(mass, values)[0]
+                    else:
+                        if method == "vaporizer_area":
+                            raise ValueError(
+                                "Vaporiser requires common-reference enthalpy flow difference or explicit latent heat and phase fraction; sensible Cp alone is insufficient"
+                            )
+                        value = (
+                            mass
+                            * positive(
+                                values.get("specific_heat_kj_kg_k"),
+                                "explicit sensible Cp",
+                            )
+                            * positive(
+                                values.get("temperature_change_k"),
+                                "explicit temperature change",
+                            )
+                            / 3600
+                        )
+        elif definition["input"] == "mass_flow":
+            value, unit = read("mass_flow")
+            if unit != "kg/h":
+                raise ValueError("Mass flow must normalize to kg/h")
+        else:
+            try:
+&gt;               value, unit = read("volume_flow")
+                              ^^^^^^^^^^^^^^^^^^^
+
+backend/engineering_sizing/adapter.py:164: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/engineering_sizing/adapter.py:52: in read
+    value, unit, eid = observation(report, key or sizing.get("stream_key"), prop)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+report = {'schema_version': 'flowvalue-balance-v1', 'parser_version': 'workbook-pipeline-3.0', 'extracted_on': '2026-11-10', 'filename': 'rows_units.xlsm', ...}
+key = 'material:75a4f363bc67219ea9ff9f10f2c70af9', prop = 'volume_flow'
+
+    def observation(report, key, prop):
+        stream = next((e for e in report["entities"] if e["key"] == key), None)
+        if stream is None:
+            raise ValueError("Sizing stream is absent from register")
+        rows = [
+            v
+            for v in stream["values"]
+            if v["property"] == prop
+            and not v.get("component")
+            and v.get("status") != "unresolved"
+            and v.get("normalized_value") is not None
+        ]
+        unique = {(str(v["normalized_value"]), v.get("normalized_unit")) for v in rows}
+        if len(unique) != 1:
+&gt;           raise ValueError("An unambiguous source " + prop + " is required")
+E           ValueError: An unambiguous source volume_flow is required
+
+backend/engineering_sizing/adapter.py:25: ValueError
+
+During handling of the above exception, another exception occurred:
+
+ext = 'xlsm', variant = 'rows_units', method = 'pump_duty'
+expected = 0.22988950107343337, unit = '1000 US_gpm_psi'
+
+    @pytest.mark.parametrize("ext", FORMATS)
+    @pytest.mark.parametrize("variant", VARIANTS)
+    @pytest.mark.parametrize(
+        "method,expected,unit",
+        [
+            ("gas_compression", 82.33066173777114, "kW"),
+            ("pump_duty", 0.2298895010734333601697918125, "1000 US_gpm_psi"),
+            ("exchanger_area", 10, "m2"),
+            ("vaporizer_area", 12.5, "m2"),
+        ],
+    )
+    def test_equivalent_real_workbook_inputs(ext, variant, method, expected, unit):
+        report = load(variant + "." + ext)
+        proposal = {"sizing": sizing(report, method)}
+        # Existing orchestration dispatcher, not a duplicate equation implementation.
+&gt;       value, actual_unit, audit = derive_size(proposal, report)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_sizing_cross_file.py:75: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/orchestration/sizing.py:84: in derive_size
+    return derive(sizing, report)
+           ^^^^^^^^^^^^^^^^^^^^^^
+backend/engineering_sizing/adapter.py:194: in derive
+    size, unit, details = compute(inputs)
+                          ^^^^^^^^^^^^^^^
+backend/engineering_sizing/adapter.py:168: in compute
+    mass, unit = read("mass_flow")
+                 ^^^^^^^^^^^^^^^^^
+backend/engineering_sizing/adapter.py:52: in read
+    value, unit, eid = observation(report, key or sizing.get("stream_key"), prop)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+report = {'schema_version': 'flowvalue-balance-v1', 'parser_version': 'workbook-pipeline-3.0', 'extracted_on': '2026-11-10', 'filename': 'rows_units.xlsm', ...}
+key = 'material:75a4f363bc67219ea9ff9f10f2c70af9', prop = 'mass_flow'
+
+    def observation(report, key, prop):
+        stream = next((e for e in report["entities"] if e["key"] == key), None)
+        if stream is None:
+            raise ValueError("Sizing stream is absent from register")
+        rows = [
+            v
+            for v in stream["values"]
+            if v["property"] == prop
+            and not v.get("component")
+            and v.get("status") != "unresolved"
+            and v.get("normalized_value") is not None
+        ]
+        unique = {(str(v["normalized_value"]), v.get("normalized_unit")) for v in rows}
+        if len(unique) != 1:
+&gt;           raise ValueError("An unambiguous source " + prop + " is required")
+E           ValueError: An unambiguous source mass_flow is required
+
+backend/engineering_sizing/adapter.py:25: ValueError</failure></testcase><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[pump_duty-0.22988950107343337-1000 US_gpm_psi-rows_units-xls]" time="0.666"><failure message="ValueError: An unambiguous source mass_flow is required">values = {'differential_pressure_bar': 1, 'efficiency': 0.5}
+
+    def compute(values):
+        thermal_basis = None
+        alternatives = []
+        if (
+            definition["input"] == "heat_duty"
+            and method == "vaporizer_area"
+            and values.get("latent_heat_kj_kg") is not None
+            and sizing.get("duty_basis", "phase_change") == "phase_change"
+        ):
+            from .thermal import phase_change_duty
+    
+            mass, mass_unit = read("mass_flow")
+            if mass_unit != "kg/h":
+                raise ValueError("Phase change requires canonical mass flow kg/h")
+            value, _, thermal_basis = phase_change_duty(mass, values)
+            thermal_basis = {
+                **thermal_basis,
+                "selected_basis": "explicit_phase_change_assumptions",
+                "heat_duty_kw": value,
+                "status": "assumption_based_not_verified",
+            }
+            for basis in ("source_duty", "enthalpy_difference"):
+                try:
+                    if basis == "source_duty":
+                        observed, unit = read("heat_duty")
+                    else:
+                        if not sizing.get("outlet_stream_key"):
+                            continue
+                        a, unit = read("enthalpy_flow")
+                        b, other_unit = read(
+                            "enthalpy_flow", sizing["outlet_stream_key"]
+                        )
+                        if other_unit != unit:
+                            continue
+                        observed = b - a
+                    if unit == "kW":
+                        alternatives.append(
+                            {
+                                "basis": basis,
+                                "heat_duty_kw": abs(observed),
+                                "difference_from_selected_kw": abs(observed) - value,
+                                "status": "unreconciled_alternative; common-reference/phase/pressure applicability requires review",
+                            }
+                        )
+                except ValueError:
+                    pass
+        elif definition["input"] == "heat_duty":
+            try:
+                value, unit = read("heat_duty")
+                if unit != "kW":
+                    raise ValueError("Heat duty must normalize to kW")
+            except ValueError:
+                if sizing.get("outlet_stream_key"):
+                    a, ua = read("enthalpy_flow")
+                    b, ub = read("enthalpy_flow", sizing["outlet_stream_key"])
+                    if ua != "kW" or ub != "kW":
+                        raise ValueError("Enthalpy rates must share kW basis")
+                    value = abs(b - a)
+                else:
+                    mass, unit = read("mass_flow")
+                    if unit != "kg/h":
+                        raise ValueError("Sensible duty needs mass flow kg/h")
+                    if values.get("latent_heat_kj_kg") is not None:
+                        from .thermal import phase_change_duty
+    
+                        value = phase_change_duty(mass, values)[0]
+                    else:
+                        if method == "vaporizer_area":
+                            raise ValueError(
+                                "Vaporiser requires common-reference enthalpy flow difference or explicit latent heat and phase fraction; sensible Cp alone is insufficient"
+                            )
+                        value = (
+                            mass
+                            * positive(
+                                values.get("specific_heat_kj_kg_k"),
+                                "explicit sensible Cp",
+                            )
+                            * positive(
+                                values.get("temperature_change_k"),
+                                "explicit temperature change",
+                            )
+                            / 3600
+                        )
+        elif definition["input"] == "mass_flow":
+            value, unit = read("mass_flow")
+            if unit != "kg/h":
+                raise ValueError("Mass flow must normalize to kg/h")
+        else:
+            try:
+&gt;               value, unit = read("volume_flow")
+                              ^^^^^^^^^^^^^^^^^^^
+
+backend/engineering_sizing/adapter.py:164: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/engineering_sizing/adapter.py:52: in read
+    value, unit, eid = observation(report, key or sizing.get("stream_key"), prop)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+report = {'schema_version': 'flowvalue-balance-v1', 'parser_version': 'workbook-pipeline-3.0', 'extracted_on': '2026-11-10', 'filename': 'rows_units.xls', ...}
+key = 'material:9baacaf58c13356c82a4f4714e598156', prop = 'volume_flow'
+
+    def observation(report, key, prop):
+        stream = next((e for e in report["entities"] if e["key"] == key), None)
+        if stream is None:
+            raise ValueError("Sizing stream is absent from register")
+        rows = [
+            v
+            for v in stream["values"]
+            if v["property"] == prop
+            and not v.get("component")
+            and v.get("status") != "unresolved"
+            and v.get("normalized_value") is not None
+        ]
+        unique = {(str(v["normalized_value"]), v.get("normalized_unit")) for v in rows}
+        if len(unique) != 1:
+&gt;           raise ValueError("An unambiguous source " + prop + " is required")
+E           ValueError: An unambiguous source volume_flow is required
+
+backend/engineering_sizing/adapter.py:25: ValueError
+
+During handling of the above exception, another exception occurred:
+
+ext = 'xls', variant = 'rows_units', method = 'pump_duty'
+expected = 0.22988950107343337, unit = '1000 US_gpm_psi'
+
+    @pytest.mark.parametrize("ext", FORMATS)
+    @pytest.mark.parametrize("variant", VARIANTS)
+    @pytest.mark.parametrize(
+        "method,expected,unit",
+        [
+            ("gas_compression", 82.33066173777114, "kW"),
+            ("pump_duty", 0.2298895010734333601697918125, "1000 US_gpm_psi"),
+            ("exchanger_area", 10, "m2"),
+            ("vaporizer_area", 12.5, "m2"),
+        ],
+    )
+    def test_equivalent_real_workbook_inputs(ext, variant, method, expected, unit):
+        report = load(variant + "." + ext)
+        proposal = {"sizing": sizing(report, method)}
+        # Existing orchestration dispatcher, not a duplicate equation implementation.
+&gt;       value, actual_unit, audit = derive_size(proposal, report)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_sizing_cross_file.py:75: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/orchestration/sizing.py:84: in derive_size
+    return derive(sizing, report)
+           ^^^^^^^^^^^^^^^^^^^^^^
+backend/engineering_sizing/adapter.py:194: in derive
+    size, unit, details = compute(inputs)
+                          ^^^^^^^^^^^^^^^
+backend/engineering_sizing/adapter.py:168: in compute
+    mass, unit = read("mass_flow")
+                 ^^^^^^^^^^^^^^^^^
+backend/engineering_sizing/adapter.py:52: in read
+    value, unit, eid = observation(report, key or sizing.get("stream_key"), prop)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+report = {'schema_version': 'flowvalue-balance-v1', 'parser_version': 'workbook-pipeline-3.0', 'extracted_on': '2026-11-10', 'filename': 'rows_units.xls', ...}
+key = 'material:9baacaf58c13356c82a4f4714e598156', prop = 'mass_flow'
+
+    def observation(report, key, prop):
+        stream = next((e for e in report["entities"] if e["key"] == key), None)
+        if stream is None:
+            raise ValueError("Sizing stream is absent from register")
+        rows = [
+            v
+            for v in stream["values"]
+            if v["property"] == prop
+            and not v.get("component")
+            and v.get("status") != "unresolved"
+            and v.get("normalized_value") is not None
+        ]
+        unique = {(str(v["normalized_value"]), v.get("normalized_unit")) for v in rows}
+        if len(unique) != 1:
+&gt;           raise ValueError("An unambiguous source " + prop + " is required")
+E           ValueError: An unambiguous source mass_flow is required
+
+backend/engineering_sizing/adapter.py:25: ValueError</failure></testcase><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[exchanger_area-10-m2-rows-xlsx]" time="0.713" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[exchanger_area-10-m2-rows-xlsm]" time="0.657" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[exchanger_area-10-m2-rows-xls]" time="0.690" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[exchanger_area-10-m2-columns-xlsx]" time="0.680" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[exchanger_area-10-m2-columns-xlsm]" time="0.659" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[exchanger_area-10-m2-columns-xls]" time="0.708" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[exchanger_area-10-m2-rows_units-xlsx]" time="1.024" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[exchanger_area-10-m2-rows_units-xlsm]" time="0.707" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[exchanger_area-10-m2-rows_units-xls]" time="0.730" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[vaporizer_area-12.5-m2-rows-xlsx]" time="0.686" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[vaporizer_area-12.5-m2-rows-xlsm]" time="0.679" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[vaporizer_area-12.5-m2-rows-xls]" time="0.728" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[vaporizer_area-12.5-m2-columns-xlsx]" time="1.848" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[vaporizer_area-12.5-m2-columns-xlsm]" time="1.181" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[vaporizer_area-12.5-m2-columns-xls]" time="0.927" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[vaporizer_area-12.5-m2-rows_units-xlsx]" time="0.907" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[vaporizer_area-12.5-m2-rows_units-xlsm]" time="1.693" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_equivalent_real_workbook_inputs[vaporizer_area-12.5-m2-rows_units-xls]" time="1.259" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_boolean_heat_from_file_must_not_be_costed[exchanger_area-True-xlsx]" time="0.766" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_boolean_heat_from_file_must_not_be_costed[exchanger_area-True-xlsm]" time="0.685" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_boolean_heat_from_file_must_not_be_costed[exchanger_area-True-xls]" time="0.729"><failure message="Failed: DID NOT RAISE ValueError">ext = 'xls', boolean = True, method = 'exchanger_area'
+
+    @pytest.mark.parametrize("ext", FORMATS)
+    @pytest.mark.parametrize("boolean", [True, False])
+    @pytest.mark.parametrize("method", ["exchanger_area", "vaporizer_area"])
+    def test_boolean_heat_from_file_must_not_be_costed(ext, boolean, method):
+        report = load("rows_bool_" + str(boolean).lower() + "." + ext)
+        proposal = sizing(report, method)
+        # Both aliases must refuse the invalid H-IN duty, even when labelled vaporizer.
+        proposal["stream_key"] = stream(report, "H-IN")["key"]
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_sizing_cross_file.py:95: Failed</failure></testcase><testcase classname="backend.tests.test_sizing_cross_file" name="test_boolean_heat_from_file_must_not_be_costed[exchanger_area-False-xlsx]" time="0.765" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_boolean_heat_from_file_must_not_be_costed[exchanger_area-False-xlsm]" time="0.665" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_boolean_heat_from_file_must_not_be_costed[exchanger_area-False-xls]" time="0.734" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_boolean_heat_from_file_must_not_be_costed[vaporizer_area-True-xlsx]" time="0.752" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_boolean_heat_from_file_must_not_be_costed[vaporizer_area-True-xlsm]" time="0.683" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_boolean_heat_from_file_must_not_be_costed[vaporizer_area-True-xls]" time="1.038"><failure message="Failed: DID NOT RAISE ValueError">ext = 'xls', boolean = True, method = 'vaporizer_area'
+
+    @pytest.mark.parametrize("ext", FORMATS)
+    @pytest.mark.parametrize("boolean", [True, False])
+    @pytest.mark.parametrize("method", ["exchanger_area", "vaporizer_area"])
+    def test_boolean_heat_from_file_must_not_be_costed(ext, boolean, method):
+        report = load("rows_bool_" + str(boolean).lower() + "." + ext)
+        proposal = sizing(report, method)
+        # Both aliases must refuse the invalid H-IN duty, even when labelled vaporizer.
+        proposal["stream_key"] = stream(report, "H-IN")["key"]
+&gt;       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_sizing_cross_file.py:95: Failed</failure></testcase><testcase classname="backend.tests.test_sizing_cross_file" name="test_boolean_heat_from_file_must_not_be_costed[vaporizer_area-False-xlsx]" time="1.008" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_boolean_heat_from_file_must_not_be_costed[vaporizer_area-False-xlsm]" time="0.761" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_boolean_heat_from_file_must_not_be_costed[vaporizer_area-False-xls]" time="0.749" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_pump_overflow_after_real_ingestion[xlsx]" time="0.810" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_pump_overflow_after_real_ingestion[xlsm]" time="0.704" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_pump_overflow_after_real_ingestion[xls]" time="0.701" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_gauge_pressure_requires_explicit_atmosphere[xlsx]" time="0.695" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_gauge_pressure_requires_explicit_atmosphere[xlsm]" time="0.668" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_gauge_pressure_requires_explicit_atmosphere[xls]" time="0.906" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_missing_heat_units_remain_unresolved[exchanger_area-xlsx]" time="0.844" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_missing_heat_units_remain_unresolved[exchanger_area-xlsm]" time="1.031" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_missing_heat_units_remain_unresolved[exchanger_area-xls]" time="0.718" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_missing_heat_units_remain_unresolved[vaporizer_area-xlsx]" time="0.696" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_missing_heat_units_remain_unresolved[vaporizer_area-xlsm]" time="0.829" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_missing_heat_units_remain_unresolved[vaporizer_area-xls]" time="0.651" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_unavailable_active_upload_types_are_explicitly_rejected[csv]" time="0.001" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_unavailable_active_upload_types_are_explicitly_rejected[pdf]" time="0.001" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_unavailable_active_upload_types_are_explicitly_rejected[docx]" time="0.001" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_unavailable_active_upload_types_are_explicitly_rejected[json]" time="0.001" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_unavailable_active_upload_types_are_explicitly_rejected[dwxml]" time="0.001" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_unavailable_active_upload_types_are_explicitly_rejected[png]" time="0.001" /><testcase classname="backend.tests.test_sizing_cross_file" name="test_unavailable_active_upload_types_are_explicitly_rejected[xlsb]" time="0.001" /></testsuite></testsuites>

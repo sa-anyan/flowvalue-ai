@@ -19,6 +19,16 @@ def _definition(unit, context, role, assumptions):
         return UNITS[ALIASES[name]]
     if name.lower() in WORDS:
         return UNITS[WORDS[name.lower()]]
+    # Bare Btu in the documented U spellings still needs the explicit thermal
+    # convention; never assume IT or reinterpret an absolute-temperature unit.
+    if name in {"Btu/(h*ft2*delta_degF)", "Btu/(h ft2 °F)", "Btu/(h*ft2*°F)"}:
+        if context.btu_basis not in {"IT", "thermochemical"}:
+            raise UnitResolutionError(
+                "Ambiguous Btu: specify IT or thermochemical basis"
+            )
+        prefix = "Btu_IT" if context.btu_basis == "IT" else "Btu_th"
+        assumptions.append("Btu basis explicitly supplied: " + context.btu_basis)
+        return UNITS[prefix + "/(h*ft2*delta_degF)"]
     if name == "gpm_sqrt_ft":
         basis = getattr(context, f"{role}_gallon_basis")
         if basis not in {"US", "Imperial"}:
@@ -224,6 +234,7 @@ def convert(
                 "volume_flow",
                 "molar_flow",
                 "standard_volume_flow",
+                "velocity",
             ]
             and value < 0
         ):

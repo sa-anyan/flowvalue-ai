@@ -1,0 +1,15 @@
+{
+  "UNIT-C01": "PASS within tested native boundaries",
+  "bounded_native_contracts_accepted": 12,
+  "wider_UNIT_001": "PARTIAL, native subset now PASS",
+  "unit_register_status_counts": {
+    "PASS": 186,
+    "PARTIAL": 2,
+    "BLOCKED": 13
+  },
+  "verified_unit_paths_unchanged": 148,
+  "numerically_exercised_canonical_units_unchanged": 143,
+  "canonical_units_inventoried": 191,
+  "full_backend": "3056 passed,5 failed,3 skipped,367 passing subtests",
+  "G1": "NOT PASSED"
+}

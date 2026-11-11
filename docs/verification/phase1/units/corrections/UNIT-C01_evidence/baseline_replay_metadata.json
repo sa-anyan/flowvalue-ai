@@ -1,0 +1,7 @@
+{
+  "purpose": "Exact pre-correction source replay; after-assertion run reused a local preliminary log filename, so keep this explicit pre-change replay and existing original UNIT-001 failures as before evidence.",
+  "baseline_source_hashes_match_start": true,
+  "baseline_root": "/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-unit-c01-before-replay-tzk7uykb",
+  "live_production_rolled_back": false,
+  "returncode": 1
+}

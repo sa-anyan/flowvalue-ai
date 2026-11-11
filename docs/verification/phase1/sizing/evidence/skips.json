@@ -1,0 +1,14 @@
+[
+  {
+    "test": "test_real_charlie_thirteen_cases_against_saved_engineering_register",
+    "reason": "Private real workbook fixture is not redistributed"
+  },
+  {
+    "test": "test_actual_charlie_register_when_available",
+    "reason": "Private Charlie snapshot not distributed"
+  },
+  {
+    "test": "test_installed_openpytea_321_reference_is_equivalent_with_an_explicit_calendar",
+    "reason": "Optional pinned OpenPyTEA reference not installed"
+  }
+]

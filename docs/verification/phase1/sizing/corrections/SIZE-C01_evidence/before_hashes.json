@@ -1,0 +1,5 @@
+{
+  "backend/engineering_sizing/compression.py": "32dddc41f8f71d54c6d1f58b6d8ca95f171d1b1eccb2dae6e61b760ee86c74ef",
+  "backend/tests/test_sizing_independent_verification.py": "c857bf3a1dcdc597236d0c44a612ef21fdaeb53ea95bea14249d2e2344f1ea20",
+  "docs/verification/phase1/sizing/FV-P1-SIZE-001_final_report.md": "37db56c4e24a6bb2c1e8ba492ce685dccd71973b97fabbf79562785f3980ed00"
+}

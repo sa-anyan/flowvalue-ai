@@ -2,6 +2,7 @@
 
 from backend.engineering_sizing.registry import calculate
 from backend.engineering_sizing.common import positive
+from backend.engineering_sizing.versioning import method_metadata
 
 
 def flow(value, unit, inputs, convert):
@@ -13,6 +14,16 @@ def flow(value, unit, inputs, convert):
 
 
 def evaluate(method, value, unit, inputs, convert):
+    metadata = (
+        method_metadata(
+            "mixing_power",
+            evaluate,
+            execution_layer="supplemental",
+            dependencies=(convert,),
+        )
+        if method == "mixing_power"
+        else None
+    )
     q = flow(value, unit, inputs, convert)
     if method == "pump_hydraulic_power":
         _, _, details = calculate("pump_duty", q, inputs)
@@ -69,8 +80,10 @@ def evaluate(method, value, unit, inputs, convert):
             * positive(inputs.get("power_density_kw_m3"), "mixing power density kW/m3"),
             "kW",
             {
-                "formula": "P = working/design volume basis * specified power density",
-                "scope": "Preliminary mixing-power assumption; not a validated agitator design",
+                "formula": "P = design_volume_m3 * specified_power_density_per_design_m3",
+                "engineering_method": metadata,
+                "volume_basis": "Gross/design vessel volume Q * residence_time / working_fraction",
+                "scope": "Preliminary mixing-power assumption, not a validated agitator design. Working-volume power density needs a separate basis conversion before use with this design-volume input.",
             },
         )
     return size, output, details

@@ -1,0 +1,30 @@
+{
+  "verified_conversion_paths": 148,
+  "pure_unit_cases": 146,
+  "physical_derivations": 2,
+  "numeric_source_to_native_paths": 24,
+  "alias_checks": 76,
+  "noncanonical_alias_spellings": 75,
+  "equivalent_canonical_unit_spellings": 1,
+  "canonical_units_inventoried": 191,
+  "canonical_units_numerically_exercised": 143,
+  "aliases_inventoried": 495,
+  "word_aliases_inventoried": 67,
+  "conversion_register_statuses": {
+    "PASS": 173,
+    "PARTIAL": 2,
+    "BLOCKED": 26
+  },
+  "alias_register_statuses": {
+    "NOT APPLICABLE": 499,
+    "PASS": 151,
+    "BLOCKED": 1
+  },
+  "native_full_contracts_accepted": 0,
+  "native_numeric_unit_contracts_verified": 12,
+  "native_numpy_boolean_failures": 13,
+  "costing_interface_statuses": {
+    "PARTIAL": 583,
+    "BLOCKED": 11
+  }
+}

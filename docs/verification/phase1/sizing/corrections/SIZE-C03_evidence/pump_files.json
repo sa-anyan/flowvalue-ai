@@ -1,0 +1,5 @@
+[
+  "backend/tests/test_pump_numerical_safety.py",
+  "backend/tests/test_sizing_independent_verification.py::test_required_finite_pump_auxiliary_outputs",
+  "backend/tests/test_engineering_sizing.py"
+]

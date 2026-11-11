@@ -1,5 +1,7 @@
 """Single-stage ideal-gas isentropic compression screening, explicit applicability."""
 
+from math import expm1, isfinite, log, log1p
+
 from .common import positive as p
 
 
@@ -9,29 +11,44 @@ def calculate(mass_kg_h, inputs):
     temp = p(inputs.get("temperature_k"), "inlet gas K")
     pin = p(inputs.get("absolute_pressure_bar"), "inlet absolute pressure bar")
     pout = p(inputs.get("discharge_pressure_bar"), "outlet absolute pressure bar")
-    ratio = pout / pin
     k = p(inputs.get("heat_capacity_ratio"), "heat capacity ratio")
     eta = p(inputs.get("efficiency"), "isentropic efficiency")
     z = p(inputs.get("compressibility_z"), "compressibility Z")
-    if k <= 1 or k > 2 or eta > 1 or ratio <= 1:
+    if k <= 1 or k > 2 or eta > 1 or pout <= pin:
         raise ValueError(
             "Compression requires 1 < k <= 2, efficiency <=1 and outlet > inlet pressure"
         )
-    power = (
-        mass
-        * (8.31446261815324 / mw)
-        * temp
-        * z
-        * k
-        / (k - 1)
-        * (ratio ** ((k - 1) / k) - 1)
-        / eta
+    # exp(x)-1 loses significant digits when gamma approaches one. Retain the
+    # same thermodynamic equation using expm1, including its removable limit.
+    # log1p preserves close pressure differences; separate logs avoid overflow
+    # if the ratio of two individually finite absolute pressures is too large.
+    relative_pressure_rise = (pout - pin) / pin
+    log_ratio = (
+        log1p(relative_pressure_rise)
+        if isfinite(relative_pressure_rise)
+        else log(pout) - log(pin)
     )
+    exponent = (k - 1) / k * log_ratio
+    try:
+        pressure_term = expm1(exponent)
+    except OverflowError as exc:
+        raise ValueError(
+            "Compressor power exceeds supported finite numerical range"
+        ) from exc
+    power = (
+        mass * (8.31446261815324 / mw) * temp * z * k / (k - 1) * pressure_term / eta
+    )
+    p(power, "calculated compressor power kW")
     return (
         power,
         "kW",
         {
             "formula": "W = m R T Z k/(k-1) * ((Pout/Pin)^((k-1)/k)-1) / eta",
             "scope": "Single-stage gas screening only; constant k and Z, no condensation/intercooling; applicability must be reviewed",
+            "applicability_warnings": [
+                "Z is a supplied representative compression-path approximation; an inlet Z alone does not establish real-gas work accuracy.",
+                "Constant k and Z must be justified for the selected gas and path. Variable properties, near-critical states, phase change or multistage/intercooled duty require an EOS/enthalpy-based or specialist calculation.",
+                "Use consistent absolute pressure and temperature states and isentropic efficiency. The numerical k limits are guards, not a certified operating envelope or a motor-rating calculation.",
+            ],
         },
     )

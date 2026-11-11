@@ -3,9 +3,21 @@
 from math import isfinite
 
 
+def reject_boolean(value, name):
+    """Reject Boolean semantics before coercion, without importing NumPy.
+
+    NumPy and compatible Boolean dtypes advertise kind "b". Numeric integer and
+    floating scalar dtypes retain their existing handling in the caller.
+    """
+    boolean_dtype = getattr(getattr(value, "dtype", None), "kind", None) == "b"
+    if isinstance(value, bool) or boolean_dtype:
+        raise ValueError(
+            name + " cannot be boolean"
+        )  # noqa: TRY004 -- uniform engineering validation
+
+
 def positive(value, name, zero=False):
-    if isinstance(value, bool):
-        raise ValueError(name + " cannot be boolean")  # noqa: TRY004 -- uniform engineering validation
+    reject_boolean(value, name)
     try:
         value = float(value)
     except (ValueError, TypeError):

@@ -1,0 +1,28 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+__________ test_required_boolean_heat_duty_rejection[exchanger_area] ___________
+
+method = 'exchanger_area'
+
+    @pytest.mark.parametrize("method", ["exchanger_area", "vaporizer_area"])
+    def test_required_boolean_heat_duty_rejection(method):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_sizing_independent_verification.py:106: Failed
+__________ test_required_boolean_heat_duty_rejection[vaporizer_area] ___________
+
+method = 'vaporizer_area'
+
+    @pytest.mark.parametrize("method", ["exchanger_area", "vaporizer_area"])
+    def test_required_boolean_heat_duty_rejection(method):
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_sizing_independent_verification.py:106: Failed
+=========================== short test summary info ============================
+FAILED backend/tests/test_sizing_independent_verification.py::test_required_boolean_heat_duty_rejection[exchanger_area]
+FAILED backend/tests/test_sizing_independent_verification.py::test_required_boolean_heat_duty_rejection[vaporizer_area]
+2 failed in 0.25s

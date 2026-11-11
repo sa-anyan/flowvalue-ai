@@ -1,0 +1,19 @@
+{
+  "canonical_before": 191,
+  "canonical_after": 203,
+  "new_definitions": 12,
+  "aliases_before": 495,
+  "aliases_after": 517,
+  "words_before": 67,
+  "words_after": 77,
+  "original_bindings_retested": 562,
+  "new_reference_cases": 38,
+  "context_dispositions": {
+    "PASS": 9,
+    "PARTIAL": 4,
+    "BLOCKED": 1
+  },
+  "costing_coordinate_dispositions": {
+    "BLOCKED": 11
+  }
+}

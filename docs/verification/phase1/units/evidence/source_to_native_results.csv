@@ -1,0 +1,25 @@
+method_id,source_unit,native_unit,source_value,expected_native_value,actual_native_value,expected_sizing_result,actual_sizing_result,output_unit,status,scope
+ion_exchange_capacity,L/s,m3/h,1,3.6,3.6,0.11520000000000001,0.1152,m3,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+ion_exchange_capacity,L/min,m3/h,60,3.6,3.6,0.11520000000000001,0.1152,m3,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+vaporizer_area,W,kW,100000,100,100.0,5.0,5.0,m2,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+vaporizer_area,MW,kW,1,1000,1000.0,50.0,50.0,m2,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+gas_compression,kg/s,kg/h,1,3600,3600.0,356.33411220656745,356.33411220656734,kW,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+gas_compression,tonne/h,kg/h,1,1000,1000.0,98.98169783515762,98.98169783515759,kW,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+phase_change_duty,kg/s,kg/h,1,3600,3600.0,1100.0,1100.0,kW,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+phase_change_duty,tonne/h,kg/h,1,1000,1000.0,305.55555555555554,305.55555555555554,kW,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+evaporated_water,kg/s,kg/h,1,3600,3600.0,2800.0,2800.0000000000005,kg/h,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+evaporated_water,tonne/h,kg/h,1,1000,1000.0,777.7777777777778,777.7777777777778,kg/h,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+ion_exchange_ebct,L/s,m3/h,1,3.6,3.6,0.6,0.6,m3,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+ion_exchange_ebct,L/min,m3/h,60,3.6,3.6,0.6,0.6,m3,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+vessel_hold_up,L/s,m3/h,1,3.6,3.6,9.0,9.0,m3,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+vessel_hold_up,L/min,m3/h,60,3.6,3.6,9.0,9.0,m3,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+pump_duty,L/s,m3/h,1,3.6,3.6,0.22988950107343337,0.22988950107343342,1000 US_gpm_psi,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+pump_duty,L/min,m3/h,60,3.6,3.6,0.22988950107343337,0.22988950107343342,1000 US_gpm_psi,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+exchanger_area,W,kW,100000,100,100.0,10.0,10.0,m2,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+exchanger_area,MW,kW,1,1000,1000.0,100.0,100.0,m2,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+filter_area,L/s,m3/h,1,3.6,3.6,0.72,0.72,m2,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+filter_area,L/min,m3/h,60,3.6,3.6,0.72,0.72,m2,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+gas_volume,kg/s,kg/h,1,3600,3600.0,3207.0070098591063,3207.0070098591073,m3/h,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+gas_volume,tonne/h,kg/h,1,1000,1000.0,890.8352805164185,890.8352805164186,m3/h,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+dryer_chamber,L/s,m3/h,1,3.6,3.6,0.01,0.01,m3,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval
+dryer_chamber,L/min,m3/h,60,3.6,3.6,0.01,0.01,m3,PASS,Explicit valid Python-number parameters; units already native for parameters; no ingestion or type-safety approval

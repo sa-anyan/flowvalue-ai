@@ -1,0 +1,20 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________________ test_required_finite_pump_auxiliary_outputs __________________
+
+    def test_required_finite_pump_auxiliary_outputs():
+        try:
+            _, _, details = calculate(
+                "pump_duty", 3.6, {"differential_pressure_bar": 1, "efficiency": 1e-320}
+            )
+        except ValueError:
+            return
+>       assert math.isfinite(details["shaft_power_kw"])
+E       assert False
+E        +  where False = <built-in function isfinite>(inf)
+E        +    where <built-in function isfinite> = math.isfinite
+
+backend/tests/test_sizing_independent_verification.py:143: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_sizing_independent_verification.py::test_required_finite_pump_auxiliary_outputs
+1 failed in 0.19s

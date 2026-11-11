@@ -1,0 +1,5 @@
+[
+  "backend/tests/test_compressor_numerical_stability.py",
+  "backend/tests/test_gas_compression_bridge.py",
+  "backend/tests/test_sizing_independent_verification.py::test_required_compression_stability_near_unity_gamma"
+]

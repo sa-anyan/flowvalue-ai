@@ -4,9 +4,11 @@ No pressure-code design, thickness prediction or automatic head geometry is impl
 
 import math
 from backend.engineering_sizing.common import positive
+from backend.engineering_sizing.versioning import method_metadata
 
 
 def evaluate(inputs):
+    metadata = method_metadata("vessel_mass", evaluate, execution_layer="supplemental")
     d = positive(inputs.get("inside_diameter_m"), "inside diameter m")
     t = positive(inputs.get("wall_thickness_m"), "wall thickness m")
     length = positive(inputs.get("straight_length_m"), "straight shell length m")
@@ -26,6 +28,7 @@ def evaluate(inputs):
         math.pi * ((d / 2 + t) ** 2 - (d / 2) ** 2) * length * density + heads,
         "kg",
         {
+            "engineering_method": metadata,
             "formula": "m = pi * ((D/2+t)^2 - (D/2)^2) * L * rho_material + m_heads_aux",
             "scope": "Supplied geometry/thickness only; does not establish code compliance or pressure suitability",
         },

@@ -1,0 +1,46 @@
+--- UNIT-001 before UNIT-003
++++ UNIT-001 capability expectations after UNIT-003
+@@ -81,19 +81,34 @@
+ 
+ 
+ @pytest.mark.parametrize(
+-    "src,dst",
++    "src,dst,expected",
+     [
+-        ("m/s", "ft/s"),
+-        ("cP", "Pa*s"),
+-        ("cSt", "m2/s"),
+-        ("Btu_IT/(h*ft2*delta_degF)", "W/m2/K"),
+-        ("min", "h"),
+-        ("specific_gravity", "kg/m3"),
++        ("m/s", "ft/s", 1 / Decimal("0.3048")),
++        ("cP", "Pa*s", None),
++        ("cSt", "m2/s", None),
++        (
++            "Btu_IT/(h*ft2*delta_degF)",
++            "W/m2/K",
++            Decimal("1055.05585262")
++            / (3600 * Decimal("0.3048") ** 2 * (Decimal(5) / 9)),
++        ),
++        ("min", "h", Decimal(1) / 60),
++        ("specific_gravity", "kg/m3", None),
+     ],
+ )
+-def test_absent_conversion_families_stay_explicitly_unresolved(src, dst):
++def test_active_and_optional_conversion_families_have_explicit_outcomes(
++    src, dst, expected
++):
++    # UNIT-003 implements three formerly absent active families. Preserve all
++    # six cases: strengthen these three to independent numeric/reverse checks;
++    # the three optional-family rejection assertions remain unchanged.
+     result = convert(1, src, dst)
+-    assert result.value is None and result.issues
++    if expected is None:
++        assert result.value is None and result.issues
++    else:
++        assert result.status == "converted" and not result.issues
++        assert result.value == pytest.approx(float(expected), rel=1e-12, abs=1e-14)
++        assert convert(result.value, dst, src).value == pytest.approx(1, rel=1e-12)
+ 
+ 
+ @pytest.mark.parametrize(

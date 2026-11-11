@@ -1,0 +1,17 @@
+{
+  "existing_files_checked": 1085,
+  "changed_existing_files": [
+    "backend/engineering_sizing/adapter.py",
+    "backend/tests/test_unit_acceptance.py",
+    "backend/equipment_costing/unit_conversion/unit_aliases.py",
+    "backend/equipment_costing/unit_conversion/__init__.py",
+    "backend/equipment_costing/unit_conversion/README.md",
+    "backend/equipment_costing/unit_conversion/unit_conversion.py",
+    "backend/equipment_costing/unit_conversion/bridges/service.py"
+  ],
+  "unexpected_changes": [],
+  "unchanged_existing_files": 1078,
+  "historical_UNIT002_unchanged": true,
+  "cost_equations_unchanged": true,
+  "native_equation_files_unchanged": true
+}

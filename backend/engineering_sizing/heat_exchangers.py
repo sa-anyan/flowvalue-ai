@@ -1,10 +1,20 @@
 """Area = abs(duty)/(U * positive temperature-driving-force * correction)."""
 
-from .common import positive as p
+from .common import positive as p, reject_boolean
+
+
+def validate_heat_duty_type(duty):
+    """Check before abs/float can erase a Python or NumPy boolean type."""
+    reject_boolean(duty, "heat duty kW")
 
 
 def calculate(duty, inputs):
-    q = p(abs(duty), "heat duty kW")
+    validate_heat_duty_type(duty)
+    try:
+        magnitude = abs(duty)
+    except TypeError:
+        raise ValueError("heat duty kW requires a signed numerical value") from None
+    q = p(magnitude, "heat duty kW")
     u = p(inputs.get("overall_u_w_m2_k"), "overall U W/m2/K")
     dt = p(inputs.get("lmtd_k"), "LMTD K")
     f = p(inputs.get("lmtd_correction"), "LMTD correction")

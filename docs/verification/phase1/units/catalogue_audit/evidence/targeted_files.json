@@ -1,0 +1,14 @@
+[
+  "docs/verification/phase1/units/catalogue_audit/evidence/test_catalogue_audit.py",
+  "backend/tests/test_native_boolean_safety.py",
+  "backend/tests/test_unit_conversion.py",
+  "backend/tests/test_unit_conversion_bridges.py",
+  "backend/tests/test_gas_compression_bridge.py",
+  "backend/tests/test_compressor_numerical_stability.py",
+  "backend/tests/test_heat_duty_validation.py",
+  "backend/tests/test_pump_numerical_safety.py",
+  "backend/tests/test_sizing_independent_verification.py",
+  "backend/tests/test_monte_carlo_horizon.py",
+  "backend/tests/test_currency_conversion.py",
+  "backend/tests/test_cost_translation.py"
+]

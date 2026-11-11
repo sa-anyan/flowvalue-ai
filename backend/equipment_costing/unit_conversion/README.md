@@ -91,3 +91,38 @@ Only `size` drives the explicitly selected curve. Pressure and temperature are n
 Constants and conventional definitions were checked against [NIST SP 811, Appendix B.8](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b8) and [B.9](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9). Exact international inch/foot and avoirdupois pound definitions are used to derive US gallon and psi; Imperial gallon is 0.00454609 m3. Thermal constants distinguish the stated Btu conventions. Floating-point implementation does not imply more engineering accuracy than source data. No third-party conversion code or new dependency is incorporated.
 
 Run `python3 -m unittest discover -s backend/tests -v`. All 85 test methods pass: 18 new conversion/adapter/round-trip/quantity tests plus previous costing, factor, installation and totals checks. Tests include independent constants, ambiguity, pressure references, dimensional mismatches, source lineage, absolute zero, prefix case and equality of native/converted costing results. This is backend verification, not an upload-to-browser UI test; the clean rebuild has no active parser/frontend integration.
+
+## UNIT-003 active parameter units (11 November 2026)
+
+Velocity (`m/s`, `m/h`, `ft/s`, `ft/min`; hydraulic loading `m3/m2/h`),
+standalone time (`s`, `min`, `h`, `day` and bounded word spellings), and
+heat-transfer coefficient (`W/m2/K`, `kW/m2/K`, explicit IT/thermochemical
+`Btu/(h*ft2*delta_degF)`) now use the canonical converter. Bare Btu in the
+supported coefficient spellings needs `ConversionContext.btu_basis`. The
+Fahrenheit term is an interval; it never receives an absolute-temperature offset.
+This finite vocabulary is not a general dimensional expression parser.
+
+`sizing_parameters.normalize_parameters` converts typed `value/unit` records,
+including supplied `low/high` endpoints, for the six existing native time,
+hydraulic-loading and U parameters. The sizing adapter and equipment bridge
+service use it before calling the unchanged native equations. Source values,
+units and source-cell references are retained in `parameter_unit_conversions`;
+original assumptions remain separate. Bare numbers retain the existing explicit
+native-unit API. Other parameter families keep their existing native allowlists.
+No UI, parser or API schema was changed; callers must supply typed backend records
+for these alternative units. This does not enable arbitrary unit entry in a UI.
+
+`relationships.average_power(energy, duration)` and
+`relationships.residence_time(working_volume, actual_volume_flow)` explicitly
+perform E/time and V/Q with typed source-linked measurements and output lineage.
+They require positive denominators and never infer duration, working fraction,
+phase or common-state applicability. They are reusable backend helpers, not new
+LLM tools or automatic inference recipes. Average power is not peak/driver power.
+Existing mass/density and actual/reference gas bridges remain separate and require
+their supplied density or positive absolute T/P/Z assumptions.
+
+The original 191 definitions and 562 alias bindings remain unchanged. Optional
+viscosity/SG conversions, opaque gas-reference validation, source-specific boiler
+hp-to-W, and the eleven blocked source-coordinate contracts are not unlocked by
+these additions. Current evidence and limits are recorded in
+`docs/verification/phase1/units/UNIT-003/`; earlier reports remain historical.

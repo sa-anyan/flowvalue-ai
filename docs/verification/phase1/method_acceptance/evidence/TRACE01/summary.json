@@ -1,0 +1,29 @@
+{
+  "focused_passed": 96,
+  "focused_failures": 0,
+  "focused_skips": 0,
+  "files": {
+    "backend.tests.test_engineering_method_versions": 45,
+    "backend.tests.test_method_acceptance": 13,
+    "backend.tests.test_unit_conversion_bridges": 11,
+    "backend.tests.test_heat_exchanger_basis": 20,
+    "backend.tests.test_production_sizing_bridge": 5,
+    "backend.tests.test_gas_compression_bridge": 2
+  },
+  "owned_methods_versioned": 15,
+  "existing_files_checked": 1057,
+  "changed_existing_files": [
+    "backend/engineering_sizing/registry.py",
+    "backend/engineering_sizing/adapter.py",
+    "backend/equipment_costing/unit_conversion/bridges/service.py",
+    "backend/equipment_costing/unit_conversion/bridges/liquid.py",
+    "backend/equipment_costing/unit_conversion/bridges/mechanical.py",
+    "backend/equipment_costing/unit_conversion/bridges/production_sizing.py"
+  ],
+  "new_production_file": "backend/engineering_sizing/versioning.py",
+  "unrelated_changes": [],
+  "Engineer2_code_changed": false,
+  "legacy_failure_evidence_unchanged": true,
+  "numerical_kernel_files_unchanged": true,
+  "note": "Native numerical kernels unchanged; selected entry points add metadata and preserve prior result/provenance fields. Supplementary return expressions and formulas are unchanged."
+}

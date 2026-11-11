@@ -1,0 +1,3 @@
+[
+  "backend/tests/test_sizing_independent_verification.py::test_required_boolean_heat_duty_rejection"
+]

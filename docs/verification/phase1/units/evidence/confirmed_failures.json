@@ -1,0 +1,54 @@
+[
+  {
+    "test": "test_required_numpy_boolean_assumptions_rejected[ion_exchange_capacity]",
+    "message": "Failed: DID NOT RAISE ValueError"
+  },
+  {
+    "test": "test_required_numpy_boolean_assumptions_rejected[vaporizer_area]",
+    "message": "Failed: DID NOT RAISE ValueError"
+  },
+  {
+    "test": "test_required_numpy_boolean_assumptions_rejected[gas_compression]",
+    "message": "Failed: DID NOT RAISE ValueError"
+  },
+  {
+    "test": "test_required_numpy_boolean_assumptions_rejected[phase_change_duty]",
+    "message": "Failed: DID NOT RAISE ValueError"
+  },
+  {
+    "test": "test_required_numpy_boolean_assumptions_rejected[evaporated_water]",
+    "message": "Failed: DID NOT RAISE ValueError"
+  },
+  {
+    "test": "test_required_numpy_boolean_assumptions_rejected[ion_exchange_ebct]",
+    "message": "Failed: DID NOT RAISE ValueError"
+  },
+  {
+    "test": "test_required_numpy_boolean_assumptions_rejected[vessel_hold_up]",
+    "message": "Failed: DID NOT RAISE ValueError"
+  },
+  {
+    "test": "test_required_numpy_boolean_assumptions_rejected[pump_duty]",
+    "message": "Failed: DID NOT RAISE ValueError"
+  },
+  {
+    "test": "test_required_numpy_boolean_assumptions_rejected[exchanger_area]",
+    "message": "Failed: DID NOT RAISE ValueError"
+  },
+  {
+    "test": "test_required_numpy_boolean_assumptions_rejected[filter_area]",
+    "message": "Failed: DID NOT RAISE ValueError"
+  },
+  {
+    "test": "test_required_numpy_boolean_assumptions_rejected[gas_volume]",
+    "message": "Failed: DID NOT RAISE ValueError"
+  },
+  {
+    "test": "test_required_numpy_boolean_assumptions_rejected[dryer_chamber]",
+    "message": "Failed: DID NOT RAISE ValueError"
+  },
+  {
+    "test": "test_required_numpy_boolean_source_observation_rejected",
+    "message": "Failed: DID NOT RAISE ValueError"
+  }
+]

@@ -14,9 +14,13 @@ def calculate(flow, inputs):
         "formula": "coordinate = Q_US_gpm * differential_pressure_psi / 1000",
         "hydraulic_power_kw": q / 3600 * dp * 100000 / 1000,
     }
+    p(coordinate, "calculated pump flow-pressure coordinate")
+    p(details["hydraulic_power_kw"], "calculated hydraulic power kW")
     if inputs.get("efficiency") is not None:
         eta = p(inputs["efficiency"], "pump efficiency")
         if eta > 1:
             raise ValueError("Efficiency cannot exceed one")
-        details["shaft_power_kw"] = details["hydraulic_power_kw"] / eta
+        details["shaft_power_kw"] = p(
+            details["hydraulic_power_kw"] / eta, "calculated shaft power kW"
+        )
     return coordinate, "1000 US_gpm_psi", details

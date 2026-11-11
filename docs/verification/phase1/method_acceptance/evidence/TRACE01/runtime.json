@@ -1,0 +1,7 @@
+{
+  "python": "/usr/local/bin/python3",
+  "version": "3.12.10",
+  "network": "blocked",
+  "AI": "disabled",
+  "assessment_storage": "isolated temporary"
+}

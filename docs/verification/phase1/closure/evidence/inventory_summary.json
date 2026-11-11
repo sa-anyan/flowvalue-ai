@@ -1,0 +1,12 @@
+{
+  "models_by_source": {
+    "garrett": 154,
+    "nottingham": 15,
+    "additional_models": 4,
+    "openpytea": 421
+  },
+  "models": 594,
+  "unit_definitions": 191,
+  "aliases": 495,
+  "word_aliases": 67
+}

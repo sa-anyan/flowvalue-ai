@@ -2,7 +2,7 @@
 
 from itertools import product
 
-from .common import positive
+from .common import positive, reject_boolean
 from .gases import calculate as gas_volume
 from .registry import METHODS, PARAMETER_UNITS, calculate
 
@@ -22,20 +22,33 @@ def observation(report, key, prop):
     unique = {(str(v["normalized_value"]), v.get("normalized_unit")) for v in rows}
     if len(unique) != 1:
         raise ValueError("An unambiguous source " + prop + " is required")
-    if isinstance(rows[0]["normalized_value"], bool):
-        raise ValueError("A boolean cannot be a physical observation")  # noqa: TRY004 -- per-item engineering validation
+    reject_boolean(rows[0]["normalized_value"], "physical observation " + prop)
     return float(rows[0]["normalized_value"]), rows[0]["normalized_unit"], rows[0]["id"]
 
 
 def derive(sizing, report):
     method = sizing["method"]
-    params = sizing.get("parameters", {})
+    from backend.equipment_costing.unit_conversion.sizing_parameters import (
+        normalize_parameters,
+    )
+
+    raw_params = sizing.get("parameters", {})
+    for name, record in raw_params.items():
+        if isinstance(record, dict):
+            for field in ("value", "low", "high"):
+                reject_boolean(record.get(field), name + " " + field)
+    params, parameter_conversions = normalize_parameters(
+        raw_params, native_spellings=PARAMETER_UNITS
+    )
     inputs = {k: v["value"] if isinstance(v, dict) else v for k, v in params.items()}
     for key, record in params.items():
         if key not in PARAMETER_UNITS:
             raise ValueError("Unknown sizing parameter: " + key)
         if isinstance(record, dict) and record.get("unit") not in PARAMETER_UNITS[key]:
             raise ValueError("Sizing parameter unit mismatch: " + key)
+        if isinstance(record, dict):
+            for endpoint in ("low", "high"):
+                reject_boolean(record.get(endpoint), key + " " + endpoint)
         positive(
             inputs[key],
             key,
@@ -44,6 +57,15 @@ def derive(sizing, report):
         )
     sources = []
     definition = METHODS[method]
+    from .versioning import method_metadata
+    from .thermal import phase_change_duty as thermal_duty
+
+    metadata = method_metadata(
+        method,
+        derive,
+        execution_layer="sizing_adapter",
+        dependencies=(normalize_parameters, thermal_duty, gas_volume),
+    )
 
     def read(prop, key=None):
         value, unit, eid = observation(report, key or sizing.get("stream_key"), prop)
@@ -176,9 +198,11 @@ def derive(sizing, report):
         size, unit, details = calculate(
             method,
             value,
-            gas_inputs(values)
-            if method in {"gas_volume", "gas_compression"}
-            else values,
+            (
+                gas_inputs(values)
+                if method in {"gas_volume", "gas_compression"}
+                else values
+            ),
         )
         if thermal_basis:
             details = {
@@ -211,17 +235,21 @@ def derive(sizing, report):
         unit,
         {
             "method": method,
+            "engineering_method": metadata,
             "source_evidence": list(dict.fromkeys(sources)),
             "assumptions": sizing,
+            "parameter_unit_conversions": parameter_conversions,
             "status": "preliminary engineering scenario",
             "calculation": details,
-            "size_range": {
-                "low": min(bounds),
-                "high": max(bounds),
-                "unit": unit,
-                "basis": "Independent assumption endpoints; conditional envelope, not a statistical confidence interval",
-            }
-            if bounds
-            else None,
+            "size_range": (
+                {
+                    "low": min(bounds),
+                    "high": max(bounds),
+                    "unit": unit,
+                    "basis": "Independent assumption endpoints; conditional envelope, not a statistical confidence interval",
+                }
+                if bounds
+                else None
+            ),
         },
     )

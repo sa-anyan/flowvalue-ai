@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.188" timestamp="2026-11-10T23:49:36.555414+00:00" hostname="MacBookPro.lan"><testcase classname="backend.tests.test_sizing_independent_verification" name="test_required_finite_pump_auxiliary_outputs" time="0.001"><failure message="assert False&#10; +  where False = &lt;built-in function isfinite&gt;(inf)&#10; +    where &lt;built-in function isfinite&gt; = math.isfinite">def test_required_finite_pump_auxiliary_outputs():
+        try:
+            _, _, details = calculate(
+                "pump_duty", 3.6, {"differential_pressure_bar": 1, "efficiency": 1e-320}
+            )
+        except ValueError:
+            return
+&gt;       assert math.isfinite(details["shaft_power_kw"])
+E       assert False
+E        +  where False = &lt;built-in function isfinite&gt;(inf)
+E        +    where &lt;built-in function isfinite&gt; = math.isfinite
+
+backend/tests/test_sizing_independent_verification.py:143: AssertionError</failure></testcase></testsuite></testsuites>

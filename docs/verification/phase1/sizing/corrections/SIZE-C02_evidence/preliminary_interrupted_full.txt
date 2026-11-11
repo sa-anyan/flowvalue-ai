@@ -1,0 +1,83 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+.................................................................... [  9%]
+........................................................................ [ 12%]
+............................................s........................... [ 16%]
+...................... [ 17%]
+..................................................... [ 19%]
+.......................................Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/pytest/__main__.py", line 9, in <module>
+    raise SystemExit(_console_main())
+                     ^^^^^^^^^^^^^^^
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/_pytest/config/__init__.py", line 253, in _console_main
+    code = _main(prog=_get_prog_name(sys.argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/_pytest/config/__init__.py", line 229, in _main
+    ret: ExitCode | int = config.hook.pytest_cmdline_main(config=config)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/pluggy/_caller.py", line 197, in __call__
+    return self._hookexec(
+           ^^^^^^^^^^^^^^^
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/pluggy/_manager.py", line 183, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/pluggy/_execution.py", line 195, in _multicall
+    raise exception
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/pluggy/_execution.py", line 147, in _multicall
+    res = hook_impl.function(*args)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/_pytest/main.py", line 377, in pytest_cmdline_main
+    return wrap_session(config, _main)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/_pytest/main.py", line 365, in wrap_session
+    config.hook.pytest_sessionfinish(
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/pluggy/_caller.py", line 197, in __call__
+    return self._hookexec(
+           ^^^^^^^^^^^^^^^
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/pluggy/_manager.py", line 183, in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/pluggy/_execution.py", line 195, in _multicall
+    raise exception
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/pluggy/_execution.py", line 167, in _multicall
+    teardown.throw(exception)
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/_pytest/logging.py", line 888, in pytest_sessionfinish
+    return (yield)
+            ^^^^^
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/pluggy/_execution.py", line 167, in _multicall
+    teardown.throw(exception)
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/_pytest/terminal.py", line 961, in pytest_sessionfinish
+    result = yield
+             ^^^^^
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/pluggy/_execution.py", line 167, in _multicall
+    teardown.throw(exception)
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/_pytest/warnings.py", line 119, in pytest_sessionfinish
+    return (yield)
+            ^^^^^
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/pluggy/_execution.py", line 147, in _multicall
+    res = hook_impl.function(*args)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/_pytest/runner.py", line 112, in pytest_sessionfinish
+    session._setupstate.teardown_exact(None)
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/_pytest/runner.py", line 579, in teardown_exact
+    raise exceptions[0]
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/_pytest/runner.py", line 568, in teardown_exact
+    fin()
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/_pytest/fixtures.py", line 1166, in finish
+    raise exceptions[0]
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/_pytest/fixtures.py", line 1156, in finish
+    fin()
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/_pytest/fixtures.py", line 1014, in _teardown_yield_fixture
+    next(it)
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/_pytest/tmpdir.py", line 305, in tmp_path
+    result_dict = request.node.stash[tmppath_result_key]
+                  ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/private/var/folders/_k/rhcmgqwj333b94c52fhrg1r40000gn/T/flowvalue-g0-k8kh055u/fresh/lib/python3.12/site-packages/_pytest/stash.py", line 84, in __getitem__
+    return cast(T, self._storage[key])
+                   ~~~~~~~~~~~~~^^^^^
+KeyError: <_pytest.stash.StashKey object at 0x103f555a0>
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! KeyboardInterrupt !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/selectors.py:415: KeyboardInterrupt
+(to show a full traceback on KeyboardInterrupt use --full-trace)

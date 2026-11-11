@@ -1,0 +1,442 @@
+input_quantity,target_quantity,input_dimension,target_dimension,example_input,example_target,expected,actual,status
+count,count,1 (item semantic count),1 (item semantic count),item,item,compatible within same declared context,converted,PASS
+count,tray_count,1 (item semantic count),1 (tray semantic count),item,tray,reject semantic/physical mismatch,unresolved,PASS
+count,mass,1 (item semantic count),M,item,kg,reject semantic/physical mismatch,unresolved,PASS
+count,length,1 (item semantic count),L,item,m,reject semantic/physical mismatch,unresolved,PASS
+count,area,1 (item semantic count),L^2,item,m2,reject semantic/physical mismatch,unresolved,PASS
+count,volume,1 (item semantic count),L^3,item,m3,reject semantic/physical mismatch,unresolved,PASS
+count,pressure,1 (item semantic count),M L^-1 T^-2,item,Pa,reject semantic/physical mismatch,unresolved,PASS
+count,temperature,1 (item semantic count),Theta (absolute),item,K,reject semantic/physical mismatch,unresolved,PASS
+count,temperature_difference,1 (item semantic count),Theta (interval),item,delta_K,reject semantic/physical mismatch,unresolved,PASS
+count,energy,1 (item semantic count),M L^2 T^-2,item,J,reject semantic/physical mismatch,unresolved,PASS
+count,power,1 (item semantic count),M L^2 T^-3,item,W,reject semantic/physical mismatch,unresolved,PASS
+count,boiler_power,1 (item semantic count),historical boiler-hp chart coordinate; thermal power basis unresolved,item,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+count,amount,1 (item semantic count),N,item,mol,reject semantic/physical mismatch,unresolved,PASS
+count,density,1 (item semantic count),M L^-3,item,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+count,mass_flow,1 (item semantic count),M T^-1,item,kg/s,reject semantic/physical mismatch,unresolved,PASS
+count,volume_flow,1 (item semantic count),L^3 T^-1,item,m3/s,reject semantic/physical mismatch,unresolved,PASS
+count,molar_flow,1 (item semantic count),N T^-1,item,mol/s,reject semantic/physical mismatch,unresolved,PASS
+count,standard_volume_flow,1 (item semantic count),L^3 T^-1 @ stated gas reference,item,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+count,flow_pressure_product,1 (item semantic count),M L^2 T^-3 (Q*deltaP coordinate),item,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+count,vacuum_capacity,1 (item semantic count),L T (mass-flow/absolute-pressure coordinate),item,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+count,flow_sqrt_head,1 (item semantic count),L^(7/2) T^-1,item,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+tray_count,count,1 (tray semantic count),1 (item semantic count),tray,item,reject semantic/physical mismatch,unresolved,PASS
+tray_count,tray_count,1 (tray semantic count),1 (tray semantic count),tray,tray,compatible within same declared context,converted,PASS
+tray_count,mass,1 (tray semantic count),M,tray,kg,reject semantic/physical mismatch,unresolved,PASS
+tray_count,length,1 (tray semantic count),L,tray,m,reject semantic/physical mismatch,unresolved,PASS
+tray_count,area,1 (tray semantic count),L^2,tray,m2,reject semantic/physical mismatch,unresolved,PASS
+tray_count,volume,1 (tray semantic count),L^3,tray,m3,reject semantic/physical mismatch,unresolved,PASS
+tray_count,pressure,1 (tray semantic count),M L^-1 T^-2,tray,Pa,reject semantic/physical mismatch,unresolved,PASS
+tray_count,temperature,1 (tray semantic count),Theta (absolute),tray,K,reject semantic/physical mismatch,unresolved,PASS
+tray_count,temperature_difference,1 (tray semantic count),Theta (interval),tray,delta_K,reject semantic/physical mismatch,unresolved,PASS
+tray_count,energy,1 (tray semantic count),M L^2 T^-2,tray,J,reject semantic/physical mismatch,unresolved,PASS
+tray_count,power,1 (tray semantic count),M L^2 T^-3,tray,W,reject semantic/physical mismatch,unresolved,PASS
+tray_count,boiler_power,1 (tray semantic count),historical boiler-hp chart coordinate; thermal power basis unresolved,tray,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+tray_count,amount,1 (tray semantic count),N,tray,mol,reject semantic/physical mismatch,unresolved,PASS
+tray_count,density,1 (tray semantic count),M L^-3,tray,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+tray_count,mass_flow,1 (tray semantic count),M T^-1,tray,kg/s,reject semantic/physical mismatch,unresolved,PASS
+tray_count,volume_flow,1 (tray semantic count),L^3 T^-1,tray,m3/s,reject semantic/physical mismatch,unresolved,PASS
+tray_count,molar_flow,1 (tray semantic count),N T^-1,tray,mol/s,reject semantic/physical mismatch,unresolved,PASS
+tray_count,standard_volume_flow,1 (tray semantic count),L^3 T^-1 @ stated gas reference,tray,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+tray_count,flow_pressure_product,1 (tray semantic count),M L^2 T^-3 (Q*deltaP coordinate),tray,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+tray_count,vacuum_capacity,1 (tray semantic count),L T (mass-flow/absolute-pressure coordinate),tray,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+tray_count,flow_sqrt_head,1 (tray semantic count),L^(7/2) T^-1,tray,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+mass,count,M,1 (item semantic count),kg,item,reject semantic/physical mismatch,unresolved,PASS
+mass,tray_count,M,1 (tray semantic count),kg,tray,reject semantic/physical mismatch,unresolved,PASS
+mass,mass,M,M,kg,kg,compatible within same declared context,converted,PASS
+mass,length,M,L,kg,m,reject semantic/physical mismatch,unresolved,PASS
+mass,area,M,L^2,kg,m2,reject semantic/physical mismatch,unresolved,PASS
+mass,volume,M,L^3,kg,m3,reject semantic/physical mismatch,unresolved,PASS
+mass,pressure,M,M L^-1 T^-2,kg,Pa,reject semantic/physical mismatch,unresolved,PASS
+mass,temperature,M,Theta (absolute),kg,K,reject semantic/physical mismatch,unresolved,PASS
+mass,temperature_difference,M,Theta (interval),kg,delta_K,reject semantic/physical mismatch,unresolved,PASS
+mass,energy,M,M L^2 T^-2,kg,J,reject semantic/physical mismatch,unresolved,PASS
+mass,power,M,M L^2 T^-3,kg,W,reject semantic/physical mismatch,unresolved,PASS
+mass,boiler_power,M,historical boiler-hp chart coordinate; thermal power basis unresolved,kg,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+mass,amount,M,N,kg,mol,reject semantic/physical mismatch,unresolved,PASS
+mass,density,M,M L^-3,kg,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+mass,mass_flow,M,M T^-1,kg,kg/s,reject semantic/physical mismatch,unresolved,PASS
+mass,volume_flow,M,L^3 T^-1,kg,m3/s,reject semantic/physical mismatch,unresolved,PASS
+mass,molar_flow,M,N T^-1,kg,mol/s,reject semantic/physical mismatch,unresolved,PASS
+mass,standard_volume_flow,M,L^3 T^-1 @ stated gas reference,kg,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+mass,flow_pressure_product,M,M L^2 T^-3 (Q*deltaP coordinate),kg,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+mass,vacuum_capacity,M,L T (mass-flow/absolute-pressure coordinate),kg,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+mass,flow_sqrt_head,M,L^(7/2) T^-1,kg,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+length,count,L,1 (item semantic count),m,item,reject semantic/physical mismatch,unresolved,PASS
+length,tray_count,L,1 (tray semantic count),m,tray,reject semantic/physical mismatch,unresolved,PASS
+length,mass,L,M,m,kg,reject semantic/physical mismatch,unresolved,PASS
+length,length,L,L,m,m,compatible within same declared context,converted,PASS
+length,area,L,L^2,m,m2,reject semantic/physical mismatch,unresolved,PASS
+length,volume,L,L^3,m,m3,reject semantic/physical mismatch,unresolved,PASS
+length,pressure,L,M L^-1 T^-2,m,Pa,reject semantic/physical mismatch,unresolved,PASS
+length,temperature,L,Theta (absolute),m,K,reject semantic/physical mismatch,unresolved,PASS
+length,temperature_difference,L,Theta (interval),m,delta_K,reject semantic/physical mismatch,unresolved,PASS
+length,energy,L,M L^2 T^-2,m,J,reject semantic/physical mismatch,unresolved,PASS
+length,power,L,M L^2 T^-3,m,W,reject semantic/physical mismatch,unresolved,PASS
+length,boiler_power,L,historical boiler-hp chart coordinate; thermal power basis unresolved,m,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+length,amount,L,N,m,mol,reject semantic/physical mismatch,unresolved,PASS
+length,density,L,M L^-3,m,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+length,mass_flow,L,M T^-1,m,kg/s,reject semantic/physical mismatch,unresolved,PASS
+length,volume_flow,L,L^3 T^-1,m,m3/s,reject semantic/physical mismatch,unresolved,PASS
+length,molar_flow,L,N T^-1,m,mol/s,reject semantic/physical mismatch,unresolved,PASS
+length,standard_volume_flow,L,L^3 T^-1 @ stated gas reference,m,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+length,flow_pressure_product,L,M L^2 T^-3 (Q*deltaP coordinate),m,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+length,vacuum_capacity,L,L T (mass-flow/absolute-pressure coordinate),m,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+length,flow_sqrt_head,L,L^(7/2) T^-1,m,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+area,count,L^2,1 (item semantic count),m2,item,reject semantic/physical mismatch,unresolved,PASS
+area,tray_count,L^2,1 (tray semantic count),m2,tray,reject semantic/physical mismatch,unresolved,PASS
+area,mass,L^2,M,m2,kg,reject semantic/physical mismatch,unresolved,PASS
+area,length,L^2,L,m2,m,reject semantic/physical mismatch,unresolved,PASS
+area,area,L^2,L^2,m2,m2,compatible within same declared context,converted,PASS
+area,volume,L^2,L^3,m2,m3,reject semantic/physical mismatch,unresolved,PASS
+area,pressure,L^2,M L^-1 T^-2,m2,Pa,reject semantic/physical mismatch,unresolved,PASS
+area,temperature,L^2,Theta (absolute),m2,K,reject semantic/physical mismatch,unresolved,PASS
+area,temperature_difference,L^2,Theta (interval),m2,delta_K,reject semantic/physical mismatch,unresolved,PASS
+area,energy,L^2,M L^2 T^-2,m2,J,reject semantic/physical mismatch,unresolved,PASS
+area,power,L^2,M L^2 T^-3,m2,W,reject semantic/physical mismatch,unresolved,PASS
+area,boiler_power,L^2,historical boiler-hp chart coordinate; thermal power basis unresolved,m2,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+area,amount,L^2,N,m2,mol,reject semantic/physical mismatch,unresolved,PASS
+area,density,L^2,M L^-3,m2,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+area,mass_flow,L^2,M T^-1,m2,kg/s,reject semantic/physical mismatch,unresolved,PASS
+area,volume_flow,L^2,L^3 T^-1,m2,m3/s,reject semantic/physical mismatch,unresolved,PASS
+area,molar_flow,L^2,N T^-1,m2,mol/s,reject semantic/physical mismatch,unresolved,PASS
+area,standard_volume_flow,L^2,L^3 T^-1 @ stated gas reference,m2,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+area,flow_pressure_product,L^2,M L^2 T^-3 (Q*deltaP coordinate),m2,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+area,vacuum_capacity,L^2,L T (mass-flow/absolute-pressure coordinate),m2,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+area,flow_sqrt_head,L^2,L^(7/2) T^-1,m2,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+volume,count,L^3,1 (item semantic count),m3,item,reject semantic/physical mismatch,unresolved,PASS
+volume,tray_count,L^3,1 (tray semantic count),m3,tray,reject semantic/physical mismatch,unresolved,PASS
+volume,mass,L^3,M,m3,kg,reject semantic/physical mismatch,unresolved,PASS
+volume,length,L^3,L,m3,m,reject semantic/physical mismatch,unresolved,PASS
+volume,area,L^3,L^2,m3,m2,reject semantic/physical mismatch,unresolved,PASS
+volume,volume,L^3,L^3,m3,m3,compatible within same declared context,converted,PASS
+volume,pressure,L^3,M L^-1 T^-2,m3,Pa,reject semantic/physical mismatch,unresolved,PASS
+volume,temperature,L^3,Theta (absolute),m3,K,reject semantic/physical mismatch,unresolved,PASS
+volume,temperature_difference,L^3,Theta (interval),m3,delta_K,reject semantic/physical mismatch,unresolved,PASS
+volume,energy,L^3,M L^2 T^-2,m3,J,reject semantic/physical mismatch,unresolved,PASS
+volume,power,L^3,M L^2 T^-3,m3,W,reject semantic/physical mismatch,unresolved,PASS
+volume,boiler_power,L^3,historical boiler-hp chart coordinate; thermal power basis unresolved,m3,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+volume,amount,L^3,N,m3,mol,reject semantic/physical mismatch,unresolved,PASS
+volume,density,L^3,M L^-3,m3,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+volume,mass_flow,L^3,M T^-1,m3,kg/s,reject semantic/physical mismatch,unresolved,PASS
+volume,volume_flow,L^3,L^3 T^-1,m3,m3/s,reject semantic/physical mismatch,unresolved,PASS
+volume,molar_flow,L^3,N T^-1,m3,mol/s,reject semantic/physical mismatch,unresolved,PASS
+volume,standard_volume_flow,L^3,L^3 T^-1 @ stated gas reference,m3,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+volume,flow_pressure_product,L^3,M L^2 T^-3 (Q*deltaP coordinate),m3,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+volume,vacuum_capacity,L^3,L T (mass-flow/absolute-pressure coordinate),m3,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+volume,flow_sqrt_head,L^3,L^(7/2) T^-1,m3,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+pressure,count,M L^-1 T^-2,1 (item semantic count),Pa,item,reject semantic/physical mismatch,unresolved,PASS
+pressure,tray_count,M L^-1 T^-2,1 (tray semantic count),Pa,tray,reject semantic/physical mismatch,unresolved,PASS
+pressure,mass,M L^-1 T^-2,M,Pa,kg,reject semantic/physical mismatch,unresolved,PASS
+pressure,length,M L^-1 T^-2,L,Pa,m,reject semantic/physical mismatch,unresolved,PASS
+pressure,area,M L^-1 T^-2,L^2,Pa,m2,reject semantic/physical mismatch,unresolved,PASS
+pressure,volume,M L^-1 T^-2,L^3,Pa,m3,reject semantic/physical mismatch,unresolved,PASS
+pressure,pressure,M L^-1 T^-2,M L^-1 T^-2,Pa,Pa,compatible within same declared context,converted,PASS
+pressure,temperature,M L^-1 T^-2,Theta (absolute),Pa,K,reject semantic/physical mismatch,unresolved,PASS
+pressure,temperature_difference,M L^-1 T^-2,Theta (interval),Pa,delta_K,reject semantic/physical mismatch,unresolved,PASS
+pressure,energy,M L^-1 T^-2,M L^2 T^-2,Pa,J,reject semantic/physical mismatch,unresolved,PASS
+pressure,power,M L^-1 T^-2,M L^2 T^-3,Pa,W,reject semantic/physical mismatch,unresolved,PASS
+pressure,boiler_power,M L^-1 T^-2,historical boiler-hp chart coordinate; thermal power basis unresolved,Pa,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+pressure,amount,M L^-1 T^-2,N,Pa,mol,reject semantic/physical mismatch,unresolved,PASS
+pressure,density,M L^-1 T^-2,M L^-3,Pa,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+pressure,mass_flow,M L^-1 T^-2,M T^-1,Pa,kg/s,reject semantic/physical mismatch,unresolved,PASS
+pressure,volume_flow,M L^-1 T^-2,L^3 T^-1,Pa,m3/s,reject semantic/physical mismatch,unresolved,PASS
+pressure,molar_flow,M L^-1 T^-2,N T^-1,Pa,mol/s,reject semantic/physical mismatch,unresolved,PASS
+pressure,standard_volume_flow,M L^-1 T^-2,L^3 T^-1 @ stated gas reference,Pa,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+pressure,flow_pressure_product,M L^-1 T^-2,M L^2 T^-3 (Q*deltaP coordinate),Pa,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+pressure,vacuum_capacity,M L^-1 T^-2,L T (mass-flow/absolute-pressure coordinate),Pa,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+pressure,flow_sqrt_head,M L^-1 T^-2,L^(7/2) T^-1,Pa,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+temperature,count,Theta (absolute),1 (item semantic count),K,item,reject semantic/physical mismatch,unresolved,PASS
+temperature,tray_count,Theta (absolute),1 (tray semantic count),K,tray,reject semantic/physical mismatch,unresolved,PASS
+temperature,mass,Theta (absolute),M,K,kg,reject semantic/physical mismatch,unresolved,PASS
+temperature,length,Theta (absolute),L,K,m,reject semantic/physical mismatch,unresolved,PASS
+temperature,area,Theta (absolute),L^2,K,m2,reject semantic/physical mismatch,unresolved,PASS
+temperature,volume,Theta (absolute),L^3,K,m3,reject semantic/physical mismatch,unresolved,PASS
+temperature,pressure,Theta (absolute),M L^-1 T^-2,K,Pa,reject semantic/physical mismatch,unresolved,PASS
+temperature,temperature,Theta (absolute),Theta (absolute),K,K,compatible within same declared context,converted,PASS
+temperature,temperature_difference,Theta (absolute),Theta (interval),K,delta_K,reject semantic/physical mismatch,unresolved,PASS
+temperature,energy,Theta (absolute),M L^2 T^-2,K,J,reject semantic/physical mismatch,unresolved,PASS
+temperature,power,Theta (absolute),M L^2 T^-3,K,W,reject semantic/physical mismatch,unresolved,PASS
+temperature,boiler_power,Theta (absolute),historical boiler-hp chart coordinate; thermal power basis unresolved,K,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+temperature,amount,Theta (absolute),N,K,mol,reject semantic/physical mismatch,unresolved,PASS
+temperature,density,Theta (absolute),M L^-3,K,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+temperature,mass_flow,Theta (absolute),M T^-1,K,kg/s,reject semantic/physical mismatch,unresolved,PASS
+temperature,volume_flow,Theta (absolute),L^3 T^-1,K,m3/s,reject semantic/physical mismatch,unresolved,PASS
+temperature,molar_flow,Theta (absolute),N T^-1,K,mol/s,reject semantic/physical mismatch,unresolved,PASS
+temperature,standard_volume_flow,Theta (absolute),L^3 T^-1 @ stated gas reference,K,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+temperature,flow_pressure_product,Theta (absolute),M L^2 T^-3 (Q*deltaP coordinate),K,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+temperature,vacuum_capacity,Theta (absolute),L T (mass-flow/absolute-pressure coordinate),K,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+temperature,flow_sqrt_head,Theta (absolute),L^(7/2) T^-1,K,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,count,Theta (interval),1 (item semantic count),delta_K,item,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,tray_count,Theta (interval),1 (tray semantic count),delta_K,tray,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,mass,Theta (interval),M,delta_K,kg,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,length,Theta (interval),L,delta_K,m,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,area,Theta (interval),L^2,delta_K,m2,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,volume,Theta (interval),L^3,delta_K,m3,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,pressure,Theta (interval),M L^-1 T^-2,delta_K,Pa,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,temperature,Theta (interval),Theta (absolute),delta_K,K,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,temperature_difference,Theta (interval),Theta (interval),delta_K,delta_K,compatible within same declared context,converted,PASS
+temperature_difference,energy,Theta (interval),M L^2 T^-2,delta_K,J,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,power,Theta (interval),M L^2 T^-3,delta_K,W,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,boiler_power,Theta (interval),historical boiler-hp chart coordinate; thermal power basis unresolved,delta_K,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,amount,Theta (interval),N,delta_K,mol,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,density,Theta (interval),M L^-3,delta_K,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,mass_flow,Theta (interval),M T^-1,delta_K,kg/s,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,volume_flow,Theta (interval),L^3 T^-1,delta_K,m3/s,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,molar_flow,Theta (interval),N T^-1,delta_K,mol/s,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,standard_volume_flow,Theta (interval),L^3 T^-1 @ stated gas reference,delta_K,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,flow_pressure_product,Theta (interval),M L^2 T^-3 (Q*deltaP coordinate),delta_K,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,vacuum_capacity,Theta (interval),L T (mass-flow/absolute-pressure coordinate),delta_K,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+temperature_difference,flow_sqrt_head,Theta (interval),L^(7/2) T^-1,delta_K,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+energy,count,M L^2 T^-2,1 (item semantic count),J,item,reject semantic/physical mismatch,unresolved,PASS
+energy,tray_count,M L^2 T^-2,1 (tray semantic count),J,tray,reject semantic/physical mismatch,unresolved,PASS
+energy,mass,M L^2 T^-2,M,J,kg,reject semantic/physical mismatch,unresolved,PASS
+energy,length,M L^2 T^-2,L,J,m,reject semantic/physical mismatch,unresolved,PASS
+energy,area,M L^2 T^-2,L^2,J,m2,reject semantic/physical mismatch,unresolved,PASS
+energy,volume,M L^2 T^-2,L^3,J,m3,reject semantic/physical mismatch,unresolved,PASS
+energy,pressure,M L^2 T^-2,M L^-1 T^-2,J,Pa,reject semantic/physical mismatch,unresolved,PASS
+energy,temperature,M L^2 T^-2,Theta (absolute),J,K,reject semantic/physical mismatch,unresolved,PASS
+energy,temperature_difference,M L^2 T^-2,Theta (interval),J,delta_K,reject semantic/physical mismatch,unresolved,PASS
+energy,energy,M L^2 T^-2,M L^2 T^-2,J,J,compatible within same declared context,converted,PASS
+energy,power,M L^2 T^-2,M L^2 T^-3,J,W,reject semantic/physical mismatch,unresolved,PASS
+energy,boiler_power,M L^2 T^-2,historical boiler-hp chart coordinate; thermal power basis unresolved,J,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+energy,amount,M L^2 T^-2,N,J,mol,reject semantic/physical mismatch,unresolved,PASS
+energy,density,M L^2 T^-2,M L^-3,J,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+energy,mass_flow,M L^2 T^-2,M T^-1,J,kg/s,reject semantic/physical mismatch,unresolved,PASS
+energy,volume_flow,M L^2 T^-2,L^3 T^-1,J,m3/s,reject semantic/physical mismatch,unresolved,PASS
+energy,molar_flow,M L^2 T^-2,N T^-1,J,mol/s,reject semantic/physical mismatch,unresolved,PASS
+energy,standard_volume_flow,M L^2 T^-2,L^3 T^-1 @ stated gas reference,J,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+energy,flow_pressure_product,M L^2 T^-2,M L^2 T^-3 (Q*deltaP coordinate),J,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+energy,vacuum_capacity,M L^2 T^-2,L T (mass-flow/absolute-pressure coordinate),J,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+energy,flow_sqrt_head,M L^2 T^-2,L^(7/2) T^-1,J,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+power,count,M L^2 T^-3,1 (item semantic count),W,item,reject semantic/physical mismatch,unresolved,PASS
+power,tray_count,M L^2 T^-3,1 (tray semantic count),W,tray,reject semantic/physical mismatch,unresolved,PASS
+power,mass,M L^2 T^-3,M,W,kg,reject semantic/physical mismatch,unresolved,PASS
+power,length,M L^2 T^-3,L,W,m,reject semantic/physical mismatch,unresolved,PASS
+power,area,M L^2 T^-3,L^2,W,m2,reject semantic/physical mismatch,unresolved,PASS
+power,volume,M L^2 T^-3,L^3,W,m3,reject semantic/physical mismatch,unresolved,PASS
+power,pressure,M L^2 T^-3,M L^-1 T^-2,W,Pa,reject semantic/physical mismatch,unresolved,PASS
+power,temperature,M L^2 T^-3,Theta (absolute),W,K,reject semantic/physical mismatch,unresolved,PASS
+power,temperature_difference,M L^2 T^-3,Theta (interval),W,delta_K,reject semantic/physical mismatch,unresolved,PASS
+power,energy,M L^2 T^-3,M L^2 T^-2,W,J,reject semantic/physical mismatch,unresolved,PASS
+power,power,M L^2 T^-3,M L^2 T^-3,W,W,compatible within same declared context,converted,PASS
+power,boiler_power,M L^2 T^-3,historical boiler-hp chart coordinate; thermal power basis unresolved,W,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+power,amount,M L^2 T^-3,N,W,mol,reject semantic/physical mismatch,unresolved,PASS
+power,density,M L^2 T^-3,M L^-3,W,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+power,mass_flow,M L^2 T^-3,M T^-1,W,kg/s,reject semantic/physical mismatch,unresolved,PASS
+power,volume_flow,M L^2 T^-3,L^3 T^-1,W,m3/s,reject semantic/physical mismatch,unresolved,PASS
+power,molar_flow,M L^2 T^-3,N T^-1,W,mol/s,reject semantic/physical mismatch,unresolved,PASS
+power,standard_volume_flow,M L^2 T^-3,L^3 T^-1 @ stated gas reference,W,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+power,flow_pressure_product,M L^2 T^-3,M L^2 T^-3 (Q*deltaP coordinate),W,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+power,vacuum_capacity,M L^2 T^-3,L T (mass-flow/absolute-pressure coordinate),W,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+power,flow_sqrt_head,M L^2 T^-3,L^(7/2) T^-1,W,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,count,historical boiler-hp chart coordinate; thermal power basis unresolved,1 (item semantic count),boiler_hp,item,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,tray_count,historical boiler-hp chart coordinate; thermal power basis unresolved,1 (tray semantic count),boiler_hp,tray,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,mass,historical boiler-hp chart coordinate; thermal power basis unresolved,M,boiler_hp,kg,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,length,historical boiler-hp chart coordinate; thermal power basis unresolved,L,boiler_hp,m,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,area,historical boiler-hp chart coordinate; thermal power basis unresolved,L^2,boiler_hp,m2,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,volume,historical boiler-hp chart coordinate; thermal power basis unresolved,L^3,boiler_hp,m3,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,pressure,historical boiler-hp chart coordinate; thermal power basis unresolved,M L^-1 T^-2,boiler_hp,Pa,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,temperature,historical boiler-hp chart coordinate; thermal power basis unresolved,Theta (absolute),boiler_hp,K,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,temperature_difference,historical boiler-hp chart coordinate; thermal power basis unresolved,Theta (interval),boiler_hp,delta_K,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,energy,historical boiler-hp chart coordinate; thermal power basis unresolved,M L^2 T^-2,boiler_hp,J,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,power,historical boiler-hp chart coordinate; thermal power basis unresolved,M L^2 T^-3,boiler_hp,W,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,boiler_power,historical boiler-hp chart coordinate; thermal power basis unresolved,historical boiler-hp chart coordinate; thermal power basis unresolved,boiler_hp,boiler_hp,compatible within same declared context,converted,PASS
+boiler_power,amount,historical boiler-hp chart coordinate; thermal power basis unresolved,N,boiler_hp,mol,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,density,historical boiler-hp chart coordinate; thermal power basis unresolved,M L^-3,boiler_hp,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,mass_flow,historical boiler-hp chart coordinate; thermal power basis unresolved,M T^-1,boiler_hp,kg/s,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,volume_flow,historical boiler-hp chart coordinate; thermal power basis unresolved,L^3 T^-1,boiler_hp,m3/s,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,molar_flow,historical boiler-hp chart coordinate; thermal power basis unresolved,N T^-1,boiler_hp,mol/s,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,standard_volume_flow,historical boiler-hp chart coordinate; thermal power basis unresolved,L^3 T^-1 @ stated gas reference,boiler_hp,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,flow_pressure_product,historical boiler-hp chart coordinate; thermal power basis unresolved,M L^2 T^-3 (Q*deltaP coordinate),boiler_hp,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,vacuum_capacity,historical boiler-hp chart coordinate; thermal power basis unresolved,L T (mass-flow/absolute-pressure coordinate),boiler_hp,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+boiler_power,flow_sqrt_head,historical boiler-hp chart coordinate; thermal power basis unresolved,L^(7/2) T^-1,boiler_hp,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+amount,count,N,1 (item semantic count),mol,item,reject semantic/physical mismatch,unresolved,PASS
+amount,tray_count,N,1 (tray semantic count),mol,tray,reject semantic/physical mismatch,unresolved,PASS
+amount,mass,N,M,mol,kg,reject semantic/physical mismatch,unresolved,PASS
+amount,length,N,L,mol,m,reject semantic/physical mismatch,unresolved,PASS
+amount,area,N,L^2,mol,m2,reject semantic/physical mismatch,unresolved,PASS
+amount,volume,N,L^3,mol,m3,reject semantic/physical mismatch,unresolved,PASS
+amount,pressure,N,M L^-1 T^-2,mol,Pa,reject semantic/physical mismatch,unresolved,PASS
+amount,temperature,N,Theta (absolute),mol,K,reject semantic/physical mismatch,unresolved,PASS
+amount,temperature_difference,N,Theta (interval),mol,delta_K,reject semantic/physical mismatch,unresolved,PASS
+amount,energy,N,M L^2 T^-2,mol,J,reject semantic/physical mismatch,unresolved,PASS
+amount,power,N,M L^2 T^-3,mol,W,reject semantic/physical mismatch,unresolved,PASS
+amount,boiler_power,N,historical boiler-hp chart coordinate; thermal power basis unresolved,mol,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+amount,amount,N,N,mol,mol,compatible within same declared context,converted,PASS
+amount,density,N,M L^-3,mol,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+amount,mass_flow,N,M T^-1,mol,kg/s,reject semantic/physical mismatch,unresolved,PASS
+amount,volume_flow,N,L^3 T^-1,mol,m3/s,reject semantic/physical mismatch,unresolved,PASS
+amount,molar_flow,N,N T^-1,mol,mol/s,reject semantic/physical mismatch,unresolved,PASS
+amount,standard_volume_flow,N,L^3 T^-1 @ stated gas reference,mol,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+amount,flow_pressure_product,N,M L^2 T^-3 (Q*deltaP coordinate),mol,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+amount,vacuum_capacity,N,L T (mass-flow/absolute-pressure coordinate),mol,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+amount,flow_sqrt_head,N,L^(7/2) T^-1,mol,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+density,count,M L^-3,1 (item semantic count),kg/m3,item,reject semantic/physical mismatch,unresolved,PASS
+density,tray_count,M L^-3,1 (tray semantic count),kg/m3,tray,reject semantic/physical mismatch,unresolved,PASS
+density,mass,M L^-3,M,kg/m3,kg,reject semantic/physical mismatch,unresolved,PASS
+density,length,M L^-3,L,kg/m3,m,reject semantic/physical mismatch,unresolved,PASS
+density,area,M L^-3,L^2,kg/m3,m2,reject semantic/physical mismatch,unresolved,PASS
+density,volume,M L^-3,L^3,kg/m3,m3,reject semantic/physical mismatch,unresolved,PASS
+density,pressure,M L^-3,M L^-1 T^-2,kg/m3,Pa,reject semantic/physical mismatch,unresolved,PASS
+density,temperature,M L^-3,Theta (absolute),kg/m3,K,reject semantic/physical mismatch,unresolved,PASS
+density,temperature_difference,M L^-3,Theta (interval),kg/m3,delta_K,reject semantic/physical mismatch,unresolved,PASS
+density,energy,M L^-3,M L^2 T^-2,kg/m3,J,reject semantic/physical mismatch,unresolved,PASS
+density,power,M L^-3,M L^2 T^-3,kg/m3,W,reject semantic/physical mismatch,unresolved,PASS
+density,boiler_power,M L^-3,historical boiler-hp chart coordinate; thermal power basis unresolved,kg/m3,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+density,amount,M L^-3,N,kg/m3,mol,reject semantic/physical mismatch,unresolved,PASS
+density,density,M L^-3,M L^-3,kg/m3,kg/m3,compatible within same declared context,converted,PASS
+density,mass_flow,M L^-3,M T^-1,kg/m3,kg/s,reject semantic/physical mismatch,unresolved,PASS
+density,volume_flow,M L^-3,L^3 T^-1,kg/m3,m3/s,reject semantic/physical mismatch,unresolved,PASS
+density,molar_flow,M L^-3,N T^-1,kg/m3,mol/s,reject semantic/physical mismatch,unresolved,PASS
+density,standard_volume_flow,M L^-3,L^3 T^-1 @ stated gas reference,kg/m3,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+density,flow_pressure_product,M L^-3,M L^2 T^-3 (Q*deltaP coordinate),kg/m3,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+density,vacuum_capacity,M L^-3,L T (mass-flow/absolute-pressure coordinate),kg/m3,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+density,flow_sqrt_head,M L^-3,L^(7/2) T^-1,kg/m3,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,count,M T^-1,1 (item semantic count),kg/s,item,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,tray_count,M T^-1,1 (tray semantic count),kg/s,tray,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,mass,M T^-1,M,kg/s,kg,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,length,M T^-1,L,kg/s,m,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,area,M T^-1,L^2,kg/s,m2,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,volume,M T^-1,L^3,kg/s,m3,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,pressure,M T^-1,M L^-1 T^-2,kg/s,Pa,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,temperature,M T^-1,Theta (absolute),kg/s,K,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,temperature_difference,M T^-1,Theta (interval),kg/s,delta_K,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,energy,M T^-1,M L^2 T^-2,kg/s,J,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,power,M T^-1,M L^2 T^-3,kg/s,W,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,boiler_power,M T^-1,historical boiler-hp chart coordinate; thermal power basis unresolved,kg/s,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,amount,M T^-1,N,kg/s,mol,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,density,M T^-1,M L^-3,kg/s,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,mass_flow,M T^-1,M T^-1,kg/s,kg/s,compatible within same declared context,converted,PASS
+mass_flow,volume_flow,M T^-1,L^3 T^-1,kg/s,m3/s,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,molar_flow,M T^-1,N T^-1,kg/s,mol/s,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,standard_volume_flow,M T^-1,L^3 T^-1 @ stated gas reference,kg/s,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,flow_pressure_product,M T^-1,M L^2 T^-3 (Q*deltaP coordinate),kg/s,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,vacuum_capacity,M T^-1,L T (mass-flow/absolute-pressure coordinate),kg/s,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+mass_flow,flow_sqrt_head,M T^-1,L^(7/2) T^-1,kg/s,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,count,L^3 T^-1,1 (item semantic count),m3/s,item,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,tray_count,L^3 T^-1,1 (tray semantic count),m3/s,tray,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,mass,L^3 T^-1,M,m3/s,kg,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,length,L^3 T^-1,L,m3/s,m,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,area,L^3 T^-1,L^2,m3/s,m2,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,volume,L^3 T^-1,L^3,m3/s,m3,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,pressure,L^3 T^-1,M L^-1 T^-2,m3/s,Pa,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,temperature,L^3 T^-1,Theta (absolute),m3/s,K,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,temperature_difference,L^3 T^-1,Theta (interval),m3/s,delta_K,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,energy,L^3 T^-1,M L^2 T^-2,m3/s,J,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,power,L^3 T^-1,M L^2 T^-3,m3/s,W,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,boiler_power,L^3 T^-1,historical boiler-hp chart coordinate; thermal power basis unresolved,m3/s,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,amount,L^3 T^-1,N,m3/s,mol,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,density,L^3 T^-1,M L^-3,m3/s,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,mass_flow,L^3 T^-1,M T^-1,m3/s,kg/s,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,volume_flow,L^3 T^-1,L^3 T^-1,m3/s,m3/s,compatible within same declared context,converted,PASS
+volume_flow,molar_flow,L^3 T^-1,N T^-1,m3/s,mol/s,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,standard_volume_flow,L^3 T^-1,L^3 T^-1 @ stated gas reference,m3/s,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,flow_pressure_product,L^3 T^-1,M L^2 T^-3 (Q*deltaP coordinate),m3/s,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,vacuum_capacity,L^3 T^-1,L T (mass-flow/absolute-pressure coordinate),m3/s,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+volume_flow,flow_sqrt_head,L^3 T^-1,L^(7/2) T^-1,m3/s,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,count,N T^-1,1 (item semantic count),mol/s,item,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,tray_count,N T^-1,1 (tray semantic count),mol/s,tray,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,mass,N T^-1,M,mol/s,kg,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,length,N T^-1,L,mol/s,m,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,area,N T^-1,L^2,mol/s,m2,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,volume,N T^-1,L^3,mol/s,m3,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,pressure,N T^-1,M L^-1 T^-2,mol/s,Pa,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,temperature,N T^-1,Theta (absolute),mol/s,K,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,temperature_difference,N T^-1,Theta (interval),mol/s,delta_K,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,energy,N T^-1,M L^2 T^-2,mol/s,J,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,power,N T^-1,M L^2 T^-3,mol/s,W,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,boiler_power,N T^-1,historical boiler-hp chart coordinate; thermal power basis unresolved,mol/s,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,amount,N T^-1,N,mol/s,mol,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,density,N T^-1,M L^-3,mol/s,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,mass_flow,N T^-1,M T^-1,mol/s,kg/s,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,volume_flow,N T^-1,L^3 T^-1,mol/s,m3/s,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,molar_flow,N T^-1,N T^-1,mol/s,mol/s,compatible within same declared context,converted,PASS
+molar_flow,standard_volume_flow,N T^-1,L^3 T^-1 @ stated gas reference,mol/s,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,flow_pressure_product,N T^-1,M L^2 T^-3 (Q*deltaP coordinate),mol/s,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,vacuum_capacity,N T^-1,L T (mass-flow/absolute-pressure coordinate),mol/s,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+molar_flow,flow_sqrt_head,N T^-1,L^(7/2) T^-1,mol/s,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,count,L^3 T^-1 @ stated gas reference,1 (item semantic count),Sm3/s,item,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,tray_count,L^3 T^-1 @ stated gas reference,1 (tray semantic count),Sm3/s,tray,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,mass,L^3 T^-1 @ stated gas reference,M,Sm3/s,kg,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,length,L^3 T^-1 @ stated gas reference,L,Sm3/s,m,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,area,L^3 T^-1 @ stated gas reference,L^2,Sm3/s,m2,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,volume,L^3 T^-1 @ stated gas reference,L^3,Sm3/s,m3,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,pressure,L^3 T^-1 @ stated gas reference,M L^-1 T^-2,Sm3/s,Pa,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,temperature,L^3 T^-1 @ stated gas reference,Theta (absolute),Sm3/s,K,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,temperature_difference,L^3 T^-1 @ stated gas reference,Theta (interval),Sm3/s,delta_K,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,energy,L^3 T^-1 @ stated gas reference,M L^2 T^-2,Sm3/s,J,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,power,L^3 T^-1 @ stated gas reference,M L^2 T^-3,Sm3/s,W,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,boiler_power,L^3 T^-1 @ stated gas reference,historical boiler-hp chart coordinate; thermal power basis unresolved,Sm3/s,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,amount,L^3 T^-1 @ stated gas reference,N,Sm3/s,mol,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,density,L^3 T^-1 @ stated gas reference,M L^-3,Sm3/s,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,mass_flow,L^3 T^-1 @ stated gas reference,M T^-1,Sm3/s,kg/s,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,volume_flow,L^3 T^-1 @ stated gas reference,L^3 T^-1,Sm3/s,m3/s,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,molar_flow,L^3 T^-1 @ stated gas reference,N T^-1,Sm3/s,mol/s,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,standard_volume_flow,L^3 T^-1 @ stated gas reference,L^3 T^-1 @ stated gas reference,Sm3/s,Sm3/s,compatible within same declared context,converted,PASS
+standard_volume_flow,flow_pressure_product,L^3 T^-1 @ stated gas reference,M L^2 T^-3 (Q*deltaP coordinate),Sm3/s,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,vacuum_capacity,L^3 T^-1 @ stated gas reference,L T (mass-flow/absolute-pressure coordinate),Sm3/s,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+standard_volume_flow,flow_sqrt_head,L^3 T^-1 @ stated gas reference,L^(7/2) T^-1,Sm3/s,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,count,M L^2 T^-3 (Q*deltaP coordinate),1 (item semantic count),m3/s_Pa,item,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,tray_count,M L^2 T^-3 (Q*deltaP coordinate),1 (tray semantic count),m3/s_Pa,tray,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,mass,M L^2 T^-3 (Q*deltaP coordinate),M,m3/s_Pa,kg,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,length,M L^2 T^-3 (Q*deltaP coordinate),L,m3/s_Pa,m,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,area,M L^2 T^-3 (Q*deltaP coordinate),L^2,m3/s_Pa,m2,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,volume,M L^2 T^-3 (Q*deltaP coordinate),L^3,m3/s_Pa,m3,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,pressure,M L^2 T^-3 (Q*deltaP coordinate),M L^-1 T^-2,m3/s_Pa,Pa,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,temperature,M L^2 T^-3 (Q*deltaP coordinate),Theta (absolute),m3/s_Pa,K,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,temperature_difference,M L^2 T^-3 (Q*deltaP coordinate),Theta (interval),m3/s_Pa,delta_K,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,energy,M L^2 T^-3 (Q*deltaP coordinate),M L^2 T^-2,m3/s_Pa,J,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,power,M L^2 T^-3 (Q*deltaP coordinate),M L^2 T^-3,m3/s_Pa,W,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,boiler_power,M L^2 T^-3 (Q*deltaP coordinate),historical boiler-hp chart coordinate; thermal power basis unresolved,m3/s_Pa,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,amount,M L^2 T^-3 (Q*deltaP coordinate),N,m3/s_Pa,mol,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,density,M L^2 T^-3 (Q*deltaP coordinate),M L^-3,m3/s_Pa,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,mass_flow,M L^2 T^-3 (Q*deltaP coordinate),M T^-1,m3/s_Pa,kg/s,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,volume_flow,M L^2 T^-3 (Q*deltaP coordinate),L^3 T^-1,m3/s_Pa,m3/s,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,molar_flow,M L^2 T^-3 (Q*deltaP coordinate),N T^-1,m3/s_Pa,mol/s,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,standard_volume_flow,M L^2 T^-3 (Q*deltaP coordinate),L^3 T^-1 @ stated gas reference,m3/s_Pa,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,flow_pressure_product,M L^2 T^-3 (Q*deltaP coordinate),M L^2 T^-3 (Q*deltaP coordinate),m3/s_Pa,m3/s_Pa,compatible within same declared context,converted,PASS
+flow_pressure_product,vacuum_capacity,M L^2 T^-3 (Q*deltaP coordinate),L T (mass-flow/absolute-pressure coordinate),m3/s_Pa,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+flow_pressure_product,flow_sqrt_head,M L^2 T^-3 (Q*deltaP coordinate),L^(7/2) T^-1,m3/s_Pa,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,count,L T (mass-flow/absolute-pressure coordinate),1 (item semantic count),kg/h/mmHg_abs,item,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,tray_count,L T (mass-flow/absolute-pressure coordinate),1 (tray semantic count),kg/h/mmHg_abs,tray,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,mass,L T (mass-flow/absolute-pressure coordinate),M,kg/h/mmHg_abs,kg,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,length,L T (mass-flow/absolute-pressure coordinate),L,kg/h/mmHg_abs,m,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,area,L T (mass-flow/absolute-pressure coordinate),L^2,kg/h/mmHg_abs,m2,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,volume,L T (mass-flow/absolute-pressure coordinate),L^3,kg/h/mmHg_abs,m3,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,pressure,L T (mass-flow/absolute-pressure coordinate),M L^-1 T^-2,kg/h/mmHg_abs,Pa,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,temperature,L T (mass-flow/absolute-pressure coordinate),Theta (absolute),kg/h/mmHg_abs,K,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,temperature_difference,L T (mass-flow/absolute-pressure coordinate),Theta (interval),kg/h/mmHg_abs,delta_K,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,energy,L T (mass-flow/absolute-pressure coordinate),M L^2 T^-2,kg/h/mmHg_abs,J,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,power,L T (mass-flow/absolute-pressure coordinate),M L^2 T^-3,kg/h/mmHg_abs,W,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,boiler_power,L T (mass-flow/absolute-pressure coordinate),historical boiler-hp chart coordinate; thermal power basis unresolved,kg/h/mmHg_abs,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,amount,L T (mass-flow/absolute-pressure coordinate),N,kg/h/mmHg_abs,mol,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,density,L T (mass-flow/absolute-pressure coordinate),M L^-3,kg/h/mmHg_abs,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,mass_flow,L T (mass-flow/absolute-pressure coordinate),M T^-1,kg/h/mmHg_abs,kg/s,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,volume_flow,L T (mass-flow/absolute-pressure coordinate),L^3 T^-1,kg/h/mmHg_abs,m3/s,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,molar_flow,L T (mass-flow/absolute-pressure coordinate),N T^-1,kg/h/mmHg_abs,mol/s,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,standard_volume_flow,L T (mass-flow/absolute-pressure coordinate),L^3 T^-1 @ stated gas reference,kg/h/mmHg_abs,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,flow_pressure_product,L T (mass-flow/absolute-pressure coordinate),M L^2 T^-3 (Q*deltaP coordinate),kg/h/mmHg_abs,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+vacuum_capacity,vacuum_capacity,L T (mass-flow/absolute-pressure coordinate),L T (mass-flow/absolute-pressure coordinate),kg/h/mmHg_abs,kg/h/mmHg_abs,compatible within same declared context,converted,PASS
+vacuum_capacity,flow_sqrt_head,L T (mass-flow/absolute-pressure coordinate),L^(7/2) T^-1,kg/h/mmHg_abs,m3/h_sqrt_m,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,count,L^(7/2) T^-1,1 (item semantic count),m3/h_sqrt_m,item,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,tray_count,L^(7/2) T^-1,1 (tray semantic count),m3/h_sqrt_m,tray,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,mass,L^(7/2) T^-1,M,m3/h_sqrt_m,kg,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,length,L^(7/2) T^-1,L,m3/h_sqrt_m,m,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,area,L^(7/2) T^-1,L^2,m3/h_sqrt_m,m2,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,volume,L^(7/2) T^-1,L^3,m3/h_sqrt_m,m3,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,pressure,L^(7/2) T^-1,M L^-1 T^-2,m3/h_sqrt_m,Pa,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,temperature,L^(7/2) T^-1,Theta (absolute),m3/h_sqrt_m,K,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,temperature_difference,L^(7/2) T^-1,Theta (interval),m3/h_sqrt_m,delta_K,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,energy,L^(7/2) T^-1,M L^2 T^-2,m3/h_sqrt_m,J,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,power,L^(7/2) T^-1,M L^2 T^-3,m3/h_sqrt_m,W,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,boiler_power,L^(7/2) T^-1,historical boiler-hp chart coordinate; thermal power basis unresolved,m3/h_sqrt_m,boiler_hp,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,amount,L^(7/2) T^-1,N,m3/h_sqrt_m,mol,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,density,L^(7/2) T^-1,M L^-3,m3/h_sqrt_m,kg/m3,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,mass_flow,L^(7/2) T^-1,M T^-1,m3/h_sqrt_m,kg/s,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,volume_flow,L^(7/2) T^-1,L^3 T^-1,m3/h_sqrt_m,m3/s,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,molar_flow,L^(7/2) T^-1,N T^-1,m3/h_sqrt_m,mol/s,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,standard_volume_flow,L^(7/2) T^-1,L^3 T^-1 @ stated gas reference,m3/h_sqrt_m,Sm3/s,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,flow_pressure_product,L^(7/2) T^-1,M L^2 T^-3 (Q*deltaP coordinate),m3/h_sqrt_m,m3/s_Pa,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,vacuum_capacity,L^(7/2) T^-1,L T (mass-flow/absolute-pressure coordinate),m3/h_sqrt_m,kg/h/mmHg_abs,reject semantic/physical mismatch,unresolved,PASS
+flow_sqrt_head,flow_sqrt_head,L^(7/2) T^-1,L^(7/2) T^-1,m3/h_sqrt_m,m3/h_sqrt_m,compatible within same declared context,converted,PASS

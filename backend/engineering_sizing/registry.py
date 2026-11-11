@@ -127,11 +127,19 @@ def list_methods():
 def calculate(method, value, inputs):
     if method not in METHODS:
         raise ValueError("Unsupported engineering sizing method: " + str(method))
-    result = METHODS[method]["calculator"](value, inputs)
+    from .versioning import method_metadata
     from .common import positive
 
+    calculator = METHODS[method]["calculator"]
+    metadata = method_metadata(
+        method,
+        calculator,
+        dependencies=(calculate, positive),
+        contract={k: v for k, v in METHODS[method].items() if k != "calculator"},
+    )
+    result = calculator(value, inputs)
     positive(result[0], "calculated equipment size")
-    return result
+    return result[0], result[1], {**result[2], "engineering_method": metadata}
 
 
 PARAMETER_UNITS = {

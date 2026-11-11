@@ -1,0 +1,16 @@
+[
+  "backend/tests/test_unit003_active_conversions.py",
+  "backend/tests/test_unit_conversion.py",
+  "backend/tests/test_unit_conversion_bridges.py",
+  "backend/tests/test_gas_compression_bridge.py",
+  "backend/tests/test_heat_exchanger_basis.py",
+  "backend/tests/test_native_boolean_safety.py",
+  "backend/tests/test_compressor_numerical_stability.py",
+  "backend/tests/test_heat_duty_validation.py",
+  "backend/tests/test_pump_numerical_safety.py",
+  "backend/tests/test_sizing_independent_verification.py",
+  "backend/tests/test_monte_carlo_horizon.py",
+  "backend/tests/test_openpytea_catalogue.py",
+  "backend/tests/test_engineering_sizing.py",
+  "backend/tests/test_production_sizing_bridge.py"
+]
