@@ -1,6 +1,6 @@
 # B09 Increment 4 · Production integration plan
 
-**Status: PARTIAL.** This is a proposal for review. Repository observations refer to B09 tip `d8c65cd`, which includes the sizing-trace follow-ups. The standalone contract is in [B09 receipts and invalidation](B09-calculation-receipts-and-invalidation.md). No Engineer 1 decision is assumed approved.
+**Status: PARTIAL.** Engineer 1 accepted the six policies in the [decision register](B09-acceptance-and-decisions.md). Production integration is parked. Repository observations refer to B09 tip `d8c65cd`, which includes the sizing-trace follow-ups. The standalone contract is in [B09 receipts and invalidation](B09-calculation-receipts-and-invalidation.md). The plan and its fixtures describe proposed production work and completed prototype evidence. Legacy freshness remains authoritative.
 
 ## Verified interface map
 
@@ -57,30 +57,29 @@ A missing consumed-input trace is unknown or coarse. A fresh replacement with id
 ## Proposed persistence
 
 - Allocate an opaque attempt ID once. Serialize the immutable receipt canonically with its scope, frozen input references and independent observed method evidence. Same ID and identical bytes is an idempotent replay. Same ID and different payload is a conflict. Assign monotonic append order at successful commit, independent of timestamps.
-- Publish receipt append, active pointer and new result atomically against the expected assessment revision. SQLite can use a single transaction. Cloud must use a single revision-conditional update for a bounded envelope or a reviewed owner-scoped transactional RPC for separate storage. Separate PATCH and POST calls cannot satisfy this invariant. Retry after reloading only if the frozen basis and identity still match, otherwise preserve/report the conflict without publishing a stale output. Decide how to record conflicted attempts before production activation.
-- Retrieve histories in append order by original scope and retain superseded receipts plus referenced output artifacts. Start with a bounded assessment-local pilot design and size tests. If archival is needed, require stable references and named-version-aware retention before adopting separate storage. Do not silently prune referenced history. Cloud validation compares canonical content because JSONB does not promise original text byte ordering. SQLite version reads must leave stored bytes unchanged.
+- Publish receipt append, active pointer and new result atomically against the expected assessment revision. SQLite can use a single transaction. Decision 5 specifies a single revision-conditional update in one cloud row for the pilot. A transactional database function requires separate review. Separate PATCH and POST calls cannot satisfy this invariant. Retry only an exact byte-for-byte resend. Record a conflicted attempt in history with outcome `conflict` and no output.
+- Retrieve histories in append order by original scope and retain superseded receipts plus referenced output artifacts. Start with a bounded assessment-local pilot design and size tests. Decision 5 permits no pruning in this phase. Keep referenced artifacts indefinitely and revisit the design when size tests approach the 16 MiB cloud limit. Cloud validation compares canonical content because JSONB does not promise original text byte ordering. SQLite version reads must leave stored bytes unchanged.
 - Named versions retain original receipt IDs, scope and references. Editable forks keep lineage but acquire no active receipt in the new scope. Freeze scenario inputs by baseline assessment revision and snapshot ID. Scenario executions keep separate receipt IDs and cannot acquire a newer baseline implicitly. Legacy snapshots retain existing fields and render unavailable receipt/method evidence as unknown. There is no migration or backfill in this plan.
 
 ## Recommended implementation order
 
 | Increment | Expected files | Acceptance and numerical parity | Review gate and rollback |
 |---|---|---|---|
-| 4A · Capture in memory | `backend/blocks/execution.py`, `models.py`, `shared.py`, per-stage runner adapters and a new capture test module. | Test exact pre-dispatch and effective inputs, optional OPEX bases, source/method identity, blocked and failed paths, and incomplete products. Compare stage payloads, totals, ledger and current freshness to fixed baseline fixtures with capture enabled and disabled. | Decisions 1 and 2. Keep the collector injectable and off by default. Remove it without touching stored data. |
-| 4B · Atomic isolated persistence pilot | `backend/orchestration/store.py`, `backend/cloud/store.py` or a transaction adapter, persistence tests. Any migration is a separately approved follow-up. | Test optimistic conflict, append order, replay, owner isolation, failure with retained output, JSON size bounds, named-version restore and SQLite/cloud contract parity with mocked PostgREST before an isolated cloud test. Stored numerical results and snapshots remain identical. | Decisions 3 and 4. Keep legacy readers and gate writes; disable receipt writes without deleting history. |
-| 4C · Shadow invalidation and scenario lineage | `backend/orchestration/calculation_receipts.py`, `backend/blocks/execution.py`, `backend/scenarios_and_uncertainty/monte_carlo/service.py` and shadow tests. | Verify direct/transitive invalidation, unrelated observations, unknown dependencies, optional bases, equivalent reruns, partial/failed transitions and frozen scenarios. Compare existing freshness, exact stage totals, scenario samples and central results; explain disagreements before enabling any behavior change. | Decisions 1, 2, 4 and 5. Keep existing freshness authoritative. Turn off shadow projections independently. |
-| 4D · Read/export adoption | `backend/api/app.py`, `backend/dashboard_reporting/study_report.py`, `backend/scenarios_and_uncertainty/monte_carlo/exports.py` and report tests. UI changes require their own review. | Verify current, stale, unknown and legacy output labels; serialize original method evidence; compare JSON/HTML/CSV/XLSX values and scope against saved outputs. Confirm no writes or engine dispatch on read. | Decisions 4, 5 and 6. Keep metadata additive and retain the existing export path behind a compatibility option until accepted. |
+| 4A · Capture in memory | `backend/blocks/execution.py`, `models.py`, `shared.py`, per-stage runner adapters and a new capture test module. | Test exact pre-dispatch and effective inputs, optional OPEX bases, source/method identity, blocked and failed paths, and incomplete products. Compare stage payloads, totals, ledger and current freshness to fixed baseline fixtures with capture enabled and disabled. | Decisions 1, 2, 3 and 4. Keep the collector injectable and off by default. Remove it without touching stored data. |
+| 4B · Atomic isolated persistence pilot | `backend/orchestration/store.py`, `backend/cloud/store.py` or a transaction adapter, persistence tests. Any migration is a separately approved follow-up. | Test optimistic conflict, append order, replay, owner isolation, failure with retained output, JSON size bounds, named-version restore and SQLite/cloud contract parity with mocked PostgREST before an isolated cloud test. Stored numerical results and snapshots remain identical. | Decisions 2 and 5. Keep legacy readers and gate writes; disable receipt writes without deleting history. |
+| 4C · Shadow invalidation and scenario lineage | `backend/orchestration/calculation_receipts.py`, `backend/blocks/execution.py`, `backend/scenarios_and_uncertainty/monte_carlo/service.py` and shadow tests. | Verify direct/transitive invalidation, unrelated observations, unknown dependencies, optional bases, equivalent reruns, partial/failed transitions and frozen scenarios. Compare existing freshness, exact stage totals, scenario samples and central results; explain disagreements before enabling any behavior change. | Decisions 1–5. Keep existing freshness authoritative. Turn off shadow projections independently. |
+| 4D · Read/export adoption | `backend/api/app.py`, `backend/dashboard_reporting/study_report.py`, `backend/scenarios_and_uncertainty/monte_carlo/exports.py` and report tests. UI changes require their own review. | Verify current, stale, unknown and legacy output labels; serialize original method evidence; compare JSON/HTML/CSV/XLSX values and scope against saved outputs. Confirm no writes or engine dispatch on read. | Decisions 1, 2, 3, 5 and 6. Keep metadata additive and retain the existing export path behind a compatibility option until accepted. |
 
-## Six unresolved decisions for Engineer 1
+## Six agreed interfaces
 
-1. **Consumed inputs and method capture.** Agree engine-specific source bindings, shared report fallbacks, normalized config and which executed layers count as receipt evidence.
-2. **Semantic output and equivalent reruns.** Agree handoff versus display digests, digest-preserving changes in method provenance and the distinction between numerical freshness and permission to reuse.
-3. **Append and retention semantics.** Agree retry versus re-execution, race and conflict outcomes, immutable output retention and what a superseded receipt must still reference.
-4. **Named-version and scenario lineage.** Agree how a fork/frozen scenario references the original, when it must re-execute and how to keep existing exports comparable.
-5. **Partial and failed result consumption.** Agree which consumers may use partial output, required coverage, and retained-output behavior for failed/blocked attempts. Do not promote partial totals into approved results implicitly.
-6. **Read/export and approval boundaries.** Agree stale/unknown labels and export eligibility, approval scope, expiry and reevaluation triggers. Preserve authority separately from calculation receipts.
+1. **Handoff digest and method provenance.** Hash the canonical downstream payload and separately hash the Financial display ledger. A stage is stale when its own method differs. Equal upstream handoff digests permit working/preview reuse with changed provenance flagged and dependent approval requiring reapproval.
+2. **Failed or blocked attempts.** Preserve the prior output and report the latest outcome separately. Existing consumption rules remain in charge. A future last-successful override requires an explicit user action recorded in the receipt.
+3. **Partial coverage.** CAPEX may consume partial Equipment with unpriced items listed. Capital-dependent OPEX lines stay pending on partial CAPEX. Financial requires complete CAPEX and OPEX and may use partial Revenue only with missing lines listed and the result marked partial. Missing is never zero.
+4. **Consumed inputs and optional OPEX bases.** Capture effective translated and scheduled inputs, engineering-report fallbacks, emitted B07 observations, and the executed preparation and native G1 methods. Newly available CAPEX or Revenue invalidates OPEX. Narrow to actual line/year use only after capture and legacy parity are proven.
+5. **Append, retention and lineage.** Retain no-output conflicts, allow exact resends only, and use a revision-conditional single-row cloud pilot if resumed. Preserve history and original scope. Forks start without active receipts and frozen scenarios flag baseline changes without automatic reruns.
+6. **Read, export and approval.** Use the same labels across JSON, HTML, CSV and XLSX. Approved/issued exports require current and complete results matching the approved receipt set. Preserve approval history and require reapproval on changes to the approved set.
 
-Engineer 2 can prepare capture instrumentation, schema validation, scope isolation, fixture replay, and store contract tests. Consumer eligibility, calculation meaning and approval rules stay behind these review gates.
-
+The [decision register](B09-acceptance-and-decisions.md) records the full qualifications and fixtures. If production work resumes, preserve legacy freshness authority until feature-on/off numerical parity is verified and Engineer 1 signs off.
 
 ## Increment 4A · In-memory prototype
 
@@ -93,7 +92,7 @@ Engineer 2 can prepare capture instrumentation, schema validation, scope isolati
 
 The Financial fixture executes the existing engine once per enabled/disabled run. It verifies 22 ledger rows, distinct identities for the handoff and result, a separate ledger digest, and exact returned and stored stage parity. Other fixtures compare every recorded store write with and without observation, including failure and partial cases.
 
-**B09 remains PARTIAL.** The six decisions above are still open. This prototype does not select authoritative digests, grant approval, change freshness, or adopt live receipt writes.
+**B09 remains PARTIAL.** The six policies are agreed for future adoption. This prototype does not select authoritative digests, grant approval, change freshness, or adopt live receipt writes.
 
 
 ### Increment 4A verification
@@ -120,7 +119,7 @@ An identical scoped receipt/result replay returns the original sequence without 
 
 **4A-to-production handoff.** The 4A callback is best effort and runs after the normal stage write. Using it as a persistence hook would leave a window where a result is visible without its receipt. Before activation, assemble and validate the immutable receipt from frozen dispatch and returned Product evidence before the final write. Commit the receipt, result and revision/active pointer in a single transaction. Handle replay and conflict at that boundary. In cloud storage, that requires one revision-conditional update if using a bounded single-row envelope, or a reviewed owner-scoped transactional RPC for separate storage. Separate client calls cannot provide this guarantee.
 
-**Pending Engineer 1 decisions.** Confirm consumed input and executed-method capture, authoritative handoff/result digests and equivalent rerun rules, retry versus re-execution and retention under conflicts, named-version and scenario inheritance, partial and failed result consumption, and stale/export and approval authority. The existing Store and CloudStore code and schema are untouched. Cloud atomicity, retention limits and production failure policy were not tested. **B09 remains PARTIAL.**
+**Production adoption is parked.** See decisions 1–6 above. The existing Store and CloudStore code and schema are untouched. Cloud atomicity, retention limits and production failure policy were not tested. **B09 remains PARTIAL.**
 
 
 ### Increment 4B verification
@@ -147,10 +146,10 @@ python -m pytest backend/tests/test_shared_pipeline.py backend/tests/test_cloud_
 |---|---|---|---|
 | Same source and stage digests, matching recorded methods | Fresh | Current, matching provenance | Expected agreement. |
 | Source or equipment edit without rerun, or changed required upstream payload | Not fresh | Stale | Expected agreement. |
-| Upstream replacement has equal digest and changed method | Fresh | Current, changed provenance | Expected distinction. Engineer 1 must decide when the matching numerical handoff can be reused. |
-| Failed or blocked latest attempt with retained output and independently matching current evidence | Not fresh | Retained output current, latest attempt still failed or blocked | Different lifecycle questions. Engineer 1 must decide which consumers may use the retained result. |
-| Complete prerequisite replaced by a partial output with equal digest | Fresh | Dependent unknown | Legacy readiness does not require completeness in its generic freshness predicate. Engineer 1 must decide coverage by consumer. |
-| New fresh optional Revenue basis appears after OPEX without a captured consumption edge | Not fresh | Current with the same supplied B09 input digest | Fixture isolates the digest-policy difference. Real consumption or availability evidence is required. Engineer 1 must approve whether availability alone invalidates. |
+| Upstream replacement has equal digest and changed method | Fresh | Current, changed provenance | Expected distinction. Decision 1 allows working/preview reuse and requires reapproval for dependent approved or issued results. |
+| Failed or blocked latest attempt with retained output and independently matching current evidence | Not fresh | Retained output current, latest attempt still failed or blocked | Different lifecycle questions. Decision 2 preserves the legacy consumption gate. |
+| Complete prerequisite replaced by a partial output with equal digest | Fresh | Dependent unknown | Legacy readiness does not require completeness in its generic freshness predicate. Decision 3 defines coverage by consumer. |
+| New fresh optional Revenue basis appears after OPEX without a captured consumption edge | Not fresh | Current with the same supplied B09 input digest | Fixture isolates the digest-policy difference. Real consumption or availability evidence is required. Decision 4 requires invalidation when an optional basis becomes available. |
 | Captured optional Revenue basis changes | Not fresh | Stale | Expected agreement for a consumed basis. |
 | Missing consumed observation and no verified current B09 digest | Fresh | Unknown | Evidence limitation. Capture actual consumed observations before granular invalidation can be considered. |
 | Legacy snapshot has an output and no immutable receipt | Fresh in fixture | Unknown, no active receipt | Expected compatibility difference. No receipt or method is invented. |
@@ -158,7 +157,7 @@ python -m pytest backend/tests/test_shared_pipeline.py backend/tests/test_cloud_
 
 [Scenario freeze fixture](../backend/tests/test_shadow_freshness.py) copies the baseline state into the same conceptual shape used by the Monte Carlo service and binds explicit scenario-scoped fixture receipts. Editing the original workbook identity, equipment plan, revision and saved total leaves the frozen snapshot bytes, reference, comparison and saved total unchanged. This is fixture evidence, not a production Monte Carlo wiring test. The comparison asserts exact serialized input and history parity on each normal call and state parity on the cycle rejection path.
 
-Legacy freshness remains authoritative. B09 unknown conveys an evidence limitation. All six Engineer 1 decisions remain open, including original-versus-current method capture, authoritative output identity, conflict/retention semantics, scenario/version lineage, partial/failed output consumption, and approval/export authority. **B09 remains PARTIAL.**
+Legacy freshness remains authoritative. B09 unknown conveys an evidence limitation. Decisions 1–6 are agreed. The fixture comparisons predate adoption and do not demonstrate production behavior. **B09 remains PARTIAL.**
 
 
 ### Increment 4C verification
