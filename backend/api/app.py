@@ -9,6 +9,7 @@ from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from pydantic import BaseModel, ConfigDict, Field
 
 from backend.currency_conversion import convert_currency, rate_snapshot
+from backend.dashboard_reporting.sizing_trace import project_sizing_traces
 from backend.currency_conversion.assessment import currency_view
 from backend.equipment_costing.registry import list_equipment_models
 from backend.ingestion.limits import (
@@ -390,8 +391,10 @@ def get(key: str, historical: bool = False, currency: str | None = None):
     from backend.equipment_resolution.identity import project_assessment_identity
 
     if historical:
-        return project_assessment_identity(saved)
-    return project_assessment_identity(currency_view(view(saved), currency), saved)
+        return project_sizing_traces(project_assessment_identity(saved))
+    return project_sizing_traces(
+        project_assessment_identity(currency_view(view(saved), currency), saved)
+    )
 
 
 @app.patch("/api/assessments/{key}")
@@ -807,7 +810,7 @@ def versions(key: str):
 def reopen(version: str):
     from backend.equipment_resolution.identity import project_assessment_identity
 
-    return project_assessment_identity(store.load(version))
+    return project_sizing_traces(project_assessment_identity(store.load(version)))
 
 
 @app.get("/api/assessments/{key}/compare/{other}")
@@ -930,7 +933,11 @@ def study_report(key: str, currency: str | None = None):
         raise HTTPException(409, "Wait for this study calculation to finish")
     from backend.blocks.execution import view
 
-    state = currency_view(view(state), currency)
+    viewed = view(state)
+    saved_equipment = ((state.get("results") or {}).get("stages") or {}).get("equipment")
+    if saved_equipment and not viewed["results"]["stages"].get("equipment"):
+        viewed["results"]["stages"]["equipment"] = saved_equipment
+    state = currency_view(viewed, currency)
     return HTMLResponse(render_study(state), headers={"Cache-Control": "no-store"})
 
 
@@ -943,11 +950,13 @@ def study_snapshot(key: str, currency: str | None = None):
     state = store.get(key)
     if state.get("running"):
         raise HTTPException(409, "Wait for this study calculation to finish")
-    from backend.blocks.execution import view
+    from backend.blocks.execution import MODE, view
 
-    state = currency_view(view(state), currency)
+    if state.get("execution_mode") == MODE or not state.get("results"):
+        state = view(state)
+    state = currency_view(state, currency)
     return Response(
-        json.dumps(state, indent=2, allow_nan=False),
+        json.dumps(project_sizing_traces(state), indent=2, allow_nan=False),
         media_type="application/json",
         headers={
             "Content-Disposition": 'attachment; filename="FlowValue-TEA-assessment.json"',
