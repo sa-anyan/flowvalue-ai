@@ -1,8 +1,9 @@
 """Founder decision (11 Nov 2026): equipment below a correlation's range is priced
 at the correlation's minimum size (option B), flagged as an explicit assumption.
 
-Applies to Garrett graph curves and OpenPyTEA correlations. Sizes above the
-range are unaffected. Each item can opt back into the previous behaviour with
+Applies to Garrett graph curves and OpenPyTEA correlations, and (since the
+extension) to the Nottingham water-treatment graphs and the additional models
+that publish a lower capacity limit. Sizes above the range are unaffected. Each item can opt back into the previous behaviour with
 below_range_policy="extrapolate".
 """
 
@@ -76,3 +77,65 @@ def test_sizing_step_keeps_openpytea_below_range():
     from backend.equipment_costing.unit_conversion.bridges.automatic import PROMPT
 
     assert "Do not switch library only because the size is small" in PROMPT
+
+
+# Nottingham and the additional models (extended 11 Nov 2026): the floor applies
+# where the source publishes a lower bound; above-range behaviour is unchanged.
+FLOORED_ELSEWHERE = [
+    # (model, published lower bound, below, above)
+    ("N501-WATER-PACKAGED_RO", 25.0, 5.0, 250.0),
+    ("N501-WATER-ION_EXCHANGE_TWO_STAGE", 25.0, 10.0, 300.0),
+    ("fermenter_reactor_turton_2001", 0.1, 0.02, 50.0),
+    ("epa_ph_adjustment_1989", 0.00001, 0.000002, 6.0),
+]
+
+
+@pytest.mark.parametrize("model_id,lower,below,_", FLOORED_ELSEWHERE)
+def test_other_sources_below_range_priced_at_published_minimum(model_id, lower, below, _):
+    floored = price(model_id, below)
+    assert floored.amount == pytest.approx(price(model_id, lower).amount)
+    floor = floored.evidence["below_range_floor"]
+    assert floor["policy"] == "minimum_size_floor"
+    assert floor["requested_size"] == pytest.approx(below)
+    assert floor["priced_at_size"] == pytest.approx(lower)
+    assert floor["size_ratio"] == pytest.approx(lower / below)
+    assert any(i.startswith("BELOW-RANGE FLOOR") for i in floored.issues)
+
+
+@pytest.mark.parametrize("model_id,lower,below,above", FLOORED_ELSEWHERE)
+def test_other_sources_override_and_above_range_unchanged(model_id, lower, below, above):
+    with pytest.raises(ValueError, match="OUT_OF_RANGE|outside"):
+        price(model_id, below, below_range_policy="extrapolate")
+    with pytest.raises(ValueError, match="OUT_OF_RANGE|outside"):
+        price(model_id, above)
+    assert "below_range_floor" not in price(model_id, lower).evidence
+
+
+@pytest.mark.parametrize(
+    "model_id", ["N501-WATER-PACKAGED_RO", "fermenter_reactor_turton_2001"]
+)
+def test_other_sources_reject_unknown_policy(model_id):
+    with pytest.raises(ValueError, match="below_range_policy"):
+        price(model_id, 1, below_range_policy="guess")
+
+
+def test_models_without_a_published_lower_bound_are_not_floored():
+    clarifier = "watertap_circular_clarifier_2011"  # no published capacity range
+    a = price(clarifier, 1)
+    assert a.amount == price(clarifier, 1, below_range_policy="extrapolate").amount
+    assert "below_range_floor" not in a.evidence
+    pump = "N501-PUMP-CAST_IRON"  # equation with no published range
+    assert "below_range_floor" not in price(pump, 0.01).evidence
+
+
+def test_parsed_input_path_passes_the_policy_to_other_sources():
+    from backend.equipment_costing.registry import estimate_from_parsed_inputs
+    from backend.equipment_costing.unit_conversion.models import Measurement
+
+    size = {"size": Measurement(0.02, "m3", {})}
+    floored = estimate_from_parsed_inputs("fermenter_reactor_turton_2001", size)
+    assert floored.evidence["below_range_floor"]["priced_at_size"] == 0.1
+    with pytest.raises(ValueError, match="MODEL_OUT_OF_RANGE"):
+        estimate_from_parsed_inputs(
+            "fermenter_reactor_turton_2001", size, below_range_policy="extrapolate"
+        )
