@@ -135,3 +135,41 @@ python -m pytest backend/tests/test_shared_pipeline.py backend/tests/test_cloud_
 - Focused B09: **51 passed, 0 failed, 0 skipped, 0 warnings** in 21.35 seconds.
 - Shared pipeline and cloud runtime regressions: **12 passed, 0 failed, 0 skipped, 1 warning** in 25.63 seconds. The warning is the existing Starlette TestClient/httpx deprecation.
 - Full-suite, frontend and live-cloud tests were outside this test-only increment.
+
+
+## Increment 4C · Test-only shadow evaluation
+
+[Shadow comparison](../backend/tests/shadow_freshness_fixture.py) calls the current `execution.fresh` and the standalone B09 lifecycle evaluator over supplied fixtures. It returns the legacy Boolean and latest status/completeness, B09 numerical state and method provenance, active and latest receipt pointers, evidence gaps and reasons. The fixture caller supplies current B09 digests and any known missing consumed-observation evidence. The adapter does not derive receipt identity from mutable legacy stage records. It does not write, recalculate, or choose a new authority.
+
+### Disagreement matrix
+
+| Fixture | Legacy | B09 | Interpretation |
+|---|---|---|---|
+| Same source and stage digests, matching recorded methods | Fresh | Current, matching provenance | Expected agreement. |
+| Source or equipment edit without rerun, or changed required upstream payload | Not fresh | Stale | Expected agreement. |
+| Upstream replacement has equal digest and changed method | Fresh | Current, changed provenance | Expected distinction. Engineer 1 must decide when the matching numerical handoff can be reused. |
+| Failed or blocked latest attempt with retained output and independently matching current evidence | Not fresh | Retained output current, latest attempt still failed or blocked | Different lifecycle questions. Engineer 1 must decide which consumers may use the retained result. |
+| Complete prerequisite replaced by a partial output with equal digest | Fresh | Dependent unknown | Legacy readiness does not require completeness in its generic freshness predicate. Engineer 1 must decide coverage by consumer. |
+| New fresh optional Revenue basis appears after OPEX without a captured consumption edge | Not fresh | Current with the same supplied B09 input digest | Fixture isolates the digest-policy difference. Real consumption or availability evidence is required. Engineer 1 must approve whether availability alone invalidates. |
+| Captured optional Revenue basis changes | Not fresh | Stale | Expected agreement for a consumed basis. |
+| Missing consumed observation and no verified current B09 digest | Fresh | Unknown | Evidence limitation. Capture actual consumed observations before granular invalidation can be considered. |
+| Legacy snapshot has an output and no immutable receipt | Fresh in fixture | Unknown, no active receipt | Expected compatibility difference. No receipt or method is invented. |
+| Unregistered stage or cyclic graph | No legacy definition for unfamiliar stage | Unknown for unfamiliar stage. Cycle rejected. | Expected contract guard. Register new stages explicitly and resolve cycles before evaluation. |
+
+[Scenario freeze fixture](../backend/tests/test_shadow_freshness.py) copies the baseline state into the same conceptual shape used by the Monte Carlo service and binds explicit scenario-scoped fixture receipts. Editing the original workbook identity, equipment plan, revision and saved total leaves the frozen snapshot bytes, reference, comparison and saved total unchanged. This is fixture evidence, not a production Monte Carlo wiring test. The comparison asserts exact serialized input and history parity on each normal call and state parity on the cycle rejection path.
+
+Legacy freshness remains authoritative. B09 unknown conveys an evidence limitation. All six Engineer 1 decisions remain open, including original-versus-current method capture, authoritative output identity, conflict/retention semantics, scenario/version lineage, partial/failed output consumption, and approval/export authority. **B09 remains PARTIAL.**
+
+
+### Increment 4C verification
+
+Windows 11, Python 3.12.14, AI/cloud disabled, temporary SQLite and unique pytest `--basetemp` per run.
+
+~~~powershell
+python -m pytest backend/tests/test_shadow_freshness.py backend/tests/test_calculation_receipts.py backend/tests/test_execution_observation.py backend/tests/test_receipt_journal.py -q -ra --tb=short -p no:cacheprovider
+python -m pytest backend/tests/test_shadow_freshness.py backend/tests/test_calculation_receipts.py backend/tests/test_execution_observation.py backend/tests/test_receipt_journal.py backend/tests/test_isolated_stages.py backend/tests/test_stage_connections.py backend/tests/test_monte_carlo.py -q -ra --tb=short -p no:cacheprovider
+~~~
+
+- Focused B09: **63 passed, 0 failed, 0 skipped, 0 warnings** in 19.71 seconds.
+- Affected backend: **107 passed, 0 failed, 1 skipped, 1 warning** in 155.74 seconds. The skip was the unavailable private Charlie snapshot. The warning was the existing Starlette TestClient/httpx deprecation.
+- Full backend, frontend and live cloud were outside this test-only increment.
