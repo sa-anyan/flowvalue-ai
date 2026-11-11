@@ -80,3 +80,31 @@ A missing consumed-input trace is unknown or coarse. A fresh replacement with id
 6. **Read/export and approval boundaries.** Agree stale/unknown labels and export eligibility, approval scope, expiry and reevaluation triggers. Preserve authority separately from calculation receipts.
 
 Engineer 2 can prepare capture instrumentation, schema validation, scope isolation, fixture replay, and store contract tests. Consumer eligibility, calculation meaning and approval rules stay behind these review gates.
+
+
+## Increment 4A · In-memory prototype
+
+`run_stage(..., observation_collector=None, observation_scenario_id=None)` accepts a synchronous callable receiving a frozen `ExecutionObservation`. Existing callers omit it. A supplied scenario ID labels an explicit isolated-run observation only. Monte Carlo remains outside this path.
+
+- With a collector, the runner allocates an attempt ID when freezing `DispatchEvidence`. For a prerequisite block it records the checked revision and stage-input digest with no dispatch context. For a dispatched stage it records the revision, stage-input digest, digest of copied context state/report and AI flag, workbook hash if present, and digests of upstream payloads supplied in Context. These are observation digests and do not replace semantic fingerprints. The callback receives digests and emitted evidence, with no raw workbook, plan or credentials.
+- After the normal final store write succeeds, the runner delivers one observation. Outcome is ready or partial for a published Product, blocked for prerequisite or runner DataRequired, and failed for a caught non-domain or output-application error. Completeness is unknown for no output. The callback receives separate handoff, result and Financial ledger digests when available. A store failure still propagates through the existing path and does not publish a completed observation.
+- Available effective inputs are the emitted `financial_inputs` and `config` payload fields. Financial success explicitly consumes CAPEX, Revenue and OPEX, so they are identified separately from the list of supplied payloads. For other stages, supplied payloads, including optional OPEX bases, are not treated as proof of actual consumption. Equipment copies emitted G1 sizing method objects as JSON and reports explicit observation IDs in its sizing measurements. Empty evidence remains unavailable. The prototype does not reconstruct methods, observations or approval records.
+- Snapshot or delivery errors are logged by action and exception type only. A snapshot error suppresses the event. A delivery error leaves the already committed stage result intact. There is no retry, receipt write, or production collector registration. Callback implementations are expected to stay in memory and return promptly.
+
+The Financial fixture executes the existing engine once per enabled/disabled run. It verifies 22 ledger rows, distinct identities for the handoff and result, a separate ledger digest, and exact returned and stored stage parity. Other fixtures compare every recorded store write with and without observation, including failure and partial cases.
+
+**B09 remains PARTIAL.** The six decisions above are still open. This prototype does not select authoritative digests, grant approval, change freshness, or adopt live receipt writes.
+
+
+### Increment 4A verification
+
+Windows 11, Python 3.12.14, default encoding, AI/cloud disabled, with an isolated SQLite path and a unique pytest `--basetemp` per run.
+
+~~~powershell
+python -m pytest backend/tests/test_execution_observation.py backend/tests/test_calculation_receipts.py backend/tests/test_isolated_stages.py backend/tests/test_stage_connections.py backend/tests/test_sizing_trace_handoff.py backend/tests/test_equipment_resolution.py -q -ra --tb=short -p no:cacheprovider
+python -m pytest backend -q -ra --tb=short -p no:cacheprovider
+~~~
+
+- Relevant backend: **87 passed, 0 failed, 1 skipped, 1 warning** in 129.74 seconds. The skip was the private equipment workbook.
+- Full backend: **4,268 passed, 0 failed, 9 skipped, 367 subtests passed, 1 warning** in 803.86 seconds. Eight private-fixture cases and one optional pinned OpenPyTEA reference were unavailable.
+- Both runs emitted the existing Starlette TestClient/httpx deprecation. Frontend checks were outside scope.
