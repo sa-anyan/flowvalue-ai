@@ -327,6 +327,7 @@ def match_report(report, description, store, provider=None):
         row["source_name_hints"] = source_name_hints(row)
     model_by_id = {m["model_id"]: m for m in models}
     from backend.orchestration.provider import EngineeringProvider
+    from backend.revenue.advisor import safe_ai_reason
 
     provider_error = None
     if register:
@@ -384,7 +385,7 @@ def match_report(report, description, store, provider=None):
                 {
                     "index": start // BATCH_SIZE + 1,
                     "status": "unavailable",
-                    "reason": type(exc).__name__,
+                    "reason": safe_ai_reason(exc),
                     "cached": False,
                 }
             )

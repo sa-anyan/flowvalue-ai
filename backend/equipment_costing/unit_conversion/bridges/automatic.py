@@ -7,7 +7,7 @@ import json
 import math
 from backend.equipment_costing.registry import list_equipment_models
 from backend.orchestration.equipment_advisor import validate
-from backend.revenue.advisor import obj, TEXT
+from backend.revenue.advisor import obj, TEXT, safe_ai_reason
 from .. import convert, ConversionContext
 from .service import describe, evaluate, model_contract, PARAMETERS, RECIPES
 from .derivations import METHODS, derive, discover
@@ -649,7 +649,7 @@ def resolve(
             {
                 "equipment_key": p["equipment_key"],
                 "status": "ai_unavailable",
-                "reason": type(exc).__name__,
+                "reason": safe_ai_reason(exc),
             }
             for p in pending
         )
@@ -794,7 +794,7 @@ def resolve(
                 {
                     "equipment_key": p["equipment_key"],
                     "status": "ai_unavailable",
-                    "reason": type(exc).__name__,
+                    "reason": safe_ai_reason(exc),
                 }
                 for p in group
             )

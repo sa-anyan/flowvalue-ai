@@ -17,7 +17,7 @@ from backend.ingestion.balance.models import (
     Table,
 )
 from backend.ingestion.balance.units import UNITS, convert
-from backend.revenue.advisor import TEXT, obj
+from backend.revenue.advisor import TEXT, obj, safe_ai_reason
 
 from .codec import plain
 from .equipment_advisor import validate
@@ -553,12 +553,12 @@ def review(parsed, description, store, provider):
                 {
                     "batch": index + 1,
                     "status": "unreviewed",
-                    "reason": type(exc).__name__,
+                    "reason": safe_ai_reason(exc),
                     "source_cells": sum(map(len, context["worksheets"].values())),
                 }
             )
             combined["scope_notes"].append(
-                f"AI review region {index + 1} failed ({type(exc).__name__}); Python extraction retained. Region requires review."
+                f"AI review region {index + 1} failed ({safe_ai_reason(exc)}); Python extraction retained. Region requires review."
             )
     failed = sum(item["status"] != "reviewed" for item in coverage)
     combined["summary"] = "\n".join(summaries)

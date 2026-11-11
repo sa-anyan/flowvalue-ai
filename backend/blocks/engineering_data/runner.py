@@ -34,9 +34,11 @@ def calculate(ctx):
                 ai={"review": meta},
             )
         except Exception as exc:
+            from backend.revenue.advisor import safe_ai_reason
+
             notes.append(
                 "AI review unavailable ("
-                + type(exc).__name__
+                + safe_ai_reason(exc)
                 + "); Python extraction retained for inspection."
             )
             updates["ai"] = {"status": "review_unavailable", "notice": notes[-1]}
