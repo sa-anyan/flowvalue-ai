@@ -89,3 +89,26 @@ def test_explicit_timeline_coordinates_and_short_commercial_schedule(build):
     periods[-1]["operating_year"] = 4
     with pytest.raises(ValidationError, match="advance consecutively"):
         Timeline(periods=periods)
+
+
+@pytest.mark.parametrize("phases", [("operation", "construction"), ("closure", "operation"), ("closure",)])
+def test_timeline_rejects_out_of_order_phases(phases):
+    periods = [
+        {"project_year": i, "calendar_year": 2030 + i, "phase": phase,
+         **({"operating_year": 1} if phase == "operation" else {})}
+        for i, phase in enumerate(phases)
+    ]
+    with pytest.raises(ValidationError, match="phase order"):
+        Timeline(periods=periods)
+
+
+@pytest.mark.parametrize("status", ["missing", "unresolved"])
+def test_unavailable_amount_cannot_be_approved(status):
+    with pytest.raises(ValidationError, match="Cannot approve"):
+        line(amount=None, status=status, authority="approved", approval_ref="review:1")
+
+
+def test_decimal_magnitude_is_bounded():
+    assert line(amount="1E+30").amount == Decimal("1E+30")
+    with pytest.raises(ValidationError, match="magnitude"):
+        line(amount="1E+400")

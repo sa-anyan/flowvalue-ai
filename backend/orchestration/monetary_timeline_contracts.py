@@ -4,7 +4,7 @@ from datetime import date
 from decimal import Decimal
 from typing import Annotated, Literal, Self
 
-from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, model_validator
+from pydantic import AfterValidator, BaseModel, BeforeValidator, ConfigDict, Field, model_validator
 
 
 def decimal_input(value):
@@ -13,7 +13,17 @@ def decimal_input(value):
     return value
 
 
-ExactDecimal = Annotated[Decimal, BeforeValidator(decimal_input)]
+def bounded_decimal(value: Decimal) -> Decimal:
+    """Cap absolute magnitude at 1E+30, far above project-scale inputs.
+
+    This catches unit and exponent errors without rounding valid decimals.
+    """
+    if value.is_finite() and value.copy_abs() > Decimal("1E+30"):
+        raise ValueError("Decimal magnitude exceeds 1E+30")
+    return value
+
+
+ExactDecimal = Annotated[Decimal, BeforeValidator(decimal_input), AfterValidator(bounded_decimal)]
 
 
 class Contract(BaseModel):
@@ -69,6 +79,8 @@ class MonetaryLine(Contract):
                 raise ValueError("Unit price requires a denominator matching any quantity unit")
         elif self.unit is not None:
             raise ValueError("Extended totals have no unit-price denominator")
+        if self.authority == "approved" and self.status in {"missing", "unresolved"}:
+            raise ValueError("Cannot approve a missing or unresolved amount")
         if (self.authority == "approved") != (self.approval_ref is not None):
             raise ValueError("Approval authority requires an approval reference")
         return self
@@ -105,15 +117,23 @@ class TimelinePeriod(Contract):
         return self
 
 
+PHASE_ORDER = ("pre_operation", "construction", "startup", "operation", "closure")
+
+
 class Timeline(Contract):
     periods: tuple[TimelinePeriod, ...] = Field(min_length=1)
 
     @model_validator(mode="after")
     def consistent(self) -> Self:
+        phase_order = [PHASE_ORDER.index(period.phase) for period in self.periods]
+        if phase_order != sorted(phase_order):
+            raise ValueError("Invalid timeline phase order")
         for previous, current in zip(self.periods, self.periods[1:]):
             if current.project_year != previous.project_year + 1 or current.calendar_year != previous.calendar_year + 1:
                 raise ValueError("Project and calendar years must advance together")
         operating = tuple(p.project_year for p in self.periods if p.operating_year is not None)
+        if self.periods[-1].phase == "closure" and not operating:
+            raise ValueError("Invalid timeline phase order: closure requires prior operation")
         if operating:
             if operating != tuple(range(operating[0], operating[-1] + 1)):
                 raise ValueError("Operating periods must be contiguous")
