@@ -125,3 +125,30 @@ def test_possibly_missing_unit_blocks_coverage_claim_in_basis_of_estimate(capex_
 
 
 from backend.tests.test_basis_of_estimate import capex_study  # noqa: E402,F401  (fixture)
+
+
+def test_stray_partial_component_row_does_not_hide_stream_flows():
+    """Finding 9 root cause: a partial "Component" row above the real subheader
+    left a whole stream block without flows, so the AI sometimes lost them."""
+    book = openpyxl.Workbook()
+    ws = book.active
+    ws.title = "Material and Energy Balance"
+    rows = {
+        3: {2: "Stream Number", 6: "1", 11: "2"},
+        4: {2: "Description", 6: "Feed to Unit U-1", 11: "Product from Unit U-1"},
+        6: {2: "Component", 4: "MW (kg/kmol)"},  # stray partial header
+        7: {2: "Component", 4: "MW (kg/kmol)", 7: "m (kg/h)", 8: "n (kmol/h)", 12: "m (kg/h)", 13: "n (kmol/h)"},
+        8: {2: "Water", 4: 18.015, 7: 900, 8: 49.96, 12: 0, 13: 0},
+        9: {2: "Hydrogen", 4: 2.016, 7: 0, 8: 0, 12: 100, 13: 49.6},
+        18: {2: "Total", 7: 900, 8: 49.96, 12: 100, 13: 49.6},
+    }
+    for r, cols in rows.items():
+        for c, value in cols.items():
+            ws.cell(row=r, column=c, value=value)
+    data = BytesIO()
+    book.save(data)
+    report = parse(data.getvalue(), "stray-header.xlsx")["report"]
+    flows = {e["identifier"]: {(v["property"], v.get("component")): v["normalized_value"] for v in e["values"]}
+             for e in report["entities"] if e["kind"] == "material"}
+    assert flows["1"][("mass_flow", None)] == 900
+    assert flows["2"][("component_mass_flow", "Hydrogen")] == 100
