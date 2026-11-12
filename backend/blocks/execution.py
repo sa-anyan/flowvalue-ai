@@ -100,6 +100,13 @@ def _inputs(state, block):
             shared["cashflow_schedule"] = config["cashflow_schedule"]
         shared["box"] = state.get("revenue_description", "")
         shared["approval"] = (state.get("revenue_approval") or {}).get("fingerprint")
+        # Contract terms map operating years to calendar years (M4.3). Only
+        # tracked when a term exists, so studies without terms keep their hash.
+        if any(l.get("contract_term") for l in config.get("commercial_lines") or []):
+            fin = config.get("financial", {})
+            shared["contract_calendar"] = {
+                k: fin.get(k) for k in ("construction_years", "calendar_start_year")
+            }
     if block == "opex":
         shared["optional_cost_bases"] = {
             key: (

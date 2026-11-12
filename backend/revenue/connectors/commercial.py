@@ -19,6 +19,10 @@ def commercial_inputs(report, description, config, basis, hours, ramp, assumptio
     )
     for item in config.get("commercial_lines", []):
         verify_context(item, description)
+        # M4.3: payments must fall inside the contract term or a stated renewal.
+        from ..contract_terms import describe
+
+        term_text = describe(item, config) if item.get("included", True) else ""
         if item["arrangement"] == "llm_proposed" and any(
             ref not in known_sources for ref in item.get("source_references", [])
         ):
@@ -132,7 +136,7 @@ def commercial_inputs(report, description, config, basis, hours, ramp, assumptio
                 item["quantity_unit"],
                 item["rate_period"],
                 item["arrangement"],
-                item["rationale"],
+                item["rationale"] + ("; " + term_text if term_text else ""),
                 tuple(dict.fromkeys(refs)),
                 tuple(years),
                 item.get("stream_key") or "",

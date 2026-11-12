@@ -946,6 +946,32 @@ def study_report(key: str, currency: str | None = None):
     return HTMLResponse(render_study(state), headers={"Cache-Control": "no-store"})
 
 
+@app.get("/api/assessments/{key}/financial-workbook")
+def financial_workbook(key: str):
+    """M4.6: reconciled financial workbook (xlsx) from the saved study."""
+    from fastapi.responses import Response
+
+    from backend.blocks.execution import view
+    from backend.dashboard_reporting.financial_workbook import build_financial_workbook
+
+    state = store.get(key)
+    if state.get("running"):
+        raise HTTPException(409, "Wait for this study calculation to finish")
+    try:
+        content, summary = build_financial_workbook(view(state))
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    return Response(
+        content,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition": 'attachment; filename="FlowValue-financial-model.xlsx"',
+            "Cache-Control": "no-store",
+            "X-FlowValue-Reconciled": "true" if summary["reconciled"] else "false",
+        },
+    )
+
+
 @app.get("/api/assessments/{key}/basis-of-estimate")
 def basis_of_estimate(key: str, format: str = "json"):
     """M3.6: Basis of Estimate from the saved study (json, markdown or html)."""
