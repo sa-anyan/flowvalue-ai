@@ -1,5 +1,5 @@
 {
-  "version": "2026-11-02",
+  "version": "2026-11-12",
   "series": {
     "US_CPI_U_NSA_1982_84": {
       "currency": "USD",
@@ -134,11 +134,216 @@
           "location": "September 2026; released 21 October 2026"
         }
       }
+    },
+    "CEPCI": {
+      "currency": "USD",
+      "kind": "equipment_index",
+      "description": "Chemical Engineering Plant Cost Index (composite CE INDEX, 1957-59=100), published by Chemical Engineering magazine. Values quoted with attribution for cost escalation; CEPCI is a trademark/publication of Chemical Engineering (Access Intelligence) and the current series is available by subscription at https://www.chemengonline.com/pci-home.",
+      "basis_note": "Publisher's spliced historical series. The January 2002 methodology revision normalised revised sub-indexes to the old index at January 2001; pre-2001 history was not recalculated (Vatavuk 2002).",
+      "licence_note": "Each value cites its publisher source. Do not add values from secondary sources; add 2025+ values only from Chemical Engineering issues or the publisher's site, with issue and page.",
+      "observations": {
+        "1987": {
+          "value": "323.8",
+          "frequency": "annual_average",
+          "source": "Vatavuk, W.M., 'Updating the CE Plant Cost Index', Chemical Engineering, January 2002, pp. 62-70: https://www.chemengonline.com/Assets/File/CEPCI_2002.pdf",
+          "location": "Table 2, annual CE index 1987, PDF page 2",
+          "retrieved": "2026-11-12"
+        },
+        "1996": {
+          "value": "381.7",
+          "frequency": "annual_average",
+          "source": "Vatavuk, W.M., 'Updating the CE Plant Cost Index', Chemical Engineering, January 2002, pp. 62-70: https://www.chemengonline.com/Assets/File/CEPCI_2002.pdf",
+          "location": "Table 2, annual CE index 1996, PDF page 2",
+          "retrieved": "2026-11-12"
+        },
+        "1997": {
+          "value": "386.5",
+          "frequency": "annual_average",
+          "source": "Vatavuk, W.M., 'Updating the CE Plant Cost Index', Chemical Engineering, January 2002, pp. 62-70: https://www.chemengonline.com/Assets/File/CEPCI_2002.pdf",
+          "location": "Table 2, annual CE index 1997, PDF page 2",
+          "retrieved": "2026-11-12"
+        },
+        "2000": {
+          "value": "394.1",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2000",
+          "retrieved": "2026-11-12"
+        },
+        "2001": {
+          "value": "394.3",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2001",
+          "retrieved": "2026-11-12"
+        },
+        "2002": {
+          "value": "395.6",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2002",
+          "retrieved": "2026-11-12"
+        },
+        "2003": {
+          "value": "402.0",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2003",
+          "retrieved": "2026-11-12"
+        },
+        "2004": {
+          "value": "444.2",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2004",
+          "retrieved": "2026-11-12"
+        },
+        "2005": {
+          "value": "468.2",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2005",
+          "retrieved": "2026-11-12"
+        },
+        "2006": {
+          "value": "499.6",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2006",
+          "retrieved": "2026-11-12"
+        },
+        "2007": {
+          "value": "525.4",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2007",
+          "retrieved": "2026-11-12"
+        },
+        "2008": {
+          "value": "575.4",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2008",
+          "retrieved": "2026-11-12"
+        },
+        "2009": {
+          "value": "521.9",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2009",
+          "retrieved": "2026-11-12"
+        },
+        "2010": {
+          "value": "550.8",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2010",
+          "retrieved": "2026-11-12"
+        },
+        "2011": {
+          "value": "585.7",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2011",
+          "retrieved": "2026-11-12"
+        },
+        "2012": {
+          "value": "584.6",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2012",
+          "retrieved": "2026-11-12"
+        },
+        "2013": {
+          "value": "567.3",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2013",
+          "retrieved": "2026-11-12"
+        },
+        "2014": {
+          "value": "576.1",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2014",
+          "retrieved": "2026-11-12"
+        },
+        "2015": {
+          "value": "556.8",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2015",
+          "retrieved": "2026-11-12"
+        },
+        "2016": {
+          "value": "541.7",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2016",
+          "retrieved": "2026-11-12"
+        },
+        "2017": {
+          "value": "567.5",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2017",
+          "retrieved": "2026-11-12"
+        },
+        "2018": {
+          "value": "603.1",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2018",
+          "retrieved": "2026-11-12"
+        },
+        "2019": {
+          "value": "607.5",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2019",
+          "retrieved": "2026-11-12"
+        },
+        "2020": {
+          "value": "596.2",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2020",
+          "retrieved": "2026-11-12"
+        },
+        "2021": {
+          "value": "708.0",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2021",
+          "retrieved": "2026-11-12"
+        },
+        "2022": {
+          "value": "816.0",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2022",
+          "retrieved": "2026-11-12"
+        },
+        "2023": {
+          "value": "797.9",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2023",
+          "retrieved": "2026-11-12"
+        },
+        "2024": {
+          "value": "796.2",
+          "frequency": "annual_average",
+          "source": "Chemical Engineering, CE Plant Cost Index annual report (Access Intelligence): https://www.chemengonline.com/wp-content/plugins/ce-base/views/pci-cost-download.php?From_Year=2000&To_Year=2024&type=year",
+          "location": "CE INDEX, annual 2024",
+          "retrieved": "2026-11-12"
+        }
+      }
     }
   },
   "currency_proxy_series": {
     "USD": "US_CPI_U_NSA_1982_84",
     "GBP": "UK_CPI_ALL_ITEMS_2015_100"
   },
-  "note": "Pinned official observations, retrieved 2026-11-02. September is a monthly 2026 basis, not a full-year 2026 average. Add licensed equipment indices or currency-specific inflation series independently. No exchange-rate conversion. UK CPI D7BT added for Nottingham GBP historical costing, verified on 2026-11-03."
+  "note": "Pinned official observations, retrieved 2026-11-02. September is a monthly 2026 basis, not a full-year 2026 average. Add licensed equipment indices or currency-specific inflation series independently. No exchange-rate conversion. UK CPI D7BT added for Nottingham GBP historical costing, verified on 2026-11-03. CEPCI annual averages 1987, 1996, 1997 and 2000-2024 added 2026-11-12 and verified against the publisher (COST-DATA-V01); used only when a policy sets equipment_index_series and the target period has an observation. No 2025/2026 CEPCI observation yet, so the default 2026-09 target still uses the CPI proxy."
 }
