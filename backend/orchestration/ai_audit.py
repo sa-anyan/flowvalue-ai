@@ -36,7 +36,7 @@ def _path():
 
 def prompt_version(context):
     if isinstance(context, dict):
-        for key in ("prompt_version", "stage", "version"):
+        for key in ("prompt_version", "task", "stage", "version"):
             if isinstance(context.get(key), str):
                 return context[key]
     return None
