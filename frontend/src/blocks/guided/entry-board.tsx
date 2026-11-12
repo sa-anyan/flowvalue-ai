@@ -79,7 +79,8 @@ export function EntryBoard(props: StageProps) {
     void props.advance(() => equipment.save('User reviewed equipment parameters on the guided Entry board'));
   };
   // Quick match: deterministic, no AI. Pops up once per assessment when items need a model.
-  const matches = useQuickMatches(hook.id, state?.revision, cards.length > 0 && !state?.running);
+  const quick = useQuickMatches(hook.id, state?.revision, cards.length > 0 && !state?.running);
+  const matches = quick.result;
   const matchByKey = useMemo(() => new Map((matches?.matches || []).map((m) => [m.equipment_key, m])), [matches]);
   const awaiting = (matches?.matches || []).filter(pending).length;
   const [quickOpen, setQuickOpen] = useState(false),
@@ -191,6 +192,14 @@ export function EntryBoard(props: StageProps) {
               Quick match{awaiting ? ` · ${awaiting} to confirm` : ' · all confirmed'}
             </button>
           )}
+          {quick.error && (
+            <span className="gf-warn gf-qm-error" role="alert">
+              Quick match unavailable: {quick.error}{' '}
+              <button type="button" className="gf-link" onClick={quick.retry}>
+                Retry
+              </button>
+            </span>
+          )}
         </div>
         {empty && (
           <div className="gf-placeholder">
@@ -247,8 +256,22 @@ export function EntryBoard(props: StageProps) {
           busy={hook.busy}
           disabled={!cards.length || Boolean(state.running)}
           onRun={runEquipment}
-          status={<strong>{equipment.dirty ? 'Unsaved board edits will be saved first' : approved ? 'Engineering data approved' : 'Review the cards, then run equipment'}</strong>}
-          note="Python prices every card with its saved model. No AI is used for the run."
+          status={
+            <span className="gf-run-status">
+              <strong>{equipment.dirty ? 'Unsaved board edits will be saved first' : approved ? 'Engineering data approved' : 'Review the cards, then run equipment'}</strong>
+              {hook.aiEnabled && (
+                <label className="gf-check gf-run-ai">
+                  <input type="checkbox" checked={props.aiSizing} onChange={(e) => props.setAiSizing(e.target.checked)} />
+                  <span>AI proposes missing sizing inputs (provisional, shown for review)</span>
+                </label>
+              )}
+            </span>
+          }
+          note={
+            props.aiSizing && hook.aiEnabled
+              ? 'Python prices every card with its confirmed model. The AI only fills sizing inputs your data lacks, each labelled as an assumption; usage charges apply.'
+              : 'Python prices every card with its saved model. No AI is used: items without sizing inputs stay unpriced until you enter them.'
+          }
         />
       )}
 

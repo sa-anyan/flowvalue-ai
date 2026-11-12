@@ -284,6 +284,17 @@ def _apply(state, block, updates):
 
 
 def run_stage(store, key, block, *, use_ai=False, provider=None):
+    """Run one stage, publishing live progress for the UI while it runs."""
+    from . import progress
+
+    token = progress.begin(key, block)
+    try:
+        return _run_stage(store, key, block, use_ai=use_ai, provider=provider)
+    finally:
+        progress.end(key, token)
+
+
+def _run_stage(store, key, block, *, use_ai=False, provider=None):
     if block not in BLOCKS:
         raise ValueError("Unknown stage: " + block)
     state = store.get(key)

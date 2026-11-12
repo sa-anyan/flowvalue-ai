@@ -30,18 +30,33 @@ export type QuickMatch = {
 type Result = { matches: QuickMatch[]; elapsed_ms: number; revision: number; version: string };
 
 export function useQuickMatches(id: string | null | undefined, revision: unknown, ready: boolean) {
-  const [result, setResult] = useState<Result | null>(null);
+  const [result, setResult] = useState<Result | null>(null),
+    [error, setError] = useState(''),
+    [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    if (!id || !ready) return setResult(null);
+    if (!id || !ready) {
+      setResult(null);
+      setError('');
+      return;
+    }
     let live = true;
     api<Result>(`assessments/${id}/equipment-matches`)
-      .then((r) => live && setResult(r))
-      .catch(() => live && setResult(null)); // 409 until engineering data exists
+      .then((r) => {
+        if (!live) return;
+        setResult(r);
+        setError('');
+      })
+      .catch((e: Error) => {
+        if (!live) return;
+        setResult(null);
+        // "Extract engineering data first" is a normal state, not a failure.
+        setError(/extract engineering data first/i.test(e.message) ? '' : e.message || 'Quick match is unavailable.');
+      });
     return () => {
       live = false;
     };
-  }, [id, revision, ready]);
-  return result;
+  }, [id, revision, ready, attempt]);
+  return { result, error, retry: () => setAttempt((n) => n + 1) };
 }
 
 export const pending = (m: QuickMatch) => !m.user_confirmed_model_id;
@@ -97,9 +112,9 @@ export function QuickMatchPanel({
   const [picks, setPicks] = useState<Record<string, string>>(() => {
     const start: Record<string, string> = {};
     for (const m of open) {
-      // The model already in use stays preselected; otherwise a clear match is.
+      // The model already in use stays preselected; otherwise the best-ranked option is suggested.
       const inUse = m.options.find((o) => o.current);
-      const initial = inUse ? text(inUse.model_id) : m.status === 'auto' ? m.selected_model_id : null;
+      const initial = inUse ? text(inUse.model_id) : m.status === 'auto' ? m.selected_model_id : m.options.length ? text(m.options[0].model_id) : null;
       if (initial) start[m.equipment_key] = initial;
     }
     return start;
@@ -110,6 +125,7 @@ export function QuickMatchPanel({
     choose: open.filter((m) => m.status === 'choose' || m.status === 'prefix_only').length,
     unmatched: open.filter((m) => m.status === 'unmatched').length,
   };
+  const bestId = (m: QuickMatch) => (m.options.length ? text(m.options[0].model_id) : '');
 
   async function apply() {
     let rows: Row[] = Array.isArray(equipment.value) ? equipment.value : [];
@@ -118,14 +134,14 @@ export function QuickMatchPanel({
       const option = match?.options.find((o) => text(o.model_id) === modelId);
       if (!match || !option) continue;
       const row = rows.find((r) => r.equipment_key === key) || {};
-      const conversion = obj(row.unit_conversion);
       const changed = text(row.curve_id) !== modelId;
       rows = patchEquipment(rows, key, {
         ...userModelSelection(modelId),
         source: text(option.source) || 'garrett',
         rationale: `Confirmed in quick match: ${match.family_label} · ${optionLabel(option)}`,
         quick_match: { version: result.version, status: match.status, family: match.family, basis: match.family_basis },
-        ...(changed ? { size: null, unit_conversion: { ...conversion, model_id: modelId, enabled: false } } : {}),
+        // A new model needs new sizing: clear the old inputs so the sizing step proposes them.
+        ...(changed ? { size: null, sizing: null, unit_conversion: null } : {}),
       });
     }
     const ok = await hook.action(() => hook.saveSection('equipment', rows, `User confirmed ${chosen.length} quick-match model(s)`).then(() => undefined));
@@ -151,11 +167,11 @@ export function QuickMatchPanel({
       }
     >
       <p className="gf-qm-summary">
-        {counts.auto > 0 && <span className="gf-qm-tag gf-qm-auto">{counts.auto} preselected</span>}
-        {counts.choose > 0 && <span className="gf-qm-tag gf-qm-choose">{counts.choose} need your choice</span>}
+        {counts.auto > 0 && <span className="gf-qm-tag gf-qm-auto">{counts.auto} clear match{counts.auto === 1 ? '' : 'es'}</span>}
+        {counts.choose > 0 && <span className="gf-qm-tag gf-qm-choose">{counts.choose} best guess{counts.choose === 1 ? '' : 'es'} to check</span>}
         {counts.unmatched > 0 && <span className="gf-qm-tag gf-qm-unmatched">{counts.unmatched} not matched</span>}
         <span className="gf-muted">
-          Read from each item&apos;s own name. Your workbook rarely states the configuration (e.g. which tank or exchanger type), so you choose. Nothing is saved until you confirm.
+          Read from each item&apos;s own name. The best match is selected for every item; your workbook rarely states the configuration (e.g. which tank or exchanger type), so check the guesses and change any you disagree with. Nothing is saved until you confirm.
         </span>
       </p>
       {!open.length && <p>Every item already has a model you confirmed.</p>}
@@ -186,7 +202,7 @@ export function QuickMatchPanel({
                       <span className="gf-qm-option-body">
                         <b>{optionLabel(o)}</b>
                         <small>
-                          {o.current ? 'in use now · ' : ''}
+                          {o.current ? 'in use now · ' : id === bestId(m) ? (m.status === 'auto' ? 'best match · ' : 'best guess · ') : ''}
                           {text(o.source)}
                           {variants > 1 ? ` · ${variants} variants (best shown)` : ''}
                           {strings(o.matched_words).length ? ` · matches “${strings(o.matched_words).join(' ')}”` : ''}

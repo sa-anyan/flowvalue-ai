@@ -39,7 +39,18 @@ def prepare(ctx):
 
     # Match against the same merged stream evidence that sizing will consume.
     report, plan, duplicate_review = reconcile(ctx.report, plan)
-    if ctx.use_ai and "equipment" not in ctx.state.get("locked", []):
+    from backend.blocks.progress import step
+    from backend.equipment_matching.library_preference import user_selected_model
+
+    extracted = {e["key"] for e in report.get("entities", []) if e.get("kind") == "equipment"}
+    chosen = {r["equipment_key"] for r in plan.get("equipment", []) if user_selected_model(r)}
+    # Quick match: when the user has confirmed a model for every item, an AI
+    # rematch would only be shown for review and is skipped to save time.
+    all_confirmed = bool(extracted) and extracted <= chosen
+    if all_confirmed and ctx.use_ai:
+        issues.append("AI model matching skipped: you confirmed a model for every item.")
+    if ctx.use_ai and not all_confirmed and "equipment" not in ctx.state.get("locked", []):
+        step("Matching equipment to models (AI)")
         matching = match_report(
             report,
             ctx.state.get("process_description", ctx.state.get("description", "")),
@@ -61,6 +72,7 @@ def prepare(ctx):
     report, plan = expand(report, plan)
     from backend.equipment_costing.unit_conversion.bridges.automatic import resolve
 
+    step("Sizing equipment" + (" (AI proposes missing inputs)" if ctx.use_ai else ""))
     plan, input_resolution = resolve(
         report,
         plan,
@@ -68,7 +80,12 @@ def prepare(ctx):
         ctx.store,
         ctx.provider,
         use_ai=ctx.use_ai,
-        locked="equipment" in ctx.state.get("locked", []),
+        # A saved edit locks the equipment section. The lock protects what the
+        # user saved: the resolver never touches rows with saved inputs, sizes,
+        # prices or scope decisions, so an explicit AI run may still propose
+        # sizing for rows that have none. AI re-matching and price repair stay
+        # blocked by the lock.
+        locked=False if ctx.use_ai else "equipment" in ctx.state.get("locked", []),
     )
     if plan.get("equipment") != ctx.plan.get("equipment"):
         updates["plan"] = {"equipment": plan["equipment"]}
@@ -79,8 +96,12 @@ def calculate(ctx):
     report, plan, updates, issues, matching, input_resolution, duplicate_review = (
         prepare(ctx)
     )
+    from backend.blocks.progress import step
+
+    step("Calculating equipment costs")
     total, rows = calculate_equipment(report, plan, plan.get("cost_translation"))
     if ctx.use_ai and "equipment" not in ctx.state.get("locked", []):
+        step("Checking unpriced items (AI)")
         from backend.equipment_costing.unit_conversion.bridges.automatic import (
             repair_pricing,
         )

@@ -1357,6 +1357,14 @@ def equipment_resolution(key: str):
     return review(report, state["plan"], state.get("results"))
 
 
+@app.get("/api/assessments/{key}/progress")
+def stage_progress(key: str):
+    """Live step of a running stage, from memory; cheap enough to poll every second."""
+    from backend.blocks.progress import get
+
+    return get(key)
+
+
 @app.get("/api/assessments/{key}/equipment-matches")
 def equipment_matches(key: str):
     """Deterministic first-pass model matches; milliseconds, no AI, nothing saved.

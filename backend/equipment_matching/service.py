@@ -340,8 +340,11 @@ def match_report(report, description, store, provider=None):
         except Exception as exc:
             provider_error = exc
     output, batches = [], []
+    from backend.blocks.progress import step
+
     for start in range(0, len(register), BATCH_SIZE):
         batch = register[start : start + BATCH_SIZE]
+        step("Matching equipment to models (AI)", start, len(register))
         keys = [e["equipment_key"] for e in batch]
         context = {
             "task": VERSION,
