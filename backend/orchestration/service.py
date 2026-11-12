@@ -474,7 +474,7 @@ def _execute_connected_reference(
 
 def edit(store, key, revision, section, value, rationale, *, manual_revenue=False):
     if (
-        section not in (*SECTIONS, "operating_economics", "cost_translation")
+        section not in (*SECTIONS, "operating_economics", "cost_translation", "estimate_class")
         or not rationale.strip()
     ):
         raise ValueError("Known section and edit rationale required")

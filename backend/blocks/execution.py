@@ -8,6 +8,9 @@ from datetime import datetime, timezone
 
 from backend.orchestration.codec import plain
 from .models import Context, DataRequired
+from .execution_observation import (
+    ObservationCollector, capture_dispatch, observe_safely, publish_observation,
+)
 from .registry import BLOCKS, dependencies, get_runner, list_blocks
 
 MODE = "isolated_stages_v1"
@@ -70,6 +73,7 @@ def _inputs(state, block):
         return {
             "capex": plan.get("capex", {}),
             "translation": plan.get("cost_translation"),
+            "estimate_class": plan.get("estimate_class"),
         }
     shared = {
         k: config.get(k)
@@ -96,6 +100,13 @@ def _inputs(state, block):
             shared["cashflow_schedule"] = config["cashflow_schedule"]
         shared["box"] = state.get("revenue_description", "")
         shared["approval"] = (state.get("revenue_approval") or {}).get("fingerprint")
+        # Contract terms map operating years to calendar years (M4.3). Only
+        # tracked when a term exists, so studies without terms keep their hash.
+        if any(l.get("contract_term") for l in config.get("commercial_lines") or []):
+            fin = config.get("financial", {})
+            shared["contract_calendar"] = {
+                k: fin.get(k) for k in ("construction_years", "calendar_start_year")
+            }
     if block == "opex":
         shared["optional_cost_bases"] = {
             key: (
@@ -272,7 +283,11 @@ def _apply(state, block, updates):
     state.update(updates)
 
 
-def run_stage(store, key, block, *, use_ai=False, provider=None):
+def run_stage(
+    store, key, block, *, use_ai=False, provider=None,
+    observation_collector: ObservationCollector | None = None,
+    observation_scenario_id: str | None = None,
+):
     if block not in BLOCKS:
         raise ValueError("Unknown stage: " + block)
     state = store.get(key)
@@ -294,7 +309,12 @@ def run_stage(store, key, block, *, use_ai=False, provider=None):
         "started_at": datetime.now(timezone.utc).isoformat(),
     }
     missing = [p for p in dependencies(block, state) if not fresh(state, p)]
+    dispatch = None
+    outcome = "failed"
     if missing:
+        outcome = "blocked"
+        if observation_collector is not None:
+            dispatch = observe_safely(lambda: capture_dispatch(state, _inputs(state, block)))
         error = DataRequired(
             "Data required: run "
             + ", ".join(BLOCKS[p]["label"] for p in missing)
@@ -334,10 +354,13 @@ def run_stage(store, key, block, *, use_ai=False, provider=None):
                 provider,
                 use_ai,
             )
+            if observation_collector is not None:
+                dispatch = observe_safely(lambda: capture_dispatch(state, _inputs(state, block), ctx))
             receipt["executed"] = True
             product = get_runner(block)(ctx)
             error = None
         except DataRequired as exc:
+            outcome = "blocked"
             product, error = None, exc
         except (
             ValueError,
@@ -434,7 +457,16 @@ def run_stage(store, key, block, *, use_ai=False, provider=None):
         report,
         approval=state.get("revenue_approval"),
     )
-    return store.put(state, state["revision"])
+    saved = store.put(state, state["revision"])
+    if observation_collector is not None and dispatch is not None:
+        if product is not None:
+            outcome = "ready" if product.complete else "partial"
+        observe_safely(
+            publish_observation, observation_collector, key=key,
+            scenario_id=observation_scenario_id, block=block, dispatch=dispatch,
+            outcome=outcome, product=product,
+        )
+    return saved
 
 
 def queue_stage(store, key, block):

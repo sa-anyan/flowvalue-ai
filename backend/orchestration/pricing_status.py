@@ -245,3 +245,19 @@ def annotate(result, report, plan):
             "notice": "Escalation adjusts an existing estimate; it does not establish an independent equipment cost. CPI is purchasing-power proxy only.",
         }
         row["decision"]["cost_method"] = label
+    # M3.7: source-supported / user evidence / assumption-based / unpriced tiers,
+    # and the indicative scale of unpriced items (estimate class applied in CAPEX).
+    from backend.capex.coverage_tiers import coverage_tiers, unpriced_significance
+
+    canonical = [
+        r for r in result["equipment"]
+        if not r.get("parsed_source", {}).get("confirmed_alias")
+    ]
+    tiers = coverage_tiers(canonical)
+    for row in canonical:
+        match = next((t for t in tiers["lines"] if t["tag"] == row["equipment_tag"]), None)
+        if match:
+            row["coverage_tier"] = {k: match[k] for k in ("tier", "reasons", "source_caveats")}
+    tiers.pop("lines")
+    coverage["tiers"] = tiers
+    coverage["unpriced_significance"] = unpriced_significance(canonical)

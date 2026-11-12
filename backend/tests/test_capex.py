@@ -28,6 +28,8 @@ def equipment(**changes):
             "early 1987",
             "CEPCI",
             320,
+            # Scope must be recorded explicitly; there is no default (B08 decision C).
+            cost_scope="purchased_equipment",
             delivery_basis="delivered",
         ),
         **changes,

@@ -1,0 +1,33 @@
+tag,model,library,price_usd_proxy_2026_before_c01,price_usd_proxy_2026_now,in_chart_range,extrapolation_factor,openpytea_same_family_models,status
+FT-101AB,openpytea:gravity_filter_turton_2001,openpytea,119365,119365,yes,,,provisional
+T-101AB,G290-104,garrett,3759,2392,no,9,,provisional
+T-104,openpytea:vertical_cylinder_perry_1996,openpytea,4642,4642,yes,,,provisional
+T-101,,,,,,,,alias (counted once under its AB entry)
+T-102AB,G290-104,garrett,3758,2391,no,9,,provisional
+P-101AB,G296-122,garrett,6617,1191,no,19,14,provisional
+HE-103,G286-090,garrett,6943,6943,no,7,33,provisional
+R-102,openpytea:jacketed_agitated_reactor_turton_2001,openpytea,92787,92787,yes,,,provisional
+R-101,openpytea:electrolyzer_nrel_2008,openpytea,3442121,3442121,yes,,,provisional
+T-105,G303-141,garrett,5344,9139,no,3,24,provisional
+P-104AB,G296-122,garrett,5939,1688,no,25,14,provisional
+HE-101,openpytea:double_pipe_seider_2013,openpytea,3065,3065,yes,,,provisional
+T-106,G303-141,garrett,2372,4056,no,9,24,provisional
+P-105AB,N501-PUMP-CAST_STEEL,nottingham,161,161,yes,,,provisional
+HE-102,G286-090,garrett,21987,21987,yes,,33,provisional
+P-103AB,N501-PUMP-STAINLESS_316,nottingham,1154,1154,yes,,,provisional
+S-201,G265-023,garrett,43483,43483,no,4,13,provisional
+MT-101,openpytea:vertical_cylinder_perry_1996,openpytea,4165,4165,yes,,,provisional
+P-102AB,G296-122,garrett,1689,535,no,223,14,provisional
+P-201AB,G296-122,garrett,3634,1078,no,58,14,provisional
+FT-201AB,G282-076,garrett,66049,66049,yes,,18,provisional
+FT-201,,,,,,,,alias (counted once under its AB entry)
+PD-201AB,N501-PUMP-STAINLESS_316,nottingham,793,793,yes,,,provisional
+PD-201,,,,,,,,alias (counted once under its AB entry)
+T-201,openpytea:vertical_cylinder_perry_1996,openpytea,4095,4095,yes,,,provisional
+C-201,openpytea:spray_dryer_seider_2013,openpytea,109057,109057,yes,,,provisional
+BL-201AB,openpytea:screw_compressor_electric_motor_seider_2013,openpytea,288657,288657,yes,,,provisional
+HE-201,G286-091,garrett,12704,12704,no,7,33,provisional
+T-301,G303-144,garrett,1154,875,no,9,24,provisional
+C-202,G279-066,garrett,188,239,no,102,12,provisional
+R-201,fermenter_reactor_turton_2001,additional_models,92787,92787,yes,,,provisional
+HE-301,openpytea:air_cooled_finfan_seider_2013,openpytea,18688,18688,yes,,,provisional

@@ -3,6 +3,7 @@
 import copy
 from uuid import uuid4
 from backend.ingestion.balance.models import Entity, Evidence
+from backend.ingestion.engineering_register import stable_key
 
 
 def apply_edit(report, edit):
@@ -36,9 +37,26 @@ def apply_edit(report, edit):
     ):
         raise ValueError("That equipment tag already exists")
 
+    existing = {}
+    if entity is not None:
+        for item in [entity.get("id_evidence") or {}, *entity.get("values", [])]:
+            if str(item.get("id", "")).startswith("user-input:"):
+                existing.setdefault(item["property"], []).append(item)
+
     def evidence(prop, value):
+        matches = existing.get(prop, [])
+        previous = matches[0] if len(matches) == 1 else {}
+        stable_id = stable_key("user-input", key, prop)
+        record_id = previous.get("id") or stable_id
+        revision = previous.get("observation_revision") or 0
+        if not revision or previous.get("original_value") != value:
+            revision += 1
+        receipt = edit.get("observation_receipts", {}).get(prop, {})
         return Evidence(
-            id="user-input:" + uuid4().hex,
+            id=receipt.get("id", record_id),
+            observation_id=receipt.get("observation_id", previous.get("observation_id") or stable_id),
+            observation_revision=receipt.get("observation_revision", revision),
+            observation_method="manual-engineering-register-1",
             workbook="User input",
             sheet="User register",
             cell="manual",
@@ -60,6 +78,8 @@ def apply_edit(report, edit):
         ).model_dump(mode="json")
         report["entities"].append(entity)
     entity["identifier"] = tag
+    if "identifier" in existing:
+        entity["id_evidence"] = evidence("identifier", tag)
     entity["values"] = [
         v
         for v in entity.get("values", [])
@@ -80,9 +100,18 @@ def save_edit(store, key, revision, edit):
         state["stage_outputs"]["engineering_data"]["report"], edit
     )
     store.version(key, "Before user equipment register edit")
-    state.setdefault("engineering_register_edits", []).append(
-        {**edit, "equipment_key": entity_key}
-    )
+    recorded_edit = {**edit, "equipment_key": entity_key}
+    if edit["action"] != "remove":
+        entity = next(e for e in report["entities"] if e["key"] == entity_key)
+        recorded_edit["observation_receipts"] = {
+            evidence["property"]: {
+                field: evidence[field]
+                for field in ("id", "observation_id", "observation_revision")
+            }
+            for evidence in [entity["id_evidence"], *entity["values"]]
+            if evidence.get("observation_revision")
+        }
+    state.setdefault("engineering_register_edits", []).append(recorded_edit)
     state["stage_outputs"]["engineering_data"]["report"] = report
     state["stage_runs"]["engineering_data"]["output_hash"] = _digest(
         state["stage_outputs"]["engineering_data"]

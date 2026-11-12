@@ -23,6 +23,389 @@
         }
       ],
       "note": "New approximate visual anchors from distinct labelled Spray Dryer line, printed page277: plotted x10000/cost200 ($1000), x40000/cost300 ($1000). Actual volume=plotted coordinate*10. Visual readings unverified, approximately +/-20%; printed size exponent0.29 retained."
+    },
+    "G296-122": {
+      "source": {
+        "printed_page": 296,
+        "pdf_page": 46,
+        "reviewed_on": "2026-11-11"
+      },
+      "points": [
+        {
+          "size": 1.5,
+          "price": 1529.0
+        },
+        {
+          "size": 2,
+          "price": 1656.0
+        },
+        {
+          "size": 3,
+          "price": 1839.0
+        },
+        {
+          "size": 5,
+          "price": 2170.0
+        },
+        {
+          "size": 7,
+          "price": 2436.0
+        },
+        {
+          "size": 10,
+          "price": 2796.0
+        },
+        {
+          "size": 15,
+          "price": 3345.0
+        },
+        {
+          "size": 20,
+          "price": 3828.0
+        },
+        {
+          "size": 30,
+          "price": 4812.0
+        },
+        {
+          "size": 50,
+          "price": 6589.0
+        },
+        {
+          "size": 100,
+          "price": 10645.0
+        },
+        {
+          "size": 150,
+          "price": 14296.0
+        },
+        {
+          "size": 200,
+          "price": 17775.0
+        },
+        {
+          "size": 300,
+          "price": 24070.0
+        }
+      ],
+      "point_purpose": "Graph anchor (digitised)",
+      "confidence": "Medium",
+      "method": "Pixel-level digitisation of the rendered page: axes calibrated from the plot frame (decade gridlines within about 2 px), line centre traced over 5-9 columns per point",
+      "note": "GARRETT-C01 (11 Nov 2026). Previous readings (5, 21, 70 $k at 1, 10, 100) matched no line; the conventional readings had been stored under G296-124. Replaced by digitised anchors; line spans about 1 to 380 (gpm x psi / 1000). Graph readings remain unverified against independent industrial prices."
+    },
+    "G296-123": {
+      "source": {
+        "printed_page": 296,
+        "pdf_page": 46,
+        "reviewed_on": "2026-11-11"
+      },
+      "points": [
+        {
+          "size": 8,
+          "price": 4467.0
+        },
+        {
+          "size": 10,
+          "price": 4643.0
+        },
+        {
+          "size": 20,
+          "price": 5285.0
+        },
+        {
+          "size": 30,
+          "price": 5853.0
+        },
+        {
+          "size": 40,
+          "price": 6499.0
+        },
+        {
+          "size": 50,
+          "price": 7079.0
+        }
+      ],
+      "point_purpose": "Graph anchor (digitised)",
+      "confidence": "Medium",
+      "method": "Pixel-level digitisation of the rendered page: axes calibrated from the plot frame (decade gridlines within about 2 px), line centre traced over 5-9 columns per point",
+      "note": "GARRETT-C01 (11 Nov 2026). Previous readings started at size 1, but the in-line line starts at about 7.5. Replaced by digitised anchors; line spans about 7.5 to 60, where it joins the conventional curve. Graph readings remain unverified against independent industrial prices."
+    },
+    "G290-104": {
+      "source": {
+        "printed_page": 290,
+        "pdf_page": 40,
+        "reviewed_on": "2026-11-11"
+      },
+      "points": [
+        {
+          "size": 15,
+          "price": 3553.0
+        },
+        {
+          "size": 20,
+          "price": 4690.0
+        },
+        {
+          "size": 30,
+          "price": 6855.0
+        },
+        {
+          "size": 50,
+          "price": 11214.0
+        },
+        {
+          "size": 100,
+          "price": 22179.0
+        },
+        {
+          "size": 200,
+          "price": 43745.0
+        },
+        {
+          "size": 300,
+          "price": 64110.0
+        },
+        {
+          "size": 500,
+          "price": 106627.0
+        },
+        {
+          "size": 1000,
+          "price": 205729.0
+        },
+        {
+          "size": 2000,
+          "price": 399130.0
+        },
+        {
+          "size": 3000,
+          "price": 595498.0
+        },
+        {
+          "size": 4000,
+          "price": 782907.0
+        }
+      ],
+      "point_purpose": "Graph anchor (digitised)",
+      "confidence": "Medium",
+      "method": "Pixel-level digitisation of the rendered page: axes calibrated from the plot frame (decade gridlines within about 2 px), line centre traced over 5-9 columns per point",
+      "note": "GARRETT-C01 (11 Nov 2026). Previous readings were 60-95% high above 100 gpm. Replaced by digitised anchors; line spans about 10 to 4,500 gpm; printed exponent 0.97 confirmed (traced 0.967). Graph readings remain unverified against independent industrial prices."
+    },
+    "G303-141": {
+      "source": {
+        "printed_page": 303,
+        "pdf_page": 53,
+        "reviewed_on": "2026-11-11"
+      },
+      "points": [
+        {
+          "size": 1.5,
+          "price": 6664.0
+        },
+        {
+          "size": 2,
+          "price": 8265.0
+        },
+        {
+          "size": 3,
+          "price": 10984.0
+        },
+        {
+          "size": 5,
+          "price": 15990.0
+        },
+        {
+          "size": 7,
+          "price": 20613.0
+        },
+        {
+          "size": 10,
+          "price": 26574.0
+        },
+        {
+          "size": 15,
+          "price": 35905.0
+        },
+        {
+          "size": 20,
+          "price": 44288.0
+        },
+        {
+          "size": 30,
+          "price": 59181.0
+        },
+        {
+          "size": 50,
+          "price": 86149.0
+        },
+        {
+          "size": 70,
+          "price": 111062.0
+        }
+      ],
+      "point_purpose": "Graph anchor (digitised)",
+      "confidence": "Medium",
+      "method": "Pixel-level digitisation of the rendered page: axes calibrated from the plot frame (decade gridlines within about 2 px), line centre traced over 5-9 columns per point",
+      "note": "GARRETT-C01 (11 Nov 2026). Previous readings were about half the chart value and extended beyond the line end. Replaced by digitised anchors; line ends at about 75,000 gal; printed exponent 0.72 confirmed (traced 0.731). Graph readings remain unverified against independent industrial prices."
+    },
+    "G303-143": {
+      "source": {
+        "printed_page": 303,
+        "pdf_page": 53,
+        "reviewed_on": "2026-11-11"
+      },
+      "points": [
+        {
+          "size": 1.5,
+          "price": 5212.0
+        },
+        {
+          "size": 2,
+          "price": 6017.0
+        },
+        {
+          "size": 3,
+          "price": 7483.0
+        },
+        {
+          "size": 5,
+          "price": 9809.0
+        },
+        {
+          "size": 7,
+          "price": 11737.0
+        },
+        {
+          "size": 10,
+          "price": 14083.0
+        },
+        {
+          "size": 15,
+          "price": 17322.0
+        },
+        {
+          "size": 20,
+          "price": 20163.0
+        },
+        {
+          "size": 30,
+          "price": 24870.0
+        }
+      ],
+      "point_purpose": "Graph anchor (digitised)",
+      "confidence": "Medium",
+      "method": "Pixel-level digitisation of the rendered page: axes calibrated from the plot frame (decade gridlines within about 2 px), line centre traced over 5-9 columns per point",
+      "note": "GARRETT-C01 (11 Nov 2026). Previous readings were about 1.8-1.9x the chart value and extended beyond the line end. Replaced by digitised anchors; line ends at about 35,000 gal; printed exponent 0.51 confirmed (traced 0.523). Graph readings remain unverified against independent industrial prices."
+    },
+    "G303-144": {
+      "source": {
+        "printed_page": 303,
+        "pdf_page": 53,
+        "reviewed_on": "2026-11-11"
+      },
+      "points": [
+        {
+          "size": 1.5,
+          "price": 1307.0
+        },
+        {
+          "size": 2,
+          "price": 1630.0
+        },
+        {
+          "size": 3,
+          "price": 2227.0
+        },
+        {
+          "size": 5,
+          "price": 3305.0
+        },
+        {
+          "size": 7,
+          "price": 4261.0
+        },
+        {
+          "size": 10,
+          "price": 5600.0
+        },
+        {
+          "size": 15,
+          "price": 7736.0
+        },
+        {
+          "size": 20,
+          "price": 9647.0
+        }
+      ],
+      "point_purpose": "Graph anchor (digitised)",
+      "confidence": "Medium",
+      "method": "Pixel-level digitisation of the rendered page: axes calibrated from the plot frame (decade gridlines within about 2 px), line centre traced over 5-9 columns per point",
+      "note": "GARRETT-C01 (11 Nov 2026). Previous readings were 1.6-2x the chart value and extended beyond the line end. Replaced by digitised anchors; line ends at about 20,000 gal; printed exponent 0.71 (traced 0.771). Graph readings remain unverified against independent industrial prices."
+    },
+    "G279-066": {
+      "source": {
+        "printed_page": 279,
+        "pdf_page": 29,
+        "reviewed_on": "2026-11-11"
+      },
+      "points": [
+        {
+          "size": 1.5,
+          "price": 1467.0
+        },
+        {
+          "size": 2,
+          "price": 1751.0
+        },
+        {
+          "size": 3,
+          "price": 2263.0
+        },
+        {
+          "size": 5,
+          "price": 3177.0
+        },
+        {
+          "size": 7,
+          "price": 4011.0
+        },
+        {
+          "size": 10,
+          "price": 5220.0
+        },
+        {
+          "size": 15,
+          "price": 8049.0
+        },
+        {
+          "size": 20,
+          "price": 10204.0
+        },
+        {
+          "size": 30,
+          "price": 12378.0
+        },
+        {
+          "size": 50,
+          "price": 19299.0
+        },
+        {
+          "size": 70,
+          "price": 26432.0
+        },
+        {
+          "size": 100,
+          "price": 37729.0
+        },
+        {
+          "size": 150,
+          "price": 58502.0
+        }
+      ],
+      "point_purpose": "Graph anchor (digitised)",
+      "confidence": "Medium",
+      "method": "Pixel-level digitisation of the rendered page: axes calibrated from the plot frame (decade gridlines within about 2 px), line centre traced over 5-9 columns per point",
+      "note": "GARRETT-C01 (11 Nov 2026). Previous size readings were about 3x too large. Replaced by digitised anchors; line spans about 1,000 to 160,000 cfm; curved. Graph readings remain unverified against independent industrial prices."
     }
   }
 }

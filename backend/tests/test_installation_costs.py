@@ -91,14 +91,21 @@ class InstallationCostTests(unittest.TestCase):
         ]:
             r = self.cost(cid, 100)
             self.assertEqual(r.installation.installation_factor, factor)
-        combined = self.cost("G296-124", 100)
-        self.assertIsNone(combined.installation_cost)
-        axial = self.cost("G296-124", 100, installation_variant="axial_flow")
-        mixed = self.cost("G296-124", 100, installation_variant="mixed_flow")
-        self.assertEqual(axial.installation.installation_factor, 1.58)
-        self.assertEqual(mixed.installation.installation_factor, 1.32)
-        invalid = self.cost("G296-124", 100, installation_variant="guessed")
-        self.assertIsNone(invalid.amount)
+        # GARRETT-C01: the merged mixed/axial price curve is blocked until it is
+        # split, because page 296 prints two separate lines. The printed
+        # installation factors per variant are still recorded in the policy.
+        from backend.equipment_costing.indexes.garrett.installation import (
+            installation_policy,
+        )
+
+        choices = installation_policy("G296-124")["choices"]
+        self.assertEqual(choices["axial_flow"]["multiplier"], 1.58)
+        self.assertEqual(choices["mixed_flow"]["multiplier"], 1.32)
+        for variant in (None, "axial_flow", "mixed_flow", "guessed"):
+            options = {"installation_variant": variant} if variant else {}
+            blocked = self.cost("G296-124", 100, **options)
+            self.assertIsNone(blocked.amount)
+            self.assertTrue(any("two separate lines" in i for i in blocked.issues))
 
     def test_explicit_installation_factor_not_applied_twice(self):
         r = self.cost(

@@ -188,6 +188,7 @@ def questions(config, text, report, *, approval=None, require_approval=True):
             problems.append(
                 "What contracted quantity should be billed for " + name + "?"
             )
+    problems.extend(double_count_reviews(config))
     basis = config.get("price_basis", {})
     if not basis.get("currency") or not basis.get("price_period"):
         problems.append(
@@ -215,6 +216,50 @@ def questions(config, text, report, *, approval=None, require_approval=True):
             "Review and approve the current revenue prices, quantities, commercial terms and operating schedule before using them in finance."
         )
     return list(dict.fromkeys(problems))
+
+
+def _reviewed(item, key):
+    return bool(str((item.get(key) or {}).get("basis") or "").strip())
+
+
+def double_count_reviews(config):
+    """Phase 4 acceptance: reviews required before revenue can be approved.
+
+    - Different payments that bill the same physical stream must each record
+      ``shared_stream_review: {"basis": ...}`` saying why they are distinct.
+    - An avoided cost alongside revenue must record
+      ``revenue_overlap_review: {"basis": ...}`` saying no payment also charges
+      for the same saving.
+    """
+    problems = []
+    by_stream = {}
+    for item in [*config.get("sales", []), *config.get("commercial_lines", [])]:
+        if item.get("included", True) is False or not item.get("stream_key"):
+            continue
+        by_stream.setdefault(item["stream_key"], []).append(item)
+    for items in by_stream.values():
+        ids = [i.get("payment_id") or i.get("id") for i in items]
+        repeated = sorted({str(x) for x in ids if x and ids.count(x) > 1})
+        if repeated:
+            problems.append(
+                "Duplicate payment on the same stream: " + ", ".join(repeated)
+                + " appears more than once. Remove the repeat."
+            )
+            continue
+        if len(items) > 1 and not all(_reviewed(i, "shared_stream_review") for i in items):
+            names = ", ".join(str(i.get("name", i.get("id", "payment"))) for i in items)
+            problems.append(
+                f"{names} bill the same stream. Record why each payment is for something "
+                "different (shared_stream_review), so the stream is not counted twice."
+            )
+    if config.get("sales") or config.get("commercial_lines"):
+        for saving in config.get("avoided_costs", []):
+            if not _reviewed(saving, "revenue_overlap_review"):
+                problems.append(
+                    f"Avoided cost {saving.get('id', 'saving')} reduces an OPEX line. Confirm no "
+                    "revenue payment also charges for this saving (revenue_overlap_review)."
+                )
+    return problems
 
 
 def runtime(config, policy, report):

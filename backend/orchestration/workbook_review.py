@@ -17,7 +17,7 @@ from backend.ingestion.balance.models import (
     Table,
 )
 from backend.ingestion.balance.units import UNITS, convert
-from backend.revenue.advisor import TEXT, obj
+from backend.revenue.advisor import TEXT, obj, safe_ai_reason
 
 from .codec import plain
 from .equipment_advisor import validate
@@ -553,12 +553,12 @@ def review(parsed, description, store, provider):
                 {
                     "batch": index + 1,
                     "status": "unreviewed",
-                    "reason": type(exc).__name__,
+                    "reason": safe_ai_reason(exc),
                     "source_cells": sum(map(len, context["worksheets"].values())),
                 }
             )
             combined["scope_notes"].append(
-                f"AI review region {index + 1} failed ({type(exc).__name__}); Python extraction retained. Region requires review."
+                f"AI review region {index + 1} failed ({safe_ai_reason(exc)}); Python extraction retained. Region requires review."
             )
     failed = sum(item["status"] != "reviewed" for item in coverage)
     combined["summary"] = "\n".join(summaries)
@@ -636,8 +636,12 @@ def apply_review(parsed, response):
                 normalized_unit = unit
                 status = "inferred"
                 note = "Semantic property interpretation from workbook source."
+        from backend.ingestion.observation_identity import recovered_identity
+
+        key = _key("ai-evidence", report.sha256, ref, prop, component, unit)
         return Evidence(
-            id=_key("ai-evidence", report.sha256, ref, prop, component, unit),
+            id=key,
+            **recovered_identity(report.sha256, key, VERSION),
             workbook=report.filename,
             sheet=ref["sheet"],
             cell=ref["cell"],

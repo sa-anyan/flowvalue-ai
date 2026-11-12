@@ -10,6 +10,22 @@
 
 These are product requirements and proposed acceptance criteria, **not proof of implemented functionality**. Respect the founder's existing broad end-to-end platform scope; do not silently narrow, expand or discard it. Historical phase acceptance docs report past checks and must not be rewritten as newly delivered claims.
 
+## Engineer 2 GitHub checkpoint
+
+For Engineer 2 tasks in this repository, use the long-lived
+`engineer-2/development` branch with upstream `origin/engineer-2/development`.
+Inspect branch, upstream and working-tree status before editing. Fetch and inspect
+any remote divergence before reconciliation. Preserve existing history and local
+work. Stage only the verified files for the task, commit with its phase and
+backlog ID, push normally to that upstream and verify the remote commit. Obtain
+approval before publishing an incomplete checkpoint.
+
+Keep generated files, credentials and unrelated work out of commits. Keep main
+and Engineer 1's branch untouched unless expressly authorized. Do not force-push,
+rewrite published history or merge automatically. Get Engineer 1 review before
+changing shared engineering or financial semantics. Report local and remote
+commit status separately.
+
 ## R39 — planned natural-language commercial opportunity workflow
 
 Founder example: **“We get revenue from food. Could we sell our wastes?”**

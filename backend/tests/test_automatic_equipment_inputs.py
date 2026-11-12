@@ -1155,3 +1155,117 @@ def test_third_binding_attempt_can_recover_without_restarting_the_register(tmp_p
     assert provider.calls == 3
     assert plan["equipment"][0]["unit_conversion"]["enabled"]
     assert audit[-1]["status"] == "converted_with_explicit_basis"
+
+
+def _range_failure_total(*keys):
+    from types import SimpleNamespace
+
+    return SimpleNamespace(
+        equipment=[
+            SimpleNamespace(
+                equipment_cost=None,
+                amount=None,
+                parsed_source={"equipment_key": key},
+                issues=["MODEL_OUT_OF_RANGE: size outside published bounds"],
+            )
+            for key in keys
+        ]
+    )
+
+
+def _out_of_range_row(key, curve, candidates):
+    row = selected(key)
+    row.update(
+        curve_id=curve,
+        matching={
+            "match_status": "matched",
+            "conceptual_validation": "suitable",
+            "candidate_model_ids": list(candidates),
+        },
+        unit_conversion={
+            "enabled": True,
+            "origin": "llm_selected_python_equation",
+            "inputs": {"residence_time_h": 2},
+        },
+    )
+    return row
+
+
+def test_pricing_repair_does_not_call_ai_when_no_alternative_remains(tmp_path):
+    """Charlie HE-101/HE-102 (11 Nov): once every reviewed candidate has failed its
+    published range, repair records why instead of asking the AI again."""
+    from backend.equipment_costing.unit_conversion.bridges.automatic import (
+        repair_pricing,
+    )
+
+    model = "openpytea:double_pipe_hx_towler_2010"
+    row = _out_of_range_row("e", model, [model])
+
+    class NoCall(Provider):
+        def generate(self, **kw):
+            raise AssertionError("no reviewed alternative is left to offer")
+
+    plan = {"equipment": [row]}
+    updated, audit = repair_pricing(
+        REPORT, plan, _range_failure_total("e"), "", Store(tmp_path / "x.db"), NoCall()
+    )
+    assert updated == plan
+    assert audit == [
+        {
+            "equipment_key": "e",
+            "status": "pricing_repair_exhausted",
+            "reason": "MODEL_OUT_OF_RANGE: size outside published bounds",
+            "excluded_model_ids": [model],
+            "pricing_repair": True,
+            "pricing_attempt": 1,
+        }
+    ]
+
+
+def test_unresolved_pricing_repair_is_not_repeated_with_identical_inputs(tmp_path):
+    """A refused repair is not re-sent unchanged on later pricing passes that run
+    only because a neighbouring item was repaired; failed models stay excluded."""
+    from backend.equipment_costing.unit_conversion.bridges.automatic import (
+        repair_pricing,
+    )
+
+    stuck = _out_of_range_row(
+        "e", "openpytea:double_pipe_seider_2013",
+        ["openpytea:double_pipe_seider_2013", "openpytea:double_pipe_hx_towler_2010"],
+    )
+    fixable = _out_of_range_row("n", "G258-004", ["G258-004", "G258-008"])
+    offered = []
+
+    def fake_resolve(report, plan, *args, **kwargs):
+        plan = copy.deepcopy(plan)
+        for retry in plan["equipment"]:
+            offered.append(
+                (retry["equipment_key"], retry["matching"]["candidate_model_ids"])
+            )
+            if retry["equipment_key"] == "n" and len(offered) < 4:
+                retry.update(curve_id="G258-008", unit_conversion={"enabled": True})
+        return plan, [{"equipment_key": "e", "status": "input_resolution_unresolved"}]
+
+    with patch(
+        "backend.equipment_costing.unit_conversion.bridges.automatic.resolve",
+        side_effect=fake_resolve,
+    ), patch(
+        "backend.blocks.equipment.calculation.calculate_equipment",
+        return_value=(_range_failure_total("e", "n"), []),
+    ):
+        updated, audit = repair_pricing(
+            REPORT,
+            {"equipment": [stuck, fixable]},
+            _range_failure_total("e", "n"),
+            "",
+            Store(tmp_path / "y.db"),
+        )
+    # "e" is asked once; "n" fails again on G258-008 and has nothing left.
+    assert offered == [
+        ("e", ["openpytea:double_pipe_hx_towler_2010"]),
+        ("n", ["G258-008"]),
+    ]
+    assert updated["equipment"][0] == stuck
+    exhausted = [a for a in audit if a["status"] == "pricing_repair_exhausted"]
+    assert [a["equipment_key"] for a in exhausted] == ["n"]
+    assert exhausted[0]["excluded_model_ids"] == ["G258-004", "G258-008"]

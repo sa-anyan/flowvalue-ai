@@ -9,6 +9,7 @@ from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from pydantic import BaseModel, ConfigDict, Field
 
 from backend.currency_conversion import convert_currency, rate_snapshot
+from backend.dashboard_reporting.sizing_trace import project_sizing_traces
 from backend.currency_conversion.assessment import currency_view
 from backend.equipment_costing.registry import list_equipment_models
 from backend.ingestion.limits import (
@@ -387,10 +388,13 @@ def save_cashflow_policy(key: str, change: CashflowPolicyEdit):
 def get(key: str, historical: bool = False, currency: str | None = None):
     saved = store.get(key)
     from backend.blocks.execution import view
+    from backend.equipment_resolution.identity import project_assessment_identity
 
     if historical:
-        return saved  # Explicit history is a snapshot, never a calculation route.
-    return currency_view(view(saved), currency)
+        return project_sizing_traces(project_assessment_identity(saved))
+    return project_sizing_traces(
+        project_assessment_identity(currency_view(view(saved), currency), saved)
+    )
 
 
 @app.patch("/api/assessments/{key}")
@@ -582,10 +586,13 @@ class EngineeringApproval(BaseModel):
 
 @app.post("/api/assessments/{key}/engineering-approval")
 def approve_engineering_data(key: str, options: EngineeringApproval):
-    from backend.blocks.stage_workflow import approve
+    from backend.blocks.stage_workflow import approve, AssessmentBusy
     from backend.blocks.execution import view
 
-    return view(approve(store, key, options.revision))
+    try:
+        return view(approve(store, key, options.revision))
+    except AssessmentBusy as exc:
+        raise HTTPException(409, str(exc))
 
 
 @app.post("/api/assessments/{key}/run-all-stages", status_code=202)
@@ -804,7 +811,9 @@ def versions(key: str):
 
 @app.post("/api/versions/{version}/open")
 def reopen(version: str):
-    return store.load(version)
+    from backend.equipment_resolution.identity import project_assessment_identity
+
+    return project_sizing_traces(project_assessment_identity(store.load(version)))
 
 
 @app.get("/api/assessments/{key}/compare/{other}")
@@ -927,8 +936,66 @@ def study_report(key: str, currency: str | None = None):
         raise HTTPException(409, "Wait for this study calculation to finish")
     from backend.blocks.execution import view
 
-    state = currency_view(view(state), currency)
+    viewed = view(state)
+    saved_equipment = ((state.get("results") or {}).get("stages") or {}).get("equipment")
+    if saved_equipment and not viewed["results"]["stages"].get("equipment"):
+        viewed["results"]["stages"]["equipment"] = {
+            **saved_equipment, "result_is_stale": True,
+        }
+    state = currency_view(viewed, currency)
     return HTMLResponse(render_study(state), headers={"Cache-Control": "no-store"})
+
+
+@app.get("/api/assessments/{key}/financial-workbook")
+def financial_workbook(key: str):
+    """M4.6: reconciled financial workbook (xlsx) from the saved study."""
+    from fastapi.responses import Response
+
+    from backend.blocks.execution import view
+    from backend.dashboard_reporting.financial_workbook import build_financial_workbook
+
+    state = store.get(key)
+    if state.get("running"):
+        raise HTTPException(409, "Wait for this study calculation to finish")
+    try:
+        content, summary = build_financial_workbook(view(state))
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    return Response(
+        content,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition": 'attachment; filename="FlowValue-financial-model.xlsx"',
+            "Cache-Control": "no-store",
+            "X-FlowValue-Reconciled": "true" if summary["reconciled"] else "false",
+        },
+    )
+
+
+@app.get("/api/assessments/{key}/basis-of-estimate")
+def basis_of_estimate(key: str, format: str = "json"):
+    """M3.6: Basis of Estimate from the saved study (json, markdown or html)."""
+    from fastapi.responses import HTMLResponse, PlainTextResponse
+
+    from backend.blocks.execution import view
+    from backend.dashboard_reporting.basis_of_estimate import (
+        build_basis_of_estimate,
+        render_html,
+        render_markdown,
+    )
+
+    if format not in {"json", "markdown", "html"}:
+        raise HTTPException(422, "format must be json, markdown or html")
+    state = store.get(key)
+    if state.get("running"):
+        raise HTTPException(409, "Wait for this study calculation to finish")
+    boe = build_basis_of_estimate(view(state))
+    headers = {"Cache-Control": "no-store"}
+    if format == "markdown":
+        return PlainTextResponse(render_markdown(boe), media_type="text/markdown", headers=headers)
+    if format == "html":
+        return HTMLResponse(render_html(boe), headers=headers)
+    return boe
 
 
 @app.get("/api/assessments/{key}/snapshot")
@@ -940,11 +1007,13 @@ def study_snapshot(key: str, currency: str | None = None):
     state = store.get(key)
     if state.get("running"):
         raise HTTPException(409, "Wait for this study calculation to finish")
-    from backend.blocks.execution import view
+    from backend.blocks.execution import MODE, view
 
-    state = currency_view(view(state), currency)
+    if state.get("execution_mode") == MODE or not state.get("results"):
+        state = view(state)
+    state = currency_view(state, currency)
     return Response(
-        json.dumps(state, indent=2, allow_nan=False),
+        json.dumps(project_sizing_traces(state), indent=2, allow_nan=False),
         media_type="application/json",
         headers={
             "Content-Disposition": 'attachment; filename="FlowValue-TEA-assessment.json"',

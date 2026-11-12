@@ -45,7 +45,7 @@ ALIASES = list(
         (
             ROOT
             / "docs/verification/phase1/units/catalogue_audit/unit_alias_verification.csv"
-        ).open()
+        ).open(encoding="utf-8")
     )
 )
 UNITS_NEW = sorted({c["source"] for c in REFS})

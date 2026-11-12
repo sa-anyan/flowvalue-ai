@@ -5,12 +5,19 @@ from backend.equipment_costing.registry import estimate_cost, list_equipment_mod
 
 
 def cost(identifier, size, **options):
+    # This module tests the downward-extrapolation path, which since the
+    # founder's minimum-size floor decision (11 Nov 2026) is an explicit
+    # per-item choice. The floor itself is tested in test_below_range_floor.py.
+    options.setdefault("below_range_policy", "extrapolate")
     model = next(m for m in list_equipment_models() if m["id"] == identifier)
     return estimate_cost(identifier, size, size_unit=model["size_unit"], **options)
 
 
+# GARRETT-C01: boundaries are the digitised ends of the printed cyclone line
+# (1,500 to 150,000 cfm). The earlier readings (20 -> $5,000, 700 -> $65,000)
+# misread the size axis by about 3x.
 @pytest.mark.parametrize(
-    "size,boundary,reference", [(0.28753362139945604, 20, 5000), (1400, 700, 65000)]
+    "size,boundary,reference", [(0.28753362139945604, 1.5, 1467.0), (1400, 150, 58502.0)]
 )
 def test_cyclone_lower_and_upper_boundary(size, boundary, reference):
     result = cost("G279-066", size, allow_unverified=True)
@@ -51,8 +58,9 @@ def test_explicit_exponent_preserves_precedence_and_requires_rationale():
 
 
 def test_in_range_results_unchanged_and_missing_models_not_invented():
-    a = cost("G279-066", 200, allow_unverified=True)
-    b = cost("G279-066", 200, allow_unverified=True, allow_fitted_extrapolation=False)
+    # 50,000 cfm lies inside the printed cyclone line (GARRETT-C01).
+    a = cost("G279-066", 50, allow_unverified=True)
+    b = cost("G279-066", 50, allow_unverified=True, allow_fitted_extrapolation=False)
     assert a.amount == b.amount and not a.estimate.extrapolated
     with pytest.raises(ValueError):
         estimate_cost(
