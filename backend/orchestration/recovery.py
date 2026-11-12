@@ -6,6 +6,7 @@ import hashlib
 from openpyxl.utils import coordinate_to_tuple, range_boundaries
 
 from backend.ingestion.balance.units import convert, unit_key
+from backend.ingestion.observation_identity import recovered_identity
 
 TOKENS = {
     "mass_flow": ("mass", "flow"),
@@ -103,6 +104,9 @@ def recover(parsed, findings):
                     "status": "inferred",
                     "note": "AI-assisted label interpretation; exact source cell and Python unit conversion checked. Human confirmation remains required.",
                 }
+                evidence.update(
+                    recovered_identity(report.get("sha256"), evidence["id"], "numeric-recovery-1")
+                )
                 entity["values"].append(evidence)
                 decision["status"] = "source_checked_inferred"
         except (ValueError, KeyError, TypeError) as exc:
