@@ -134,3 +134,48 @@ def test_group_preserves_approved_revenue_when_ai_is_requested(study):
         "financial": True,
     }
     assert result["stage_workflow"]["status"] == "complete"
+
+
+@pytest.mark.parametrize(
+    "busy",
+    [
+        # Charlie AI run (11 Nov): equipment preparation after extraction runs
+        # with running=False, only the workflow status says it is still going.
+        {"engineering_workflow": {"status": "running", "stage": "equipment_preparation"}},
+        {"stage_workflow": {"status": "running", "stage": "capex"}},
+        {"running": True},
+    ],
+)
+def test_approval_refused_while_any_preparation_or_stage_runs(study, busy):
+    from backend.blocks.stage_workflow import AssessmentBusy
+
+    store, key = study
+    state = run_stage(store, key, "engineering_data")
+    state.update(busy)
+    state = store.put(state, state["revision"])
+    with pytest.raises(AssessmentBusy, match="still running"):
+        approve(store, key, state["revision"])
+    after = store.get(key)
+    assert after["revision"] == state["revision"]
+    assert not approved(after)
+
+
+def test_approval_endpoint_returns_409_while_preparation_runs(study):
+    from fastapi.testclient import TestClient
+    from backend.api import app as api
+
+    store, key = study
+    state = run_stage(store, key, "engineering_data")
+    state["engineering_workflow"] = {
+        "status": "running",
+        "stage": "equipment_preparation",
+    }
+    state = store.put(state, state["revision"])
+    with patch.object(api, "store", store):
+        response = TestClient(api.app, base_url="http://localhost").post(
+            f"/api/assessments/{key}/engineering-approval",
+            json={"revision": state["revision"]},
+        )
+    assert response.status_code == 409
+    assert "still running" in response.json()["detail"]
+    assert store.get(key)["revision"] == state["revision"]

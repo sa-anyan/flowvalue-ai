@@ -10,6 +10,7 @@ from pathlib import Path
 from backend.equipment_costing.indexes.garrett.installation import InstallationBreakdown
 from backend.equipment_costing.indexes.garrett.integrated import CostingResult
 from backend.equipment_costing.models import CostEstimate, positive
+from backend.equipment_costing.indexes.floor import floor_issue, minimum_size_floor
 
 TITLE = "University of Nottingham CEE Design Consultants, CEEDG501 Rev 3"
 FILENAME = "CEEDG501 Cost Estimation Rev 3 (1)(1).pdf"
@@ -58,7 +59,14 @@ def list_models():
             source_page=12, limitation="Approximate manually read graph; package-level scope, not individual exchanger/tank; explicitly allow unverified data"))
     return rows
 
-def estimate_cost(curve_id, size, *, size_unit, **options):
+def estimate_cost(curve_id, size, *, size_unit, below_range_policy="minimum_size_floor", **options):
+    """below_range_policy (founder decision, 11 Nov 2026): "minimum_size_floor"
+    (default) prices a flow below the lowest reviewed water-graph anchor at that
+    anchor, flagged as an explicit assumption; "extrapolate" keeps the strict
+    refusal. The pump, steel and pipe equations publish no range and are
+    unaffected. Flows above the graph stay refused."""
+    if below_range_policy not in {"minimum_size_floor", "extrapolate"}:
+        raise ValueError("below_range_policy must be minimum_size_floor or extrapolate")
     models = {m["id"]: m for m in list_models()}
     if curve_id not in models:
         raise ValueError("Unknown Nottingham equipment model")
@@ -70,21 +78,28 @@ def estimate_cost(curve_id, size, *, size_unit, **options):
         raise ValueError("Implausible model input; verify engineering units")
     family = curve_id.split("-")[1]
     factor = model.get("coefficient")
+    floor = None
     if family == "WATER":
         if options.get("allow_unverified") is not True:
             raise ValueError("Water treatment graph requires allow_unverified=True; points are approximate")
         anchors = WATER_GRAPH_ANCHORS[model["configuration"]]
-        if not anchors[0][0] <= size <= anchors[-1][0]:
+        lower = anchors[0][0]
+        if size < lower and below_range_policy == "minimum_size_floor":
+            floor = minimum_size_floor(size, lower, size_unit)
+        priced_at = floor["priced_at_size"] if floor else size
+        if not anchors[0][0] <= priced_at <= anchors[-1][0]:
             raise ValueError("Flow is outside visually reviewed graph anchor interval")
         for i in range(1, len(anchors)):
             x0, y0 = anchors[i-1]
             x1, y1 = anchors[i]
-            if x0 <= size <= x1:
-                amount = y0 + (y1 - y0) * (size - x0) / (x1 - x0)
+            if x0 <= priced_at <= x1:
+                amount = y0 + (y1 - y0) * (priced_at - x0) / (x1 - x0)
                 break
         formula = "Linear interpolation between approximate visual graph anchors (£2012 vs flow in m3/h)"
         scope = "purchased_equipment"
         issues = ("UNVERIFIED graph reading, package-level cost; completeness of delivered/installed scope not established. Never apply to individual ion exchanger tanks.",)
+        if floor:
+            issues += (floor_issue(floor, "lowest reviewed graph anchor"),)
     elif family == "PUMP":
         # CEEDG501 p.11: c=F*p*2000*p^-0.3 = 2000 F p^0.7.
         # Page doesn't explicitly print motor-power units; kW assumption is disclosed.
@@ -116,6 +131,8 @@ def estimate_cost(curve_id, size, *, size_unit, **options):
         source_page=model["source_page"], model_id=curve_id, model_metadata=model,
         applied_parameter=size, unit=size_unit, historical_price=amount,
         status="unverified_graph_interpolation" if family == "WATER" else "published_equation_preliminary", issues=list(issues))
+    if floor:
+        evidence["below_range_floor"] = floor
     installation = InstallationBreakdown(
         amount if scope == "purchased_equipment" else None, None, None,
         None, "not_provided", evidence)
