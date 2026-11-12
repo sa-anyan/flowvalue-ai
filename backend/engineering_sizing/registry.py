@@ -126,7 +126,11 @@ def list_methods():
 
 def calculate(method, value, inputs):
     if method not in METHODS:
-        raise ValueError("Unsupported engineering sizing method: " + str(method))
+        from .common import UnsupportedMethodError
+
+        raise UnsupportedMethodError(
+            "Unsupported engineering sizing method: " + str(method)
+        )
     from .versioning import method_metadata
     from .common import positive
 
