@@ -50,7 +50,7 @@ class G2PreflightTests(unittest.TestCase):
         state["plan"]["equipment"][0]["size"] = 20
         self.assertEqual(
             {key for key in BLOCKS if not fresh(state, key)},
-            {"equipment", "capex", "financial"},
+            {"equipment", "capex", "opex", "financial"},
         )
         refresh(state)
         for key in ("equipment", "capex", "financial"):
