@@ -9,10 +9,10 @@ from backend.equipment_costing.registry import list_equipment_models
 from backend.revenue.advisor import TEXT, obj
 from backend.orchestration.equipment_advisor import validate as validate_shape
 
-VERSION = "equipment-concept-matcher-8-explicit-core-scope"
+VERSION = "equipment-concept-matcher-10-no-project-rules"
 # Bound request/response size so one unavailable review cannot erase the plant.
 BATCH_SIZE = 8
-PROMPT = """Search all registered libraries without preferring Garrett or OpenPyTEA. Rank physical function, configuration, required measurements, valid domain, cost scope, source and assumptions; price year does not determine suitability. P-001 may mean pH adjustment, NOT a pump: function and target-bound process evidence take precedence over tag prefixes. Fermenter correlation range is strict; clarifier geometry/mechanical scope must be justified.
+PROMPT = """Search all registered libraries. LIBRARY PREFERENCE: when an OpenPyTEA model and a Garrett model both describe the same equipment function and configuration, select the OpenPyTEA model and keep the Garrett model as a candidate. Select Garrett only when no OpenPyTEA model fits the function, configuration or size inputs, and say why. Rank physical function, configuration, required measurements, valid domain, cost scope, source and assumptions; price year does not determine suitability. A tag prefix does not establish function (a P- tag is not necessarily a pump): function and target-bound process evidence take precedence over tag prefixes. Correlation ranges are strict; any assumed geometry or mechanical scope must be justified.
 Prefer explicit raw workbook equipment nouns over earlier AI-normalised labels.
 A name explicitly attached to an equipment tag in any source stream applies across
 all occurrences of that same tag; absence of the name elsewhere is not ambiguity.
@@ -61,11 +61,11 @@ Do not fabricate a pressure/size/material to select a configuration. If a family
 clearly matched but configuration is not established, return matched with the real
 family candidates and selected_model_id=null; explain configuration selection later.
 A bioreactor may have an agitated-reactor core-equipment proxy, with its omissions
-explicit. For a biofilm or other specialised reactor, also consider a compatible
+explicit. For a specialised reactor (for example immobilised-cell or otherwise non-agitated designs), also consider a compatible
 non-agitated reactor/vessel core where defensible; do not assume agitation is
 mandatory. Media, aeration, internals and other omitted package components must
-remain explicit unresolved scope. A generic settler may have clarifier candidates
-as preliminary configuration scenarios; mechanical scope is not a workbook fact.
+remain explicit unresolved scope. A generic separation unit may have several separator
+configurations as preliminary scenarios; mechanical scope is not a workbook fact.
 An electrolyser is not functionally an agitated tank: a possible vessel
 component alone is not a match for its electrochemical operation. Distinguish core
 functional equivalence from an unrelated model or merely one package component.
@@ -327,6 +327,7 @@ def match_report(report, description, store, provider=None):
         row["source_name_hints"] = source_name_hints(row)
     model_by_id = {m["model_id"]: m for m in models}
     from backend.orchestration.provider import EngineeringProvider
+    from backend.revenue.advisor import safe_ai_reason
 
     provider_error = None
     if register:
@@ -384,7 +385,7 @@ def match_report(report, description, store, provider=None):
                 {
                     "index": start // BATCH_SIZE + 1,
                     "status": "unavailable",
-                    "reason": type(exc).__name__,
+                    "reason": safe_ai_reason(exc),
                     "cached": False,
                 }
             )
@@ -453,6 +454,11 @@ def match_report(report, description, store, provider=None):
                 decision.update(match_status="ambiguous", selected_model_id=None)
             if decision["match_status"] != "matched":
                 decision["selected_model_id"] = None
+            from .library_preference import apply_preference
+
+            decision, preference = apply_preference(decision, model_by_id)
+            if preference:
+                decision["library_preference"] = preference
             chosen = model_by_id.get(decision["selected_model_id"]) or {}
             output.append(
                 {
@@ -512,6 +518,17 @@ def apply_matches(previous, matching):
             row.update(
                 equipment_key=match["equipment_key"],
                 matching_attempt=copy.deepcopy(match),
+            )
+            rows.append(row)
+            continue
+        from .library_preference import user_selected_model
+
+        if user_selected_model(row):
+            # A model the user chose is never replaced by an AI rerun or by the
+            # OpenPyTEA preference. The new proposal is kept for review only.
+            row["matching_attempt"] = copy.deepcopy(match)
+            row["matching_preservation_reason"] = (
+                "User-selected model retained; the new AI proposal is shown for review only."
             )
             rows.append(row)
             continue

@@ -323,6 +323,10 @@ async def upload(
     import hashlib
 
     state["source_sha256"] = hashlib.sha256(content).hexdigest()
+    # Equipment-scope decisions follow a re-upload of the same file.
+    from backend.equipment_resolution.register_completeness import carry_over
+
+    carry_over(store, state)
     state = initialize(state)
     state.update(
         running=False, status="Source loaded. Run a stage explicitly.", progress=[]
@@ -582,10 +586,13 @@ class EngineeringApproval(BaseModel):
 
 @app.post("/api/assessments/{key}/engineering-approval")
 def approve_engineering_data(key: str, options: EngineeringApproval):
-    from backend.blocks.stage_workflow import approve
+    from backend.blocks.stage_workflow import approve, AssessmentBusy
     from backend.blocks.execution import view
 
-    return view(approve(store, key, options.revision))
+    try:
+        return view(approve(store, key, options.revision))
+    except AssessmentBusy as exc:
+        raise HTTPException(409, str(exc))
 
 
 @app.post("/api/assessments/{key}/run-all-stages", status_code=202)
@@ -929,6 +936,86 @@ def study_report(key: str, currency: str | None = None):
 
     state = currency_view(view(state), currency)
     return HTMLResponse(render_study(state), headers={"Cache-Control": "no-store"})
+
+
+class AssumptionApproval(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    revision: int
+    items: list[str]
+    reviewer: str
+    note: str = ""
+
+
+@app.get("/api/assessments/{key}/assumption-approvals")
+def assumption_approval_status(key: str):
+    """M5.4: approval status of each reviewable assumption."""
+    from backend.blocks.assumption_approval import status
+
+    return status(store.get(key))
+
+
+@app.post("/api/assessments/{key}/assumption-approvals")
+def approve_assumptions(key: str, request: AssumptionApproval):
+    """M5.4: approve named assumptions exactly as currently saved."""
+    from backend.blocks.assumption_approval import approve, status
+
+    try:
+        state = approve(store, key, request.revision, request.items, request.reviewer, request.note)
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    return {"revision": state["revision"], **status(state)}
+
+
+@app.get("/api/assessments/{key}/financial-workbook")
+def financial_workbook(key: str):
+    """M4.6: reconciled financial workbook (xlsx) from the saved study."""
+    from fastapi.responses import Response
+
+    from backend.blocks.execution import view
+    from backend.dashboard_reporting.financial_workbook import build_financial_workbook
+
+    state = store.get(key)
+    if state.get("running"):
+        raise HTTPException(409, "Wait for this study calculation to finish")
+    try:
+        content, summary = build_financial_workbook(view(state))
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    return Response(
+        content,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition": 'attachment; filename="FlowValue-financial-model.xlsx"',
+            "Cache-Control": "no-store",
+            "X-FlowValue-Reconciled": "true" if summary["reconciled"] else "false",
+        },
+    )
+
+
+@app.get("/api/assessments/{key}/basis-of-estimate")
+def basis_of_estimate(key: str, format: str = "json"):
+    """M3.6: Basis of Estimate from the saved study (json, markdown or html)."""
+    from fastapi.responses import HTMLResponse, PlainTextResponse
+
+    from backend.blocks.execution import view
+    from backend.dashboard_reporting.basis_of_estimate import (
+        build_basis_of_estimate,
+        render_html,
+        render_markdown,
+    )
+
+    if format not in {"json", "markdown", "html"}:
+        raise HTTPException(422, "format must be json, markdown or html")
+    state = store.get(key)
+    if state.get("running"):
+        raise HTTPException(409, "Wait for this study calculation to finish")
+    boe = build_basis_of_estimate(view(state))
+    headers = {"Cache-Control": "no-store"}
+    if format == "markdown":
+        return PlainTextResponse(render_markdown(boe), media_type="text/markdown", headers=headers)
+    if format == "html":
+        return HTMLResponse(render_html(boe), headers=headers)
+    return boe
 
 
 @app.get("/api/assessments/{key}/snapshot")

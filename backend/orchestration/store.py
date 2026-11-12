@@ -114,13 +114,23 @@ class Store:
             "off",
         }:
             return compute(), False
-        key = hashlib.sha256(dump(context).encode()).hexdigest()
+        # Rev 1.1 (G5): the model identifier is pinned in every cache key, so a
+        # model change never reuses a response produced by a different model.
+        # Prompt versions already sit inside each caller's context.
+        model = os.environ.get("OPENAI_MODEL", "").strip()
+        key = hashlib.sha256(
+            dump({"context": context, "ai_model": model}).encode()
+        ).hexdigest()
         with self.db() as db:
             row = db.execute(
                 "SELECT value FROM ai_cache WHERE key=?", (key,)
             ).fetchone()
+        from .ai_audit import record
+
         if row:
-            return json.loads(row[0]), True
+            value = json.loads(row[0])
+            record("cache", model=model or None, context=context, response=value, cached=True)
+            return value, True
         value = compute()
         with self.db() as db:
             db.execute(
@@ -145,6 +155,15 @@ class Store:
         if row is None:
             raise KeyError("Assessment not found")
         return row[0]
+
+    def states_by_source(self, source_sha256):
+        """Saved studies of the exact same source file, oldest first."""
+        with self.db() as db:
+            rows = db.execute(
+                "SELECT state FROM assessments WHERE json_extract(state, '$.source_sha256')=? ORDER BY rowid",
+                (source_sha256,),
+            ).fetchall()
+        return [json.loads(row[0]) for row in rows]
 
     def related_states(self, parent):
         with self.db() as db:

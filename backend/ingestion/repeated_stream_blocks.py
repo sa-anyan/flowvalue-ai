@@ -12,6 +12,17 @@ from backend.ingestion.balance.units import UNITS, clean, find_unit, unit_key
 from backend.ingestion.balance.workbook import address
 
 
+def _property_columns(sheet, header, first, last):
+    count = 0
+    for cc in range(first, last + 1):
+        label = sheet.text(header, cc)
+        key = unit_key(find_unit(label))
+        if (key in UNITS["mass_flow"] or key in UNITS["molar_flow"] or key in UNITS["volume_flow"]
+                or ("mol" in clean(label) and "%" in label)):
+            count += 1
+    return count
+
+
 def parse_blocks(parser, sheet, inferred):
     anchors = sorted(
         (r, c)
@@ -21,19 +32,24 @@ def parse_blocks(parser, sheet, inferred):
     )
     handled = set()
     for row, label_col in anchors:
-        header = next(
-            (
-                rr
-                for rr in range(row + 1, min(row + 7, sheet.rows + 1))
-                if clean(sheet.text(rr, label_col))
-                in {"component", "components", "species", "constituent"}
-            ),
-            None,
-        )
-        if header is None:
-            continue
         region_end = next(
             (cc - 1 for rr, cc in anchors if rr == row and cc > label_col), sheet.cols
+        )
+        candidates = [
+            rr
+            for rr in range(row + 1, min(row + 7, sheet.rows + 1))
+            if clean(sheet.text(rr, label_col))
+            in {"component", "components", "species", "constituent"}
+        ]
+        if not candidates:
+            continue
+        # Held-out finding: a stray partial "Component" row above the real
+        # subheader hid every flow column of the block. Use the candidate with
+        # the most recognised property columns; ties go to the later row, which
+        # sits directly above the data.
+        header = max(
+            candidates,
+            key=lambda rr: (_property_columns(sheet, rr, label_col + 1, region_end), rr),
         )
         starts = []
         origins = set()

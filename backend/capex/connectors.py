@@ -3,10 +3,26 @@
 from backend.equipment_costing.models import is_scoped_capital
 
 import copy
+import re
 
 from backend.equipment_costing.cost_to_future.cost_translation import aggregation_basis
 
 from .models import CapexInputs, EquipmentCost, UnitCapitalCost
+
+
+def _costing_source(line):
+    """Name the costing source for the inclusion record; never guessed beyond IDs."""
+    source = (line.calculation.evidence or {}).get("source")
+    if source:
+        return source
+    curve = line.curve_id or ""
+    if curve.startswith("manual:"):
+        return "manual"
+    if re.match(r"^G\d{3}-\d{3}$", curve):
+        return "garrett"
+    if curve.startswith("N501-"):
+        return "nottingham"
+    return "unrecorded"
 
 
 def prepare_capex_inputs(
@@ -23,6 +39,13 @@ def prepare_capex_inputs(
     if not equipment_total.equipment:
         raise ValueError("No canonical equipment records")
     for line in equipment_total.equipment:
+        if line.amount is not None and (
+            not isinstance(line.cost_scope, str) or not line.cost_scope.strip()
+        ):
+            raise ValueError(
+                line.equipment_tag
+                + ": no recorded cost scope; rejected rather than defaulted to purchased_equipment"
+            )
         if (
             is_scoped_capital(
                 line.cost_scope, line.calculation.evidence if line.calculation else None
@@ -77,6 +100,11 @@ def prepare_capex_inputs(
                 delivery_basis=delivery_basis,
                 provenance={
                     "component": "equipment_cost; already quantity-extended",
+                    # A source-native installed/module line with a purchase
+                    # split enters as its purchase component only; the
+                    # method's own installation factors then apply once.
+                    "source_scope": line.cost_scope,
+                    "source": _costing_source(line),
                     "parser_source": copy.deepcopy(line.parsed_source),
                     "costing_evidence": copy.deepcopy(line.calculation.evidence),
                 },

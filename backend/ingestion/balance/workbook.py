@@ -198,6 +198,16 @@ def read_book(content: bytes, name: str):
                     raise ValueError("Workbook exceeds 40 worksheets.")
                 for ws in formulas:
                     rows, cols = ws.max_row, ws.max_column
+                    if rows is None or cols is None:
+                        # Some writers omit the optional <dimension> record, so a
+                        # read-only sheet reports no size. Measure it instead,
+                        # stopping as soon as a limit is exceeded.
+                        ws.reset_dimensions()
+                        rows = cols = 0
+                        for rows, row in enumerate(ws.iter_rows(values_only=True), 1):
+                            cols = max(cols, len(row))
+                            if rows > MAX_ROWS or cols > MAX_COLS:
+                                break
                     total += rows * cols
                     if rows > MAX_ROWS or cols > MAX_COLS or total > MAX_CELLS:
                         raise ValueError(

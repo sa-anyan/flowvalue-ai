@@ -13,6 +13,9 @@ from .models import (
     WorkingCapital,
     number,
 )
+from .breakdown import breakdown as _breakdown
+from .breakdown import double_count_checks as _double_count_checks
+from .scope import ELIGIBLE, FACTOR_CATEGORIES, eligibility, inclusion_record
 
 
 def _sum(values):
@@ -38,6 +41,12 @@ def _basis(inputs, require_delivered, issues):
             issues.append("Missing or duplicate equipment tag: " + str(e.tag))
             continue
         tags.add(e.tag.strip().casefold())
+        if not isinstance(e.cost_scope, str) or not e.cost_scope.strip():
+            issues.append(
+                e.tag
+                + ": no recorded cost scope; rejected rather than defaulted to purchased_equipment"
+            )
+            continue
         if e.cost_scope != "purchased_equipment":
             issues.append(
                 e.tag
@@ -477,6 +486,123 @@ def _working_capital(spec, wc_factor, inputs, bases, issues, assumptions):
     )
 
 
+def _scoped_line(factor, inputs, bases, records, scoped, gaps, issues, assumptions):
+    """Indirect/fee factor charged on each eligible scope's own base.
+
+    Purchased equipment uses the model's stage base. An installed or unit
+    capital record joins the base only when the factor is expressed on a
+    direct-cost subtotal and its source is recorded as excluding every
+    category the factor covers. Bases are kept per scope; nothing is summed
+    across scopes before the factor is chosen.
+    """
+    purchased_base = bases.get(factor.base)
+    extra = Decimal(0)
+    contributions = {
+        "purchased_equipment": {"base": purchased_base},
+        "installed_equipment": {"base": Decimal(0), "tags": []},
+        "unit_capital": {"base": Decimal(0), "tags": []},
+    }
+    for record, amount in records:
+        applies, status, reason = eligibility(record, factor.id)
+        categories = FACTOR_CATEGORIES.get(factor.id, ())
+        if applies and factor.base not in ("direct_costs", "direct_and_indirect"):
+            applies, status = False, "basis_purchased_only"
+            reason = (
+                "factor is expressed on "
+                + factor.base
+                + "; the method gives no basis to apply it to "
+                + record["scope"]
+            )
+        if not applies:
+            partly = status == "already_included" and any(
+                c in record["excluded"] for c in categories
+            )
+            if status in ("unknown", "basis_purchased_only") or partly:
+                for c in categories:
+                    if c in record["included"]:
+                        continue
+                    gaps.append(
+                        {
+                            "tag": record["tag"],
+                            "scope": record["scope"],
+                            "factor": factor.id,
+                            "category": c,
+                            "status": "combined_factor_partly_included"
+                            if partly
+                            else status,
+                            "reason": reason,
+                        }
+                    )
+            continue
+        base = amount
+        if factor.base == "direct_and_indirect":
+            base += scoped.get(record["tag"], Decimal(0))
+        extra += base
+        contributions[record["scope"]]["base"] += base
+        contributions[record["scope"]]["tags"].append(record["tag"])
+    scoped_bases = dict(bases)
+    if purchased_base is not None and factor.base in scoped_bases:
+        scoped_bases[factor.base] = purchased_base + extra
+    line = _line(factor, inputs, scoped_bases, issues, assumptions)
+    fraction = line.fraction
+    for name, entry in contributions.items():
+        entry["amount"] = (
+            entry["base"] * fraction
+            if fraction is not None and entry["base"] is not None
+            else None
+        )
+    if fraction is not None and factor.stage == "indirect":
+        # Remember indirects charged per record, for direct_and_indirect bases.
+        for record, amount in records:
+            if record["tag"] in contributions[record["scope"]]["tags"]:
+                scoped[record["tag"]] = (
+                    scoped.get(record["tag"], Decimal(0)) + amount * fraction
+                )
+    return replace(line, scope_contributions=contributions)
+
+
+def _purchased_parts(lines, stage, factors):
+    ids = {f.id for f in factors if f.stage == stage and f.additive}
+    parts = []
+    for line in lines:
+        if line.id not in ids:
+            continue
+        part = line.scope_contributions.get("purchased_equipment", {})
+        # Absolute overrides are not split by scope; they stay whole.
+        parts.append(
+            part.get("amount") if line.fraction is not None else line.amount
+        )
+    return parts
+
+
+def _uncovered_gaps(factors, records, gaps):
+    """Categories a non-purchased record could receive but the method lacks."""
+    covered = set()
+    for f in factors:
+        if f.stage in ("indirect", "fees") and f.additive:
+            covered.update(FACTOR_CATEGORIES.get(f.id, ()))
+    seen = {(g["tag"], g["category"]) for g in gaps}
+    out = []
+    for record, _ in records:
+        for c in sorted(ELIGIBLE[record["scope"]]):
+            if c == "owners_costs" or c in record["included"]:
+                continue
+            if c in covered or (record["tag"], c) in seen:
+                continue
+            out.append(
+                {
+                    "tag": record["tag"],
+                    "scope": record["scope"],
+                    "factor": None,
+                    "category": c,
+                    "status": "no_factor_in_method",
+                    "reason": "selected CAPEX method has no factor for this category on "
+                    + record["scope"],
+                }
+            )
+    return out
+
+
 def calculate(spec, factors, inputs):
     if not isinstance(inputs, CapexInputs):
         raise TypeError("inputs must be CapexInputs")
@@ -507,10 +633,17 @@ def calculate(spec, factors, inputs):
         else (Decimal(0), None)
     )
     capital_amount = Decimal(0)
+    records = []  # (inclusion record, quantity-extended amount)
     capital_tags = {e.tag.strip().casefold() for e in inputs.equipment}
     for e in inputs.pre_costed_capital:
         if not isinstance(e, UnitCapitalCost):
             raise TypeError("pre_costed_capital must contain UnitCapitalCost records")
+        if not isinstance(e.cost_scope, str) or not e.cost_scope.strip():
+            issues.append(
+                str(e.tag)
+                + ": no recorded cost scope; rejected rather than defaulted to unit_capital or purchased_equipment"
+            )
+            continue
         if e.cost_scope not in {
             "unit_capital",
             "installed_equipment",
@@ -544,6 +677,17 @@ def calculate(spec, factors, inputs):
             basis = key
             amount = number(e.amount) * quantity
             capital_amount += amount
+            records.append(
+                (
+                    inclusion_record(
+                        e.tag,
+                        e.cost_scope,
+                        e.provenance,
+                        e.included_categories,
+                    ),
+                    amount,
+                )
+            )
             lines.append(
                 CostLine(
                     "unit_capital:" + e.tag,
@@ -551,17 +695,20 @@ def calculate(spec, factors, inputs):
                     None,
                     "pre_costed_unit_capital",
                     amount,
-                    "source capital amount × quantity; no equipment factors",
+                    "source capital amount × quantity; no plant or installation factors",
                     "provisional",
-                    "Source-defined capital scope; included allowances not charged twice",
+                    "Source-defined "
+                    + e.cost_scope
+                    + " scope; only factors its source excludes are applied, on separate bases",
                     spec.source,
+                    {records[-1][0]["scope"]: {"base": amount, "amount": amount}},
                 )
             )
         except (ValueError, TypeError) as exc:
             issues.append(e.tag + ": " + str(exc))
     if inputs.pre_costed_capital:
         assumptions.append(
-            "Pre-costed unit capital is excluded from all purchased-equipment/direct factorial bases and added once to plant cost. Source auxiliary scope requires review."
+            "Pre-costed installed/unit capital is excluded from all purchased-equipment plant-factor bases and added once to plant cost. It receives only indirect, contingency or owner's-cost factors its source is recorded as excluding (B08 decision C)."
         )
     for e in inputs.equipment:
         for category in e.included_categories:
@@ -575,6 +722,8 @@ def calculate(spec, factors, inputs):
     if any(e.provisional for e in inputs.equipment):
         assumptions.append("Canonical equipment prices include provisional estimates")
     bases = {"purchased_equipment": purchase}
+    scoped = {}  # tag -> indirect amount already charged on that record
+    gaps = []
     for factor in factors:
         if factor.stage == "information":
             lines.append(_line(factor, inputs, bases, issues, assumptions))
@@ -596,7 +745,22 @@ def calculate(spec, factors, inputs):
             for factor in factors:
                 if factor.stage != stage:
                     continue
-                line = _line(factor, inputs, bases, issues, assumptions)
+                if stage in ("indirect", "fees"):
+                    line = _scoped_line(
+                        factor, inputs, bases, records, scoped, gaps, issues, assumptions
+                    )
+                else:
+                    line = _line(factor, inputs, bases, issues, assumptions)
+                    if factor.additive and factor.base == "purchased_equipment":
+                        line = replace(
+                            line,
+                            scope_contributions={
+                                "purchased_equipment": {
+                                    "base": line.base_amount,
+                                    "amount": line.amount,
+                                }
+                            },
+                        )
                 lines.append(line)
                 if factor.additive:
                     amounts.append(line.amount)
@@ -605,8 +769,10 @@ def calculate(spec, factors, inputs):
                     ([purchase] if spec.method != "lang" else []) + direct
                 )
             if stage == "indirect":
+                # Purchased path only; installed/unit records add their own
+                # amount and indirects in _scoped_line, never twice.
                 bases["direct_and_indirect"] = _sum(
-                    [bases["direct_costs"], _sum(indirect)]
+                    [bases["direct_costs"], _sum(_purchased_parts(lines, "indirect", factors))]
                 )
         if spec.method == "lang":
             direct_total = _sum(direct)
@@ -669,6 +835,38 @@ def calculate(spec, factors, inputs):
         total = _sum([fixed, startup, wc])
     if issues:
         total = None
+    gaps.extend(_uncovered_gaps(factors, records, gaps))
+    installed_total = sum(
+        (a for r, a in records if r["scope"] == "installed_equipment"), Decimal(0)
+    )
+    unit_total = sum(
+        (a for r, a in records if r["scope"] == "unit_capital"), Decimal(0)
+    )
+    scope_subtotals = {
+        "purchased_equipment": purchase,
+        "installed_equipment": installed_total,
+        "unit_capital": unit_total,
+    }
+    inclusion_records = tuple(
+        inclusion_record(
+            e.tag, e.cost_scope, e.provenance, e.included_categories
+        )
+        for e in inputs.equipment
+        if isinstance(e, EquipmentCost) and e.cost_scope
+    ) + tuple(r for r, _ in records)
+    breakdown_lines, breakdown_gaps = _breakdown(
+        spec, tuple(lines), inputs, purchase, records
+    )
+    checks = _double_count_checks(
+        spec,
+        tuple(lines),
+        records,
+        purchase,
+        plant,
+        capital_amount,
+        breakdown_lines,
+        {"total_capex": total, "fixed_capital": fixed, "startup": startup, "wc": wc},
+    )
     evidence = {
         "model_source": spec.source,
         "method": spec.method,
@@ -701,4 +899,10 @@ def calculate(spec, factors, inputs):
         tuple(issues),
         tuple(assumptions),
         evidence,
+        scope_subtotals,
+        inclusion_records,
+        tuple(gaps),
+        checks,
+        breakdown_lines,
+        breakdown_gaps,
     )

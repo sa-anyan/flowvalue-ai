@@ -11,7 +11,14 @@ from dataclasses import asdict, dataclass, replace
 from decimal import Decimal, InvalidOperation, localcontext
 from pathlib import Path
 
-DEFAULT_POLICY = {"target_period": "2026-09", "allow_general_inflation_proxy": True}
+DEFAULT_POLICY = {
+    "target_period": "2026-09",
+    "allow_general_inflation_proxy": True,
+    # Plant-capital index for equipment estimates only (never operating prices
+    # or working capital). Used once the catalogue holds a target-period value;
+    # until then equipment falls back to the CPI proxy.
+    "equipment_index_series": "CEPCI",
+}
 
 
 def catalogue():
@@ -74,6 +81,23 @@ class MissingIndexObservation(ValueError):
     """The requested price conversion has no matching index observation."""
 
 
+def _equipment_index_points(policy, series, currency, source_period, source_year, target):
+    """Base and target observations of the policy's equipment index, or None.
+
+    Used only when the policy names an equipment cost index series, the series
+    is in the estimate's currency, and it holds both the source year and the
+    target period. Otherwise the caller falls back to its existing rules.
+    """
+    name = policy.get("equipment_index_series")
+    selected = series.get(name) if name else None
+    if not selected or selected.get("currency") != currency:
+        return None
+    observations = selected.get("observations", {})
+    base = observations.get(source_period) or observations.get(source_year)
+    target_point = observations.get(target)
+    return (base, target_point) if base and target_point else None
+
+
 def translate_cost(
     amount,
     *,
@@ -84,7 +108,10 @@ def translate_cost(
     method_id="",
     policy=None,
     indices=None,
+    equipment=False,
 ):
+    """Translate a dated price. ``equipment=True`` allows the policy's equipment
+    cost index (e.g. CEPCI); other prices never use it."""
     policy = DEFAULT_POLICY if policy is None else policy
     indices = catalogue() if indices is None else indices
     original = numeric(amount)
@@ -142,6 +169,15 @@ def translate_cost(
                 "period": source_period,
             },
         )
+    elif equipment and _equipment_index_points(
+        policy, series, currency, source_period, source_year, target
+    ):
+        # Opt-in equipment cost index (e.g. CEPCI) for sources without a native index.
+        selected_series = policy["equipment_index_series"]
+        selected = series[selected_series]
+        base, target_point = _equipment_index_points(
+            policy, series, currency, source_period, source_year, target
+        )
     else:
         if policy.get("allow_general_inflation_proxy") is not True:
             raise ValueError(
@@ -166,6 +202,18 @@ def translate_cost(
         if not isinstance(point.get("source"), str) or not point["source"].strip():
             raise ValueError("Every index observation needs a source")
     proxy = selected.get("kind") == "general_inflation_proxy"
+    if proxy:
+        status = "general_inflation_proxy"
+        notice = "Consumer purchasing-power proxy, not CEPCI or a vendor quotation; annual source average may approximate a year-only/early-year cost basis. Monthly target is not a full-year average."
+    elif selected_series != source_series:
+        status = "equipment_index_ratio"
+        notice = (
+            f"Equipment cost index {selected_series} (policy opt-in): source-year "
+            f"annual average to target {target}; the source did not state its own index value"
+        )
+    else:
+        status = "same_series_index_ratio"
+        notice = "Source and target use the same named index series; currency unchanged"
     with localcontext() as context:
         context.prec = 40
         multiplier = numeric(target_point["value"], positive=True) / numeric(
@@ -186,13 +234,9 @@ def translate_cost(
         copy.deepcopy(base),
         copy.deepcopy(target_point),
         multiplier,
-        "general_inflation_proxy" if proxy else "same_series_index_ratio",
+        status,
         method_id,
-        (
-            "Consumer purchasing-power proxy, not CEPCI or a vendor quotation; annual source average may approximate a year-only/early-year cost basis. Monthly target is not a full-year average."
-            if proxy
-            else "Source and target use the same named index series; currency unchanged"
-        ),
+        notice,
     )
 
 
@@ -209,6 +253,7 @@ def translate_calculation(calculation, *, method_id, policy, indices=None):
         method_id=method_id,
         policy=policy,
         indices=indices,
+        equipment=True,
     )
     audit = asdict(translated)
     if translated.status == "already_target_year":

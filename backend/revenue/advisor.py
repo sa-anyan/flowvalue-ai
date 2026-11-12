@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from typing import Protocol
@@ -316,6 +317,24 @@ class RevenueAIError(RuntimeError):
     """Sanitized provider error; no key, raw request or response disclosure."""
 
 
+_SECRET = re.compile(r"\b(?:sk|rk|pk)-[A-Za-z0-9_\-]{6,}|Bearer\s+\S+", re.IGNORECASE)
+
+
+def safe_ai_reason(exc, limit=300):
+    """A reason safe to store and show for a failed AI call.
+
+    RevenueAIError messages are written by our providers from fixed text and
+    status codes (for example "OpenAI HTTP 401: invalid_api_key"), so they are
+    kept. Any other exception may carry a provider payload, so only its type is
+    returned. Anything shaped like a key is redacted as a last guard.
+    """
+    name = type(exc).__name__
+    if not isinstance(exc, RevenueAIError):
+        return name
+    message = _SECRET.sub("[redacted]", " ".join(str(exc).split()))[:limit]
+    return f"{name}: {message}" if message else name
+
+
 def strict_object(pairs):
     result = {}
     for key, value in pairs:
@@ -354,6 +373,12 @@ class OpenAIRevenueProvider:
         )
 
     def generate(self, *, instructions, context, schema):
+        from backend.orchestration.ai_audit import audited
+
+        return audited("call", self.model, instructions, context,
+                       lambda: self._generate(instructions=instructions, context=context, schema=schema))
+
+    def _generate(self, *, instructions, context, schema):
         payload = {
             "model": self.model,
             "instructions": instructions,

@@ -47,8 +47,15 @@ def estimate_cost(
     installation_profile=None,
     adjustment_basis_confirmed=False,
     operating_pressure=None,
+    below_range_policy="minimum_size_floor",
     **options
 ):
+    """below_range_policy (founder decision, 11 Nov 2026): "minimum_size_floor"
+    (default) prices a primary size below the published lower bound at that bound,
+    flagged as an explicit assumption; "extrapolate" keeps OpenPyTEA's strict
+    refusal (OpenPyTEA never extrapolates). Sizes above the bound stay refused."""
+    if below_range_policy not in {"minimum_size_floor", "extrapolate"}:
+        raise ValueError("below_range_policy must be minimum_size_floor or extrapolate")
     m = get_model(model_id)
     if m["status"] == "disabled":
         raise ValueError("MODEL_DISABLED: " + "; ".join(m["disabled_reasons"]))
@@ -111,7 +118,18 @@ def estimate_cost(
                 "status": "source_limit_not_available",
                 "supplied": asdict(p),
             }
-    base = evaluate(m["raw"], value, v2, allow_missing_bounds=allow_unverified)
+    floor = None
+    lower = m["raw"].get("s_lower", "")
+    if below_range_policy == "minimum_size_floor" and lower not in ("", None) and value < float(lower):
+        floor = {
+            "policy": "minimum_size_floor",
+            "requested_size": value,
+            "priced_at_size": float(lower),
+            "size_ratio": float(lower) / value,
+            "size_unit": m["size_unit"],
+            "basis": "Size below the correlation's published lower bound; priced at that bound (explicit preliminary-estimate assumption, not a validated small-equipment price).",
+        }
+    base = evaluate(m["raw"], floor["priced_at_size"] if floor else value, v2, allow_missing_bounds=allow_unverified)
     factors = json.loads((ROOT / "adjustment_factors.json").read_text(encoding="utf-8"))
     ratio = 1.0
     factor_details = {}
@@ -188,6 +206,16 @@ def estimate_cost(
             m["scope_note"],
             "Underlying source applicability, materials, pressure, temperature and auxiliaries require engineering review; mathematical parity is not design validation.",
         ]
+        + (
+            [
+                "BELOW-RANGE FLOOR: priced at the published minimum size "
+                + format(floor["priced_at_size"], ".4g") + " " + m["size_unit"]
+                + " (requested " + format(value, ".4g") + ", "
+                + format(floor["size_ratio"], ".3g") + "x smaller); list in the Basis of Estimate"
+            ]
+            if floor
+            else []
+        )
     )
     manifest = json.loads((ROOT / "sources.json").read_text(encoding="utf-8"))
     estimate = CostEstimate(
@@ -240,6 +268,7 @@ def estimate_cost(
         "input_provenance": input_provenance or {},
         "upstream_parallelisation": False,
         "upstream_escalation": False,
+        "below_range_floor": floor,
     }
     return CostingResult(
         "provisional", estimate, base, notes, evidence, installation=installation

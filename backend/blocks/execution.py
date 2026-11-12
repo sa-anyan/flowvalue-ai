@@ -62,14 +62,18 @@ def _inputs(state, block):
             "process": state.get("process_description", state.get("description", "")),
         }
     if block == "equipment":
-        return {
+        inputs = {
             "equipment": plan.get("equipment", []),
             "translation": plan.get("cost_translation"),
         }
+        if plan.get("register_review"):  # only when used, so saved studies keep their hash
+            inputs["register_review"] = plan["register_review"]
+        return inputs
     if block == "capex":
         return {
             "capex": plan.get("capex", {}),
             "translation": plan.get("cost_translation"),
+            "estimate_class": plan.get("estimate_class"),
         }
     shared = {
         k: config.get(k)
@@ -96,6 +100,13 @@ def _inputs(state, block):
             shared["cashflow_schedule"] = config["cashflow_schedule"]
         shared["box"] = state.get("revenue_description", "")
         shared["approval"] = (state.get("revenue_approval") or {}).get("fingerprint")
+        # Contract terms map operating years to calendar years (M4.3). Only
+        # tracked when a term exists, so studies without terms keep their hash.
+        if any(l.get("contract_term") for l in config.get("commercial_lines") or []):
+            fin = config.get("financial", {})
+            shared["contract_calendar"] = {
+                k: fin.get(k) for k in ("construction_years", "calendar_start_year")
+            }
     if block == "opex":
         shared["optional_cost_bases"] = {
             key: (

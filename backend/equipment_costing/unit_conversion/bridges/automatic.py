@@ -7,15 +7,15 @@ import json
 import math
 from backend.equipment_costing.registry import list_equipment_models
 from backend.orchestration.equipment_advisor import validate
-from backend.revenue.advisor import obj, TEXT
+from backend.revenue.advisor import obj, TEXT, safe_ai_reason
 from .. import convert, ConversionContext
 from .service import describe, evaluate, model_contract, PARAMETERS, RECIPES
 from .derivations import METHODS, derive, discover
 
-VERSION = "equipment-input-resolution-23-physical-duty-bases"
+VERSION = "equipment-input-resolution-25-minimum-size-floor"
 PROMPT = """For a dryer model requiring evaporation rate, use dryer_evaporation: measurement_id is feed water COMPONENT mass flow and outlet_measurement_id is product water COMPONENT mass flow. Python subtracts and converts them. Confirm the selected drying boundary has no other water paths/reaction; disclose this scope assumption. Never use total wet-feed flow as evaporation. Carrier-gas inlet/outlet water can independently check the calculated evaporation; do not confuse those roles with feed/product.
 For OpenPyTEA power coordinates use electrical_to_shaft_power / shaft_to_electrical_power with explicit motor_efficiency, or pump_hydraulic_power, when the power role differs. Shaft power is not electrical input power. For OpenPyTEA correlations, preserve exact required parameter roles (shaft/fluid/electrical power, actual/standard flow, composite design coordinates). Never substitute an uncalculated feed rate for a composite coordinate. Two-variable models require secondary_input: choose its measurement_id independently, or provide an explicit assumed value/unit/rationale; Python converts it. Missing second input remains MISSING_SIZING_INPUT. Disabled models cannot be selected. No automatic size clamping or parallelisation.
-OpenPyTEA correlations have strict published capacity limits and do not accept Garrett extrapolation options. If the physically calculated size is outside a correlation's domain, choose a conceptually compatible supplied alternative with an applicable domain or a Garrett model supporting disclosed boundary extrapolation. Never change a source quantity or tune residence time, efficiency or density just to fit a cost curve. Keep extrapolation_exponent null for non-Garrett models.
+LIBRARY PREFERENCE: among compatible candidates whose published domain covers the calculated size, choose an OpenPyTEA model before any Garrett model. Use Garrett only when no OpenPyTEA candidate applies. OpenPyTEA correlations have strict published capacity limits and do not accept Garrett extrapolation options. BELOW-RANGE SIZES: when the physically calculated size is BELOW a correlation's published minimum, keep the best-matching OpenPyTEA (or Garrett) model; Python prices it at that minimum size and records the floor as an explicit assumption. Do not switch library only because the size is small. If the size is ABOVE a correlation's maximum, choose a conceptually compatible supplied alternative with an applicable domain or a Garrett model supporting disclosed boundary extrapolation. Never change a source quantity or tune residence time, efficiency or density just to fit a cost curve. Keep extrapolation_exponent null for non-Garrett models.
 For the Turton fermenter, specify operating_mode from process evidence, or an explicit provisional operating assumption. Flow-to-volume sizing requires continuous mode, residence time and working fraction. Batch/unknown requires directly documented per-vessel volume. Never extrapolate beyond 35 m3. For a clarifier use clarifier_area (hydraulic_loading_m_h is surface overflow rate). A generic settler does not prove mechanical equipment exists. A mechanically equipped clarifier may be proposed as an explicit preliminary configuration scenario for a compatible settling duty, with geometry, mechanical scope and uncertainty disclosed; never label that configuration as extracted or verified. Likewise a biofilm reactor may use a defensible vessel-core costing proxy with biofilm media/aeration/internals explicitly excluded or unresolved; it is not a complete validated bioreactor package.
 You are the chemical-engineering input-resolution specialist AFTER equipment matching.
 Apply these five skills in order for every conversion-matching decision:
@@ -569,11 +569,14 @@ def resolve(
             if row.get("curve_id")
             else match.get("candidate_model_ids", [])
         )
+        from backend.equipment_matching.library_preference import user_selected_model
+
         if (
             row.get("curve_id") == match.get("selected_model_id")
             and match.get("review_available") is True
             and use_ai
             and not locked
+            and not user_selected_model(row)
         ):
             # A conceptual first choice is not an exclusive design instruction.
             # Sizing may discover a strict domain/coordinate mismatch before any
@@ -646,7 +649,7 @@ def resolve(
             {
                 "equipment_key": p["equipment_key"],
                 "status": "ai_unavailable",
-                "reason": type(exc).__name__,
+                "reason": safe_ai_reason(exc),
             }
             for p in pending
         )
@@ -791,7 +794,7 @@ def resolve(
                 {
                     "equipment_key": p["equipment_key"],
                     "status": "ai_unavailable",
-                    "reason": type(exc).__name__,
+                    "reason": safe_ai_reason(exc),
                 }
                 for p in group
             )
@@ -1150,24 +1153,34 @@ def resolve(
 
 
 def repair_pricing(
-    report, plan, total, description, store, provider=None, *, attempt=0
+    report, plan, total, description, store, provider=None, *, attempt=0, _history=None
 ):
     """Bounded recovery for failed AI model/coordinate handoffs across libraries.
 
     Accepted user overrides and missing cost correlations never enter this path.
+    Across the bounded pricing passes, a model that failed its published range
+    stays excluded for that item; an item whose repair the AI left unresolved
+    is not re-sent with identical inputs; and an item with no reviewed
+    alternative left is recorded as exhausted without another AI call.
     """
+    history = {} if _history is None else _history
     rows = {r["equipment_key"]: r for r in plan.get("equipment", [])}
     attempts = []
     feedback = []
+    exhausted = []
+    signatures = {}
     for line in total.equipment:
         key = (line.parsed_source or {}).get("equipment_key")
         row = rows.get(key, {})
         spec = row.get("unit_conversion") or {}
+        from backend.equipment_matching.library_preference import user_selected_model
+
         if (
             line.equipment_cost is not None
             or (getattr(line, "amount", None) is not None)
             or row.get("manual_price")
             or row.get("external_quote")
+            or user_selected_model(row)
             or (row.get("size") is not None and not spec.get("enabled"))
         ):
             continue
@@ -1196,17 +1209,42 @@ def repair_pricing(
             or any("Unsupported extrapolation" in issue for issue in line.issues)
         ):
             continue
+        record = history.setdefault(key, {"excluded": [], "unresolved": None})
+        remaining = None
+        if range_failure and match.get("candidate_model_ids"):
+            if row.get("curve_id") and row["curve_id"] not in record["excluded"]:
+                record["excluded"].append(row["curve_id"])
+            remaining = [
+                model
+                for model in match["candidate_model_ids"]
+                if model not in record["excluded"]
+            ]
+            if not remaining:
+                # Every reviewed candidate failed its published range; the AI
+                # has nothing new to choose. Keep the genuine exception.
+                exhausted.append(
+                    {
+                        "equipment_key": key,
+                        "status": "pricing_repair_exhausted",
+                        "reason": "; ".join(line.issues),
+                        "excluded_model_ids": list(record["excluded"]),
+                    }
+                )
+                continue
+        signature = json.dumps(
+            [row, remaining, list(line.issues)], sort_keys=True, default=str
+        )
+        if record["unresolved"] == signature:
+            # Same item, same inputs, same failure: the AI already declined.
+            continue
+        signatures[key] = signature
         retry = copy.deepcopy(row)
         retry.pop("unit_conversion", None)
-        if range_failure and match.get("candidate_model_ids"):
+        if remaining is not None:
             # The chosen correlation failed, not the physical sizing. Reopen
             # conceptually reviewed alternatives, never clamp the measured size.
             retry.pop("curve_id", None)
-            retry["matching"]["candidate_model_ids"] = [
-                model
-                for model in match["candidate_model_ids"]
-                if model != row.get("curve_id")
-            ]
+            retry["matching"]["candidate_model_ids"] = remaining
         if option_failure:
             for name in ("extrapolation_exponent", "extrapolation_justification"):
                 retry.get("costing_options", {}).pop(name, None)
@@ -1221,8 +1259,12 @@ def repair_pricing(
                 "instruction": "Preserve valid physical sizing, source bindings and assumptions. For strict-domain failures select a conceptually compatible alternative from supplied candidates; never alter the size to fit a curve. Non-Garrett libraries do not support Garrett extrapolation options. A known operation may use a disclosed preliminary configuration, not an unrelated operation. Supply a defensible Garrett scaling exponent only where supported. Otherwise retain the genuine exception.",
             }
         )
+    exhausted = [
+        {**a, "pricing_repair": True, "pricing_attempt": attempt + 1}
+        for a in exhausted
+    ]
     if not attempts:
-        return plan, []
+        return plan, exhausted
     keys = {r["equipment_key"] for r in attempts}
     subset = {
         **report,
@@ -1246,11 +1288,13 @@ def repair_pricing(
         for r in repaired["equipment"]
         if r.get("unit_conversion", {}).get("enabled")
     }
+    for key in keys - set(candidates):
+        history[key]["unresolved"] = signatures[key]
     plan = copy.deepcopy(plan)
     plan["equipment"] = [
         candidates.get(r["equipment_key"], r) for r in plan["equipment"]
     ]
-    audit = [
+    audit = exhausted + [
         {**a, "pricing_repair": True, "pricing_attempt": attempt + 1} for a in audit
     ]
     if attempt < 2 and plan["equipment"] != list(rows.values()):
@@ -1267,6 +1311,7 @@ def repair_pricing(
             store,
             provider,
             attempt=attempt + 1,
+            _history=history,
         )
         audit.extend(followup)
     return plan, audit

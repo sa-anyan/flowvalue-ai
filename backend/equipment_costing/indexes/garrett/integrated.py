@@ -34,11 +34,16 @@ def _read(name):
         for curve in data["curves"]:
             correction = corrections["models"].get(curve["id"])
             if not correction:continue
-            curve["source_correction"] = {**correction,"source":corrections["source"]}
-            curve["size_unit"] = "actual chamber volume, ft3"
+            # Per-model source details (page) override the file-level source record.
+            curve["source_correction"] = {**correction,"source":{**corrections["source"],**correction.get("source",{})}}
+            # Only the fluid-bed/spray dryer corrections change the size basis.
+            if "size_unit" in correction:
+                curve["size_unit"] = correction["size_unit"]
+            elif "physical_volume_multiplier" in correction or curve["printed_page"] == 277:
+                curve["size_unit"] = "actual chamber volume, ft3"
             if "points" in correction:
                 template=copy.deepcopy(curve["points"][0])
-                curve["points"]=[{**template,"size":p["size"],"source_price":p["price"]/1000,"cached_usd":p["price"],"source_correction":correction["note"],"purpose":"Graph anchor (unverified)","status":"Pending","confidence":"Low","size_unit":curve["size_unit"]} for p in correction["points"]]
+                curve["points"]=[{**template,"size":p["size"],"source_price":p["price"]/1000,"cached_usd":p["price"],"source_correction":correction["note"],"purpose":correction.get("point_purpose","Graph anchor (unverified)"),"status":"Pending","confidence":correction.get("confidence","Low"),"method":correction.get("method",template.get("method")),"size_unit":curve["size_unit"]} for p in correction["points"]]
             else:
                 for point in curve["points"]:
                     if point["size"] is not None:point["size"]*=correction["physical_volume_multiplier"]
@@ -244,8 +249,14 @@ def estimate_cost(
     index_series="CEPCI",
     installation_variant=None,
     pressure_adjustment=None,
+    below_range_policy="minimum_size_floor",
 ):
     """Exact source-coordinate units required. No fuzzy equipment/material matching.
+
+    below_range_policy (founder decision, 11 Nov 2026): "minimum_size_floor"
+    (default) prices a size below the lowest chart anchor at that anchor's cost,
+    flagged as an explicit assumption; "extrapolate" keeps the previous downward
+    extrapolation. Sizes above the chart are unaffected.
 
     Provisional graph prices and factor transcriptions need allow_unverified=True.
     With provisional graph use enabled, graph-only models may use their fitted n
@@ -254,6 +265,8 @@ def estimate_cost(
     to False for the previous strict policy requiring a printed/caller-justified n.
     Explicit caller exponents always require a recorded justification.
     """
+    if below_range_policy not in {"minimum_size_floor", "extrapolate"}:
+        raise ValueError("below_range_policy must be minimum_size_floor or extrapolate")
     curve = _curve(curve_id)
     size = positive(size, "size")
     if size_unit != curve["size_unit"]:
@@ -304,7 +317,8 @@ def estimate_cost(
             n = fit.exponent
             exponent_basis = fit.exponent_basis
             provisional_boundary = False
-            extrapolated = size != anchor
+            floored = size < anchor and below_range_policy == "minimum_size_floor"
+            extrapolated = size != anchor and not floored
             if extrapolated:
                 if extrapolation_exponent is not None:
                     if (
@@ -344,7 +358,22 @@ def estimate_cost(
                 evidence["extrapolation"] = {"formula": "C2 = C1 * (S2/S1)**n", "anchor_size": anchor, "anchor_cost": anchor_cost, "target_size": size, "size_ratio": size / anchor, "distance_factor": max(size / anchor, anchor / size), "exponent": n, "exponent_basis": exponent_basis, "provisional_fitted_exponent": provisional_boundary}
                 if max(size / anchor, anchor / size) >= 10:
                     issues.append("VERY LARGE EXTRAPOLATION: target and boundary sizes differ by at least 10-fold; accuracy is unvalidated")
-            amount = scale_cost(anchor_cost, anchor, size, n)
+            if floored:
+                amount = anchor_cost
+                evidence["below_range_floor"] = {
+                    "policy": "minimum_size_floor",
+                    "requested_size": size,
+                    "priced_at_size": anchor,
+                    "size_ratio": anchor / size,
+                    "basis": "Size below the lowest chart anchor; priced at the smallest charted unit (explicit preliminary-estimate assumption, not a validated small-equipment price).",
+                }
+                issues.append(
+                    "BELOW-RANGE FLOOR: priced at the minimum charted size "
+                    + format(anchor, ".4g") + " (requested " + format(size, ".4g")
+                    + ", " + format(anchor / size, ".3g") + "x smaller); list in the Basis of Estimate"
+                )
+            else:
+                amount = scale_cost(anchor_cost, anchor, size, n)
             issues.append(
                 "UNVERIFIED graph estimate; fitted reference cost is not a supplier quotation"
             )

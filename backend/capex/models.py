@@ -61,7 +61,8 @@ class EquipmentCost:
     index_series: str
     index_value: Any
     quantity: Any = 1
-    cost_scope: str = "purchased_equipment"
+    # No default: a line without a recorded scope is rejected (B08 decision C).
+    cost_scope: str | None = None
     delivery_basis: str = "unspecified"
     included_categories: tuple[str, ...] = ()
     provenance: dict = field(default_factory=dict)
@@ -79,7 +80,8 @@ class UnitCapitalCost:
     index_series: str
     index_value: Any
     quantity: Any = 1
-    cost_scope: str = "unit_capital"
+    # unit_capital, installed_equipment or module_estimate; never defaulted.
+    cost_scope: str | None = None
     included_categories: tuple[str, ...] = ()
     provenance: dict = field(default_factory=dict)
     provisional: bool = True
@@ -133,6 +135,27 @@ class CostLine:
     status: str
     rationale: str
     source: Source
+    # Per-scope base and amount for factors that may reach several scopes.
+    scope_contributions: dict = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class BreakdownLine:
+    """One M3.3 capital category, traceable to its factor, base and source."""
+
+    category: str
+    label: str
+    amount: Decimal | None
+    status: str  # calculated, combined, embedded, excluded, unavailable, gap
+    counted: bool
+    basis: str
+    source: str
+    provisional: bool
+    ai_suggested: bool
+    factors: tuple[dict, ...] = ()
+    combined_into: str | None = None
+    by_scope: dict = field(default_factory=dict)
+    note: str = ""
 
 
 @dataclass(frozen=True)
@@ -156,3 +179,10 @@ class CapexResult:
     issues: tuple[str, ...]
     assumptions: tuple[str, ...]
     evidence: dict
+    # M3.4 scope controls and M3.3 breakdown. Defaults keep saved results valid.
+    scope_subtotals: dict = field(default_factory=dict)
+    inclusion_records: tuple[dict, ...] = ()
+    scope_gaps: tuple[dict, ...] = ()
+    double_count_checks: tuple[dict, ...] = ()
+    breakdown: tuple[BreakdownLine, ...] = ()
+    breakdown_gaps: tuple[str, ...] = ()

@@ -10,6 +10,19 @@ from .metadata import coordinate, cost_scope
 ROOT = Path(__file__).parent
 
 
+# FlowValue source-check holds: upstream rows kept verbatim, but not used until
+# checked against the printed source. Found on the held-out PEM run (12 Nov
+# 2026): cost = b x flow(MGD) with b = 3.1 or 3.988 gives a few dollars per MGD,
+# which only makes sense if the printed coefficient is in $ millions.
+SOURCE_CHECK_HOLDS = {
+    key: (
+        "FlowValue hold: coefficient magnitude implausible (a few US$ per MGD of RO capacity; "
+        "likely $ million in Seider et al. Table 16.32). Disabled until checked against the printed table"
+    )
+    for key in ("osmosis_brackish_seider_2013", "osmosis_seawater_seider_2013")
+}
+
+
 def model_id(key):
     return "openpytea:" + quote(key, safe="._-")
 
@@ -39,6 +52,8 @@ def catalogue():
             disabled.append(str(exc))
             form = row.get("form")
             c = {}
+        if key in SOURCE_CHECK_HOLDS:
+            disabled.append(SOURCE_CHECK_HOLDS[key])
         inputs = coordinate(row["units"])
         if form == "2-var power-law" and len(inputs) != 2:
             disabled.append("Two-variable sizing contract unresolved")

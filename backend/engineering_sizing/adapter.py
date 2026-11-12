@@ -2,7 +2,7 @@
 
 from itertools import product
 
-from .common import positive, reject_boolean
+from .common import InvalidInputError, positive, reject_boolean
 from .gases import calculate as gas_volume
 from .registry import METHODS, PARAMETER_UNITS, calculate
 
@@ -43,9 +43,9 @@ def derive(sizing, report):
     inputs = {k: v["value"] if isinstance(v, dict) else v for k, v in params.items()}
     for key, record in params.items():
         if key not in PARAMETER_UNITS:
-            raise ValueError("Unknown sizing parameter: " + key)
+            raise InvalidInputError("Unknown sizing parameter: " + key)
         if isinstance(record, dict) and record.get("unit") not in PARAMETER_UNITS[key]:
-            raise ValueError("Sizing parameter unit mismatch: " + key)
+            raise InvalidInputError("Sizing parameter unit mismatch: " + key)
         if isinstance(record, dict):
             for endpoint in ("low", "high"):
                 reject_boolean(record.get(endpoint), key + " " + endpoint)
