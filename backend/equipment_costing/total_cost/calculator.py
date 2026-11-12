@@ -96,13 +96,17 @@ class EquipmentCostTotal:
     installation_issues: tuple[str, ...] = ()
 
 
-def calculate_total_cost(equipment, *, translation_policy=None, indices=None):
+def calculate_total_cost(
+    equipment, *, translation_policy=None, indices=None, require_record_keys=False
+):
     """Accept an iterable of parsed/mapped equipment dictionaries.
 
     Required per item: equipment_tag, curve_id, size, size_unit.
     Optional: source ('garrett'), quantity/quantity_unit, costing_options,
     parsed_source (parser cell/stream evidence). Material/pressure/configuration
     choices belong to the selected curve and scoped registry factors.
+    Integrated callers require nonblank record keys. Standalone callers may
+    omit the key for unique display tags; explicitly supplied keys must be valid.
     Unresolved items preserve partial subtotals but suppress the complete total.
     """
     items = list(equipment)
@@ -122,7 +126,9 @@ def calculate_total_cost(equipment, *, translation_policy=None, indices=None):
         evidence = item.get("parsed_source")
         evidence = evidence if isinstance(evidence, Mapping) else {}
         key = evidence.get("equipment_key")
-        if key:
+        if require_record_keys or "equipment_key" in evidence:
+            if not isinstance(key, str) or not key.strip():
+                raise ValueError("Equipment record key must be a nonblank string")
             if key in keys:
                 raise ValueError("Duplicate equipment record key: " + key)
             keys.add(key)

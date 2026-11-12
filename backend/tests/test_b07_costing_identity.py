@@ -43,3 +43,20 @@ def test_effective_record_key_must_be_unique_even_across_tags():
 def test_unconfirmed_same_tag_is_rejected_at_costing_boundary(restore):
     with pytest.raises(ValueError, match="Duplicate equipment tag"):
         calculate_total_cost([record("one"), record("two", restore=restore)])
+
+
+@pytest.mark.parametrize("key", [None, "", " \t", 123])
+@pytest.mark.parametrize("required", [False, True])
+def test_explicit_invalid_record_key_is_rejected(key, required):
+    with pytest.raises(ValueError, match="Equipment record key must be a nonblank string"):
+        calculate_total_cost([record(key)], require_record_keys=required)
+
+
+def test_omitted_record_key_is_accepted_only_for_legacy_unique_tags():
+    item = record("unused")
+    del item["parsed_source"]["equipment_key"]
+    assert calculate_total_cost([item]).total == 10_000
+    with pytest.raises(ValueError, match="Equipment record key must be a nonblank string"):
+        calculate_total_cost([item], require_record_keys=True)
+    with pytest.raises(ValueError, match="Duplicate equipment tag"):
+        calculate_total_cost([item, record("other", distinct=True)])

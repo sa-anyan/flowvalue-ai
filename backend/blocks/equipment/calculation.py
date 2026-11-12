@@ -224,4 +224,9 @@ def calculate_equipment(report, plan, translation_policy=None):
             }
         )
     objects["equipment_sizing_rows"] = rows
-    return calculate_total_cost(rows, translation_policy=translation_policy), rows
+    return (
+        calculate_total_cost(
+            rows, translation_policy=translation_policy, require_record_keys=True
+        ),
+        rows,
+    )

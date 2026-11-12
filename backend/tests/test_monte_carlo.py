@@ -775,3 +775,39 @@ def test_ab_full_duty_sizing_and_exact_scenario_acceptance():
     assert pair_sizing == single_sizing
     assert pair_sizing["method"] == "pump_duty"
     assert Decimal(str(pair_sizing["calculation"]["hydraulic_power_kw"])) == Decimal("0.1")
+
+
+
+def test_xlsx_exact_values_reconstruct_multiple_chunks_by_run():
+    payloads = {
+        index: {
+            "schema_version": 1,
+            "metrics": {"npv": f"{index}.123456789012345678901234567890"},
+            "equipment": [{"record_key": "T-104-" + str(i), "cost": "0.00000000000001"}
+                          for i in range(count)],
+        }
+        for index, count in ((7, 1500), (3, 800))
+    }
+    expected = {index: json.dumps(payload, ensure_ascii=False)
+                for index, payload in payloads.items()}
+    assert all(len(payload) > 30000 for payload in expected.values())
+    workbook, _ = export({
+        "runs": [{"index": i, "status": "complete", "exact_values": payload}
+                 for i, payload in payloads.items()],
+        "settings": Settings().model_dump(mode="json"),
+        "summary": {"metrics": {}},
+        "audit": {"exceptions": []},
+    }, "xlsx")
+    with io.BytesIO(workbook) as buffer:
+        book = load_workbook(buffer, read_only=True)
+        rows = iter(book["Exact values"].values)
+        assert next(rows) == ("run", "chunk", "json")
+        chunks = list(rows)
+        book.close()
+    assert [(index, chunk) for index, chunk, _ in chunks] == [
+        (index, chunk)
+        for index, payload in expected.items()
+        for chunk in range((len(payload) + 29999) // 30000)
+    ]
+    for index, payload in expected.items():
+        assert "".join(text for run, _, text in chunks if run == index) == payload
