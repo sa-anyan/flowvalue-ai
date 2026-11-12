@@ -186,6 +186,11 @@ def calculate_equipment(report, plan, translation_policy=None):
                 "costing_options": options,
                 "parsed_source": {
                     "equipment_key": key,
+                    "confirmed_distinct": (
+                        (proposal.get("alias_confirmation") or proposal.get("scope_confirmation") or {}).get("status")
+                        == "user_confirmed_distinct"
+                        and confirmed(proposal)
+                    ),
                     "quantity_basis": count_basis,
                     "equipment_count": count,
                     "conceptual_matching": proposal.get("matching"),
@@ -219,4 +224,9 @@ def calculate_equipment(report, plan, translation_policy=None):
             }
         )
     objects["equipment_sizing_rows"] = rows
-    return calculate_total_cost(rows, translation_policy=translation_policy), rows
+    return (
+        calculate_total_cost(
+            rows, translation_policy=translation_policy, require_record_keys=True
+        ),
+        rows,
+    )

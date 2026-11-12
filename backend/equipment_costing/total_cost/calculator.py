@@ -96,13 +96,17 @@ class EquipmentCostTotal:
     installation_issues: tuple[str, ...] = ()
 
 
-def calculate_total_cost(equipment, *, translation_policy=None, indices=None):
+def calculate_total_cost(
+    equipment, *, translation_policy=None, indices=None, require_record_keys=False
+):
     """Accept an iterable of parsed/mapped equipment dictionaries.
 
     Required per item: equipment_tag, curve_id, size, size_unit.
     Optional: source ('garrett'), quantity/quantity_unit, costing_options,
     parsed_source (parser cell/stream evidence). Material/pressure/configuration
     choices belong to the selected curve and scoped registry factors.
+    Integrated callers require nonblank record keys. Standalone callers may
+    omit the key for unique display tags; explicitly supplied keys must be valid.
     Unresolved items preserve partial subtotals but suppress the complete total.
     """
     items = list(equipment)
@@ -110,7 +114,8 @@ def calculate_total_cost(equipment, *, translation_policy=None, indices=None):
         from ..cost_to_future.cost_translation import catalogue
 
         indices = catalogue()
-    tags = set()
+    keys = set()
+    tags = {}
     for item in items:
         if not isinstance(item, Mapping):
             raise TypeError("Each equipment item must be a mapping")
@@ -118,9 +123,24 @@ def calculate_total_cost(equipment, *, translation_policy=None, indices=None):
         if not isinstance(tag, str) or not tag.strip():
             raise ValueError("Every equipment item needs a nonempty equipment_tag")
         canonical_tag = tag.strip().casefold()
-        if canonical_tag in tags:
+        evidence = item.get("parsed_source")
+        evidence = evidence if isinstance(evidence, Mapping) else {}
+        key = evidence.get("equipment_key")
+        if require_record_keys or "equipment_key" in evidence:
+            if not isinstance(key, str) or not key.strip():
+                raise ValueError("Equipment record key must be a nonblank string")
+            if key in keys:
+                raise ValueError("Duplicate equipment record key: " + key)
+            keys.add(key)
+        tags.setdefault(canonical_tag, []).append(
+            (bool(key), evidence.get("confirmed_distinct") is True)
+        )
+    for tag, records in tags.items():
+        if len(records) > 1 and (
+            not all(has_key for has_key, _ in records)
+            or sum(not distinct for _, distinct in records) > 1
+        ):
             raise ValueError("Duplicate equipment tag would double-count cost: " + tag)
-        tags.add(canonical_tag)
     lines = []
     groups = {}
     for item in items:

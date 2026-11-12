@@ -7,6 +7,8 @@ from itertools import chain
 
 from openpyxl import Workbook
 
+from .equipment_projection import equipment_records
+
 
 def safe(value):
     if isinstance(value, (dict, list)):
@@ -83,9 +85,9 @@ def export(result, kind):
     sheet(
         "Equipment costs",
         (
-            {"run": r["index"], "status": r["status"], "tag": tag, "cost": cost}
+            {"run": r["index"], "status": r["status"], **record}
             for r in result["runs"]
-            for tag, cost in r.get("equipment_costs", {}).items()
+            for record in equipment_records(r)
         ),
     )
     sheet(
@@ -99,7 +101,6 @@ def export(result, kind):
     for field, name in (
         ("capex_components", "CAPEX components"),
         ("opex_components", "OPEX components"),
-        ("equipment_installation_costs", "Equipment installation"),
     ):
         sheet(
             name,
@@ -114,6 +115,31 @@ def export(result, kind):
                 for key, amount in r.get(field, {}).items()
             ),
         )
+    sheet(
+        "Equipment installation",
+        (
+            {
+                "run": run["index"],
+                "status": run["status"],
+                "component": record["display_tag"],
+                "record_key": record["record_key"],
+                "amount": record["installation_cost"],
+            }
+            for run in result["runs"]
+            for record in equipment_records(run)
+            if record["price_coverage"] == "priced"
+        ),
+    )
+    sheet(
+        "Exact values",
+        (
+            {"run": run["index"], "chunk": offset // 30000, "json": payload[offset:offset + 30000]}
+            for run in result["runs"]
+            if "exact_values" in run
+            for payload in [json.dumps(run["exact_values"], ensure_ascii=False)]
+            for offset in range(0, len(payload), 30000)
+        ),
+    )
     sheet("Unresolved scope", result["audit"]["exceptions"])
     sheet(
         "Exception register",

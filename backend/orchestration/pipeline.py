@@ -95,6 +95,7 @@ def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges
     """Independent stage failures stay visible. Unpriced equipment never becomes zero."""
     from backend.equipment_resolution.scope import confirmed, expand
 
+    source_report, original_plan = report, plan
     report, plan = expand(report, plan)
     outputs, objects = {}, {}
     exclusions = []
@@ -160,6 +161,11 @@ def run(report, description, plan, *, progress=lambda *x: None, calculate_ranges
         from .pricing_status import annotate
 
         annotate(outputs["equipment"]["result"], report, plan)
+        from backend.equipment_resolution.identity import identity_register
+
+        outputs["equipment"]["result"]["identity_register"] = identity_register(
+            source_report, report, plan, [], original_plan
+        )
         from backend.equipment_resolution.review import review
 
         outputs["equipment"]["result"]["resolution_register"] = review(
