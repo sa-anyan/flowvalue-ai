@@ -50,7 +50,7 @@ class DependencyMutationTests(unittest.TestCase):
         state["plan"]["equipment"][0]["size"] = 20
         self.assertEqual(
             {block for block in BLOCKS if not fresh(state, block)},
-            {"equipment", "capex", "financial"},
+            {"equipment", "capex", "opex", "financial"},
         )
         previous = copy.deepcopy(state["stage_outputs"])
         refresh(state)
