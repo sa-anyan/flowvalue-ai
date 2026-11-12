@@ -35,6 +35,7 @@ TESTS = {
     "CHARLIE-COV03 minimum-size floor": ["backend/tests/test_below_range_floor.py"],
     "M3.5 estimate class": ["backend/tests/test_estimate_class.py"],
     "M3.6 Basis of Estimate": ["backend/tests/test_basis_of_estimate.py"],
+    "M3.7 coverage tiers and unpriced significance": ["backend/tests/test_coverage_tiers.py"],
 }
 
 REQUIRED_FIELDS = {
@@ -134,6 +135,17 @@ def study_checks(db, key):
             "unpriced": len(boe["scope"]["unpriced_equipment"]),
             "priced_fraction": round(len(rows) / items, 3) if items else None,
             "in_range_fraction": round(in_range / items, 3) if items else None,
+        },
+        "tiers_m3_7": {
+            name: {"items": t["items"], "fraction_of_items": t["fraction_of_items"],
+                   "fraction_of_priced_value": t["fraction_of_priced_value"]}
+            for name, t in boe["coverage"]["tiers"]["tiers"].items()
+        },
+        "assumption_kinds": boe["coverage"]["tiers"]["assumption_kinds"],
+        "meets_target_without_assumptions": boe["coverage"]["tiers"]["meets_coverage_target_without_assumptions"],
+        "unpriced_significance": {
+            k: boe["coverage"]["unpriced_significance"].get(k)
+            for k in ("status", "significance", "share_of_priced_equipment")
         },
         "escalation": boe["price_basis"]["escalation_by_status"],
         "double_count_checks": {c["id"]: c["passed"] for c in boe["checks"]["double_count"]},
