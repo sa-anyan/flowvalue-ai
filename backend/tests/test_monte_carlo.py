@@ -1,6 +1,7 @@
 """Seeded distributions, scope honesty and canonical financial reconciliation."""
 
 import copy
+from decimal import Decimal
 import io
 import json
 from pathlib import Path
@@ -232,9 +233,15 @@ def test_canonical_financials_and_reproducible_simulation():
         "Results",
         "Parameters",
         "Cash flows",
+        "Exact values",
         "Unresolved scope",
         "Audit JSON",
     } <= set(book.sheetnames)
+    exact_rows = book["Exact values"].values
+    assert next(exact_rows) == ("run", "chunk", "json")
+    run_index, chunk_index, payload = next(exact_rows)
+    assert (run_index, chunk_index) == (0, 0)
+    assert json.loads(payload) == a["runs"][0]["exact_values"]
     assert mime.endswith("sheet")
     csv, _ = export(a, "csv")
     assert b"npv" in csv and b"complete" in csv
@@ -358,9 +365,10 @@ def test_confirmed_alias_is_not_charged_twice():
     )
     plan = prepare(state, settings)
     result = evaluate(report, state["description"], plan, ["alias"])
+    assert_exact_stage_parity(report, state["description"], plan, result)
     assert result["coverage"]["total"] == 1
     assert result["coverage"]["confirmed_aliases"] == 1
-    assert len(result["equipment_costs"]) == 1
+    assert sum(row["price_coverage"] == "priced" for row in result["equipment_records"]) == 1
 
 
 def test_engineering_proposals_are_separate_and_require_enablement():
@@ -530,3 +538,240 @@ def test_input_fingerprint_includes_source_values():
     state["parsed"]["report"]["entities"][0]["values"][0]["normalized_value"] = 101
     second = simulate(state, settings, progress=lambda *args: False)
     assert first["input_hash"] != second["input_hash"]
+
+
+def test_confirmed_same_tag_scenario_keeps_both_prices():
+    state = complete_state()
+    report = state["parsed"]["report"]
+    original = next(row for row in report["entities"] if row["key"] == "pump")
+    original["identifier"] = "T-104"
+    report["entities"].append({**copy.deepcopy(original), "key": "pump-two"})
+    first = state["plan"]["equipment"][0]
+    second = copy.deepcopy(first)
+    second.update(
+        equipment_key="pump-two",
+        scope_confirmation={
+            "status": "user_confirmed_distinct",
+            "rationale": "Reviewed separate costed item",
+        },
+    )
+    second["manual_price"]["amount"] = 5_000
+    state["plan"]["equipment"].append(second)
+    result = evaluate(report, state["description"], state["plan"], [])
+    assert_exact_stage_parity(report, state["description"], state["plan"], result)
+    records = result["equipment_records"]
+    assert [(r["record_key"], r["display_tag"], r["cost"]) for r in records] == [
+        ("pump", "T-104", 10_000), ("pump-two", "T-104", 5_000)
+    ]
+    assert sum(r["cost"] for r in records) == 15_000
+    from backend.scenarios_and_uncertainty.monte_carlo.engine import summarize
+
+    summary = summarize([{"index": 0, **result}], [], Settings())
+    assert summary["equipment"]["pump"]["p50"] == 10_000
+    assert summary["equipment"]["pump-two"]["p50"] == 5_000
+    assert summary["equipment"]["pump-two"]["display_tag"] == "T-104"
+
+def test_legacy_tag_keyed_scenario_export_leaves_snapshot_unchanged():
+    payload = json.dumps({
+        "runs": [{
+            "index": 0,
+            "status": "complete",
+            "equipment_costs": {"T-104": 5000},
+            "equipment_installation_costs": {"T-104": 250},
+            "equipment_models": {"T-104": "legacy-model"},
+        }],
+        "settings": Settings().model_dump(mode="json"),
+        "summary": {"metrics": {}},
+        "audit": {"exceptions": []},
+    })
+    result = json.loads(payload)
+    workbook, _ = export(result, "xlsx")
+    book = load_workbook(io.BytesIO(workbook), read_only=True)
+    headers, values = list(book["Equipment costs"].values)
+    row = dict(zip(headers, values))
+    assert row["display_tag"] == "T-104"
+    assert row["record_key"] is None
+    assert row["cost"] == 5000
+    assert row["installation_cost"] == 250
+    assert row["model_id"] == "legacy-model"
+    assert json.dumps(result) == payload
+
+def test_split_projection_keeps_priced_and_unpriced_records():
+    state = complete_state()
+    report = state["parsed"]["report"]
+    parent = state["plan"]["equipment"][0]
+    parent["scope_confirmation"] = {
+        "status": "user_confirmed",
+        "rationale": "Reviewed split",
+    }
+    parent["physical_assets"] = [
+        {
+            "asset_id": "priced",
+            "equipment_tag": "T-104",
+            "quantity": 1,
+            "manual_price": parent["manual_price"],
+        },
+        {
+            "asset_id": "unpriced",
+            "equipment_tag": "T-104",
+            "quantity": 1,
+            "scope_confirmation": {
+                "status": "user_confirmed_distinct",
+                "rationale": "Reviewed separately costed item",
+            },
+        },
+    ]
+    result = evaluate(report, state["description"], state["plan"], [])
+    assert_exact_stage_parity(report, state["description"], state["plan"], result)
+    records = result["equipment_records"]
+    assert [(r["record_key"], r["price_coverage"], r["cost"]) for r in records] == [
+        ("pump::priced", "priced", 10_000), ("pump::unpriced", "unpriced", None)
+    ]
+    assert [r["physical_asset_id"] for r in records] == ["pump::priced", "pump::unpriced"]
+    assert records[0]["model_id"] == "manual:user-price"
+
+
+def test_ab_projection_preserves_quantity_extended_price():
+    state = complete_state()
+    report = state["parsed"]["report"]
+    equipment = next(row for row in report["entities"] if row["key"] == "pump")
+    equipment["identifier"] = "PD-201AB"
+    state["plan"]["equipment"][0]["quantity"] = 2
+    result = evaluate(report, state["description"], state["plan"], [])
+    record, = result["equipment_records"]
+    assert record["display_tag"] == "PD-201AB"
+    assert record["equipment_count"] == 2
+    assert record["cost"] == 20_000
+
+@pytest.mark.parametrize("case", ["alias", "AB"])
+def test_deterministic_decimal_parity(case):
+    from backend.orchestration.pipeline import run
+
+    state = complete_state()
+    report = state["parsed"]["report"]
+    aliases = []
+    if case == "alias":
+        report["entities"].append(
+            {"key": "alias", "identifier": "Pump alias", "kind": "equipment", "values": []}
+        )
+        state["plan"]["equipment"].append({"equipment_key": "alias"})
+        aliases = [Alias(equipment_key="alias", target_key="pump", rationale="Reviewed alias")]
+    else:
+        next(row for row in report["entities"] if row["key"] == "pump")["identifier"] = "P-101AB"
+        state["plan"]["equipment"][0]["quantity"] = 2
+    plan = prepare(state, Settings(aliases=aliases))
+    stage = run(report, state["description"], plan, calculate_ranges=False)["stages"]
+    scenario = evaluate(report, state["description"], plan, [a.equipment_key for a in aliases])
+    assert_exact_stage_parity(report, state["description"], plan, scenario)
+    metrics = dict(stage["financial"]["result"]["metrics"])
+    values = scenario.get("exact_values", {}).get("metrics", scenario["metrics"])
+    for key, metric in {"npv": "project_npv", "payback": "project_discounted_payback"}.items():
+        expected = metrics[metric]["value"]
+        actual = values[key]
+        assert (None if actual is None else Decimal(str(actual))) == (
+            None if expected is None else Decimal(expected)
+        ), (case, key, expected, actual)
+
+def assert_exact_stage_parity(report, description, plan, scenario):
+    from backend.orchestration.pipeline import run
+
+    stages = run(report, description, plan, calculate_ranges=False)["stages"]
+    results = {key: value["result"] or {} for key, value in stages.items()}
+    exact = json.loads(json.dumps(scenario, allow_nan=False))["exact_values"]
+
+    def check(actual, expected):
+        if expected is None:
+            assert actual is None
+        else:
+            assert isinstance(actual, str)
+            assert Decimal(actual) == Decimal(str(expected))
+
+    for key, status in exact["stage_status"].items():
+        assert status == results[key].get("status")
+    financial = dict(results["financial"].get("metrics") or [])
+    for key, name in (
+        ("npv", "project_npv"),
+        ("irr", "project_irr"),
+        ("payback", "project_discounted_payback"),
+    ):
+        check(exact["metrics"][key], financial.get(name, {}).get("value"))
+        assert scenario["metric_status"].get(name) == financial.get(name, {}).get("status")
+    for key, amount in exact["capex_subtotals"].items():
+        check(amount, results["capex"].get(key))
+    for key, amount in exact["equipment_totals"].items():
+        check(amount, results["equipment"].get(key))
+    check(exact["metrics"]["opex"], results["opex"].get("first_year_cash_opex"))
+    assert set(exact["annual_opex"]) == set(results["opex"].get("years", {}))
+    for year, amounts in exact["annual_opex"].items():
+        canonical = results["opex"]["years"][year]
+        for key, value in amounts.items():
+            if key == "status":
+                assert value == canonical.get(key)
+            else:
+                check(value, canonical.get(key))
+    annual = {str(row["year"]): row for row in results["revenue"].get("annual", [])}
+    assert set(exact["annual_revenue"]) == set(annual)
+    for year, amounts in exact["annual_revenue"].items():
+        for key, value in amounts.items():
+            check(value, annual[year].get(key))
+    if not results["revenue"].get("issues"):
+        check(exact["metrics"]["revenue"], annual.get("1", {}).get("sales_revenue"))
+    equipment = {
+        row["parsed_source"]["equipment_key"]: row for row in results["equipment"]["equipment"]
+    }
+    assert set(equipment) == {row["record_key"] for row in scenario["equipment_records"]}
+    for record, amounts in zip(scenario["equipment_records"], exact["equipment"], strict=True):
+        key = record["record_key"]
+        row = equipment[key]
+        assert amounts["record_key"] == key
+        assert record["quantity"] == row["quantity"]
+        assert record["cost_scope"] == row["cost_scope"]
+        cost = row["equipment_cost"] if row["equipment_cost"] is not None else row["amount"]
+        included = record["price_coverage"] == "priced"
+        check(amounts["cost"], cost if included else None)
+        check(amounts["installation_cost"], row["installation_cost"] if included else None)
+    assert scenario["coverage"]["priced"] == sum(
+        row["price_coverage"] == "priced" for row in scenario["equipment_records"]
+    )
+
+
+def test_exact_values_preserve_zero_and_distinguish_nonfinite_fields():
+    from backend.scenarios_and_uncertainty.monte_carlo.exact_values import project_exact_values
+
+    payload = project_exact_values(
+        {"zero": "0.00", "missing": None, "invalid": "NaN", "overflow": "Infinity"},
+        [], {}, {}, {}, {}, {},
+    )
+    assert payload["metrics"] == {
+        "zero": "0.00", "missing": None, "invalid": None, "overflow": None,
+    }
+    assert payload["invalid_numeric_fields"] == ["metrics.invalid", "metrics.overflow"]
+
+def test_ab_full_duty_sizing_and_exact_scenario_acceptance():
+    from backend.orchestration.pipeline import run
+    from backend.tests.test_sizing_cross_file import load, sizing, stream
+
+    state = complete_state()
+    report = state["parsed"]["report"]
+    next(row for row in report["entities"] if row["key"] == "pump")["identifier"] = "P-101AB"
+    source = load("rows.xlsx")
+    report["entities"].append(stream(source, "P-IN"))
+    item = state["plan"]["equipment"][0]
+    item["sizing"] = sizing(source, "pump_duty")
+    item["quantity"] = 2
+    plan = prepare(state, Settings())
+    scenario = evaluate(report, state["description"], plan, [])
+    assert_exact_stage_parity(report, state["description"], plan, scenario)
+    record, = scenario["equipment_records"]
+    assert (record["display_tag"], record["equipment_count"]) == ("P-101AB", 2)
+    assert Decimal(scenario["exact_values"]["equipment"][0]["cost"]) == Decimal(20_000)
+
+    pair = run(report, state["description"], plan, calculate_ranges=False)
+    single_plan = copy.deepcopy(plan)
+    single_plan["equipment"][0]["quantity"] = 1
+    single = run(report, state["description"], single_plan, calculate_ranges=False)
+    pair_sizing = pair["stages"]["equipment"]["result"]["equipment"][0]["parsed_source"]["sizing"]
+    single_sizing = single["stages"]["equipment"]["result"]["equipment"][0]["parsed_source"]["sizing"]
+    assert pair_sizing == single_sizing
+    assert pair_sizing["method"] == "pump_duty"
+    assert Decimal(str(pair_sizing["calculation"]["hydraulic_power_kw"])) == Decimal("0.1")

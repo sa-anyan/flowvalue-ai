@@ -110,7 +110,8 @@ def calculate_total_cost(equipment, *, translation_policy=None, indices=None):
         from ..cost_to_future.cost_translation import catalogue
 
         indices = catalogue()
-    tags = set()
+    keys = set()
+    tags = {}
     for item in items:
         if not isinstance(item, Mapping):
             raise TypeError("Each equipment item must be a mapping")
@@ -118,9 +119,22 @@ def calculate_total_cost(equipment, *, translation_policy=None, indices=None):
         if not isinstance(tag, str) or not tag.strip():
             raise ValueError("Every equipment item needs a nonempty equipment_tag")
         canonical_tag = tag.strip().casefold()
-        if canonical_tag in tags:
+        evidence = item.get("parsed_source")
+        evidence = evidence if isinstance(evidence, Mapping) else {}
+        key = evidence.get("equipment_key")
+        if key:
+            if key in keys:
+                raise ValueError("Duplicate equipment record key: " + key)
+            keys.add(key)
+        tags.setdefault(canonical_tag, []).append(
+            (bool(key), evidence.get("confirmed_distinct") is True)
+        )
+    for tag, records in tags.items():
+        if len(records) > 1 and (
+            not all(has_key for has_key, _ in records)
+            or sum(not distinct for _, distinct in records) > 1
+        ):
             raise ValueError("Duplicate equipment tag would double-count cost: " + tag)
-        tags.add(canonical_tag)
     lines = []
     groups = {}
     for item in items:
