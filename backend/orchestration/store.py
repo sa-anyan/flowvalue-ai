@@ -156,6 +156,15 @@ class Store:
             raise KeyError("Assessment not found")
         return row[0]
 
+    def states_by_source(self, source_sha256):
+        """Saved studies of the exact same source file, oldest first."""
+        with self.db() as db:
+            rows = db.execute(
+                "SELECT state FROM assessments WHERE json_extract(state, '$.source_sha256')=? ORDER BY rowid",
+                (source_sha256,),
+            ).fetchall()
+        return [json.loads(row[0]) for row in rows]
+
     def related_states(self, parent):
         with self.db() as db:
             rows = db.execute(

@@ -323,6 +323,10 @@ async def upload(
     import hashlib
 
     state["source_sha256"] = hashlib.sha256(content).hexdigest()
+    # Equipment-scope decisions follow a re-upload of the same file.
+    from backend.equipment_resolution.register_completeness import carry_over
+
+    carry_over(store, state)
     state = initialize(state)
     state.update(
         running=False, status="Source loaded. Run a stage explicitly.", progress=[]

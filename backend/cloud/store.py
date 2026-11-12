@@ -158,6 +158,18 @@ class CloudStore:
         )
         return value, False
 
+    def states_by_source(self, source_sha256):
+        rows = self.request(
+            "assessments",
+            filters={
+                "state->>source_sha256": "eq." + source_sha256,
+                "select": "state",
+                "order": "created_at.asc",
+                "limit": "100",
+            },
+        )
+        return [r["state"] for r in rows]
+
     def related_states(self, parent):
         rows = self.request(
             "assessments",
