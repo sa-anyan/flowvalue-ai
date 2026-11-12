@@ -69,8 +69,15 @@ def test_invalid_input(model, unit, value):
 
 @pytest.mark.parametrize("v", [0.09, 35.01, 10000])
 def test_fermenter_strict_range(v):
+    # Strict range checks with the minimum-size floor switched off for this
+    # item. By default 0.09 m3 is now priced at 0.1 m3 (founder decision,
+    # 11 Nov 2026; see test_below_range_floor.py). Above 35 m3 is refused
+    # either way.
     with pytest.raises(ValueError, match="MODEL_OUT_OF_RANGE"):
-        estimate_cost(TURTON, v, size_unit="m3")
+        estimate_cost(TURTON, v, size_unit="m3", below_range_policy="extrapolate")
+    if v > 35:
+        with pytest.raises(ValueError, match="MODEL_OUT_OF_RANGE"):
+            estimate_cost(TURTON, v, size_unit="m3")
 
 
 @pytest.mark.parametrize("model,area", [(CIRCULAR, 90000), (RECTANGULAR, 30000)])

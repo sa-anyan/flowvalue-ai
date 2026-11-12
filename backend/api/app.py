@@ -586,10 +586,13 @@ class EngineeringApproval(BaseModel):
 
 @app.post("/api/assessments/{key}/engineering-approval")
 def approve_engineering_data(key: str, options: EngineeringApproval):
-    from backend.blocks.stage_workflow import approve
+    from backend.blocks.stage_workflow import approve, AssessmentBusy
     from backend.blocks.execution import view
 
-    return view(approve(store, key, options.revision))
+    try:
+        return view(approve(store, key, options.revision))
+    except AssessmentBusy as exc:
+        raise HTTPException(409, str(exc))
 
 
 @app.post("/api/assessments/{key}/run-all-stages", status_code=202)

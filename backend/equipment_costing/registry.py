@@ -126,10 +126,6 @@ def estimate_from_parsed_inputs(
 ):
     """Explicit parser/context adapter. No fuzzy field or equipment inference."""
     source = model_source(curve_id, source)
-    if source in {"additional_models", "nottingham"}:
-        # The minimum-size floor applies to Garrett and OpenPyTEA; these
-        # libraries keep their own published range rules.
-        options.pop("below_range_policy", None)
     if source == "openpytea":
         item = measurements.get("size")
         if not isinstance(item, Measurement):
@@ -242,10 +238,6 @@ def estimate_cost(
     **options,
 ):
     source = model_source(curve_id, source)
-    if source in {"additional_models", "nottingham"}:
-        # The minimum-size floor applies to Garrett and OpenPyTEA; these
-        # libraries keep their own published range rules.
-        options.pop("below_range_policy", None)
     if source == "openpytea":
         return _openpytea_cost(
             curve_id,

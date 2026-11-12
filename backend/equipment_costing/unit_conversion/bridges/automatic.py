@@ -7,7 +7,7 @@ import json
 import math
 from backend.equipment_costing.registry import list_equipment_models
 from backend.orchestration.equipment_advisor import validate
-from backend.revenue.advisor import obj, TEXT
+from backend.revenue.advisor import obj, TEXT, safe_ai_reason
 from .. import convert, ConversionContext
 from .service import describe, evaluate, model_contract, PARAMETERS, RECIPES
 from .derivations import METHODS, derive, discover
@@ -649,7 +649,7 @@ def resolve(
             {
                 "equipment_key": p["equipment_key"],
                 "status": "ai_unavailable",
-                "reason": type(exc).__name__,
+                "reason": safe_ai_reason(exc),
             }
             for p in pending
         )
@@ -794,7 +794,7 @@ def resolve(
                 {
                     "equipment_key": p["equipment_key"],
                     "status": "ai_unavailable",
-                    "reason": type(exc).__name__,
+                    "reason": safe_ai_reason(exc),
                 }
                 for p in group
             )
@@ -1153,15 +1153,22 @@ def resolve(
 
 
 def repair_pricing(
-    report, plan, total, description, store, provider=None, *, attempt=0
+    report, plan, total, description, store, provider=None, *, attempt=0, _history=None
 ):
     """Bounded recovery for failed AI model/coordinate handoffs across libraries.
 
     Accepted user overrides and missing cost correlations never enter this path.
+    Across the bounded pricing passes, a model that failed its published range
+    stays excluded for that item; an item whose repair the AI left unresolved
+    is not re-sent with identical inputs; and an item with no reviewed
+    alternative left is recorded as exhausted without another AI call.
     """
+    history = {} if _history is None else _history
     rows = {r["equipment_key"]: r for r in plan.get("equipment", [])}
     attempts = []
     feedback = []
+    exhausted = []
+    signatures = {}
     for line in total.equipment:
         key = (line.parsed_source or {}).get("equipment_key")
         row = rows.get(key, {})
@@ -1202,17 +1209,42 @@ def repair_pricing(
             or any("Unsupported extrapolation" in issue for issue in line.issues)
         ):
             continue
+        record = history.setdefault(key, {"excluded": [], "unresolved": None})
+        remaining = None
+        if range_failure and match.get("candidate_model_ids"):
+            if row.get("curve_id") and row["curve_id"] not in record["excluded"]:
+                record["excluded"].append(row["curve_id"])
+            remaining = [
+                model
+                for model in match["candidate_model_ids"]
+                if model not in record["excluded"]
+            ]
+            if not remaining:
+                # Every reviewed candidate failed its published range; the AI
+                # has nothing new to choose. Keep the genuine exception.
+                exhausted.append(
+                    {
+                        "equipment_key": key,
+                        "status": "pricing_repair_exhausted",
+                        "reason": "; ".join(line.issues),
+                        "excluded_model_ids": list(record["excluded"]),
+                    }
+                )
+                continue
+        signature = json.dumps(
+            [row, remaining, list(line.issues)], sort_keys=True, default=str
+        )
+        if record["unresolved"] == signature:
+            # Same item, same inputs, same failure: the AI already declined.
+            continue
+        signatures[key] = signature
         retry = copy.deepcopy(row)
         retry.pop("unit_conversion", None)
-        if range_failure and match.get("candidate_model_ids"):
+        if remaining is not None:
             # The chosen correlation failed, not the physical sizing. Reopen
             # conceptually reviewed alternatives, never clamp the measured size.
             retry.pop("curve_id", None)
-            retry["matching"]["candidate_model_ids"] = [
-                model
-                for model in match["candidate_model_ids"]
-                if model != row.get("curve_id")
-            ]
+            retry["matching"]["candidate_model_ids"] = remaining
         if option_failure:
             for name in ("extrapolation_exponent", "extrapolation_justification"):
                 retry.get("costing_options", {}).pop(name, None)
@@ -1227,8 +1259,12 @@ def repair_pricing(
                 "instruction": "Preserve valid physical sizing, source bindings and assumptions. For strict-domain failures select a conceptually compatible alternative from supplied candidates; never alter the size to fit a curve. Non-Garrett libraries do not support Garrett extrapolation options. A known operation may use a disclosed preliminary configuration, not an unrelated operation. Supply a defensible Garrett scaling exponent only where supported. Otherwise retain the genuine exception.",
             }
         )
+    exhausted = [
+        {**a, "pricing_repair": True, "pricing_attempt": attempt + 1}
+        for a in exhausted
+    ]
     if not attempts:
-        return plan, []
+        return plan, exhausted
     keys = {r["equipment_key"] for r in attempts}
     subset = {
         **report,
@@ -1252,11 +1288,13 @@ def repair_pricing(
         for r in repaired["equipment"]
         if r.get("unit_conversion", {}).get("enabled")
     }
+    for key in keys - set(candidates):
+        history[key]["unresolved"] = signatures[key]
     plan = copy.deepcopy(plan)
     plan["equipment"] = [
         candidates.get(r["equipment_key"], r) for r in plan["equipment"]
     ]
-    audit = [
+    audit = exhausted + [
         {**a, "pricing_repair": True, "pricing_attempt": attempt + 1} for a in audit
     ]
     if attempt < 2 and plan["equipment"] != list(rows.values()):
@@ -1273,6 +1311,7 @@ def repair_pricing(
             store,
             provider,
             attempt=attempt + 1,
+            _history=history,
         )
         audit.extend(followup)
     return plan, audit

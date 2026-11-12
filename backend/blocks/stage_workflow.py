@@ -15,9 +15,34 @@ def approved(state):
     )
 
 
+class AssessmentBusy(ValueError):
+    """The assessment is being written by a running workflow; retry when idle."""
+
+
+def running_work(state):
+    """Name of the workflow currently writing this assessment, or None.
+
+    Equipment preparation after extraction runs with ``running`` already False,
+    so the workflow statuses are checked as well.
+    """
+    for name in ("engineering_workflow", "stage_workflow"):
+        workflow = state.get(name) or {}
+        if workflow.get("status") == "running":
+            return workflow.get("stage") or name
+    if state.get("running"):
+        return state.get("queued_stage") or "a stage"
+    return None
+
+
 def approve(store, key, revision):
     state = store.get(key)
-    if state["revision"] != revision or state.get("running"):
+    busy = running_work(state)
+    if busy:
+        raise AssessmentBusy(
+            f"Engineering data cannot be approved while {busy.replace('_', ' ')} "
+            "is still running; wait for it to finish, reload and approve again"
+        )
+    if state["revision"] != revision:
         raise ValueError("Assessment changed or is running; reload before approving")
     if not fresh(state, "engineering_data"):
         raise ValueError("Extract engineering data before approving")

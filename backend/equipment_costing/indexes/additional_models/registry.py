@@ -4,9 +4,10 @@ No upstream software execution, built-in currency conversion, or installation up
 """
 
 from dataclasses import asdict
-from ...models import CostEstimate
+from ...models import CostEstimate, positive
 from ..garrett.integrated import CostingResult
 from ..garrett.installation import InstallationBreakdown
+from ..floor import floor_issue, minimum_size_floor
 from . import epa_ph_adjustment, turton_fermenter, watertap_clarifier
 
 EPA = "epa_ph_adjustment_1989"
@@ -115,8 +116,24 @@ def list_models():
     return rows
 
 
-def estimate_cost(model_id, size, *, size_unit, input_provenance=None, **options):
+def estimate_cost(
+    model_id,
+    size,
+    *,
+    size_unit,
+    input_provenance=None,
+    below_range_policy="minimum_size_floor",
+    **options,
+):
+    """below_range_policy (founder decision, 11 Nov 2026): "minimum_size_floor"
+    (default) prices a size below a model's published lower capacity limit at
+    that limit, flagged as an explicit assumption; "extrapolate" keeps the
+    strict refusal. Models without published limits (the WaterTAP clarifiers)
+    are unaffected, and sizes above the limit stay refused."""
     from ...unit_conversion import convert
+
+    if below_range_policy not in {"minimum_size_floor", "extrapolate"}:
+        raise ValueError("below_range_policy must be minimum_size_floor or extrapolate")
 
     models = {m["id"]: m for m in list_models()}
     if model_id not in models:
@@ -139,12 +156,18 @@ def estimate_cost(model_id, size, *, size_unit, input_provenance=None, **options
     )
     if converted.value is None:
         raise ValueError("; ".join(converted.issues))
-    value = converted.value
+    # Reject zero/negative/non-finite sizes before any floor is considered.
+    value = positive(converted.value, "model size")
+    floor = None
+    limits = m["capacity_limits"]
+    if limits and value < limits[0] and below_range_policy == "minimum_size_floor":
+        floor = minimum_size_floor(value, limits[0], m["size_unit"])
+    priced_at = floor["priced_at_size"] if floor else value
     if model_id == EPA:
-        amount = epa_ph_adjustment.calculate(value)
+        amount = epa_ph_adjustment.calculate(priced_at)
         equation = "exp(11.721 + 0.543*ln(Q) + 0.000139*ln(Q)**2)"
     elif model_id == TURTON:
-        amount = turton_fermenter.calculate(value)
+        amount = turton_fermenter.calculate(priced_at)
         equation = "10**(4.1052 + 0.532*log10(V) - 0.0005*log10(V)**2)"
     else:
         amount = watertap_clarifier.calculate(
@@ -157,6 +180,8 @@ def estimate_cost(model_id, size, *, size_unit, input_provenance=None, **options
             + " polynomial in area ft2"
         )
     issues = (m["scope_note"], m["range_status"])
+    if floor:
+        issues += (floor_issue(floor, "published minimum size"),)
     estimate = CostEstimate(
         m["category"],
         m["configuration"],
@@ -191,6 +216,8 @@ def estimate_cost(model_id, size, *, size_unit, input_provenance=None, **options
         applicability_status="provisional",
         input_provenance=input_provenance or {},
     )
+    if floor:
+        evidence["below_range_floor"] = floor
     installation = (
         InstallationBreakdown(amount, None, None, None, "not_provided", evidence)
         if m["cost_scope"] == "purchased_equipment"
