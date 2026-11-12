@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import {ProcessSchematic} from '@/blocks/engineering_data/process-schematic';
+import {MappingPreview} from '@/blocks/engineering_data/mapping-preview';
 import {useState} from 'react';
 import {assessmentHref} from '@/lib/assessment-navigation';
 
@@ -36,7 +37,7 @@ export function EquipmentDataExplorer({report,assessmentId}:{report:Report;asses
  const selectedEvidence=selected?[...(selected.id_evidence?[selected.id_evidence]:[]),...selected.values,...(selected.kind==='equipment'?linked.flatMap(e=>e.values):[])]:[];
  function choose(e:Entity){setSelectedKey(e.key);setPropertyQuery('');}
  function switchKind(next:'equipment'|'streams'){setKind(next);setSelectedKey('');setQuery('');setFilter('all');setPropertyQuery('');}
- return <><ProcessSchematic report={report}/><section className="equipment-explorer" aria-label="Equipment data workspace">
+ return <><details className="register-scope"><summary>Source mapping preview · read-only</summary><MappingPreview report={report}/></details><ProcessSchematic report={report}/><section className="equipment-explorer" aria-label="Equipment data workspace">
   <div className="explorer-heading"><div><h2>Equipment & streams</h2><p>Search a record. Inspect its connections, measurements and source cells.</p></div><Link className="report-link" href={assessmentHref('/capex/equipment',assessmentId)}>Equipment costing ↗</Link></div>
   <div className="register-stats" aria-label="Extraction summary"><button aria-pressed={kind==='equipment'} onClick={()=>switchKind('equipment')}><strong>{equipment.length}</strong><span>Equipment</span></button><button aria-pressed={kind==='streams'} onClick={()=>switchKind('streams')}><strong>{streams.length}</strong><span>Streams</span></button><div><strong>{observedCount}</strong><span>Observations</span></div><div><strong>{sourceSheets.size}</strong><span>Worksheets</span></div></div>
   <div className="explorer-layout"><div className="asset-directory">
