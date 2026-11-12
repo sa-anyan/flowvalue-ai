@@ -11,7 +11,14 @@ from dataclasses import asdict, dataclass, replace
 from decimal import Decimal, InvalidOperation, localcontext
 from pathlib import Path
 
-DEFAULT_POLICY = {"target_period": "2026-09", "allow_general_inflation_proxy": True}
+DEFAULT_POLICY = {
+    "target_period": "2026-09",
+    "allow_general_inflation_proxy": True,
+    # Plant-capital index for equipment estimates only (never operating prices
+    # or working capital). Used once the catalogue holds a target-period value;
+    # until then equipment falls back to the CPI proxy.
+    "equipment_index_series": "CEPCI",
+}
 
 
 def catalogue():
@@ -101,7 +108,10 @@ def translate_cost(
     method_id="",
     policy=None,
     indices=None,
+    equipment=False,
 ):
+    """Translate a dated price. ``equipment=True`` allows the policy's equipment
+    cost index (e.g. CEPCI); other prices never use it."""
     policy = DEFAULT_POLICY if policy is None else policy
     indices = catalogue() if indices is None else indices
     original = numeric(amount)
@@ -159,7 +169,9 @@ def translate_cost(
                 "period": source_period,
             },
         )
-    elif _equipment_index_points(policy, series, currency, source_period, source_year, target):
+    elif equipment and _equipment_index_points(
+        policy, series, currency, source_period, source_year, target
+    ):
         # Opt-in equipment cost index (e.g. CEPCI) for sources without a native index.
         selected_series = policy["equipment_index_series"]
         selected = series[selected_series]
@@ -241,6 +253,7 @@ def translate_calculation(calculation, *, method_id, policy, indices=None):
         method_id=method_id,
         policy=policy,
         indices=indices,
+        equipment=True,
     )
     audit = asdict(translated)
     if translated.status == "already_target_year":
