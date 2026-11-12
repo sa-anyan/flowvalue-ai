@@ -215,3 +215,25 @@ def test_avoided_cost_beside_revenue_needs_an_overlap_review():
     config["avoided_costs"][0]["revenue_overlap_review"] = {
         "basis": "The saving is the plant's own avoided cost; no customer is billed for it"}
     assert double_count_reviews(config) == []
+
+
+def test_revenue_output_ignores_unrelated_opex_settings():
+    from backend.blocks.revenue.runner import _revenue_config
+
+    _, config = _study()
+    before = _revenue_config(config)
+    config["materials"] = [{"id": "new-feed"}]
+    config["financial"]["discount_rate"] = 0.08
+    assert _revenue_config(config) == before
+    config["financial"]["calendar_start_year"] = 2030  # contract dates depend on it
+    assert _revenue_config(config) != before
+
+
+def test_contract_calendar_is_a_revenue_input_only_when_terms_exist():
+    from backend.blocks.execution import _inputs
+
+    _, config = _study()
+    state = {"plan": {"operating_economics": config}}
+    assert "contract_calendar" not in _inputs(state, "revenue")
+    config["commercial_lines"][0]["contract_term"] = {"end_year": 2030, "basis": "x"}
+    assert _inputs(state, "revenue")["contract_calendar"] == {"construction_years": 1, "calendar_start_year": 2025}
