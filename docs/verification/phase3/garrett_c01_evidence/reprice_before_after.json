@@ -1,0 +1,130 @@
+[
+ {
+  "item": "P-101AB",
+  "curve": "G296-122",
+  "size": 0.023319923635069805,
+  "usd_1987_before": 580.19,
+  "usd_1987_after": 172.92,
+  "extrapolated": true
+ },
+ {
+  "item": "P-102AB",
+  "curve": "G296-122",
+  "size": 0.0033677323905754795,
+  "usd_1987_before": 191.42,
+  "usd_1987_after": 62.8,
+  "extrapolated": true
+ },
+ {
+  "item": "P-103AB",
+  "curve": "G296-122",
+  "size": 0.04708077746196974,
+  "usd_1987_before": 867.81,
+  "usd_1987_after": 249.78,
+  "extrapolated": true
+ },
+ {
+  "item": "P-104AB",
+  "curve": "G296-122",
+  "size": 0.012082986761143952,
+  "usd_1987_before": 398.05,
+  "usd_1987_after": 122.57,
+  "extrapolated": true
+ },
+ {
+  "item": "P-105AB",
+  "curve": "G296-122",
+  "size": 0.0019549510267707717,
+  "usd_1987_before": 140.16,
+  "usd_1987_after": 47.24,
+  "extrapolated": true
+ },
+ {
+  "item": "P-201AB",
+  "curve": "G296-122",
+  "size": 0.012823177844772137,
+  "usd_1987_before": 411.84,
+  "usd_1987_after": 126.45,
+  "extrapolated": true
+ },
+ {
+  "item": "T-101AB",
+  "curve": "G290-104",
+  "size": 1.6105760790283898,
+  "usd_1987_before": 633.66,
+  "usd_1987_after": 403.2,
+  "extrapolated": true
+ },
+ {
+  "item": "T-102AB",
+  "curve": "G290-104",
+  "size": 1.6100077167689821,
+  "usd_1987_before": 633.44,
+  "usd_1987_after": 403.06,
+  "extrapolated": true
+ },
+ {
+  "item": "T-201 (on G303-144)",
+  "curve": "G303-144",
+  "size": 0.071703842782926,
+  "usd_1987_before": 215.14,
+  "usd_1987_after": 163.25,
+  "extrapolated": true
+ },
+ {
+  "item": "C-202",
+  "curve": "G279-066",
+  "size": 0.28753362139945604,
+  "usd_1987_before": 244.14,
+  "usd_1987_after": 397.1,
+  "extrapolated": true
+ },
+ {
+  "item": "1,000 gpm IX (in range)",
+  "curve": "G290-104",
+  "size": 1000,
+  "usd_1987_before": 324401.68,
+  "usd_1987_after": 206418.01,
+  "extrapolated": false
+ },
+ {
+  "item": "pump at 10 (in range)",
+  "curve": "G296-122",
+  "size": 10,
+  "usd_1987_before": 19442.96,
+  "usd_1987_after": 3220.43,
+  "extrapolated": false
+ },
+ {
+  "item": "10,000 gal horizontal (in range)",
+  "curve": "G303-141",
+  "size": 10,
+  "usd_1987_before": 15577.48,
+  "usd_1987_after": 26641.01,
+  "extrapolated": false
+ },
+ {
+  "item": "10,000 gal cone roof (in range)",
+  "curve": "G303-143",
+  "size": 10,
+  "usd_1987_before": 25712.82,
+  "usd_1987_after": 13975.71,
+  "extrapolated": false
+ },
+ {
+  "item": "10,000 gal small storage (in range)",
+  "curve": "G303-144",
+  "size": 10,
+  "usd_1987_before": 7166.1,
+  "usd_1987_after": 5437.83,
+  "extrapolated": false
+ },
+ {
+  "item": "50,000 cfm cyclone (in range)",
+  "curve": "G279-066",
+  "size": 50,
+  "usd_1987_before": 9213.23,
+  "usd_1987_after": 20729.0,
+  "extrapolated": false
+ }
+]
