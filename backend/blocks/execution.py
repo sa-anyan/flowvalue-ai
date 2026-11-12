@@ -73,6 +73,7 @@ def _inputs(state, block):
         return {
             "capex": plan.get("capex", {}),
             "translation": plan.get("cost_translation"),
+            "estimate_class": plan.get("estimate_class"),
         }
     shared = {
         k: config.get(k)
