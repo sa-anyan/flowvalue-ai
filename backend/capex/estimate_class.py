@@ -145,7 +145,7 @@ def _line_evidence(lines, unpriced):
         calc = line.get("calculation") or {}
         evidence = calc.get("evidence") or {}
         estimate = calc.get("estimate") or {}
-        if "below_range_floor" in evidence:
+        if evidence.get("below_range_floor"):  # key may be present with None
             floored += 1
         if estimate.get("extrapolated"):
             extrapolated += 1
