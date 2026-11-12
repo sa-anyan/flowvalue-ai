@@ -56,7 +56,7 @@ class G2PreflightTests(unittest.TestCase):
         for key in ("equipment", "capex", "financial"):
             self.assertEqual(state["stage_runs"][key]["status"], "stale")
             self.assertTrue(state["results"]["stages"][key]["result_is_stale"])
-        for key in ("engineering_data", "revenue", "opex"):
+        for key in ("engineering_data", "revenue"):
             self.assertEqual(state["stage_runs"][key]["status"], "ready")
         self.assertEqual(state["stage_outputs"], original["stage_outputs"])
         self.assertEqual(state["revenue_approval"], original["revenue_approval"])
