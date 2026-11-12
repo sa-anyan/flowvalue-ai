@@ -22,6 +22,16 @@ from backend.orchestration.store import Store
 from backend.revenue.authority import MAX_REVENUE_REVIEW_LENGTH
 
 app = FastAPI(title="FlowValue Assessment Orchestration")
+
+
+@app.on_event("startup")
+def _warm_quick_match():
+    """Build the matcher's catalogue index off the request path (about 0.5 s once)."""
+    import threading
+
+    from backend.equipment_matching.deterministic import index
+
+    threading.Thread(target=index, name="quick-match-index", daemon=True).start()
 store = Store(
     os.environ.get("FLOWVALUE_ASSESSMENT_DB", "outputs/assessments/local.sqlite3")
 )
@@ -1345,6 +1355,40 @@ def equipment_resolution(key: str):
         or state["parsed"]["report"]
     )
     return review(report, state["plan"], state.get("results"))
+
+
+@app.get("/api/assessments/{key}/equipment-matches")
+def equipment_matches(key: str):
+    """Deterministic first-pass model matches; milliseconds, no AI, nothing saved.
+
+    Proposals only: a choice is saved through the normal equipment plan edit
+    with ``model_selection.origin = "user"``, the same path as the model dropdown.
+    """
+    import time
+
+    from backend.blocks.execution import fresh
+    from backend.equipment_matching.deterministic import match_register
+    from backend.equipment_matching.library_preference import user_selected_model
+    from backend.ingestion.design_basis import extract as design_basis
+
+    state = store.get(key)
+    # Same rule as the assessment view: a stale extraction is not offered
+    # (checked directly; the full view is too slow for an instant pop-up).
+    if not fresh(state, "engineering_data"):
+        raise HTTPException(409, "Extract engineering data first")
+    parsed = state.get("parsed") or {}
+    report = state.get("scoped_report") or state.get("effective_report") or parsed.get("report")
+    if not report:
+        raise HTTPException(409, "Extract engineering data first")
+    plan = {r.get("equipment_key"): r for r in (state.get("plan") or {}).get("equipment", [])}
+    started = time.perf_counter()
+    result = match_register(report, design_basis(parsed.get("source_cells") or []),
+                            {k: r.get("curve_id") for k, r in plan.items() if r.get("curve_id")})
+    for match in result["matches"]:
+        match["user_confirmed_model_id"] = user_selected_model(plan.get(match["equipment_key"]) or {})
+    result["elapsed_ms"] = round((time.perf_counter() - started) * 1000, 1)
+    result["revision"] = state.get("revision")
+    return result
 
 
 @app.get("/api/assessments/{key}/equipment-conversion")
