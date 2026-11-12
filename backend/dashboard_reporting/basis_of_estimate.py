@@ -239,6 +239,11 @@ def build_basis_of_estimate(state):
             "categories_without_source": list(capex.get("breakdown_gaps") or []),
             "scope_gaps": list(capex.get("scope_gaps") or []),
             "combined_categories": [b.get("category") for b in breakdown if b.get("status") == "combined"],
+            # Units named in the source but excluded by a recorded decision.
+            "excluded_units": [
+                {k: r.get(k) for k in ("label", "decision", "basis")}
+                for r in (completeness or {}).get("resolved") or []
+            ],
         },
         "checks": {"double_count": checks, "reconciliation": reconciliation},
         "user_assumptions": {
@@ -346,7 +351,8 @@ def render_markdown(boe):
     out += ["", "## 6. Exclusions and gaps", "",
             "- Categories with no source: " + (", ".join(gaps["categories_without_source"]) or "none"),
             "- Combined into another category: " + (", ".join(gaps["combined_categories"]) or "none"),
-            "- Scope gaps: " + (", ".join(map(str, gaps["scope_gaps"])) or "none"), "",
+            "- Scope gaps: " + (", ".join(map(str, gaps["scope_gaps"])) or "none"),
+            "- Units excluded by decision: " + ("; ".join(f"{u['label']} ({u['decision']}: {u['basis']})" for u in gaps.get("excluded_units") or []) or "none"), "",
             "## 7. Checks", ""]
     out += [f"- {'Pass' if c.get('passed') else 'FAIL'}: {c.get('id')}" for c in boe["checks"]["double_count"]] or ["- None recorded"]
     out += ["", "## 8. User assumptions", ""]

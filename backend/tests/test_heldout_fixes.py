@@ -152,3 +152,20 @@ def test_stray_partial_component_row_does_not_hide_stream_flows():
              for e in report["entities"] if e["kind"] == "material"}
     assert flows["1"][("mass_flow", None)] == 900
     assert flows["2"][("component_mass_flow", "Hydrogen")] == 100
+
+
+def test_unit_excluded_by_decision_is_shown_in_basis_of_estimate(capex_study):  # noqa: F811
+    from backend.blocks.execution import view
+    from backend.dashboard_reporting.basis_of_estimate import build_basis_of_estimate, render_markdown
+
+    store, key = capex_study
+    state = view(store.get(key))
+    state["results"]["stages"]["equipment"]["result"]["pricing_coverage"]["register_completeness"] = {
+        "status": "no_unregistered_units_named", "possibly_missing": [],
+        "resolved": [{"family": "reverse_osmosis", "label": "RO / reverse osmosis unit",
+                      "decision": "out_of_scope", "basis": "Site supplies purified water"}]}
+    boe = build_basis_of_estimate(state)
+    assert boe["exclusions_and_gaps"]["excluded_units"] == [
+        {"label": "RO / reverse osmosis unit", "decision": "out_of_scope", "basis": "Site supplies purified water"}]
+    assert not any("Possibly missing" in i for i in boe["open_items"])
+    assert "Units excluded by decision: RO / reverse osmosis unit (out_of_scope: Site supplies purified water)" in render_markdown(boe)

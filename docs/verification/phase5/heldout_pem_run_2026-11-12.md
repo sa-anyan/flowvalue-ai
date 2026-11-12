@@ -70,3 +70,14 @@ Tests: `test_heldout_fixes.py` (6), `test_workbook_missing_dimension.py` (2), an
 - The RO unit is flagged.
 - Variance: 3 uncached repeats, 2 of 2 items identical, including whether they are priced.
 - **Remaining variance:** across separate full runs, HE-101 matched different valid exchanger types: plate-and-frame in the held-out run, shell-and-tube here. Both fit the duty; the choice should be confirmed per item by the user (M5.7 per-item confirmation).
+
+## Founder decision on the RO unit and G3 evidence
+
+- **Decision (founder, 12 Nov 2026):** RO pretreatment is out of scope for this estimate. It is recorded in `plan.register_review` with that basis; no engineering reason is recorded yet. The Basis of Estimate lists it under "Units excluded by decision".
+- **G3 checks on the second verification study:**
+  - 2 of 2 units priced and in range, 0 unpriced;
+  - register complete (RO excluded by decision);
+  - 4 of 4 double-count checks pass, and the breakdown reconciles;
+  - tiers: 1 source supported (99% of value), 1 assumption based;
+  - Class 5 proposed.
+- **R3 status: PARTIAL.** Coverage holds on a project not used for matcher tuning. However, this workbook's findings drove three general fixes (parser header choice, design basis to the AI, register completeness). A reviewer may reasonably treat it as no longer held out. Recommendation: confirm R3 on one more unseen workbook, run once on the current code.
