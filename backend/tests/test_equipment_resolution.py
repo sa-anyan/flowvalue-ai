@@ -373,7 +373,7 @@ def test_manual_price_monte_carlo_reconciles_same_canonical_run():
     plan = prepare(s, settings)
     apply(plan, [p], draws[0])
     output = evaluate(s["parsed"]["report"], s["description"], plan, [])
-    assert list(output["equipment_costs"].values()) == pytest.approx(
+    assert [row["cost"] for row in output["equipment_records"] if row["price_coverage"] == "priced"] == pytest.approx(
         [float(draws[0, 0])]
     )
     assert output["status"] == "complete"
