@@ -946,6 +946,32 @@ def study_report(key: str, currency: str | None = None):
     return HTMLResponse(render_study(state), headers={"Cache-Control": "no-store"})
 
 
+@app.get("/api/assessments/{key}/basis-of-estimate")
+def basis_of_estimate(key: str, format: str = "json"):
+    """M3.6: Basis of Estimate from the saved study (json, markdown or html)."""
+    from fastapi.responses import HTMLResponse, PlainTextResponse
+
+    from backend.blocks.execution import view
+    from backend.dashboard_reporting.basis_of_estimate import (
+        build_basis_of_estimate,
+        render_html,
+        render_markdown,
+    )
+
+    if format not in {"json", "markdown", "html"}:
+        raise HTTPException(422, "format must be json, markdown or html")
+    state = store.get(key)
+    if state.get("running"):
+        raise HTTPException(409, "Wait for this study calculation to finish")
+    boe = build_basis_of_estimate(view(state))
+    headers = {"Cache-Control": "no-store"}
+    if format == "markdown":
+        return PlainTextResponse(render_markdown(boe), media_type="text/markdown", headers=headers)
+    if format == "html":
+        return HTMLResponse(render_html(boe), headers=headers)
+    return boe
+
+
 @app.get("/api/assessments/{key}/snapshot")
 def study_snapshot(key: str, currency: str | None = None):
     import json
