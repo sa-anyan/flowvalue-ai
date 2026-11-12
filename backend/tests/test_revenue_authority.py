@@ -35,6 +35,10 @@ def ready():
             ("fee", "processing_services", "charge wastewater treatment fees"),
         ]
     )
+    # Both bill the same synthetic stream: the Phase 4 shared-stream review.
+    review = {"basis": "Synthetic: product sale and treatment fee are separate payments"}
+    config["sales"][0]["shared_stream_review"] = review
+    config["commercial_lines"][0]["shared_stream_review"] = dict(review)
     return report, config, capex
 
 
