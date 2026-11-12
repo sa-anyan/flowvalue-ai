@@ -373,6 +373,12 @@ class OpenAIRevenueProvider:
         )
 
     def generate(self, *, instructions, context, schema):
+        from backend.orchestration.ai_audit import audited
+
+        return audited("call", self.model, instructions, context,
+                       lambda: self._generate(instructions=instructions, context=context, schema=schema))
+
+    def _generate(self, *, instructions, context, schema):
         payload = {
             "model": self.model,
             "instructions": instructions,

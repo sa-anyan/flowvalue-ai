@@ -54,9 +54,27 @@ def calculate(ctx):
         {
             "revenue": plain(result),
             "schedule": {"hours": str(hours), "ramp": plain(ramp)},
-            "config": {k: v for k, v in config.items() if k != "_revenue_authority"},
+            # Only revenue inputs, so the saved output (and its hash) does not
+            # change when unrelated OPEX or finance settings change (G4 F1).
+            "config": _revenue_config(config),
         },
         updates,
         complete=not result.issues,
         issues=result.issues,
     )
+
+
+REVENUE_CONFIG_KEYS = (
+    "methodology", "assumption_date", "price_basis", "operating", "sales",
+    "commercial_lines", "avoided_costs", "commercial_intent", "cashflow_schedule",
+)
+REVENUE_SCHEDULE_KEYS = (
+    "operating_years", "production_ramp", "construction_years", "calendar_start_year",
+)
+
+
+def _revenue_config(config):
+    kept = {k: config[k] for k in REVENUE_CONFIG_KEYS if k in config}
+    financial = config.get("financial") or {}
+    kept["financial"] = {k: financial[k] for k in REVENUE_SCHEDULE_KEYS if k in financial}
+    return kept
