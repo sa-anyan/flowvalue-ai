@@ -9,7 +9,9 @@ from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 from html import escape
 
-VERSION = "basis-of-estimate-1"
+from backend.capex.coverage_tiers import classify_line, coverage_tiers, unpriced_significance
+
+VERSION = "basis-of-estimate-2"
 
 
 def _dec(value):
@@ -61,6 +63,7 @@ def _equipment_rows(lines):
             "escalation": translation.get("status") or "none recorded",
             "escalation_series": translation.get("applied_series"),
             "flags": _flags(line),
+            "coverage_tier": classify_line(line)["tier"],
         })
     return rows
 
@@ -161,6 +164,26 @@ def build_basis_of_estimate(state):
         open_items.append(f"{extrapolated} items extrapolated beyond a correlation's published range")
     if any(b.get("ai_suggested") for b in breakdown):
         open_items.append("Some capital factors were suggested by AI; confirm or replace them")
+    unpriced_tags = [u["tag"] for u in unpriced]
+    # Confirmed aliases reference a priced asset; they are neither priced nor unpriced.
+    canonical = [l for l in lines if not (l.get("parsed_source") or {}).get("confirmed_alias")]
+    tiers = coverage_tiers(canonical, unpriced_tags)
+    significance = unpriced_significance(
+        canonical, unpriced_tags,
+        (estimate_class.get("class_characteristics") if estimate_class.get("status") != "invalid_input" else None),
+    )
+    assumed = tiers["tiers"]["assumption_based"]
+    if assumed["items"]:
+        share = assumed["fraction_of_priced_value"]
+        open_items.append(
+            f"{assumed['items']} of {tiers['items']} items are assumption based"
+            + (f" ({float(share):.0%} of priced equipment value)" if share is not None else "")
+            + "; see the coverage tiers")
+    if significance.get("significance") == "significant":
+        open_items.append("Unpriced items could exceed the estimate class's typical high range: "
+                          + significance["against_estimate_class"]["statement"])
+    elif significance.get("status") == "not_assessable":
+        open_items.append("Significance of unpriced items could not be assessed: " + significance["reason"])
     reconciliation = _reconcile(capex)
     if reconciliation["status"] != "reconciled":
         open_items.append("Capital breakdown does not reconcile to total CAPEX")
@@ -189,6 +212,7 @@ def build_basis_of_estimate(state):
             "unpriced_equipment": unpriced,
             "scope_subtotals": capex.get("scope_subtotals"),
         },
+        "coverage": {"tiers": tiers, "unpriced_significance": significance},
         "methodology": {
             "capex_method": capex.get("model_id"),
             "process_type": capex.get("process_type"),
@@ -259,14 +283,43 @@ def render_markdown(boe):
     rec = boe["checks"]["reconciliation"]
     out += ["", f"Reconciliation: **{rec['status']}**.", "",
             "## 4. Scope: priced equipment", "",
-            f"| Tag | Description | Model | Source period | Scope | {cur} | Escalation | Flags |",
-            "|---|---|---|---|---|---:|---|---|"]
+            f"| Tag | Description | Model | Source period | Scope | {cur} | Escalation | Tier | Flags |",
+            "|---|---|---|---|---|---:|---|---|---|"]
     for r in boe["scope"]["priced_equipment"]:
         out.append(f"| {r['tag']} | {r['description'] or ''} | {r['model'] or ''} | {r['source_price_period'] or ''} | "
-                   f"{r['scope'] or ''} | {_money(r['amount'])} | {r['escalation']} | {'; '.join(r['flags'])} |")
+                   f"{r['scope'] or ''} | {_money(r['amount'])} | {r['escalation']} | {(r.get('coverage_tier') or '').replace('_', ' ')} | {'; '.join(r['flags'])} |")
     out += ["", "### Unpriced equipment", ""]
     unpriced = boe["scope"]["unpriced_equipment"]
     out += [f"- **{u['tag']}**: {u['value']}. {u['reason'] or ''}" for u in unpriced] or ["None."]
+    cov = boe.get("coverage") or {}
+    tiers = cov.get("tiers") or {}
+    if tiers:
+        out += ["", "### Coverage tiers", "",
+                "| Tier | Items | Share of items | Share of priced value | Confidence |", "|---|---:|---:|---:|---|"]
+        for name, t in tiers["tiers"].items():
+            frac = lambda v: "—" if v is None else f"{float(v):.0%}"  # noqa: E731
+            out.append(f"| {name.replace('_', ' ')} | {t['items']} | {frac(t['fraction_of_items'])} | "
+                       f"{frac(t['fraction_of_priced_value'])} | {t['confidence']['statement']} |")
+        kinds = tiers.get("assumption_kinds") or {}
+        if any(kinds.values()):
+            out += ["", "Assumption-based items by reason (an item can have several): "
+                    + ", ".join(f"{k.replace('_', ' ')} {v}" for k, v in kinds.items() if v) + "."]
+        caveats = tiers.get("source_caveats") or {}
+        if caveats:
+            out += ["Source caveats (do not change the tier): " + ", ".join(f"{k} {v}" for k, v in caveats.items()) + "."]
+        out += ["", f"Source-supported or user-evidence items: {float(tiers['supported_fraction'] or 0):.0%} "
+                f"(target {float(tiers['coverage_target']):.0%}). {tiers['notice']}"]
+    sig = cov.get("unpriced_significance") or {}
+    if sig.get("status") == "assessed":
+        share = sig["share_of_priced_equipment"]
+        out += ["", "### Significance of unpriced items", "",
+                f"Indicative scale {sig['currency']} {_money(sig['total_band']['low'])} to {_money(sig['total_band']['high'])}, "
+                f"{float(share['low']):.0%} to {float(share['high']):.0%} of priced equipment. {sig['notice']}"]
+        if sig.get("against_estimate_class"):
+            out.append(sig["against_estimate_class"]["statement"])
+        out += [f"- {i['tag']}: {_money(i['band']['low'])} to {_money(i['band']['high'])} ({i['basis']})" for i in sig["items"]]
+    elif sig.get("status") == "not_assessable":
+        out += ["", "### Significance of unpriced items", "", "Not assessable: " + sig["reason"]]
     out += ["", "## 5. Capital breakdown and method", "",
             f"Method: `{boe['methodology']['capex_method']}` · process type: {boe['methodology']['process_type']}", "",
             f"| Category | Status | {cur} | Basis | Provisional | AI-suggested |", "|---|---|---:|---|---|---|"]
