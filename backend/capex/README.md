@@ -30,6 +30,7 @@ inputs = CapexInputs(
             period="early 1987",
             index_series="CEPCI",
             index_value=320,
+            cost_scope="purchased_equipment",  # required; no default
             delivery_basis="delivered",
             provenance={"source": "synthetic demonstration"},
         ),
@@ -105,6 +106,16 @@ For Garrett, offsite and startup fractions use **core plant cost**, keeping the 
 Inputs may supply `selected_factors`, explicit `Override(fraction=... or amount=..., rationale=..., source=...)`, and `exclusions`. A normal selection must fit the published range. An evidenced user override can depart from it, retaining the published range and user rationale. Unknown, conflicting, cross-model and embedded-category charges are rejected. Zero overrides are preserved.
 
 All monetary arithmetic uses Decimal. Result dataclasses can be serialized with `dataclasses.asdict`; use an explicit Decimal-to-string policy when producing JSON rather than silently rounding early.
+
+## Capital scope controls (M3.4) and capital breakdown (M3.3)
+
+Implements B08 Engineer 1 decision C. Verification on Charlie: `docs/verification/phase3/M3.3-M3.4-capex-scope.md`.
+
+- **Every line must record its scope.** `EquipmentCost.cost_scope` and `UnitCapitalCost.cost_scope` have no default. A line without a scope is rejected by the engine and by the connector; it is never defaulted to `purchased_equipment`.
+- **Plant factors (Lang, factorial direct) apply only to `purchased_equipment`.** Installed (`installed_equipment`, OpenPyTEA `module_estimate`) and `unit_capital` lines are added once to plant cost at their source price.
+- **Installed lines** receive indirect, fee and contingency factors only where their source is recorded as *excluding* them, and only when the method expresses the factor on a direct-cost subtotal (Garrett `indirect_basis="direct_costs"`, Nottingham `relationships` fees/contingency). **Unit-capital lines** receive only contingency on the same terms. Percent-of-purchased-equipment factors are never stretched over an installed or package price.
+- **Inclusion records** (`scope.INCLUSION_MATRIX` merged with each line's `included_categories` / `provenance["excluded_categories"]`) list included, excluded and unknown categories. Unknown means "not applied, reported in `scope_gaps`", never zero and never assumed included.
+- **Result fields:** `scope_subtotals` (one per scope; scopes are never summed before factors), `inclusion_records`, `scope_gaps`, `double_count_checks`, `breakdown` (17 categories: purchased equipment, installation, piping, I&C, electrical, civil/structural, buildings, yard/utilities/offsites, environmental, land, engineering and supervision, construction overheads, contractor fee, contingency, owner's costs, start-up, working capital, plus Lang overall and pre-costed scope rows) and `breakdown_gaps`. Each breakdown row carries its factor(s), fraction × base, source page, a provisional flag and an AI-suggested flag. A category without a registered source factor is `gap` with no amount. Owner's costs are a gap in every current method.
 
 ## Canonical connector — prepared, not activated
 
