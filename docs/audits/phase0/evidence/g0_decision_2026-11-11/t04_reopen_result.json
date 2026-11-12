@@ -1,0 +1,18 @@
+{
+  "criterion": "T-04 (roadmap paragraph 82): saved project revisions reopen without modifying the original baseline",
+  "date": "2026-11-11",
+  "code_commit": "84800bebe92bd55563801a2a6bf111a043712487",
+  "dataset": "Local historical assessment store from 5 November 2026 (outputs/before-tank-pd-test-20261105T193219Z/assessments.sqlite3). Private; not committed. Probe ran on a byte copy.",
+  "source_sha256_unchanged_after_run": true,
+  "assessments": 28,
+  "named_versions": 2,
+  "assessment_reads_via_api_ok": 28,
+  "assessment_reads_failed": 0,
+  "named_versions_opened_via_api": 2,
+  "opened_versions_record_parent_version": true,
+  "new_editable_copies_created": 2,
+  "original_assessment_rows_changed": 0,
+  "original_version_rows_changed": 0,
+  "method": "SHA-256 of every assessment state, workbook blob and version state before and after GET /api/assessments/{id} for all 28 and POST /api/versions/{id}/open for both versions, using FastAPI TestClient with AI and cloud disabled.",
+  "not_covered": "Hosted (Supabase) restore and two-user isolation remain Phase 8 (R17)."
+}
