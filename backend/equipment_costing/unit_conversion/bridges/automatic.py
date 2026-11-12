@@ -467,6 +467,21 @@ def direct_maximum(report, row):
     }
 
 
+def _has_saved_inputs(conversion):
+    """A disabled conversion that holds no inputs is only a model reference
+    (written when a model is chosen), not user inputs to preserve."""
+    if not conversion:
+        return False
+    return bool(
+        conversion.get("enabled")
+        or conversion.get("inputs")
+        or conversion.get("derivations")
+        or conversion.get("thermal_basis")
+        or conversion.get("method")
+        or conversion.get("recipe")
+    )
+
+
 def resolve(
     report,
     plan,
@@ -530,7 +545,7 @@ def resolve(
                 )
             continue
         if (
-            row.get("unit_conversion")
+            _has_saved_inputs(row.get("unit_conversion"))
             or row.get("sizing")
             or row.get("size") is not None
         ):
@@ -655,8 +670,11 @@ def resolve(
         )
         return plan, audits
     by_key = {r["equipment_key"]: r for r in rows}
+    from backend.blocks.progress import step
+
     for start in range(0, len(pending), 4):
         group = pending[start : start + 4]
+        step("Proposing sizing inputs (AI)", start, len(pending))
         transport = []
         for item in group:
             water_balance_available = any(

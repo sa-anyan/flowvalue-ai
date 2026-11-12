@@ -63,6 +63,9 @@ export type StageProps = {
    */
   advance: (prepare?: () => Promise<void>, upstream?: string[]) => Promise<void>;
   go: (stage: StageId) => void;
+  /** Let the AI propose missing sizing inputs when equipment runs (provisional, reviewable). */
+  aiSizing: boolean;
+  setAiSizing: (on: boolean) => void;
 };
 
 export function GuidedFlow() {
@@ -70,6 +73,7 @@ export function GuidedFlow() {
   const equipment = useDraft<Row[]>(hook, 'equipment', []);
   const capex = useDraft<Row>(hook, 'capex', {});
   const operating = useDraft<Row>(hook, 'operating_economics', {});
+  const [aiSizing, setAiSizing] = useState(true);
   const [stage, setStage] = useState<StageId>('entry'),
     [dir, setDir] = useState<'forward' | 'back'>('forward'),
     [dark, setDark] = useState(false),
@@ -117,16 +121,18 @@ export function GuidedFlow() {
           await api(`assessments/${hook.id}/stages/${name}/run`, post({ use_ai: false }));
           await waitUntilIdle(hook.id);
         }
-        await api(`assessments/${hook.id}/stages/${backend}/run`, post({ use_ai: false }));
+        // Only the equipment run may use AI, and only to propose missing sizing inputs.
+        const useAi = backend === 'equipment' && aiSizing && hook.aiEnabled;
+        await api(`assessments/${hook.id}/stages/${backend}/run`, post({ use_ai: useAi }));
       });
       if (ok) go(target);
     },
-    [stage, hook, go],
+    [stage, hook, go, aiSizing],
   );
   const state = hook.state,
     receipts = obj(state?.stage_runs),
     stages = obj(obj(state?.results).stages);
-  const props: StageProps = { hook, equipment, capex, operating, advance, go };
+  const props: StageProps = { hook, equipment, capex, operating, advance, go, aiSizing, setAiSizing };
   const current = guidedStages[stageIndex(stage)];
   return (
     <div className={`gf ${dark ? 'dark' : ''}`} data-stage={stage}>
@@ -176,12 +182,7 @@ export function GuidedFlow() {
           </button>
         </div>
       </div>
-      {state?.running && (
-        <div className="gf-running" role="status" aria-live="polite">
-          <i aria-hidden="true" />
-          {String(state.status || 'Python is calculating')}…
-        </div>
-      )}
+      {state?.running && <RunProgress id={hook.id} fallback={String(state.status || 'Python is calculating')} />}
       {state?.parent_version && (
         <p className="gf-banner" role="note">
           You are editing a <strong>scenario copy</strong>. The baseline assessment is unchanged.
@@ -206,6 +207,65 @@ export function GuidedFlow() {
         {stage === 'revenue' && <RevenuePlayground {...props} />}
         {stage === 'financial' && <FinancialPlayground {...props} />}
       </main>
+    </div>
+  );
+}
+
+const STAGE_LABEL: Record<string, string> = {
+  engineering_data: 'Reading engineering data',
+  equipment_preparation: 'Preparing equipment',
+  equipment: 'Pricing equipment',
+  capex: 'Calculating CAPEX',
+  opex: 'Calculating OPEX',
+  revenue: 'Calculating revenue',
+  financial: 'Calculating cash flow',
+};
+
+/** Live progress of the running stage: step, count and elapsed time (polled from memory, about once a second). */
+export function RunProgress({ id, fallback }: { id: string; fallback: string }) {
+  const [live, setLive] = useState<Row | null>(null);
+  useEffect(() => {
+    let disposed = false,
+      timer: ReturnType<typeof setTimeout>;
+    async function poll() {
+      try {
+        const next = await api<Row>(`assessments/${id}/progress`);
+        if (!disposed) setLive(next);
+      } catch {
+        /* keep the last known step */
+      }
+      if (!disposed) timer = setTimeout(poll, 1000);
+    }
+    void poll();
+    return () => {
+      disposed = true;
+      clearTimeout(timer);
+    };
+  }, [id]);
+  const done = typeof live?.done === 'number' ? live.done : null,
+    total = typeof live?.total === 'number' && live.total > 0 ? live.total : null;
+  const share = done !== null && total ? Math.min(1, done / total) : null;
+  const seconds = typeof live?.elapsed_seconds === 'number' ? Math.round(live.elapsed_seconds) : null;
+  const elapsed = seconds === null ? '' : `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+  const stage = STAGE_LABEL[String(live?.stage)] || '';
+  return (
+    <div className="gf-running" role="status" aria-live="polite">
+      <i aria-hidden="true" />
+      <span className="gf-progress-text">
+        <b>{live?.running ? stage || fallback : fallback}</b>
+        {live?.running && live.step ? <span> · {String(live.step)}{total ? ` · ${done} of ${total}` : ''}</span> : null}
+      </span>
+      <span
+        className={`gf-progress ${share === null ? 'gf-progress-busy' : ''}`}
+        role="progressbar"
+        aria-label="Calculation progress"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={share === null ? undefined : Math.round(share * 100)}
+      >
+        <span style={share === null ? undefined : { width: `${Math.max(4, share * 100)}%` }} />
+      </span>
+      {elapsed && <span className="gf-progress-time">{elapsed}</span>}
     </div>
   );
 }

@@ -8,6 +8,9 @@ from backend.blocks.models import Product, DataRequired
 def calculate(ctx):
     if not ctx.content:
         raise DataRequired("Data required: upload a mass and energy balance workbook.")
+    from backend.blocks.progress import step
+
+    step("Reading the workbook")
     parsed = parse(ctx.content, ctx.state["filename"])
     report = parsed["report"]
     updates = {
@@ -19,6 +22,7 @@ def calculate(ctx):
     if ctx.use_ai:
         from backend.orchestration.workbook_review import review
 
+        step("AI reviewing the workbook")
         try:
             from backend.orchestration.provider import EngineeringProvider
 

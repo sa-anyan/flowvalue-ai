@@ -336,3 +336,16 @@ polyline.gf-tone-c { stroke: var(--gf-tone-c); }
 .gf-qm-options .gf-link { grid-column: 1 / -1; justify-self: start; font-size: 12px; }
 .gf-qm-item > .gf-link { justify-self: start; font-size: 12px; }
 @media (max-width: 600px) { .gf-qm-options { grid-template-columns: 1fr; } }
+
+/* Live stage progress */
+.gf-running .gf-progress-text { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gf-progress { position: relative; flex: 0 1 220px; height: 6px; border-radius: 999px; background: color-mix(in srgb, var(--gf-source) 18%, var(--gf-surface)); overflow: hidden; }
+.gf-progress > span { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit; background: var(--gf-source); transition: width 0.4s ease; }
+.gf-progress-busy > span { width: 35%; animation: gf-progress-slide 1.4s ease-in-out infinite; }
+@keyframes gf-progress-slide { 0% { left: -35%; } 100% { left: 100%; } }
+.gf-progress-time { font-variant-numeric: tabular-nums; color: var(--gf-muted); }
+@media (max-width: 600px) { .gf-progress { flex-basis: 80px; } .gf-running { flex-wrap: wrap; padding: 8px 16px; } }
+@media (prefers-reduced-motion: reduce) { .gf-progress-busy > span { animation: none; width: 100%; opacity: 0.4; } }
+.gf-qm-error { font-size: 12px; padding: 4px 10px; }
+.gf-run-status { display: grid; gap: 4px; }
+.gf-run-ai { font-size: 12px; font-weight: 400; }
