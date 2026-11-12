@@ -28,8 +28,13 @@ def review_registers(report):
         )
         validate(scoped)
         # Register graph, rather than a name-only heuristic, owns connectivity issues.
+        # A sheet holding only equipment (for example a unit identified on a cover
+        # page) is not evidence that the workbook lacks stream tables.
+        has_streams = any(e.kind == "material" for e in report.entities)
         report.issues.extend(
-            i for i in scoped.issues if i.code != "unresolved_connection"
+            i for i in scoped.issues
+            if i.code != "unresolved_connection"
+            and not (i.code == "missing_material_streams" and has_streams)
         )
         report.checks.extend(scoped.checks)
     for stream in [e for e in report.entities if e.kind == "material"]:

@@ -169,3 +169,31 @@ def test_unit_excluded_by_decision_is_shown_in_basis_of_estimate(capex_study):  
         {"label": "RO / reverse osmosis unit", "decision": "out_of_scope", "basis": "Site supplies purified water"}]
     assert not any("Possibly missing" in i for i in boe["open_items"])
     assert "Units excluded by decision: RO / reverse osmosis unit (out_of_scope: Site supplies purified water)" in render_markdown(boe)
+
+
+def test_ro_models_with_implausible_coefficients_are_held():
+    """Merged-code PEM run: an RO unit was priced at US$0.90 by a Seider RO model."""
+    from backend.equipment_costing.indexes.openpytea.adapter import estimate_cost
+    from backend.equipment_costing.indexes.openpytea.registry import catalogue
+
+    for key in ("openpytea:osmosis_brackish_seider_2013", "openpytea:osmosis_seawater_seider_2013"):
+        model = catalogue()[key]
+        assert model["status"] == "disabled"
+        assert any("FlowValue hold" in r for r in model["disabled_reasons"])
+        with pytest.raises(ValueError, match="MODEL_DISABLED"):
+            estimate_cost(key, 0.2, size_unit="US_MGD", allow_unverified=True)
+
+
+def test_equipment_only_sheet_does_not_claim_the_workbook_has_no_streams():
+    from backend.ingestion.balance.models import BalanceReport
+    from backend.ingestion.workbook_pipeline import review_registers
+
+    report = BalanceReport.model_validate(parse(_workbook(), "ro.xlsx")["report"])
+    equipment = next(e for e in report.entities if e.kind == "equipment").model_copy(deep=True)
+    equipment.key = "cover:RO"
+    equipment.identifier = "RO"
+    equipment.id_evidence = equipment.id_evidence.model_copy(update={"sheet": "Cover Page"})
+    report.entities.append(equipment)
+    report.issues = []
+    review_registers(report)
+    assert not [i for i in report.issues if i.code == "missing_material_streams"]
