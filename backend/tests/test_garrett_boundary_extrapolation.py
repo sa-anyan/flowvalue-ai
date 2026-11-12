@@ -5,6 +5,10 @@ from backend.equipment_costing.registry import estimate_cost, list_equipment_mod
 
 
 def cost(identifier, size, **options):
+    # This module tests the downward-extrapolation path, which since the
+    # founder's minimum-size floor decision (11 Nov 2026) is an explicit
+    # per-item choice. The floor itself is tested in test_below_range_floor.py.
+    options.setdefault("below_range_policy", "extrapolate")
     model = next(m for m in list_equipment_models() if m["id"] == identifier)
     return estimate_cost(identifier, size, size_unit=model["size_unit"], **options)
 

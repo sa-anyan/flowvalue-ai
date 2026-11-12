@@ -120,7 +120,9 @@ class GarrettIntegrationTests(unittest.TestCase):
 
     def test_printed_exponent_boundary_and_lower_anchor(self):
         for size, bound in [(0.1, 1), (1000, 200)]:
-            r = self.cost("G259-009", size, allow_unverified=True)
+            # Below the chart, extrapolation is now an explicit choice; the
+            # default minimum-size floor is tested in test_below_range_floor.py.
+            r = self.cost("G259-009", size, allow_unverified=True, below_range_policy="extrapolate")
             self.assertTrue(r.estimate.extrapolated)
             self.assertEqual(r.estimate.anchor_size, bound)
             self.assertAlmostEqual(
