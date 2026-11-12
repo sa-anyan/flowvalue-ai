@@ -62,10 +62,13 @@ def _inputs(state, block):
             "process": state.get("process_description", state.get("description", "")),
         }
     if block == "equipment":
-        return {
+        inputs = {
             "equipment": plan.get("equipment", []),
             "translation": plan.get("cost_translation"),
         }
+        if plan.get("register_review"):  # only when used, so saved studies keep their hash
+            inputs["register_review"] = plan["register_review"]
+        return inputs
     if block == "capex":
         return {
             "capex": plan.get("capex", {}),

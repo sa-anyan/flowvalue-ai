@@ -207,7 +207,9 @@ def test_run_to_run_agreement_is_measured_per_item():
     assert result["share_identical"] == 0.5
     assert result["per_item"]["T-1"] == {"distinct_decisions": 2, "modal_share": 0.667}
     line = {"equipment_tag": "P-1", "curve_id": "m1", "decision": {"conceptual_matching": {"match_status": "matched"}}}
-    assert decisions({"equipment": [line]}) == {"P-1": ("m1", "matched")}
+    assert decisions({"equipment": [line]}) == {"P-1": ("m1", "matched", False)}
+    line["amount"] = "10"
+    assert decisions({"equipment": [line]}) == {"P-1": ("m1", "matched", True)}
     import pytest as _pytest
     with _pytest.raises(ValueError):
         agreement([run_a])

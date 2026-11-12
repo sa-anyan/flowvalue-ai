@@ -142,6 +142,10 @@ def study_checks(db, key):
             for name, t in boe["coverage"]["tiers"]["tiers"].items()
         },
         "assumption_kinds": boe["coverage"]["tiers"]["assumption_kinds"],
+        "register_completeness": {
+            "status": (boe["coverage"].get("register_completeness") or {}).get("status"),
+            "possibly_missing_families": len((boe["coverage"].get("register_completeness") or {}).get("possibly_missing") or []),
+        },
         "meets_target_without_assumptions": boe["coverage"]["tiers"]["meets_coverage_target_without_assumptions"],
         "unpriced_significance": {
             k: boe["coverage"]["unpriced_significance"].get(k)

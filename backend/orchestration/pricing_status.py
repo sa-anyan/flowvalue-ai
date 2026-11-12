@@ -259,5 +259,15 @@ def annotate(result, report, plan):
         if match:
             row["coverage_tier"] = {k: match[k] for k in ("tier", "reasons", "source_caveats")}
     tiers.pop("lines")
+    # Held-out finding 3: units the source names but the register lacks.
+    from backend.equipment_resolution.register_completeness import check as register_check
+
+    completeness = register_check(report, "", plan)
+    coverage["register_completeness"] = completeness
+    if completeness["possibly_missing"]:
+        coverage["complete"] = False
+        tiers["meets_coverage_target_without_assumptions"] = False
+        tiers["register_completeness"] = "unconfirmed: " + ", ".join(
+            f["label"] for f in completeness["possibly_missing"])
     coverage["tiers"] = tiers
     coverage["unpriced_significance"] = unpriced_significance(canonical)

@@ -12,15 +12,18 @@ import tempfile
 from collections import Counter
 from pathlib import Path
 
-FIELDS = ("selected_model_id", "match_status")
+FIELDS = ("selected_model_id", "match_status", "priced")
 
 
 def decisions(equipment_result):
-    """{equipment_tag: (selected_model_id, match_status)} from a saved equipment result."""
+    """{equipment_tag: (selected_model_id, match_status, priced)} from a saved equipment result."""
     out = {}
     for line in equipment_result.get("equipment") or []:
         match = (line.get("decision") or {}).get("conceptual_matching") or {}
-        out[line.get("equipment_tag")] = (line.get("curve_id"), match.get("match_status"))
+        # Matching alone missed held-out variance in input routing (an item priced in one
+        # run and unpriced in the next), so the priced outcome is part of the decision.
+        out[line.get("equipment_tag")] = (line.get("curve_id"), match.get("match_status"),
+                                          line.get("amount") is not None)
     return out
 
 

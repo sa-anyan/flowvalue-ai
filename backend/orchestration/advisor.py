@@ -11,7 +11,7 @@ from backend.revenue.advisor import TEXT, obj, validate_shape
 from .codec import plain
 from .pipeline import SECTIONS, contracts, source_streams
 
-PROMPT_VERSION = "engineering-orchestrator-5-typed-capital-summary"
+PROMPT_VERSION = "engineering-orchestrator-6-workbook-design-basis"
 SCHEMA = obj(
     {
         "sections": {
@@ -160,6 +160,8 @@ def propose(
     for m in models:
         for option in list_factors(m["id"]):
             factor_options[option["id"]] = option
+    from backend.ingestion.design_basis import extract as design_basis
+
     cells = parsed["source_cells"]
     report = parsed.get("effective_report", parsed["report"])
     context = {
@@ -214,6 +216,9 @@ def propose(
         "scope_notes": report.get("scope_notes", []),
         "product_candidates": report.get("product_candidates", []),
         "source_cells_truncated": parsed["source_cells_truncated"],
+        # Held-out finding 2: workbook parameter tables (design basis) reach the
+        # AI with their cells, so it uses stated values before proposing its own.
+        "workbook_design_basis": design_basis(cells),
         "plan": plan,
         "locked_sections": locked,
         "available_models": models if "equipment" in requested_sections else [],
@@ -238,6 +243,7 @@ def propose(
             "capex": "CapexInputs fields except equipment; add model_id and delivery_basis.",
             "revenue": "User-stated commercial_intent governs revenue. Product sales only when explicitly stated; service, capacity, usage, credits and contractual payments use their own categories. Physical quantities reference the parser.",
             "opex": "OpexInputs; capital/revenue bases automatically recomputed, all categories reviewed or explicitly excluded.",
+            "workbook_design_basis": "Values the workbook itself states in parameter tables (id = worksheet!cell). Before proposing any quantity, specific energy, recovery, property or temperature, check this list. Use the stated value and cite its id in source/evidence and rationale. If you deliberately use a different value, keep the workbook value visible and say why in the rationale. Never write that a value is not provided when it appears here.",
             "financial": "{project_id,assumptions:FinancialAssumptions,capital_spend:[Spend],depreciation_policies:{direct:DepreciationPolicy,indirect:...,offsite:...,startup:...},disposal_proceeds:{same keys:Money},year_map:{revenueYear:financialYear},price_year,startup_treatment,working_capital_funding_year,selling_cost_reconciliation}",
         },
     }

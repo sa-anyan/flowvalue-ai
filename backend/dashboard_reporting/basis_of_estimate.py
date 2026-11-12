@@ -172,6 +172,15 @@ def build_basis_of_estimate(state):
         canonical, unpriced_tags,
         (estimate_class.get("class_characteristics") if estimate_class.get("status") != "invalid_input" else None),
     )
+    completeness = (equipment_view.get("pricing_coverage") or {}).get("register_completeness") or {}
+    if completeness.get("possibly_missing"):
+        tiers["meets_coverage_target_without_assumptions"] = False
+        tiers["register_completeness"] = "unconfirmed"
+        for item in completeness["possibly_missing"]:
+            open_items.append(
+                f"Possibly missing equipment: {item['label']} is named in the source "
+                f"({len(item['evidence'])} mentions) but is not in the register, so it is neither priced nor "
+                "counted as unpriced. Add it, or record why it is not separate equipment")
     assumed = tiers["tiers"]["assumption_based"]
     if assumed["items"]:
         share = assumed["fraction_of_priced_value"]
@@ -212,7 +221,8 @@ def build_basis_of_estimate(state):
             "unpriced_equipment": unpriced,
             "scope_subtotals": capex.get("scope_subtotals"),
         },
-        "coverage": {"tiers": tiers, "unpriced_significance": significance},
+        "coverage": {"tiers": tiers, "unpriced_significance": significance,
+                     "register_completeness": completeness or None},
         "methodology": {
             "capex_method": capex.get("model_id"),
             "process_type": capex.get("process_type"),
@@ -309,6 +319,11 @@ def render_markdown(boe):
             out += ["Source caveats (do not change the tier): " + ", ".join(f"{k} {v}" for k, v in caveats.items()) + "."]
         out += ["", f"Source-supported or user-evidence items: {float(tiers['supported_fraction'] or 0):.0%} "
                 f"(target {float(tiers['coverage_target']):.0%}). {tiers['notice']}"]
+    completeness = cov.get("register_completeness") or {}
+    if completeness.get("possibly_missing"):
+        out += ["", "### Possibly missing equipment", "",
+                "Named in the source but not in the register, so not priced and not counted as unpriced:"]
+        out += [f"- **{m['label']}**: " + "; ".join(e['text'] for e in m["evidence"][:3]) for m in completeness["possibly_missing"]]
     sig = cov.get("unpriced_significance") or {}
     if sig.get("status") == "assessed":
         share = sig["share_of_priced_equipment"]

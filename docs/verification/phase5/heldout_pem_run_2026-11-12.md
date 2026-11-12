@@ -20,7 +20,7 @@
 | CAPEX | Ready; 4 of 4 double-count checks pass; reconciles; Class 5 (no declarations); fixed capital ÷ equipment 2.51. **The RO unit is missing** (finding 3) |
 | Revenue, finance | Stop and ask for a Revenue Box: correct behaviour |
 | OPEX | Ready (partial). Electricity basis wrong by 0.9% (finding 2) |
-| Run-to-run variance (M5.7) | 3 uncached runs: 2 of 2 items gave identical decisions every run (share identical 1.0) |
+| Run-to-run variance (M5.7) | Matching only: 3 uncached runs gave identical model choices for 2 of 2 items. **With the priced outcome added (see finding 9): 1 of 2 items differs across runs (share identical 0.5)** |
 | AI decision log (M5.6) | Every call logged with model and fingerprints. The matcher's prompt version was missing (finding 6, fixed) |
 
 ## Findings by phase
@@ -28,13 +28,15 @@
 | # | Finding | Phase (milestone) | Owner | Status |
 |---|---|---|---|---|
 | 1 | **A valid .xlsx was rejected as "Malformed or unsupported Excel workbook".** The writer omitted the optional `<dimension>` record, so read-only openpyxl reports no sheet size and `rows × cols` raised `TypeError`. The generic message hid the cause | **P2** (workbook ingestion) | E2 area; fixed by E1 | **Fixed:** the sheet is measured when the size is absent, and limits still apply. `test_workbook_missing_dimension.py` |
-| 2 | **Design-basis tables are not parsed.** Mass Balance 1, Energy Balance 1 and Sources and Assumptions are standard "Parameter / Value / Unit" tables, but they are skipped as "no supported engineering table". Their values (55.5 kWh/kg, 85% RO recovery, coolant Cp 4.18, temperatures) never reach the AI. **Effect:** the OPEX AI said "No measured electrical duty is provided" and assumed 55 kWh/kg (0.9% low), and the exchanger Cp was AI-estimated although the workbook states it | **P2** (data architecture); seen in **P4/P5** (grounded accuracy) | E2 (parser), E1 (handoff into AI context) | **Open; highest priority** |
-| 3 | **An untagged unit is missing from the register and the CAPEX.** The RO unit is named in three stream descriptions and on the cover page. The AI review noticed it in a scope note ("No separate RO equipment tag…") but did not register it. CAPEX then reports 100% coverage and no unpriced items, so the missing unit is concealed by the metric | **P2** (M2.6 identification), **P3** (completeness guard: G3's core claim), **P5** (workbook-engineer specialist) | E2 (identification), E1 (P3 guard, P5 prompt) | **Open; blocks G3** |
+| 2 | **Design-basis values never reached the AI.** (Root cause corrected: the parser does keep these cells; the OPEX/CAPEX AI context listed a cell layout but never included the cells.) Mass Balance 1, Energy Balance 1 and Sources and Assumptions are standard "Parameter / Value / Unit" tables, but they are skipped as "no supported engineering table". Their values (55.5 kWh/kg, 85% RO recovery, coolant Cp 4.18, temperatures) never reach the AI. **Effect:** the OPEX AI said "No measured electrical duty is provided" and assumed 55 kWh/kg (0.9% low), and the exchanger Cp was AI-estimated although the workbook states it | **P2** (data architecture); seen in **P4/P5** (grounded accuracy) | E1 | **Fixed:** `ingestion/design_basis.py` extracts parameter tables with their cells; the AI receives them as `workbook_design_basis` with an instruction to cite them (prompt `engineering-orchestrator-6`). Verified: the AI now cites Mass Balance 1!C9, 55.5 kWh/kg, 5,550 kW |
+| 3 | **An untagged unit is missing from the register and the CAPEX.** The RO unit is named in three stream descriptions and on the cover page. The AI review noticed it in a scope note ("No separate RO equipment tag…") but did not register it. CAPEX then reports 100% coverage and no unpriced items, so the missing unit is concealed by the metric | **P2** (M2.6 identification), **P3** (completeness guard: G3's core claim), **P5** (workbook-engineer specialist) | E1 (guard); E2 (identification) | **Guard fixed:** `register_completeness.py` flags equipment families named in source text but absent from the register. Coverage is then not complete, the 95% target is not met, and the Basis of Estimate lists the unit. Cleared by adding the unit or recording a decision with a basis (`plan.register_review`). Verified: RO flagged. Registering untagged units automatically (E2) is still open |
 | 4 | **Composition check is inconsistent.** The workbook's "mol %" columns hold fractions (1 = 100%). FlowValue flagged streams 5–7 ("sum to 0.01, not 1") but not streams 1–4, which have the same issue | **P2** (validation) | E2 | Open |
 | 5 | **The workbook's own Balance Check sheet is not recognised.** All FlowValue mass and energy checks are "unresolved" because no boundary is declared | **P2/P6** (supported formats) | E2 | Open (limitation) |
 | 6 | **Matcher prompt version missing from the AI decision log.** The matcher uses the key `task`. The revenue call carries no version key in its request; its instructions fingerprint still pins the prompt | **P5** (M5.6) | E1 | **Fixed** (`task` recognised); revenue: minor, open |
 | 7 | **The AI under-staffs continuous operation again:** 4 operator FTEs for 24 h × 314 days, the same as Charlie's F2. This is a systematic tendency of the operating adviser | **P4/P5** | E1 | Open |
 | 8 | The AI added an RO and balance-of-plant electricity allowance (0.5 kWh/kg) that the workbook explicitly excludes. **Disclosed** in its rationale | P4/P5 (boundary behaviour) | Founder review | Review item, not a defect |
+
+| 9 | **Unstable AI input routing.** In a post-fix verification run, the input router did not bind EL-101's size to the dry-H2 stream ("a hydrogen production measurement… is needed"), so EL-101 was unpriced. In the held-out run it was priced. Three uncached repeats: 1 of 2 items differs. The variance tool measured matching only, so it missed this; it now includes the priced outcome | **P5** (M5.7 repeatability), affects **P3** coverage | E1 | Open: needs a deterministic fallback when a linked stream has the required property |
 
 **Workbook-side issues** for the workbook's author: the "mol %" columns contain fractions, and the coolant streams' h column shows hydrogen HHV values.
 
@@ -51,3 +53,13 @@
 
 - **G3, R3 (held-out coverage): not met.** The run shows 100% coverage, but against an incomplete register (finding 3). Fix finding 3, then re-run.
 - **G5:** the guard suite holds and variance is stable. One grounded-accuracy failure (finding 2) traces to the parser, not the model. **Critical approval-bypass failures: 0.** Thresholds for noncritical errors are still to be set by engineering experts.
+
+## Post-fix verification run (not the held-out evaluation)
+
+After fixing findings 2 and 3, the workbook was run again on a fresh scratch database. This run verifies the fixes; it is not counted as held-out evidence.
+
+- **Design basis:** the AI cites Mass Balance 1!C9 and uses 55.5 kWh/kg; the RO electricity it had added is gone.
+- **Register completeness:** the RO unit is flagged, coverage is not complete, and the Basis of Estimate shows the open item.
+- **New finding 9:** EL-101 was unpriced in this run because of unstable input routing.
+
+Tests: `test_heldout_fixes.py` (6), `test_workbook_missing_dimension.py` (2), and the variance test updated. Full backend suite: 4,353 passed, 3 skipped.
