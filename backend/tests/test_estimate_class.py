@@ -156,3 +156,10 @@ def _study(tmp_path):
     state.update(running=False, plan=plan_for(report))
     state = store.put(state, state["revision"])
     return store, state["id"]
+
+
+def test_floor_key_with_none_value_is_not_counted():
+    """Saved lines can carry below_range_floor=None when no floor applied."""
+    result = propose_estimate_class(equipment_lines=[
+        line("A", below_range_floor=None), line("B", below_range_floor={"size_ratio": 3})])
+    assert result["costing_evidence"]["minimum_size_floor"] == 1
