@@ -5,6 +5,7 @@ import { equipmentCards, list, obj, text, type EquipmentCardModel, type Row } fr
 import { api, post } from './use-assessment';
 import { EquipmentInspector } from './equipment-inspector';
 import { OriginChip, Panel, RunBar, type StageProps } from './flow';
+import { matchChip, pending, QuickMatchPanel, useQuickMatches } from './quick-match';
 
 const WORKBOOK = /\.(xlsx|xls|xlsm)$/i;
 
@@ -77,6 +78,17 @@ export function EntryBoard(props: StageProps) {
     if (!approved) return setConfirm(true);
     void props.advance(() => equipment.save('User reviewed equipment parameters on the guided Entry board'));
   };
+  // Quick match: deterministic, no AI. Pops up once per assessment when items need a model.
+  const matches = useQuickMatches(hook.id, state?.revision, cards.length > 0 && !state?.running);
+  const matchByKey = useMemo(() => new Map((matches?.matches || []).map((m) => [m.equipment_key, m])), [matches]);
+  const awaiting = (matches?.matches || []).filter(pending).length;
+  const [quickOpen, setQuickOpen] = useState(false),
+    [quickSeen, setQuickSeen] = useState<string | null>(null);
+  useEffect(() => {
+    if (!matches || !hook.id || quickSeen === hook.id) return;
+    if (matches.matches.some((m) => pending(m) && m.options.length)) setQuickOpen(true);
+    setQuickSeen(hook.id);
+  }, [matches, hook.id, quickSeen]);
   const counts = {
     total: cards.length,
     matched: cards.filter((c) => c.status !== 'unmatched').length,
@@ -174,6 +186,11 @@ export function EntryBoard(props: StageProps) {
               {counts.total} items · {counts.matched} with a cost model · {counts.inputs} need inputs
             </span>
           )}
+          {matches && (
+            <button type="button" className="gf-secondary gf-qm-open" onClick={() => setQuickOpen(true)}>
+              Quick match{awaiting ? ` · ${awaiting} to confirm` : ' · all confirmed'}
+            </button>
+          )}
         </div>
         {empty && (
           <div className="gf-placeholder">
@@ -203,6 +220,10 @@ export function EntryBoard(props: StageProps) {
                 </span>
                 <span className="gf-card-name">{c.name}</span>
                 <span className="gf-card-model">{c.model}</span>
+                {(() => {
+                  const chip = matchChip(matchByKey.get(c.key));
+                  return chip && <span className={`gf-qm-tag gf-qm-${chip.tone}`}>{chip.label}</span>;
+                })()}
                 <span className="gf-card-foot">
                   <OriginChip origin={c.modelOrigin === 'ai' ? 'AI · provisional' : c.modelOrigin === 'user' ? 'Your input' : 'Unreviewed'} />
                   <small>
@@ -231,6 +252,19 @@ export function EntryBoard(props: StageProps) {
         />
       )}
 
+      {quickOpen && matches && (
+        <QuickMatchPanel
+          key={`${hook.id}-${matches.revision}`}
+          result={matches}
+          props={props}
+          onClose={() => setQuickOpen(false)}
+          onInspect={(key) => {
+            const card = cards.find((c) => c.key === key);
+            setQuickOpen(false);
+            if (card) setSelected({ card, mode: 'inspect' });
+          }}
+        />
+      )}
       {selected && (
         <EquipmentInspector
           key={selected.card.key}
