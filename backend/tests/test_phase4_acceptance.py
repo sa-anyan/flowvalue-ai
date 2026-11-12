@@ -237,3 +237,43 @@ def test_contract_calendar_is_a_revenue_input_only_when_terms_exist():
     assert "contract_calendar" not in _inputs(state, "revenue")
     config["commercial_lines"][0]["contract_term"] = {"end_year": 2030, "basis": "x"}
     assert _inputs(state, "revenue")["contract_calendar"] == {"construction_years": 1, "calendar_start_year": 2025}
+
+
+# --- M4.1: payment owner and escalation basis on every OPEX line ---
+
+
+def _opex_study(**material_changes):
+    report, config, _ = operating_fixture()
+    config["materials"][0].update(material_changes)
+    return _run(report, config)
+
+
+def test_every_opex_line_records_payment_owner_and_escalation_basis():
+    result = _opex_study()
+    for opex in result["opex"].values():
+        for line in opex.lines:
+            if not line.id.startswith(("feed:", "energy:", "staff:", "other:")):
+                continue  # lines FlowValue generates (allowances, financing)
+            assert "payment owner: project" in line.evidence, line.id
+            assert any(e.startswith("escalation basis: ") for e in line.evidence), line.id
+    custom = _opex_study(escalation_basis="Supplier contract indexed to CPI from 2027")
+    line = next(l for l in custom["opex"][1].lines if l.id == "feed:acid")
+    assert "escalation basis: Supplier contract indexed to CPI from 2027" in line.evidence
+
+
+def test_cost_paid_by_customer_is_shown_but_not_in_project_opex():
+    base = _opex_study()
+    acid = next(l for l in base["opex"][1].lines if l.id == "feed:acid")
+    paid = _opex_study(payment_owner="customer", payment_owner_basis="Customer supplies acid under the treatment contract")
+    assert all(l.id != "feed:acid" for l in paid["opex"][1].lines)
+    others = paid["detail"]["years"][1]["paid_by_others"]
+    assert [o["id"] for o in others] == ["feed:acid"] and others[0]["payment_owner"] == "customer"
+    assert D(others[0]["amount"]) == acid.amount
+    assert paid["opex"][1].annual_cash_opex < base["opex"][1].annual_cash_opex
+
+
+def test_payment_owner_needs_a_valid_owner_and_basis():
+    with pytest.raises(ValueError, match="needs payment_owner_basis"):
+        _opex_study(payment_owner="third_party")
+    with pytest.raises(ValueError, match="payment_owner must be one of"):
+        _opex_study(payment_owner="government", payment_owner_basis="x")

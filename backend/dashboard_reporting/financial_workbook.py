@@ -20,7 +20,7 @@ import json
 from decimal import Decimal, InvalidOperation
 from io import BytesIO
 
-VERSION = "financial-workbook-1"
+VERSION = "financial-workbook-2"
 TOLERANCE = Decimal("1e-9")  # relative, per check
 
 CASH_FLOW_ROWS = (
@@ -207,6 +207,46 @@ def build_financial_workbook(state):
         put(op, i, 2, values.get("cash_fixed"))
         put(op, i, 3, values.get("cash_variable"))
         put(op, i, 4, values.get("annual_cash_opex"))
+
+    # OPEX lines (first operating year): who pays, escalation basis, source
+    lines_sheet = book.create_sheet("OPEX lines")
+    first = sorted((opex.get("years") or {}), key=int)[:1]
+    heads = ("Line", "Category", "Behaviour", "Quantity", "Quantity unit", "Rate", "Rate unit",
+             "Amount", "Payment owner", "Escalation basis", "Source")
+    for j, head in enumerate(heads, 1):
+        lines_sheet.cell(row=1, column=j, value=head).font = bold
+    row = 2
+    if first:
+        year = first[0]
+        lines_sheet.cell(row=row, column=1, value=f"Operating year {year}").font = bold
+        row += 1
+        for line in (opex["years"][year].get("lines") or []):
+            evidence = [str(e) for e in line.get("evidence") or []]
+            tag = lambda prefix: next((e[len(prefix):] for e in evidence if e.startswith(prefix)), "")  # noqa: E731
+            values = (line.get("id"), line.get("category"), line.get("behavior"), line.get("quantity"),
+                      line.get("quantity_unit"), line.get("rate"), line.get("rate_unit"), line.get("amount"),
+                      tag("payment owner: ") or "project (not recorded)", tag("escalation basis: "), line.get("source"))
+            for j, value in enumerate(values, 1):
+                if j in (4, 6, 8):
+                    put(lines_sheet, row, j, value)
+                else:
+                    lines_sheet.cell(row=row, column=j, value=value)
+            row += 1
+        detail = ((opex.get("operating_detail") or {}).get("years") or {}).get(year) or {}
+        others = detail.get("paid_by_others") or []
+        if others:
+            row += 1
+            lines_sheet.cell(row=row, column=1, value="Paid by others (not in project OPEX)").font = bold
+            for other in others:
+                row += 1
+                values = (other.get("id"), other.get("category"), "", other.get("quantity"), "", other.get("rate"),
+                          "", other.get("amount"), other.get("payment_owner"), other.get("escalation_basis"),
+                          other.get("basis"))
+                for j, value in enumerate(values, 1):
+                    if j in (4, 6, 8):
+                        put(lines_sheet, row, j, value)
+                    else:
+                        lines_sheet.cell(row=row, column=j, value=value)
 
     # Reconciliation
     rec = book.create_sheet("Reconciliation")

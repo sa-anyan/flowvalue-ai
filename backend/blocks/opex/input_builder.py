@@ -12,6 +12,10 @@ from backend.orchestration.codec import plain
 from backend.blocks.shared import _a, operating_schedule, production_schedule
 
 
+PAYMENT_OWNERS = ("project", "customer", "third_party")
+DEFAULT_ESCALATION = "Study price basis and financial escalation policy; no line-specific escalation"
+
+
 def _costs_for_year(report, config, basis, hours, ramp, year, *, partial=False):
     costs = []
     detail = {
@@ -20,6 +24,7 @@ def _costs_for_year(report, config, basis, hours, ramp, year, *, partial=False):
         "labour": [],
         "additional_expenses": [],
         "factor_replacements": [],
+        "paid_by_others": [],
     }
     seen = set()
     material_sources = set()
@@ -72,10 +77,29 @@ def _costs_for_year(report, config, basis, hours, ramp, year, *, partial=False):
         amount=None,
         unit="",
         evidence=(),
+        item=None,
     ):
         if key in seen:
             raise ValueError("Duplicate operating expense ID: " + key)
         seen.add(key)
+        # M4.1: who pays, and the escalation basis, are recorded on every line.
+        owner = (item or {}).get("payment_owner") or "project"
+        if owner not in PAYMENT_OWNERS:
+            raise ValueError(key + ": payment_owner must be one of " + ", ".join(PAYMENT_OWNERS))
+        escalation = str((item or {}).get("escalation_basis") or DEFAULT_ESCALATION).strip()
+        evidence = (*tuple(evidence), "payment owner: " + owner, "escalation basis: " + escalation)
+        if owner != "project":
+            # Paid by someone else: shown, never counted in project OPEX.
+            if not str((item or {}).get("payment_owner_basis") or "").strip():
+                raise ValueError(key + ": a cost paid by " + owner + " needs payment_owner_basis")
+            detail["paid_by_others"].append({
+                "id": key, "category": category, "payment_owner": owner,
+                "basis": item["payment_owner_basis"], "quantity": quantity, "rate": rate,
+                "amount": amount if amount is not None else (
+                    decimal(quantity) * decimal(rate) if quantity is not None and rate is not None else None),
+                "escalation_basis": escalation,
+            })
+            return
         costs.append(
             Expense(
                 key,
@@ -158,6 +182,7 @@ def _costs_for_year(report, config, basis, hours, ramp, year, *, partial=False):
                 quantity=quantity,
                 rate=item["unit_price"],
                 unit=item["quantity_unit"],
+                item=item,
             )
             detail["materials"].append(
                 dict(
@@ -186,6 +211,7 @@ def _costs_for_year(report, config, basis, hours, ramp, year, *, partial=False):
                 rate=item["tariff_per_kwh"],
                 unit="kWh",
                 evidence=result["source_evidence"],
+                item=item,
             )
             detail["energy"].append(result)
     for item in config.get("labour", []):
@@ -208,6 +234,7 @@ def _costs_for_year(report, config, basis, hours, ramp, year, *, partial=False):
                     method="headcount_salary",
                     quantity=fte,
                     rate=item["annual_base_salary"],
+                    item=item,
                 )
             detail["labour"].append(
                 dict(
@@ -236,10 +263,21 @@ def _costs_for_year(report, config, basis, hours, ramp, year, *, partial=False):
                 item["uncertainty"],
                 method="fixed_annual",
                 amount=amount,
+                item=item,
             )
             detail["additional_expenses"].append(
                 dict(item, effective_annual_cost=amount)
             )
+    # A category paid entirely by others is an explicit zero for the project.
+    for category in sorted({p["category"] for p in detail["paid_by_others"]} - {c.category for c in costs}):
+        costs.append(
+            Expense(
+                "paid-by-others:" + category, category, "fixed_annual", "fixed", basis,
+                "Every item in this category is paid by another party; see paid_by_others",
+                "Recorded payment owner decision", "As recorded", (category,), amount=0,
+                evidence=("payment owner: others", "escalation basis: not applicable"),
+            )
+        )
     itemized = {c.category for c in costs}
     # Explicit zero allowances only for categories whose study decision is none, never missing coverage.
     for key in ("raw_materials", "utilities", "operating_labor"):

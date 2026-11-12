@@ -40,7 +40,7 @@ def test_workbook_reconciles_and_reads_back(study):
     assert summary["reconciled"] and not summary["readback_mismatches"]
     assert summary["checks"] > 3 and summary["numbers_written"] > 100
     book = openpyxl.load_workbook(BytesIO(content), data_only=True)
-    assert book.sheetnames == ["Summary", "Cash flow", "Revenue", "OPEX", "Reconciliation", "Assumptions", "Sources"]
+    assert book.sheetnames == ["Summary", "Cash flow", "Revenue", "OPEX", "OPEX lines", "Reconciliation", "Assumptions", "Sources"]
     results = [row[7].value for row in book["Reconciliation"].iter_rows(min_row=2) if row[0].value and row[7].value]
     assert results and set(results) == {"pass"}
 
@@ -74,3 +74,11 @@ def test_no_financial_result_no_workbook(study):
     state["results"]["stages"]["financial"]["result"] = {}
     with pytest.raises(ValueError, match="Run the financial stage first"):
         build_financial_workbook(state)
+
+
+def test_opex_lines_sheet_shows_payment_owner_and_escalation(study):
+    content, _ = build_financial_workbook(study)
+    sheet = openpyxl.load_workbook(BytesIO(content), data_only=True)["OPEX lines"]
+    rows = [[c.value for c in r] for r in sheet.iter_rows(min_row=3) if r[0].value]
+    feed = next(r for r in rows if str(r[0]).startswith("feed:"))
+    assert feed[8] == "project" and feed[9].startswith("Study price basis")
