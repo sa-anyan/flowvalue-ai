@@ -135,6 +135,7 @@ def build_financial_workbook(state):
         ("Discount convention", financial.get("discount_convention")),
         ("Status", financial.get("status")),
         ("Reconciliation", "all checks pass" if all(c["passed"] for c in checks) else "CHECK FAILED; see Reconciliation"),
+        ("Assumption approvals", _approval_summary(state)),
         ("Notice", "Written from the saved study; no figure is recalculated except the reconciliation checks."),
     ]
     for i, (k, v) in enumerate(rows, 1):
@@ -297,3 +298,10 @@ def build_financial_workbook(state):
     }
     return content, summary_out
 
+
+
+def _approval_summary(state):
+    from backend.blocks.assumption_approval import status
+
+    counts = status(state)["counts"]
+    return ", ".join(f"{k.replace('_', ' ')} {v}" for k, v in sorted(counts.items())) or "no reviewable assumptions"

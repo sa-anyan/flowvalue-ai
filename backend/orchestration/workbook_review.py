@@ -22,7 +22,7 @@ from backend.revenue.advisor import TEXT, obj
 from .codec import plain
 from .equipment_advisor import validate
 
-VERSION = "workbook-engineer-3.5-primary-scope-anchors"
+VERSION = "workbook-engineer-3.6-no-project-rules"
 REF = obj({"sheet": TEXT, "cell": TEXT})
 OBSERVATION = obj(
     {
@@ -101,7 +101,7 @@ and products even outside detected tables or without conventional tags or exact 
 For an existing record use its key; new records use a unique temporary key of your choice.
 A new identifier/name must have workbook identity_sources. Normalise tag punctuation
 and interpret abbreviations using process context. A bioreactor may use an agitated
-vessel costing proxy; a pH adjustment unit is not automatically a pump because of P.
+vessel costing proxy; a tag prefix such as P does not by itself make a unit a pump.
 Record classification/name/rationale for ALL equipment supported in this review region even if no numeric changes needed. Check register_keys and its reviewed names/types before adding a new identity. A supporting worksheet mentioning an already identified unit is NOT evidence of an additional physical unit. Reuse an existing key when identity is supported; flag uncertain aliases rather than assuming extra installed equipment. A/B/AB suffixes can indicate parallel/duty/standby units; do not equate spellings with equipment counts or silently cost a base tag and its AB variant twice. Flag aliases for confirmation.
 Observations cite the value cell; Python reads the actual value and calculates unit
 conversions. Do not output a numerical replacement. Cite unit and label cells even if

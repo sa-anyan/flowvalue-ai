@@ -931,6 +931,34 @@ def study_report(key: str, currency: str | None = None):
     return HTMLResponse(render_study(state), headers={"Cache-Control": "no-store"})
 
 
+class AssumptionApproval(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    revision: int
+    items: list[str]
+    reviewer: str
+    note: str = ""
+
+
+@app.get("/api/assessments/{key}/assumption-approvals")
+def assumption_approval_status(key: str):
+    """M5.4: approval status of each reviewable assumption."""
+    from backend.blocks.assumption_approval import status
+
+    return status(store.get(key))
+
+
+@app.post("/api/assessments/{key}/assumption-approvals")
+def approve_assumptions(key: str, request: AssumptionApproval):
+    """M5.4: approve named assumptions exactly as currently saved."""
+    from backend.blocks.assumption_approval import approve, status
+
+    try:
+        state = approve(store, key, request.revision, request.items, request.reviewer, request.note)
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    return {"revision": state["revision"], **status(state)}
+
+
 @app.get("/api/assessments/{key}/financial-workbook")
 def financial_workbook(key: str):
     """M4.6: reconciled financial workbook (xlsx) from the saved study."""

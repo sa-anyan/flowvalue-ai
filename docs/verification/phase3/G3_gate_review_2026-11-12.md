@@ -20,7 +20,7 @@ On Charlie, FlowValue now produces a complete, reconciled preliminary capital es
 
 The gate cannot pass yet for three reasons. A fourth, the held-out run, was resolved on 12 November ([Team 8 record](G3-R3-team8-heldout.md)):
 
-1. ~~**Charlie was used for tuning.**~~ **Resolved:** Team 8 was run once as the held-out project with the matcher frozen: 7/7 priced by a stated method, 0 unpriced, and the unrelated sheets correctly kept out of scope.
+1. **No clean held-out project yet.** Team 8 was run on 12 Nov, but its units had already shaped the prompts (corrected in the Phase 5 audit), so it does not count as held out. A new, unseen project is needed.
 2. **Most of Charlie's items rest on assumptions.** M3.7 tiers: 2 of 28 items are source supported (70% of priced value), and 26 are assumption based. Of those, 14 use the minimum-size floor, and 12 rest only on sizing inputs the AI estimated.
 3. **The OpenPyTEA correlations are unchecked.** They are now the preferred library, but they haven't been checked against their textbook sources.
 4. **Escalation still uses the CPI proxy.** No 2025 or 2026 CEPCI value has been added yet.
@@ -39,7 +39,7 @@ The gate cannot pass yet for three reasons. A fourth, the held-out run, was reso
 | A6 | Basis of Estimate identifies scope, exclusions, assumptions and uncertainty | **PASS** | M3.6 (PR #19): 10 sections generated from the saved study. Charlie's report reconciles to total CAPEX and lists 5 open items |
 | R1 (rev 1.1) | Missing inputs → labelled assumptions, reported as a separate tier with stated confidence | **PASS** | M3.7: four tiers per line, by count and value, each with a stated confidence in words (no uncalibrated number), in the equipment result and the Basis of Estimate ([M3.7 record](M3.7-coverage-tiers.md)). Founder decided 12 Nov 2026 to keep the strict rule: AI-estimated physical properties count as assumptions. No UI view yet |
 | R2 (rev 1.1) | Alternative correlations kept; user can switch and re-run; change recorded | **PASS** | Alternatives listed per line. A user's choice is recorded as `model_selection {origin: "user"}` and protected from AI re-matching (PR #8; `test_library_preference.py`) |
-| R3 (rev 1.1) | Coverage shown on a reference project not used for tuning | **PASS** | Team 8 was run once on 12 Nov 2026, matcher frozen at `069aab0`: 7/7 priced, 0 unpriced, 4/4 double-count checks pass, and the breakdown reconciles. All 7 AI matches are flagged ambiguous for review, and none is hidden. The engineering data was then approved in the app on the founder's instruction (12 Nov 2026) ([record](G3-R3-team8-heldout.md)) |
+| R3 (rev 1.1) | Coverage shown on a reference project not used for tuning | **NOT MET (corrected 12 Nov)** | Team 8 was run once with the matcher frozen (7/7 priced; [record](G3-R3-team8-heldout.md)). **However, Phase 5 review found Team 8-specific rules in the prompts before the run:** the matching prompt said "P-001 may mean pH adjustment" and contained fermenter, clarifier and biofilm-reactor rules (added 6 Nov, commit `b1ad0d3`), and the workbook-review prompt contained a pH-adjustment rule. Team 8 was therefore not held out from the matcher. Those rules are now general (PR for Phase 5). A new, unseen project is needed for R3 |
 
 ## 2. Required tests
 

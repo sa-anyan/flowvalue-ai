@@ -22,6 +22,12 @@ class EngineeringProvider:
             )
 
     def generate(self, *, instructions, context, schema):
+        from .ai_audit import audited
+
+        return audited("call", self.model, instructions, context,
+                       lambda: self._generate(instructions=instructions, context=context, schema=schema))
+
+    def _generate(self, *, instructions, context, schema):
         payload = {
             "model": self.model,
             "instructions": instructions,
@@ -95,6 +101,12 @@ class EngineeringProvider:
 
     def research(self, *, instructions, context):
         """Explicit research only: bounded hosted web searches; no browser/code tools."""
+        from .ai_audit import audited
+
+        return audited("research", self.model, instructions, context,
+                       lambda: self._research(instructions=instructions, context=context))
+
+    def _research(self, *, instructions, context):
         payload = {'model': self.model, 'store': False, 'instructions': instructions,
                    'input': json.dumps(context), 'tools': [{'type': 'web_search', 'search_context_size': 'low'}],
                    'tool_choice': 'required', 'max_tool_calls': 3,

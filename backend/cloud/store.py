@@ -3,6 +3,7 @@
 import base64
 import copy
 import hashlib
+import os
 import json
 import uuid
 from urllib.error import HTTPError, URLError
@@ -140,9 +141,16 @@ class CloudStore:
         return self.create(state, self.workbook(row["assessment_id"]))
 
     def cached(self, context, compute):
-        key = hashlib.sha256(dump(context).encode()).hexdigest()
+        # Same rule as the local store: the model identifier is in the key.
+        model = os.environ.get("OPENAI_MODEL", "").strip()
+        key = hashlib.sha256(
+            dump({"context": context, "ai_model": model}).encode()
+        ).hexdigest()
         rows = self.request("cache", filters={"key": "eq." + key, "select": "value"})
         if rows:
+            from backend.orchestration.ai_audit import record
+
+            record("cache", model=model or None, context=context, response=rows[0]["value"], cached=True)
             return rows[0]["value"], True
         value = compute()
         self.request(

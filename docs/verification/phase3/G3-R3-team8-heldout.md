@@ -1,5 +1,7 @@
 # G3 · R3 held-out run: Team 8
 
+> **Correction (12 Nov 2026, Phase 5 audit): this run does NOT meet R3.** The matching prompt already contained rules written from Team 8's units: "P-001 may mean pH adjustment", fermenter and clarifier ranges, and a biofilm-reactor rule. They were added on 6 Nov (`b1ad0d3`), before Team 8 was named held out. The workbook-review prompt and parser vocabulary also carried Team 8 terms. The run's results stand as an integration check, not as held-out evidence. The prompt rules are now general; R3 needs a new, unseen project.
+
 **Date:** 12 November 2026 · **Owner:** Engineer 1, with the founder's go-ahead · **Criterion:** roadmap rev 1.1 R3, "coverage shown on a reference project not used for tuning"; also A3 and T3-2 · **Code:** commit `069aab0` (PR #25)
 
 ## Why Team 8
@@ -45,7 +47,7 @@ The matcher and pricing rules were frozen at commit `069aab0` before the run. No
 
 ## What this shows
 
-- **R3 met.** Coverage is shown on a project not used for tuning: 100% priced by a stated method, no unpriced items, and nothing concealed.
+- ~~**R3 met.**~~ **Withdrawn; see the correction at the top.** Coverage was shown on Team 8, but Team 8 had shaped the prompts: 100% priced by a stated method, no unpriced items, and nothing concealed.
 - **The held-out project behaves like Charlie.** Coverage is complete by stated method, but most items rest on assumptions: 6 of 7 here, 26 of 28 on Charlie. The 95% target is reached only when assumption-based prices count.
 - **Scope handling held.** The unrelated bioethanol sheets were recognised and kept out, so there was no false "missing equipment" and no double counting.
 - **OpenPyTEA's weight grows.** 6 of 7 Team 8 items use OpenPyTEA, whose textbook sources are still unchecked (A1). This makes the Seider and Turton source checks more pressing.
