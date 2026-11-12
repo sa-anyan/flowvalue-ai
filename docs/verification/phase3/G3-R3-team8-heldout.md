@@ -23,7 +23,7 @@ The matcher and pricing rules were frozen at commit `069aab0` before the run. No
 - **Source:** `Mass Balance Team 8.xlsm`, SHA-256 prefix `f2d297f62d8b5a61`. The file is private and stays local.
 - **Database:** a new scratch database, separate from the app's database. No process description was given, so nothing written for this run steered the AI.
 - **Stages:** engineering data (AI on), then engineering approval, then equipment (AI on), then CAPEX. CAPEX used the Charlie check's settings: Garrett, delivered, mixed process, minimum factors.
-- **Engineering approval was given by the script for this run.** The founder has not reviewed it.
+- **Engineering approval:** the script approved the engineering data so the run could continue. The study was then copied unchanged into the app database, and the engineering data was approved in the app on the founder's instruction (12 Nov 2026, 14:19 UTC).
 - **Run once.** An earlier attempt could not reach the AI because of a TLS certificate problem in the scratch Python environment, not in FlowValue. The AI matching batch returned `unavailable`, and no item was priced. That attempt is not counted. The run below is the first one with the AI reachable.
 
 ## Results (counts and ratios only)
