@@ -45,6 +45,9 @@ if CLOUD:
 else:
     executor = ThreadPoolExecutor(max_workers=1)
 lock = threading.Lock()
+from backend.blocks.opex import brainstorm as _opex_brainstorm  # noqa: E402
+
+_opex_brainstorm.STAGE_LOCK = lock  # background AI results are written only between stages
 
 
 class Edit(BaseModel):
@@ -406,9 +409,20 @@ def get(key: str, historical: bool = False, currency: str | None = None):
 
     if historical:
         return project_sizing_traces(project_assessment_identity(saved))
-    return project_sizing_traces(
+    out = project_sizing_traces(
         project_assessment_identity(currency_view(view(saved), currency), saved)
     )
+    out["opex_brainstorm"] = _opex_brainstorm.status(key, saved)
+    return out
+
+
+@app.post("/api/assessments/{key}/opex-brainstorm", status_code=202)
+def start_opex_brainstorm(key: str):
+    """Start (or restart after a change) the background AI OPEX brainstorm."""
+    if not _opex_brainstorm.ai_available():
+        raise HTTPException(409, "AI is not enabled on this server; reference defaults apply")
+    started = _opex_brainstorm.kick(store, key)
+    return {"started": started, "opex_brainstorm": _opex_brainstorm.status(key, store.get(key))}
 
 
 @app.patch("/api/assessments/{key}")

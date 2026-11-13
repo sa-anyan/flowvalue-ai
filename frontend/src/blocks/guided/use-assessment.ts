@@ -79,7 +79,10 @@ export function useAssessment() {
         if (disposed) return;
         setState(next);
         const auto = (next as Row).autopilot as Row | undefined;
+        const brainstorm = (next as Row).opex_brainstorm as Row | undefined;
         if (next.running || auto?.status === 'queued' || auto?.status === 'running') timer = setTimeout(refresh, 1200);
+        // Background AI research: check back slowly until its proposals are saved.
+        else if (brainstorm?.status === 'running') timer = setTimeout(refresh, 4000);
       } catch (e) {
         if (!disposed) setError((e as Error).message);
       }

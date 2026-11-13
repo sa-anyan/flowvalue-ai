@@ -51,7 +51,19 @@ def approve(store, key, revision):
         "fingerprint": _digest(state["stage_outputs"]["engineering_data"]),
         "approved_at": datetime.now(timezone.utc).isoformat(),
     }
-    return store.put(state, revision)
+    state = store.put(state, revision)
+    _brainstorm(store, key)
+    return state
+
+
+def _brainstorm(store, key):
+    """Start the background OPEX brainstorm for newly approved data (AI only)."""
+    try:
+        from backend.blocks.opex.brainstorm import kick
+
+        kick(store, key)
+    except Exception:
+        pass  # the reference defaults still cover OPEX without the AI
 
 
 def queue(store, key, *, economic_only=False):
@@ -62,6 +74,7 @@ def queue(store, key, *, economic_only=False):
         raise ValueError(
             "Review and approve Engineering Data before running downstream stages"
         )
+    _brainstorm(store, key)
     order = ECONOMIC_ORDER if economic_only and fresh(state, "equipment") else ORDER
     store.version(
         key,

@@ -398,3 +398,14 @@ polyline.gf-tone-c { stroke: var(--gf-tone-c); }
 .gf-rev-effects { margin: 0 0 12px; font-size: 13px; }
 .gf-review { border-color: var(--gf-accent); }
 .gf-review-row .gf-line-actions { align-items: flex-end; flex-wrap: wrap; gap: 8px; }
+
+/* Background AI research notice on the OPEX page */
+.gf-brainstorm { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.gf-brainstorm-failed { border-color: var(--gf-warn, #b45309); }
+.gf-spinner {
+  width: 0.9rem; height: 0.9rem; border-radius: 50%;
+  border: 2px solid currentColor; border-right-color: transparent;
+  animation: gf-spin 0.8s linear infinite; flex: none;
+}
+@keyframes gf-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .gf-spinner { animation: none; } }
