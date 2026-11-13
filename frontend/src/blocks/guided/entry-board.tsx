@@ -27,7 +27,8 @@ export function EntryBoard(props: StageProps) {
     [selected, setSelected] = useState<{ card: EquipmentCardModel; mode: 'inspect' | 'manual' | 'research' } | null>(null),
     [confirm, setConfirm] = useState(false),
     [versions, setVersions] = useState<Row[]>([]),
-    [briefOpen, setBriefOpen] = useState(false);
+    [briefOpen, setBriefOpen] = useState(false),
+    [previous, setPrevious] = useState<{ id: string; name: string } | null>(null);
   useEffect(() => setUseAI(hook.aiEnabled), [hook.aiEnabled]);
   useEffect(() => {
     void api<Row[]>('versions')
@@ -52,6 +53,20 @@ export function EntryBoard(props: StageProps) {
     if (!WORKBOOK.test(next.name)) return hook.setError('Choose an Excel workbook (.xlsx, .xls or .xlsm).');
     if (next.size > MAX_WORKBOOK_BYTES) return hook.setError('Choose a workbook up to 20 MiB.');
     hook.setError('');
+    if (state && hook.id) {
+      // A new workbook is a new study: leave the open one (it stays saved) and
+      // start from a blank board, so its equipment and brief never carry over.
+      if (state.running) return hook.setError('Wait for the current calculation to finish, then choose the new workbook.');
+      setPrevious({ id: hook.id, name: text(state.filename) || 'previous study' });
+      setSelected(null);
+      setConfirm(false);
+      setDescription('');
+      setRevenue('');
+      setYears(20);
+      setConstruction(2);
+      setBriefOpen(true);
+      hook.clear();
+    }
     setFile(next);
   }
   async function extract() {
@@ -67,6 +82,7 @@ export function EntryBoard(props: StageProps) {
       key = (await api<Row>('assessments', { method: 'POST', body: form })).id as string;
       hook.select(key);
       setFile(null);
+      setPrevious(null);
     }
     if (!key) throw new Error('Choose a workbook first.');
     await api(
@@ -157,8 +173,24 @@ export function EntryBoard(props: StageProps) {
           </label>
         </details>
         <button type="button" className="gf-primary gf-extract" disabled={running || (!file && !hook.id)} onClick={() => void hook.action(extract)}>
-          {file || !state ? 'Extract equipment' : 'Re-extract with this brief'}
+          {file ? `Extract equipment from ${file.name}` : !state ? 'Extract equipment' : 'Re-extract with this brief'}
         </button>
+        {previous && (
+          <p className="gf-note">
+            New study: {previous.name} is saved and unchanged.{' '}
+            <button
+              type="button"
+              className="gf-link"
+              onClick={() => {
+                setFile(null);
+                hook.select(previous.id);
+                setPrevious(null);
+              }}
+            >
+              Back to {previous.name}
+            </button>
+          </p>
+        )}
 
         {empty && versions.length > 0 && (
           <div className="gf-saved">
