@@ -12,8 +12,39 @@ from .calculation import calculate_equipment
 from backend.equipment_matching.service import match_report, apply_matches
 
 
+def workbook_parameters_for(ctx, report):
+    """{equipment_key: [workbook-stated parameter values]} from the parsed source cells."""
+    from backend.equipment_costing.unit_conversion.bridges.workbook_parameters import for_items, scan
+    from backend.equipment_matching.deterministic import head_family
+
+    upstream = (getattr(ctx, "upstream", None) or {}).get("engineering_data") or {}
+    stored = (ctx.state.get("stage_outputs") or {}).get("engineering_data") or {}
+    cells = (upstream.get("source_cells") or stored.get("source_cells")
+             or (ctx.state.get("parsed") or {}).get("source_cells") or [])
+    items = [{"key": e["key"], "tag": e.get("identifier"),
+              "names": [str(v.get("normalized_value") or v.get("original_value") or "")
+                        for v in e.get("values", []) if v.get("property") in {"name", "type"}]}
+             for e in report.get("entities", []) if e.get("kind") == "equipment"]
+    from backend.blocks.progress import step
+
+    step("Searching the workbook for sizing parameters")
+    return for_items(scan(cells), items, head_family)
+
+
+# Record-valued fields of an equipment row. A cleared field may arrive as null
+# (e.g. after a model change); downstream code reads these as dicts.
+RECORD_FIELDS = ("unit_conversion", "sizing", "costing_options", "manual_price", "external_quote",
+                 "matching", "matching_attempt", "model_selection", "previous_costing_inputs")
+
+
+def without_empty_records(rows):
+    """Drop record fields saved as null, so a cleared field means 'absent'."""
+    return [{k: v for k, v in row.items() if not (k in RECORD_FIELDS and v is None)} for row in rows]
+
+
 def prepare(ctx):
     plan = copy.deepcopy(ctx.plan)
+    plan["equipment"] = without_empty_records(plan.get("equipment", []))
     from .quantity import equipment_quantity
 
     tags = {
@@ -74,8 +105,13 @@ def prepare(ctx):
     from backend.equipment_costing.unit_conversion.bridges.automatic import resolve
 
     step("Sizing equipment" + (" (AI proposes missing inputs)" if ctx.use_ai else ""))
+    # Python first: values the workbook states for sizing parameters, scoped to
+    # each item, are handed to the sizing AI to use and cite before assuming.
+    sizing_report = report
+    if ctx.use_ai:
+        sizing_report = {**report, "_workbook_parameters": workbook_parameters_for(ctx, report)}
     plan, input_resolution = resolve(
-        report,
+        sizing_report,
         plan,
         ctx.state.get("process_description") or ctx.state.get("description", ""),
         ctx.store,

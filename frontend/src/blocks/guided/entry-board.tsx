@@ -94,6 +94,12 @@ export function EntryBoard(props: StageProps) {
     if (!approved) return setConfirm(true);
     void props.advance(() => equipment.save('User reviewed equipment parameters on the guided Entry board'));
   };
+  // After quick match saves the choices: price straight away. No draft save here,
+  // so an older unsaved board copy can never overwrite the confirmed models.
+  const priceNow = () => {
+    if (!approved) return setConfirm(true);
+    void props.advance();
+  };
   // Quick match: deterministic, no AI. Pops up once per assessment when items need a model.
   const quick = useQuickMatches(hook.id, state?.revision, cards.length > 0 && !state?.running);
   const matches = quick.result;
@@ -313,6 +319,7 @@ export function EntryBoard(props: StageProps) {
           result={matches}
           props={props}
           onClose={() => setQuickOpen(false)}
+          onPrice={priceNow}
           onInspect={(key) => {
             const card = cards.find((c) => c.key === key);
             setQuickOpen(false);

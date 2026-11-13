@@ -101,11 +101,14 @@ export function QuickMatchPanel({
   props,
   onClose,
   onInspect,
+  onPrice,
 }: {
   result: Result;
   props: StageProps;
   onClose: () => void;
   onInspect: (equipmentKey: string) => void;
+  /** Starts the equipment pricing run after the choices are saved. */
+  onPrice?: () => void;
 }) {
   const { hook, equipment } = props;
   const open = useMemo(() => result.matches.filter(pending), [result]);
@@ -141,11 +144,15 @@ export function QuickMatchPanel({
         rationale: `Confirmed in quick match: ${match.family_label} · ${optionLabel(option)}`,
         quick_match: { version: result.version, status: match.status, family: match.family, basis: match.family_basis },
         // A new model needs new sizing: clear the old inputs so the sizing step proposes them.
-        ...(changed ? { size: null, sizing: null, unit_conversion: null } : {}),
+        // undefined removes the field when saved (null would be stored and read as a record).
+        ...(changed ? { size: null, sizing: undefined, unit_conversion: undefined } : {}),
       });
     }
     const ok = await hook.action(() => hook.saveSection('equipment', rows, `User confirmed ${chosen.length} quick-match model(s)`).then(() => undefined));
-    if (ok) onClose();
+    if (ok) {
+      onClose();
+      onPrice?.();
+    }
   }
 
   return (
@@ -160,9 +167,23 @@ export function QuickMatchPanel({
           <button type="button" className="gf-secondary" onClick={onClose}>
             Not now
           </button>
-          <button type="button" className="gf-primary" disabled={!chosen.length || hook.busy} onClick={() => void apply()}>
-            Confirm {chosen.length} model{chosen.length === 1 ? '' : 's'}
-          </button>
+          {open.length === 0 && onPrice ? (
+            <button
+              type="button"
+              className="gf-primary"
+              disabled={hook.busy}
+              onClick={() => {
+                onClose();
+                onPrice();
+              }}
+            >
+              Price equipment now
+            </button>
+          ) : (
+            <button type="button" className="gf-primary" disabled={!chosen.length || hook.busy} onClick={() => void apply()}>
+              {onPrice ? 'Confirm and price' : 'Confirm'} {chosen.length} model{chosen.length === 1 ? '' : 's'}
+            </button>
+          )}
         </>
       }
     >
