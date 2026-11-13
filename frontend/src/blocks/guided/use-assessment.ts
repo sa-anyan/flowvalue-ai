@@ -95,6 +95,16 @@ export function useAssessment() {
     setError('');
     setId(key);
   }, []);
+  /** Leaves the current study for a blank board: clears the URL, the remembered study and the loaded data. */
+  const clear = useCallback(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('assessment');
+    window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash);
+    localStorage.removeItem('flowvalue-assessment');
+    setError('');
+    setState(null);
+    setId('');
+  }, []);
   /** Re-reads the assessment (and restarts polling if a stage was queued). */
   const reload = useCallback(() => setTick((t) => t + 1), []);
   const action = useCallback(async (work: () => Promise<unknown>) => {
@@ -128,6 +138,6 @@ export function useAssessment() {
     },
     [id],
   );
-  return { id, state, setState, error, setError, busy, catalogue, aiEnabled, select, reload, action, saveSection, runStage };
+  return { id, state, setState, error, setError, busy, catalogue, aiEnabled, select, clear, reload, action, saveSection, runStage };
 }
 export type AssessmentHook = ReturnType<typeof useAssessment>;
