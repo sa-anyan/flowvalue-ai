@@ -349,3 +349,21 @@ polyline.gf-tone-c { stroke: var(--gf-tone-c); }
 .gf-qm-error { font-size: 12px; padding: 4px 10px; }
 .gf-run-status { display: grid; gap: 4px; }
 .gf-run-ai { font-size: 12px; font-weight: 400; }
+
+/* Editable inputs and direct price */
+.gf-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 600px) { .gf-grid-3 { grid-template-columns: 1fr; } }
+.gf .gf-cell-input { width: 100%; max-width: 180px; padding: 6px 8px; border: 1px solid var(--gf-line); border-radius: 8px; background: var(--gf-surface); color: var(--gf-ink); font: inherit; font-variant-numeric: tabular-nums; }
+.gf .gf-cell-input:focus { outline: 2px solid var(--gf-accent); outline-offset: 1px; }
+.gf .gf-cell-missing { border-color: var(--gf-warn); background: var(--gf-warn-soft); }
+.gf .gf-cell-missing::placeholder { color: var(--gf-warn); font-style: italic; }
+/* Price editor reused from the workspace, inside the Equipment playground */
+.gf .gf-adjust button { padding: 8px 14px; border-radius: 10px; border: 1px solid var(--gf-accent); background: var(--gf-accent); color: var(--gf-accent-ink); font: inherit; font-weight: 600; cursor: pointer; }
+.gf .gf-adjust button.secondary, .gf .gf-adjust button.gf-secondary { background: var(--gf-surface); color: var(--gf-accent); }
+.gf .gf-adjust button:disabled { opacity: 0.5; cursor: not-allowed; }
+.gf .gf-adjust .sizing-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+.gf .gf-adjust .field { display: grid; gap: 4px; font-size: 13px; color: var(--gf-muted); }
+.gf .gf-adjust .field input { padding: 6px 8px; border: 1px solid var(--gf-line); border-radius: 8px; background: var(--gf-surface); color: var(--gf-ink); font: inherit; }
+.gf .gf-adjust .toolbar { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.gf .gf-adjust .peq-span { grid-column: 1 / -1; }
+@media (max-width: 600px) { .gf .gf-adjust .sizing-fields { grid-template-columns: 1fr; } }
