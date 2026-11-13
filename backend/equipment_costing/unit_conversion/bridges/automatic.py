@@ -12,8 +12,9 @@ from .. import convert, ConversionContext
 from .service import describe, evaluate, model_contract, PARAMETERS, RECIPES
 from .derivations import METHODS, derive, discover
 
-VERSION = "equipment-input-resolution-25-minimum-size-floor"
-PROMPT = """For a dryer model requiring evaporation rate, use dryer_evaporation: measurement_id is feed water COMPONENT mass flow and outlet_measurement_id is product water COMPONENT mass flow. Python subtracts and converts them. Confirm the selected drying boundary has no other water paths/reaction; disclose this scope assumption. Never use total wet-feed flow as evaporation. Carrier-gas inlet/outlet water can independently check the calculated evaporation; do not confuse those roles with feed/product.
+VERSION = "equipment-input-resolution-26-workbook-parameters"
+PROMPT = """WORKBOOK PARAMETERS FIRST: an equipment item may carry workbook_parameters, values the workbook itself states (id = worksheet!cell), found by a label search. Before proposing any assumed parameter (residence or batch time, efficiency, density, heat-transfer coefficient, loading, latent or specific heat, vessel volume, heat capacity ratio), check that list. When a listed value fits the parameter's meaning, units and this item's service, use it, cite its id in the rationale and label it a workbook statement; convert units explicitly through the declared parameter units. A label match can be wrong (another stream, chemical, temperature or unit): reject it with a short reason. Propose an assumption only when no listed value fits, and say so.
+For a dryer model requiring evaporation rate, use dryer_evaporation: measurement_id is feed water COMPONENT mass flow and outlet_measurement_id is product water COMPONENT mass flow. Python subtracts and converts them. Confirm the selected drying boundary has no other water paths/reaction; disclose this scope assumption. Never use total wet-feed flow as evaporation. Carrier-gas inlet/outlet water can independently check the calculated evaporation; do not confuse those roles with feed/product.
 For OpenPyTEA power coordinates use electrical_to_shaft_power / shaft_to_electrical_power with explicit motor_efficiency, or pump_hydraulic_power, when the power role differs. Shaft power is not electrical input power. For OpenPyTEA correlations, preserve exact required parameter roles (shaft/fluid/electrical power, actual/standard flow, composite design coordinates). Never substitute an uncalculated feed rate for a composite coordinate. Two-variable models require secondary_input: choose its measurement_id independently, or provide an explicit assumed value/unit/rationale; Python converts it. Missing second input remains MISSING_SIZING_INPUT. Disabled models cannot be selected. No automatic size clamping or parallelisation.
 LIBRARY PREFERENCE: among compatible candidates whose published domain covers the calculated size, choose an OpenPyTEA model before any Garrett model. Use Garrett only when no OpenPyTEA candidate applies. OpenPyTEA correlations have strict published capacity limits and do not accept Garrett extrapolation options. BELOW-RANGE SIZES: when the physically calculated size is BELOW a correlation's published minimum, keep the best-matching OpenPyTEA (or Garrett) model; Python prices it at that minimum size and records the floor as an explicit assumption. Do not switch library only because the size is small. If the size is ABOVE a correlation's maximum, choose a conceptually compatible supplied alternative with an applicable domain or a Garrett model supporting disclosed boundary extrapolation. Never change a source quantity or tune residence time, efficiency or density just to fit a cost curve. Keep extrapolation_exponent null for non-Garrett models.
 For the Turton fermenter, specify operating_mode from process evidence, or an explicit provisional operating assumption. Flow-to-volume sizing requires continuous mode, residence time and working fraction. Batch/unknown requires directly documented per-vessel volume. Never extrapolate beyond 35 m3. For a clarifier use clarifier_area (hydraulic_loading_m_h is surface overflow rate). A generic settler does not prove mechanical equipment exists. A mechanically equipped clarifier may be proposed as an explicit preliminary configuration scenario for a compatible settling duty, with geometry, mechanical scope and uncertainty disclosed; never label that configuration as extracted or verified. Likewise a biofilm reactor may use a defensible vessel-core costing proxy with biofilm media/aeration/internals explicitly excluded or unresolved; it is not a complete validated bioreactor package.
@@ -505,6 +506,9 @@ def resolve(
     known = {p["equipment_key"] for p in rows}
     rows.extend({"equipment_key": k} for k in entities if k not in known)
     for row in rows:
+        for field in ("unit_conversion", "sizing", "costing_options"):
+            if field in row and row[field] is None:
+                del row[field]  # a cleared field means absent
         key = row["equipment_key"]
         if key not in entities:
             continue
@@ -716,6 +720,7 @@ def resolve(
                         )
                     },
                     "measurements": visible,
+                    "workbook_parameters": (report.get("_workbook_parameters") or {}).get(item["equipment_key"], [])[:40],
                     "thermal_enthalpy_facts": (
                         enthalpy_pairings(
                             visible,
