@@ -45,6 +45,14 @@ def calculate(ctx):
         if "capex" in values:
             plan["capex"] = values["capex"]
             updates["plan"] = {"capex": values["capex"]}
+    # No settings chosen and no AI proposal: fill only the missing CAPEX
+    # settings with stated Python defaults, so CAPEX runs instead of failing.
+    from backend.capex.defaults import fill_missing
+
+    filled, defaults_applied = fill_missing(plan.get("capex"), ctx.report)
+    if defaults_applied:
+        plan["capex"] = filled
+        updates.setdefault("plan", {})["capex"] = filled
     priced = [
         e
         for e in total.equipment
@@ -64,6 +72,12 @@ def calculate(ctx):
         plan.get("cost_translation"),
     )
     result = plain(capital)
+    if defaults_applied:
+        result["python_defaults"] = {
+            "version": "capex-python-defaults-1",
+            "applied": defaults_applied,
+            "notice": "CAPEX settings not chosen by you or the AI were filled with stated Python defaults; review them on the CAPEX page.",
+        }
     unpriced = ctx.upstream["equipment"].get("unpriced", [])
     result.update(
         complete=not unpriced and capital.total_capex is not None,

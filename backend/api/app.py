@@ -609,6 +609,44 @@ def approve_engineering_data(key: str, options: EngineeringApproval):
         raise HTTPException(409, str(exc))
 
 
+class AutopilotRun(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    use_ai: bool = False
+
+
+@app.post("/api/assessments/{key}/autopilot", status_code=202)
+def run_autopilot(key: str, options: AutopilotRun):
+    """One action: approve for a provisional run, pick models, run every stage."""
+    from backend.blocks.autopilot import run as autopilot
+
+    state = store.get(key)
+    if state.get("running"):
+        raise HTTPException(409, "Another stage is running")
+    if not lock.acquire(blocking=False):
+        raise HTTPException(409, "Another stage is running")
+    # running is set by the stage queue inside Autopilot (approval needs an idle study).
+    state["autopilot"] = {"status": "queued"}
+    store.put(state, state["revision"])
+
+    def work():
+        try:
+            autopilot(store, key, use_ai=options.use_ai)
+        except Exception:
+            pass  # the failure is recorded on the study for the UI
+        finally:
+            lock.release()
+
+    try:
+        executor.submit(work)
+    except Exception:
+        state = store.get(key)
+        state["autopilot"] = {"status": "failed", "error": "could not start"}
+        store.put(state, state["revision"])
+        lock.release()
+        raise
+    return {"id": key}
+
+
 @app.post("/api/assessments/{key}/run-all-stages", status_code=202)
 def run_all_stages(key: str, options: Rerun):
     return submit_stage_group(key, options)

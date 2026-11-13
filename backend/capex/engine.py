@@ -18,6 +18,26 @@ from .breakdown import double_count_checks as _double_count_checks
 from .scope import ELIGIBLE, FACTOR_CATEGORIES, eligibility, inclusion_record
 
 
+def _is_user_price(key):
+    return str(key[2]).startswith("PRICE_BASIS:")
+
+
+def compatible_basis(a, b):
+    """Same currency and date, and either the same cost index or one side is a
+    user price (a dated amount with no index of its own). Two different indices
+    are never mixed."""
+    if a[:2] != b[:2]:
+        return False
+    return a[2:] == b[2:] or _is_user_price(a) or _is_user_price(b)
+
+
+def preferred_basis(current, new):
+    """Report the index-based basis when a user price joins index-based costs."""
+    if current is None or (_is_user_price(current) and not _is_user_price(new)):
+        return new
+    return current
+
+
 def _sum(values):
     values = list(values)
     return None if any(v is None for v in values) else sum(values, Decimal(0))
@@ -76,12 +96,14 @@ def _basis(inputs, require_delivered, issues):
             issues.append(e.tag + ": " + str(exc))
             continue
         key = (e.currency, e.period, e.index_series, index)
-        if basis is not None and basis != key:
+        if basis is not None and not compatible_basis(basis, key):
             issues.append(
-                "Equipment currency, date or cost-index bases differ; reconcile upstream"
+                f"{e.tag} is costed in {e.currency} {e.period} ({e.index_series}), other equipment in "
+                f"{basis[0]} {basis[1]} ({basis[2]}): equipment currency, date or cost-index bases differ; "
+                "reconcile upstream (e.g. date a user price at the study cost date)"
             )
             continue
-        basis = key
+        basis = preferred_basis(basis, key)
         amounts.append(cost * quantity)
     if issues:
         return None, basis
@@ -670,11 +692,13 @@ def calculate(spec, factors, inputs):
                 raise ValueError(
                     "Capital records require currency, date, index and integer quantity"
                 )
-            if basis is not None and key != basis:
+            if basis is not None and not compatible_basis(basis, key):
                 raise ValueError(
-                    "Capital/purchased date, currency or index bases differ; reconcile upstream"
+                    f"{e.tag} is costed in {e.currency} {e.period} ({e.index_series}), other equipment in "
+                    f"{basis[0]} {basis[1]} ({basis[2]}): capital/purchased date, currency or index bases differ; "
+                    "reconcile upstream"
                 )
-            basis = key
+            basis = preferred_basis(basis, key)
             amount = number(e.amount) * quantity
             capital_amount += amount
             records.append(

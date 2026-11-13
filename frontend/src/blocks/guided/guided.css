@@ -367,3 +367,21 @@ polyline.gf-tone-c { stroke: var(--gf-tone-c); }
 .gf .gf-adjust .toolbar { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
 .gf .gf-adjust .peq-span { grid-column: 1 / -1; }
 @media (max-width: 600px) { .gf .gf-adjust .sizing-fields { grid-template-columns: 1fr; } }
+
+/* Autopilot */
+.gf-autopilot { display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 16px; padding: 16px 18px; border-radius: var(--gf-radius); border: 1px solid var(--gf-accent); background: var(--gf-accent-soft); }
+.gf-autopilot h2 { margin: 4px 0 6px; font-size: 18px; }
+.gf-autopilot p { margin: 0; font-size: 13px; color: var(--gf-ink); max-width: 62ch; }
+.gf-autopilot-go { font-size: 15px; padding: 12px 20px; white-space: nowrap; }
+.gf-autopilot-done { display: grid; gap: 12px; background: var(--gf-surface); }
+.gf-autopilot-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.gf-autopilot-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.gf-autopilot-tile { display: grid; gap: 2px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--gf-line); background: var(--gf-raised); }
+.gf-autopilot-tile small { color: var(--gf-muted); font-size: 12px; }
+.gf-autopilot-tile strong { font-size: 18px; font-variant-numeric: tabular-nums; }
+.gf-autopilot-review summary { cursor: pointer; font-weight: 600; font-size: 14px; }
+.gf-autopilot-review ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+.gf-autopilot-review li { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; padding: 8px 10px; border-radius: 8px; background: var(--gf-raised); font-size: 13px; }
+.gf-autopilot-review li small { flex-basis: 100%; color: var(--gf-muted); }
+.gf-autopilot-review li .gf-link { margin-left: auto; }
+.gf-autopilot-review .gf-review-blocked, .gf-autopilot-review .gf-review-unpriced { border-left: 3px solid var(--gf-warn); }

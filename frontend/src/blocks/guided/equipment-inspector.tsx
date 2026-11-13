@@ -192,7 +192,12 @@ export function EquipmentInspector({
         )}
       </section>
 
-      <PriceEntry key={card.key + text(state?.revision)} mapping={mapping} onChange={change} />
+      <PriceEntry
+        key={card.key + text(state?.revision)}
+        mapping={mapping}
+        studyDate={text(obj(obj(state?.plan).cost_translation).target_period)}
+        onChange={change}
+      />
 
       {mode === 'research' && (
         <section className="gf-block gf-ai" aria-labelledby="gf-ai-h">
@@ -409,11 +414,12 @@ function InputTable({ rows, onEdit }: { rows: InputRow[]; onEdit?: (row: InputRo
 }
 
 /** Direct purchased price per unit. Overrides the cost model for this item; saved as your input. */
-function PriceEntry({ mapping, onChange }: { mapping: Row; onChange: (patch: Row) => void }) {
+function PriceEntry({ mapping, studyDate, onChange }: { mapping: Row; studyDate: string; onChange: (patch: Row) => void }) {
   const current = obj(mapping.manual_price);
+  // Default to the study cost date so the price adds up with the other equipment.
   const [amount, setAmount] = useState(text(current.amount)),
     [currency, setCurrency] = useState(text(current.currency) || 'USD'),
-    [year, setYear] = useState(text(current.price_period) || String(new Date().getFullYear()));
+    [year, setYear] = useState(text(current.price_period) || studyDate || String(new Date().getFullYear()));
   const value = Number(amount);
   const valid = amount.trim() !== '' && Number.isFinite(value) && value > 0 && /^[A-Z]{3}$/.test(currency) && /^\d{4}(?:-(?:0[1-9]|1[0-2]))?$/.test(year);
   return (
@@ -432,7 +438,7 @@ function PriceEntry({ mapping, onChange }: { mapping: Row; onChange: (patch: Row
           <input maxLength={3} value={currency} onChange={(e) => setCurrency(e.target.value.toUpperCase())} />
         </label>
         <label className="gf-field">
-          <span>Price year</span>
+          <span>Price date{studyDate ? ` (study: ${studyDate})` : ''}</span>
           <input placeholder="YYYY or YYYY-MM" value={year} onChange={(e) => setYear(e.target.value)} />
         </label>
       </div>
@@ -443,6 +449,9 @@ function PriceEntry({ mapping, onChange }: { mapping: Row; onChange: (patch: Row
           </span>
         ) : (
           <span className="gf-muted">{valid ? '' : 'Enter a positive price, a 3-letter currency and a year.'}</span>
+        )}
+        {studyDate && year && year !== studyDate && (
+          <span className="gf-warn">Dated {year}, the study uses {studyDate}: this price will not add into the CAPEX total until both match.</span>
         )}
         {current.amount ? (
           <button type="button" className="gf-secondary" onClick={() => onChange({ manual_price: null })}>
