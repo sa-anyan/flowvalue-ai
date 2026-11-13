@@ -7,6 +7,7 @@ import { EquipmentInspector } from './equipment-inspector';
 import { OriginChip, Panel, RunBar, type StageProps } from './flow';
 import { matchChip, pending, QuickMatchPanel, useQuickMatches } from './quick-match';
 import { AutopilotCard } from './autopilot';
+import { RevenueSetup } from './revenue-setup';
 
 const WORKBOOK = /\.(xlsx|xls|xlsm)$/i;
 
@@ -151,16 +152,6 @@ export function EntryBoard(props: StageProps) {
             <span>Describe your process</span>
             <textarea value={description} maxLength={12000} onChange={(e) => setDescription(e.target.value)} placeholder="Inputs, outputs, location and design requirements." />
           </label>
-          <label className="gf-field">
-            <span>Revenue Box — how will this project earn income?</span>
-            <textarea
-              value={revenue}
-              maxLength={6000}
-              onChange={(e) => setRevenue(e.target.value)}
-              placeholder="e.g. treatment fee per m³; product sales; capacity payments. Include prices if known."
-            />
-            <small>Only the Revenue Box authorises income. Producing an output does not mean it is sold.</small>
-          </label>
           <div className="gf-grid-2">
             <label className="gf-field">
               <span>Analysis years</span>
@@ -182,6 +173,7 @@ export function EntryBoard(props: StageProps) {
         <button type="button" className="gf-primary gf-extract" disabled={running || (!file && !hook.id)} onClick={() => void hook.action(extract)}>
           {file ? `Extract equipment from ${file.name}` : !state ? 'Extract equipment' : 'Re-extract with this brief'}
         </button>
+        {state && !previous && <RevenueSetup props={props} />}
         {previous && (
           <p className="gf-note">
             New study: {previous.name} is saved and unchanged.{' '}
@@ -286,7 +278,7 @@ export function EntryBoard(props: StageProps) {
           ))}
         </ul>
         {list(state?.revenue_questions).length > 0 && (
-          <p className="gf-note">Revenue Box needs clarification. You can answer it on the Revenue stage.</p>
+          <p className="gf-note">Revenue needs a choice: set what the project sells under “How does this project earn money?”.</p>
         )}
       </div>
 
