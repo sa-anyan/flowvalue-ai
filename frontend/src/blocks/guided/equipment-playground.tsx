@@ -46,9 +46,11 @@ export function EquipmentPlayground(props: StageProps) {
           <span>{num(result.equipment_cost_total) !== null ? currency : totalReason(result.issues, cards.length - priced)}</span>
         </div>
         <div>
-          <small>Installed (equipment + installation)</small>
-          <strong>{num(result.equipment_and_installation_cost_total) === null ? 'Pending' : compact(result.equipment_and_installation_cost_total)}</strong>
-          <span>{currency}</span>
+          <small>Total equipment cost</small>
+          <strong>{num(result.equipment_total_with_packages) === null ? '—' : compact(result.equipment_total_with_packages)}</strong>
+          <span>
+            {num(result.packages_total) ? `${currency} · includes ${compact(result.packages_total)} installed packages` : `${currency} · installation is added in CAPEX`}
+          </span>
         </div>
         <div>
           <small>Priced items</small>
