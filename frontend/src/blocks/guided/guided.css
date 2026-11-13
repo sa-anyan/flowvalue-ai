@@ -385,3 +385,14 @@ polyline.gf-tone-c { stroke: var(--gf-tone-c); }
 .gf-autopilot-review li small { flex-basis: 100%; color: var(--gf-muted); }
 .gf-autopilot-review li .gf-link { margin-left: auto; }
 .gf-autopilot-review .gf-review-blocked, .gf-autopilot-review .gf-review-unpriced { border-left: 3px solid var(--gf-warn); }
+
+/* Revenue set-up on the Entry board */
+.gf-revenue-setup { display: grid; gap: 10px; margin-top: 14px; padding: 14px; border: 1px solid var(--gf-line); border-radius: var(--gf-radius); background: var(--gf-raised); }
+.gf-revenue-setup h3 { margin: 0; font-size: 16px; }
+.gf-revenue-setup p { margin: 0; font-size: 13px; }
+.gf-rev-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; border-radius: 10px; border: 1px solid var(--gf-line); background: var(--gf-surface); }
+.gf-rev-row .gf-link { justify-self: start; font-size: 12px; }
+.gf-revenue-setup > .gf-link { justify-self: start; font-size: 13px; }
+.gf-ok { color: var(--gf-user); font-weight: 600; font-size: 13px; }
+@media (max-width: 600px) { .gf-rev-row { grid-template-columns: 1fr; } }
+.gf-rev-effects { margin: 0 0 12px; font-size: 13px; }

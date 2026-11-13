@@ -47,8 +47,12 @@ export function RevenuePlayground(props: StageProps) {
   return (
     <div className="gf-play">
       <StageHeading kicker="STAGE 05 · REVENUE" title="Revenue playground">
-        Income comes only from your Revenue Box and the explicit revenue worksheet. Prices you give are your assumptions; unpriced income stays unpriced.
+        Income comes only from what you set on the Entry board and the explicit revenue worksheet. Prices you give are your assumptions; unpriced income stays unpriced.
       </StageHeading>
+      <p className="gf-warn gf-rev-effects" role="note">
+        Changing revenue also changes the OPEX lines that are a share of revenue (administration, distribution &amp; sales, R&amp;D, royalties), so variable
+        operating cost (VCOP), total OPEX and the cash flow move with it. Fixed operating cost (FCOP) is not affected. Run OPEX and Financial again after a change.
+      </p>
       <div className="gf-kpis">
         <div className="gf-kpi-hero">
           <small>Sales revenue · operating year 1</small>

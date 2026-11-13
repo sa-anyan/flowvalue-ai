@@ -614,6 +614,30 @@ class AutopilotRun(BaseModel):
     use_ai: bool = False
 
 
+class RevenueSetup(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    revision: int
+    currency: str = "USD"
+    price_period: str | None = None
+    days_per_year: float | None = None
+    hours_per_day: float | None = None
+    sales: list[dict]
+
+
+@app.post("/api/assessments/{key}/revenue-setup")
+def revenue_setup(key: str, setup: RevenueSetup):
+    """Entry-page revenue: user-chosen stream, price and unit; approved when complete."""
+    from backend.revenue.setup import apply
+
+    if store.get(key).get("running"):
+        raise HTTPException(409, "Wait for the current calculation to finish")
+    try:
+        out = apply(store, key, setup.revision, setup.model_dump())
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    return {"approved": out["approved"], "questions": out["questions"], "revision": out["state"]["revision"]}
+
+
 @app.post("/api/assessments/{key}/autopilot", status_code=202)
 def run_autopilot(key: str, options: AutopilotRun):
     """One action: approve for a provisional run, pick models, run every stage."""
