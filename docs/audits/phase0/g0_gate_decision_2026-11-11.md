@@ -101,8 +101,8 @@ Adopt Engineer 2's **R01–R19** as the single forward register: each row alread
 | ID | Decision | Proposal | Engineer 1 | Engineer 2 |
 |---|---|---|---|---|
 | S1 | **Reference project (M0.5)** | **Charlie protein-from-air study** (Engineer 1 decision, 11 November 2026). Its M&E workbook and the human economics study (`Task 2 Charlie Economics 2.xlsx`) are both available; Team 8 has an M&E workbook but no economics file. The economics study is a comparison made *after* independent calculation, never a price source. **Team 8 is the held-out project** for AI matching and assumption evaluation, because Charlie was used to tune them. Source files stay private and local; only page references, hashes and derived checks enter the repository. The four synthetic workbook fixtures stay as parser regression tests. | ☑ 11 Nov 2026 | ☐ |
-| S2 | **Single requirements register** (IW-05, M0.3, T-06) | R01–R19 plus R20 and R21 above, with the REQ mapping retained | ☐ | ☐ |
-| S3 | **Capability register** (IW-02, M0.2) | Engineer 2's 22-capability register is the maintained one; Engineer 1's 19 groups stay as the baseline snapshot | ☐ | ☐ |
+| S2 | **Single requirements register** (IW-05, M0.3, T-06) | R01–R19 plus R20 and R21 above, with the REQ mapping retained | ☐ | ☑ 11 Nov 2026 |
+| S3 | **Capability register** (IW-02, M0.2) | Engineer 2's 22-capability register is the maintained one; Engineer 1's 19 groups stay as the baseline snapshot | ☐ | ☑ 11 Nov 2026 |
 | S4 | **Baseline rules and test disposition** (IW-07, T-02 skips, T-05) | B08 decisions (PR #3) for money, timeline, missing and approval; Phase 1 per-method tolerances; the 3 private-fixture or optional-package skips accepted as documented skips; Engineer 2 confirms the test log and fixture policy for T-05 | ☐ | ☐ |
 
 When all eight boxes are ticked, with the decision and date recorded beside S1, **G0 passes at the commit that records the sign-offs.** Record each sign-off as a pull-request approval or a dated line in this file, made by the engineer themself.
@@ -117,6 +117,15 @@ PR #9 (`engineer-2/development`, head `9bec52d`, CI green) settles several items
 - Combined with every open Engineer 1 PR, the full suite gives 4,285 passed, 0 failed.
 
 The sign-offs below are still required. Merging PR #9 first lets S2 and S3 point at files on `main`.
+
+## Engineer 2 governance decisions
+
+- **S2 agreed.** The maintained [requirements register](../../phase-0/08-requirements-register.md) contains R01–R21. The REQ-01–26 mapping above and the original Engineer 1 register remain historical references.
+- **S3 agreed.** Maintain the [22-capability register](../../phase-0/02-capability-register.md) and retain Engineer 1’s 19-group snapshot.
+- **S1 open.** The founder must confirm local availability, version hashes, owner permission and confidentiality classification for the Charlie and Team 8 sources. The engineers still need a hand-checked, independent truth set for balances, equipment identities and economics. Charlie’s historical economics is a comparison after independent calculation.
+- **S4 open.** The Windows 11 full run on `9514494` recorded 4,224 passed, zero failed and nine skips: one private equipment workbook, one private Charlie snapshot, six private workbook cases and one optional pinned OpenPyTEA comparison. This is separate from the recorded three-skip runs. T-05 evidence includes the narrow Python baseline checker and a targeted scan of the test and audit paths. The 25 tracked workbook fixtures were classified using their README and generator. No recognizable credential token, private-key header, email or personal home path beyond `/Users/user` was found in that scan. Historical logs and private workbook contents were not comprehensively audited. Joint skip and confidentiality disposition remains open.
+
+G0 remains open.
 
 ## Not part of G0
 

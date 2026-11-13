@@ -14,6 +14,10 @@ Scalar = str | float | int | bool | None
 class Evidence(Model):
     id: str
     workbook: str
+    observation_id: str | None = None
+    observation_revision: int | None = Field(default=None, ge=1, exclude_if=lambda v: v is None)
+    observation_method: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    observation_identity_limitation: str | None = Field(default=None, exclude_if=lambda v: v is None)
     sheet: str
     cell: str
     header_cells: list[str] = Field(default_factory=list, max_length=8)
@@ -87,6 +91,7 @@ class BalanceReport(Model):
     extracted_on: date | None = None
     filename: str = Field(max_length=255)
     sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    previous_source_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     sheets: list[dict[str, str | int | bool]] = Field(max_length=40)
     tables: list[Table] = Field(default_factory=list, max_length=300)
     entities: list[Entity] = Field(default_factory=list, max_length=1500)

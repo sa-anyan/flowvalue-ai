@@ -4,6 +4,8 @@ import json
 from decimal import Decimal, InvalidOperation
 from html import escape
 
+from .sizing_trace import sizing_trace
+
 
 def text(value):
     if value is None:
@@ -32,6 +34,22 @@ def table(columns, rows):
         )
         + "</tbody></table></div>"
     )
+
+
+def equipment_rows(rows):
+    for row in rows:
+        trace = sizing_trace(row)
+        yield {
+            **row,
+            "method_trace": json.dumps(trace["engineering_methods"]) if trace["engineering_methods"] else "Unversioned",
+            "applicability_notes": " | ".join(trace["applicability_notes"]),
+        }
+
+
+def equipment_status(stage):
+    if stage.get("result_is_stale") or stage.get("status") == "stale":
+        return '<p role="status">Saved changes await recalculation</p>'
+    return ""
 
 
 def render_partial(state):
@@ -75,14 +93,17 @@ def render_partial(state):
     ]
     parts += [
         "<h2>Equipment register</h2>",
+        equipment_status(stages.get("equipment") or {}),
         partial_table(
             [
                 ("equipment_tag", "Equipment"),
                 ("curve_id", "Model"),
                 ("equipment_cost", "Purchased cost"),
                 ("issues", "Outstanding issues"),
+                ("method_trace", "Engineering method"),
+                ("applicability_notes", "Sizing applicability"),
             ],
-            result("equipment").get("equipment", []),
+            equipment_rows(result("equipment").get("equipment", [])),
         ),
     ]
     parts.append("<h2>Pending inputs and dependencies</h2>")
@@ -215,6 +236,7 @@ def render_study(state):
     equipment = stages["equipment"]["result"]["equipment"]
     blocks += [
         "<h2>Equipment and capital scope</h2>",
+        equipment_status(stages["equipment"]),
         table(
             [
                 ("equipment_tag", "Equipment"),
@@ -223,8 +245,10 @@ def render_study(state):
                 ("installation_cost", "Installation"),
                 ("equipment_and_installation_cost", "Combined"),
                 ("status", "Basis"),
+                ("method_trace", "Engineering method"),
+                ("applicability_notes", "Sizing applicability"),
             ],
-            equipment,
+            equipment_rows(equipment),
         ),
     ]
     capex = stages["capex"]["result"]

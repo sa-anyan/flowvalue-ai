@@ -57,13 +57,13 @@ def test_register_edits_persist_without_replacing_workbook(study):
             "name": "Edited storage tank",
         },
     )
+    edited = next(e for e in state["effective_report"]["entities"] if e["key"] == added["key"])
+    assert edited["values"][-1]["observation_id"] == added["values"][-1]["observation_id"]
+    assert edited["values"][-1]["observation_revision"] == 2
     state = run_stage(store, key, "engineering_data")
-    assert (
-        next(
-            e for e in state["effective_report"]["entities"] if e["key"] == added["key"]
-        )["values"][-1]["normalized_value"]
-        == "Edited storage tank"
-    )
+    replayed = next(e for e in state["effective_report"]["entities"] if e["key"] == added["key"])
+    assert replayed == edited
+    assert replayed["values"][-1]["normalized_value"] == "Edited storage tank"
     state = save_edit(
         store,
         key,

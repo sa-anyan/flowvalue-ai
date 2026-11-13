@@ -15,6 +15,8 @@ from scipy import stats
 from backend.orchestration.pipeline import run
 
 from .discovery import discover
+from .equipment_projection import equipment_records
+from .exact_values import project_exact_values
 from .models import Settings
 from .sampling import sample
 from .scenarios import apply, prepare, resolve_horizon, resolved_settings
@@ -48,27 +50,51 @@ def evaluate(report, description, plan, confirmed_aliases):
         }
     result = run(report, description, plan, calculate_ranges=False)
     stages = result["stages"]
-    equipment = (stages.get("equipment", {}).get("result") or {}).get("equipment", [])
-    confirmed = set(confirmed_aliases)
-    excluded = [
-        r
-        for r in equipment
-        if r.get("parsed_source", {}).get("equipment_key") in confirmed
-        or r.get("parsed_source", {}).get("confirmed_alias")
-    ]
-    counted = [r for r in equipment if r not in excluded]
-    priced = [r for r in counted if priced_record(r)]
-    costs = {
-        r["equipment_tag"]: number(
-            r.get("equipment_cost")
-            if r.get("equipment_cost") is not None
-            else r["amount"]
-        )
-        for r in priced
+    equipment_result = stages.get("equipment", {}).get("result") or {}
+    equipment = equipment_result.get("equipment", [])
+    physical_ids = {
+        row["equipment_key"]: row["physical_asset_id"]
+        for row in equipment_result.get("identity_register", {}).get("equipment", [])
+        if row["status"] == "resolved"
     }
+    confirmed = set(confirmed_aliases)
+    counted, priced, excluded, records, exact_equipment = [], [], [], [], []
+    for row in equipment:
+        source = row.get("parsed_source") or {}
+        key = source["equipment_key"]
+        is_excluded = key in confirmed or source.get("confirmed_alias")
+        is_priced = not is_excluded and priced_record(row)
+        if is_excluded:
+            excluded.append(row)
+        else:
+            counted.append(row)
+        if is_priced:
+            priced.append(row)
+        cost = row.get("equipment_cost")
+        if cost is None:
+            cost = row.get("amount")
+        exact_equipment.append({
+            "record_key": key,
+            "cost": cost if is_priced else None,
+            "installation_cost": row.get("installation_cost") if is_priced else None,
+        })
+        records.append({
+            "record_key": key,
+            "display_tag": row["equipment_tag"],
+            "physical_asset_id": physical_ids.get(key),
+            "quantity": row.get("quantity"),
+            "equipment_count": source.get("equipment_count"),
+            "quantity_unit": row.get("quantity_unit"),
+            "cost_scope": row.get("cost_scope"),
+            "price_coverage": "excluded" if is_excluded else "priced" if is_priced else "unpriced",
+            "cost": number(cost) if is_priced else None,
+            "installation_cost": number(row.get("installation_cost")) if is_priced else None,
+            "model_id": row.get("curve_id"),
+        })
     missing = [
         {
             "tag": r["equipment_tag"],
+            "record_key": r["parsed_source"]["equipment_key"],
             "reason": "; ".join(r.get("issues", [])),
             "rationale": r.get("decision", {}).get("rationale", ""),
         }
@@ -83,19 +109,16 @@ def evaluate(report, description, plan, confirmed_aliases):
     year_one = next(
         (row for row in revenue.get("annual", []) if row.get("year") == 1), {}
     )
-    vals = {
-        "npv": number(metrics.get("project_npv", {}).get("value")),
-        "irr": number(metrics.get("project_irr", {}).get("value")),
-        "payback": number(metrics.get("project_discounted_payback", {}).get("value")),
-        "capex": number(capex.get("total_capex")),
-        "opex": number(opex.get("first_year_cash_opex")),
-        "revenue": (
-            number(year_one.get("sales_revenue")) if not revenue.get("issues") else None
-        ),
-        "known_opex": number(
-            opex.get("known_cash_opex_subtotal", opex.get("first_year_cash_opex"))
-        ),
+    metric_values = {
+        "npv": metrics.get("project_npv", {}).get("value"),
+        "irr": metrics.get("project_irr", {}).get("value"),
+        "payback": metrics.get("project_discounted_payback", {}).get("value"),
+        "capex": capex.get("total_capex"),
+        "opex": opex.get("first_year_cash_opex"),
+        "revenue": year_one.get("sales_revenue") if not revenue.get("issues") else None,
+        "known_opex": opex.get("known_cash_opex_subtotal", opex.get("first_year_cash_opex")),
     }
+    vals = {key: number(value) for key, value in metric_values.items()}
     finance_ready = (
         financial.get("status") == "calculated_preliminary" and vals["npv"] is not None
     )
@@ -129,20 +152,16 @@ def evaluate(report, description, plan, confirmed_aliases):
     return {
         "status": "complete" if complete else "partial",
         "metrics": vals,
-        "equipment_costs": costs,
-        "equipment_cost_scopes": {
-            r["equipment_tag"]: r.get("cost_scope") for r in priced
-        },
-        "equipment_installation_costs": {
-            r["equipment_tag"]: number(r.get("installation_cost")) for r in priced
-        },
+        "exact_values": project_exact_values(
+            metric_values, exact_equipment, equipment_result, capex, opex, revenue, financial
+        ),
+        "equipment_records": records,
         "capex_components": {
             r["id"]: number(r.get("amount")) for r in capex.get("lines", [])
         },
         "opex_components": {
             r["id"]: number(r.get("amount")) for r in opex.get("first_year_lines", [])
         },
-        "equipment_models": {r["equipment_tag"]: r.get("curve_id") for r in equipment},
         "coverage": {
             "priced": len(priced),
             "total": len(counted),
@@ -210,10 +229,18 @@ def summarize(rows, parameters, settings):
         )
         for name in ("npv", "irr", "payback", "capex", "opex", "known_opex", "revenue")
     }
-    tags = sorted({tag for r in valid for tag in r.get("equipment_costs", {})})
+    by_run = [
+        {(row["record_key"] or row["display_tag"]): row for row in equipment_records(run)
+         if row["price_coverage"] == "priced"}
+        for run in valid
+    ]
+    labels = {key: row["display_tag"] for rows in by_run for key, row in rows.items()}
     equipment = {
-        tag: distribution([r.get("equipment_costs", {}).get(tag) for r in valid])
-        for tag in tags
+        key: {
+            **distribution([rows.get(key, {}).get("cost") for rows in by_run]),
+            "display_tag": labels[key],
+        }
+        for key in sorted(labels)
     }
     cash_years = sorted({p["year"] for r in good for p in r["cash_flow"]})
     cash = [

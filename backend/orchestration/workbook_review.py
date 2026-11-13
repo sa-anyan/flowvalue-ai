@@ -636,8 +636,12 @@ def apply_review(parsed, response):
                 normalized_unit = unit
                 status = "inferred"
                 note = "Semantic property interpretation from workbook source."
+        from backend.ingestion.observation_identity import recovered_identity
+
+        key = _key("ai-evidence", report.sha256, ref, prop, component, unit)
         return Evidence(
-            id=_key("ai-evidence", report.sha256, ref, prop, component, unit),
+            id=key,
+            **recovered_identity(report.sha256, key, VERSION),
             workbook=report.filename,
             sheet=ref["sheet"],
             cell=ref["cell"],

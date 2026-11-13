@@ -362,14 +362,18 @@ def test_manual_price_monte_carlo_reconciles_same_canonical_run():
         source="Independent synthetic test",
         rationale="Explicit uncertainty fixture",
     )
-    settings = Settings(parameters=[p], seed=15)
+    settings = Settings(
+        parameters=[p],
+        seed=15,
+        operating_years=s["plan"]["operating_economics"]["financial"]["operating_years"],
+    )
     discovered = Settings.model_validate(discover(s)["settings"])
     draws = sample(settings, discovered)[1]
     assert (draws == sample(settings, discovered)[1]).all()
     plan = prepare(s, settings)
     apply(plan, [p], draws[0])
     output = evaluate(s["parsed"]["report"], s["description"], plan, [])
-    assert list(output["equipment_costs"].values()) == pytest.approx(
+    assert [row["cost"] for row in output["equipment_records"] if row["price_coverage"] == "priced"] == pytest.approx(
         [float(draws[0, 0])]
     )
     assert output["status"] == "complete"

@@ -6,6 +6,7 @@ from backend.equipment_costing.models import is_scoped_capital
 import copy
 from backend.blocks.models import Product
 from backend.blocks.shared import plain
+from backend.equipment_resolution.identity import identity_register
 from backend.equipment_resolution.scope import expand
 from .calculation import calculate_equipment
 from backend.equipment_matching.service import match_report, apply_matches
@@ -128,6 +129,9 @@ def calculate(ctx):
             message = "Thermal sizing: " + warning
             if message not in line["issues"]:
                 line["issues"].append(message)
+    result["identity_register"] = identity_register(
+        ctx.report, report, plan, duplicate_review, ctx.plan
+    )
     result["duplicate_review"] = duplicate_review
     result["input_resolution"] = input_resolution
     result["matching_register"] = matching or {
