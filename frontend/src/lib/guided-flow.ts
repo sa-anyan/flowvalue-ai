@@ -96,6 +96,8 @@ export type EquipmentCardModel = {
   quantity: number | null;
   requiredInputs: { name: string; unit: string; value: unknown; origin: ValueOrigin; required: boolean; role: string }[];
   sizing: { method: string; inputs: { name: string; unit: string; value: unknown; origin: ValueOrigin }[] } | null;
+  /** Sizing assumptions behind the size (proposed by the AI, from the M&E balance, or yours). */
+  assumptions: { name: string; unit: string; value: unknown; origin: ValueOrigin; rationale: string }[];
   issues: string[];
 };
 
@@ -188,10 +190,14 @@ export function equipmentCards(state: Row | null, plan: unknown, catalogue: Row[
     const estimate = obj(obj(line.calculation).estimate);
     const size = num(estimate.size ?? mapping.size);
     const requiredInputs = requirements.length
-      ? requirements.map((r) => {
+      ? requirements.map((r, i) => {
           const name = text(r.name || r.quantity);
-          const value = name === 'size' ? (size ?? inputs[name] ?? null) : (inputs[name] ?? null);
-          const origin: ValueOrigin = name === 'size' && size !== null && estimate.size !== undefined ? 'derived' : originOf(obj(provenance[name]).status, obj(provenance[name]).source);
+          // The first required input is the model's size coordinate (e.g. volume, area, power).
+          const isSize = name === 'size' || i === 0;
+          const typedSize = mapping.size !== null && mapping.size !== undefined && conversion.enabled !== true;
+          const value = isSize ? (size ?? inputs[name] ?? null) : (inputs[name] ?? null);
+          const origin: ValueOrigin =
+            isSize && typedSize ? 'user' : isSize && size !== null && estimate.size !== undefined ? 'derived' : originOf(obj(provenance[name]).status, obj(provenance[name]).source);
           return { name, unit: text(r.target_unit || r.unit), value, origin, required: r.required !== false, role: text(r.role) };
         })
       : Object.entries(inputs).map(([name, value]) => ({ name, unit: '', value, origin: originOf(obj(provenance[name]).status, obj(provenance[name]).source), required: true, role: '' }));
@@ -232,6 +238,13 @@ export function equipmentCards(state: Row | null, plan: unknown, catalogue: Row[
       quantity: num(line.quantity ?? mapping.quantity),
       requiredInputs,
       sizing,
+      assumptions: Object.entries(inputs).map(([name, value]) => ({
+        name,
+        unit: text(obj(provenance[name]).unit),
+        value,
+        origin: originOf(obj(provenance[name]).status, obj(provenance[name]).source),
+        rationale: text(obj(provenance[name]).rationale),
+      })),
       issues: (Array.isArray(line.issues) ? line.issues : []).map(text).filter(Boolean),
     };
   });
