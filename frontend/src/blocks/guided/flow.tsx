@@ -12,6 +12,7 @@ import {
   obj,
   stageIndex,
   stageStatus,
+  text,
   type Row,
   type StageId,
 } from '@/lib/guided-flow';
@@ -35,9 +36,16 @@ export type Draft<T = unknown> = {
 function useDraft<T>(hook: AssessmentHook, section: string, fallback: T): Draft<T> {
   const saved = (hook.state?.plan?.[section] ?? fallback) as T;
   const [value, setValue] = useState<T>(saved);
+  const base = useRef(saved);
+  const study = useRef(hook.state?.id);
   useEffect(() => {
-    setValue(saved);
-    // Reset only when a new saved revision arrives.
+    // Take a new saved revision (e.g. background AI proposals) unless the user
+    // has unsaved edits on the same study; their edits are never discarded.
+    const sameStudy = study.current === hook.state?.id;
+    const previous = stableJson(base.current); // read now: the updater below runs later
+    study.current = hook.state?.id;
+    base.current = saved;
+    setValue((current) => (sameStudy && stableJson(current) !== previous ? current : saved));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hook.state?.id, hook.state?.revision]);
   const dirty = stableJson(value) !== stableJson(saved);
@@ -132,6 +140,16 @@ export function GuidedFlow() {
   const state = hook.state,
     receipts = obj(state?.stage_runs),
     stages = obj(obj(state?.results).stages);
+  // Studies approved before background research existed: start it once on open.
+  const asked = useRef('');
+  useEffect(() => {
+    const id = text(state?.id);
+    if (!id || !hook.aiEnabled || state?.engineering_data_approved !== true || obj(state).opex_brainstorm || asked.current === id) return;
+    asked.current = id;
+    void api(`assessments/${id}/opex-brainstorm`, post({}))
+      .then(() => hook.reload())
+      .catch(() => {});
+  }, [state, hook]);
   const props: StageProps = { hook, equipment, capex, operating, advance, go, aiSizing, setAiSizing };
   const current = guidedStages[stageIndex(stage)];
   return (

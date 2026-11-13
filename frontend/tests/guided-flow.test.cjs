@@ -156,3 +156,26 @@ test('only reference defaults are offered for review, with source and range',()=
  assert.match(rows[0].detail,/midpoint of 2\.0%–10\.0%/);
  assert.equal(rows[1].value,'price needed');
 });
+
+test('AI proposals from the background brainstorm are offered for review; user values are not',()=>{
+ const config={
+  garrett_factors:{maintenance:{fraction:.04,origin:'ai',rationale:'AI: clean service'},supervision:{fraction:.12,origin:'user'}},
+  labour:[{id:'electricians',role:'Electricians',headcount_fte:6,annual_base_salary:70000,origin:'ai',rationale:'AI'},{id:'ops',role:'Operators',headcount_fte:3,origin:'user'}],
+ };
+ const rows=lib.opexProposals(config);
+ assert.deepEqual(rows.map(r=>`${r.root}:${r.id}:${r.by}`),['garrett_factors:maintenance:ai','labour:electricians:ai']);
+ const labour=rows.find(r=>r.root==='labour');
+ assert.equal(labour.editKey,'headcount_fte');
+ assert.match(labour.value,/^6 FTE/);
+ assert.equal(labour.label,'Electricians');
+});
+
+test('background brainstorm notice reflects running, ready and failed states, and stays silent without AI',()=>{
+ assert.equal(lib.brainstormNotice({status:'running'},false),null);
+ assert.equal(lib.brainstormNotice({status:'running'},true).tone,'running');
+ assert.match(lib.brainstormNotice({status:'ready',added:['labour.a','energy.b']},true).text,/AI added 2 proposals/);
+ const failed=lib.brainstormNotice({status:'failed',error:'timeout'},true);
+ assert.equal(failed.tone,'failed');
+ assert.match(failed.text,/Reference defaults still apply/);
+ assert.equal(lib.brainstormNotice(null,true),null);
+});

@@ -1,6 +1,6 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { strings, compact, list, money, num, obj, opexHeadline, opexProgress, opexProposals, percent, text, words, type OpexProposal, type Row } from '@/lib/guided-flow';
+import { useEffect, useRef, useState } from 'react';
+import { brainstormNotice, stageStatus, strings, compact, list, money, num, obj, opexHeadline, opexProgress, opexProposals, percent, text, words, type OpexProposal, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
 import { Issues, OriginChip, Panel, RunBar, StageHeading, type StageProps } from './flow';
 
@@ -10,6 +10,14 @@ const groups = [
   ['labour', 'Labour', ['headcount_fte', 'annual_base_salary', 'allocation_fraction']],
   ['additional_expenses', 'Additional expenses', ['amount', 'annual_amount', 'unit_price', 'quantity']],
 ] as const;
+const EDIT_LABELS: Record<string, string> = {
+  fraction: 'Edit (fraction)',
+  tariff_per_kwh: 'Tariff per kWh',
+  unit_price: 'Price per unit',
+  headcount_fte: 'Headcount (FTE)',
+  annual_amount: 'Annual amount',
+  amount: 'Amount',
+};
 const hidden = new Set(['id', 'stream_key', 'equipment_key', 'source_key', 'component', 'property', 'price_basis']);
 
 /** Value origin for an OPEX input, read from its own recorded source/status fields. */
@@ -73,15 +81,27 @@ export function OpexPlayground(props: StageProps) {
     }
     const items = list(config[p.root]);
     if (action === 'exclude') return set({ [p.root]: items.filter((i) => text(i.id) !== p.id) });
-    const priceKey = p.root === 'energy' ? 'tariff_per_kwh' : 'unit_price';
     set({
       [p.root]: items.map((i) =>
         text(i.id) !== p.id
           ? i
-          : { ...i, ...(action === 'edit' ? { [priceKey]: value } : {}), origin: 'user', status: action === 'edit' ? 'edited by user' : 'accepted by user' },
+          : { ...i, ...(action === 'edit' ? { [p.editKey]: value } : {}), origin: 'user', status: action === 'edit' ? 'edited by user' : 'accepted by user' },
       ),
     });
   };
+  const notice = brainstormNotice(obj(state).opex_brainstorm, hook.aiEnabled);
+  // Calculate on arrival: when CAPEX is current and OPEX is not (never run, or
+  // new background AI proposals made it stale), Python recalculates once.
+  const receipts = obj(state?.stage_runs);
+  const capexReady = stageStatus(receipts.capex, obj(obj(state?.results).stages).capex).tone === 'ready';
+  const opexTone = stageStatus(receipts.opex, stage).tone;
+  const autoRan = useRef('');
+  useEffect(() => {
+    const stamp = `${text(state?.id)}:${text(state?.revision)}`;
+    if (!state || state.running || hook.busy || operating.dirty || !capexReady || !['stale', 'idle'].includes(opexTone) || autoRan.current === stamp) return;
+    autoRan.current = stamp;
+    void hook.action(() => hook.runStage('opex'));
+  }, [state, hook, operating.dirty, capexReady, opexTone]);
   const questions = pending.filter((q) => !/categories priced/.test(q));
   const shift = (id: string, amount: unknown) => (before && before[id] !== undefined && before[id] !== money(amount, '—') ? ` · was ${before[id]}` : '');
   return (
@@ -133,17 +153,35 @@ export function OpexPlayground(props: StageProps) {
         </div>
       </div>
       {!stage.result && <p className="gf-note">OPEX has not been calculated yet.</p>}
+      {notice && (
+        <p className={`gf-note gf-brainstorm gf-brainstorm-${notice.tone}`} role="status">
+          {notice.tone === 'running' && <span className="gf-spinner" aria-hidden="true" />}
+          {notice.text}
+          {notice.tone === 'failed' && (
+            <button
+              type="button"
+              className="gf-link"
+              onClick={() => void hook.action(async () => {
+                await api(`assessments/${hook.id}/opex-brainstorm`, post({}));
+                hook.reload();
+              })}
+            >
+              Try again
+            </button>
+          )}
+        </p>
+      )}
       {proposals.length > 0 && (
         <section className="gf-card-block gf-review" aria-labelledby="gf-opex-review">
           <h2 id="gf-opex-review">Review {proposals.length} proposed assumption{proposals.length === 1 ? '' : 's'}</h2>
-          <p className="gf-muted">Proposed by Python from the reference library and your study data, without AI. Accept, edit or exclude each one.</p>
+          <p className="gf-muted">Proposed by Python from the reference library and your study data, and by the AI researching in the background. Accept, edit or exclude each one.</p>
           <ul className="gf-lines">
             {proposals.map((p) => (
               <li key={p.root + p.id} className="gf-line gf-review-row">
                 <div className="gf-line-main">
                   <div>
                     <strong>{p.label}</strong>
-                    <OriginChip origin="Reference default · review" />
+                    <OriginChip origin={p.by === 'ai' ? 'AI proposal · review' : 'Reference default · review'} />
                     <small>
                       {p.source} · {p.detail}
                     </small>
@@ -157,7 +195,7 @@ export function OpexPlayground(props: StageProps) {
                     Accept
                   </button>
                   <label className="gf-field gf-field-sm">
-                    <span>{p.root === 'garrett_factors' ? 'Edit (fraction)' : p.root === 'energy' ? 'Tariff per kWh' : 'Price per unit'}</span>
+                    <span>{EDIT_LABELS[p.editKey] || 'Edit'}</span>
                     <input type="number" step="any" min="0" onChange={(e) => review(p, 'edit', e.target.value === '' ? null : Number(e.target.value))} />
                   </label>
                   <button type="button" className="gf-link" onClick={() => review(p, 'exclude')}>

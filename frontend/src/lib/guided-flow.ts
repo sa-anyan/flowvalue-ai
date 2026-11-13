@@ -381,36 +381,78 @@ export function opexHeadline(result: Row, progress: { priced: number; total: num
   };
 }
 
-export type OpexProposal = { root: 'garrett_factors' | 'energy' | 'materials'; id: string; label: string; value: string; source: string; detail: string };
+export type OpexProposal = {
+  root: 'garrett_factors' | 'energy' | 'materials' | 'labour' | 'additional_expenses';
+  id: string;
+  label: string;
+  value: string;
+  source: string;
+  detail: string;
+  by: 'reference' | 'ai';
+  /** The input the edit box writes (fraction, tariff, price, headcount or amount). */
+  editKey: string;
+};
 
-/** Reference-default values still awaiting the user's review. */
+const proposedBy = (origin: unknown): 'reference' | 'ai' | null => (origin === 'reference_default' ? 'reference' : origin === 'ai' ? 'ai' : null);
+
+/** Reference-default and AI-proposed values still awaiting the user's review. */
 export function opexProposals(config: Row): OpexProposal[] {
   const out: OpexProposal[] = [];
   for (const [id, raw] of Object.entries(obj(config.garrett_factors))) {
-    const e = obj(raw);
-    if (e.origin !== 'reference_default') continue;
+    const e = obj(raw),
+      by = proposedBy(e.origin);
+    if (!by) continue;
     out.push({
       root: 'garrett_factors',
       id,
       label: words(id),
       value: percent(e.fraction),
-      source: `${text(e.source)}, ${text(e.page)}`,
-      detail: `${text(e.value_basis) || 'value'} of ${percent(e.low)}–${percent(e.high)}`,
+      source: by === 'reference' ? `${text(e.source)}, ${text(e.page)}` : 'AI proposal',
+      detail: by === 'reference' ? `${text(e.value_basis) || 'value'} of ${percent(e.low)}–${percent(e.high)}` : text(e.rationale),
+      by,
+      editKey: 'fraction',
     });
   }
-  for (const root of ['energy', 'materials'] as const) {
+  for (const root of ['energy', 'materials', 'labour', 'additional_expenses'] as const) {
     for (const item of list(config[root])) {
-      if (item.origin !== 'reference_default') continue;
-      const price = root === 'energy' ? item.tariff_per_kwh : item.unit_price;
+      const by = proposedBy(item.origin);
+      if (!by) continue;
+      let value: string, editKey: string;
+      if (root === 'labour') {
+        editKey = 'headcount_fte';
+        value = `${text(item.headcount_fte) || '?'} FTE${num(item.annual_base_salary) === null ? '' : ` × ${money(item.annual_base_salary)}/yr`}`;
+      } else if (root === 'additional_expenses') {
+        editKey = item.annual_amount !== undefined ? 'annual_amount' : item.amount !== undefined ? 'amount' : 'unit_price';
+        value = num(item[editKey]) === null ? 'amount needed' : money(item[editKey]);
+      } else {
+        editKey = root === 'energy' ? 'tariff_per_kwh' : 'unit_price';
+        const price = item[editKey];
+        value = num(price) === null ? 'price needed' : `${text(price)} per ${root === 'energy' ? 'kWh' : text(item.quantity_unit)}`;
+      }
       out.push({
         root,
         id: text(item.id),
-        label: text(item.name || item.id),
-        value: num(price) === null ? 'price needed' : `${text(price)} per ${root === 'energy' ? 'kWh' : text(item.quantity_unit)}`,
-        source: 'Study data',
+        label: text(item.name || item.role || item.id),
+        value,
+        source: by === 'reference' ? 'Study data' : 'AI proposal',
         detail: text(item.rationale),
+        by,
+        editKey,
       });
     }
   }
   return out;
+}
+
+/** What the background AI brainstorm is doing, for a one-line notice. */
+export function brainstormNotice(record: unknown, aiEnabled: boolean): { tone: 'running' | 'ready' | 'failed' | 'off'; text: string } | null {
+  const r = obj(record);
+  if (!aiEnabled) return null;
+  if (r.status === 'running') return { tone: 'running', text: 'AI is researching OPEX assumptions in the background (labour, utilities, materials). Reference defaults are shown meanwhile.' };
+  if (r.status === 'failed') return { tone: 'failed', text: `AI research did not finish (${text(r.error) || 'unknown error'}). Reference defaults still apply.` };
+  if (r.status === 'ready') {
+    const n = list(r.added).length;
+    return { tone: 'ready', text: n ? `AI added ${n} proposal${n === 1 ? '' : 's'} to review below.` : 'AI research finished; nothing new to add beyond your values.' };
+  }
+  return null;
 }
