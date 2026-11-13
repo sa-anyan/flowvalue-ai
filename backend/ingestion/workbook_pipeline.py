@@ -9,7 +9,7 @@ from openpyxl.utils import coordinate_to_tuple
 
 from backend.ingestion.balance.models import BalanceReport, Issue
 from backend.ingestion.balance.validation import validate
-from backend.ingestion.engineering_register import build_register
+from backend.ingestion.engineering_register import build_register, stable_key
 from backend.ingestion.stream_layout import StreamLayoutParser
 
 
@@ -121,7 +121,9 @@ def review_registers(report):
             )
 
 
-def parse_workbook(content, filename, *, metrics=None, loaded=None):
+def parse_workbook(
+    content, filename, *, metrics=None, loaded=None, previous_source_sha256=None
+):
     start = perf_counter()
     parser = StreamLayoutParser(content, filename, loaded=loaded)
     opened = perf_counter()
@@ -163,6 +165,26 @@ def parse_workbook(content, filename, *, metrics=None, loaded=None):
             else "verified"
         )
     report.parser_version = "workbook-pipeline-3.0"
+    if previous_source_sha256 == report.sha256:
+        raise ValueError("A source revision cannot be its own predecessor")
+    report.previous_source_sha256 = previous_source_sha256
+    observations = [
+        value
+        for entity in report.entities
+        for value in [entity.id_evidence, *entity.values]
+    ] + report.declarations
+    for value in observations:
+        value.observation_id = stable_key(
+            "observation",
+            report.sha256,
+            report.parser_version,
+            value.sheet,
+            value.cell,
+            tuple(value.header_cells),
+            value.property,
+            value.component,
+            value.id,
+        )
     report.limitations.append(
         "Partial, deterministic extraction for supported labelled table regions. Relationships use scoped keys; untagged streams are retained. Mention edges do not establish connectivity. Separate worksheets/cases are never silently merged. Cached formulas were not recalculated. Volume component sums are arithmetic comparisons only, not evidence of physical additivity."
     )
