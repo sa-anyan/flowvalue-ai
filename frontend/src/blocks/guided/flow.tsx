@@ -182,7 +182,9 @@ export function GuidedFlow() {
           </button>
         </div>
       </div>
-      {state?.running && <RunProgress id={hook.id} fallback={String(state.status || 'Python is calculating')} />}
+      {(state?.running || ['queued', 'running'].includes(String(obj(state?.autopilot).status))) && (
+        <RunProgress id={hook.id} fallback={String(state?.status || 'Python is calculating')} />
+      )}
       {state?.parent_version && (
         <p className="gf-banner" role="note">
           You are editing a <strong>scenario copy</strong>. The baseline assessment is unchanged.
@@ -212,6 +214,7 @@ export function GuidedFlow() {
 }
 
 const STAGE_LABEL: Record<string, string> = {
+  autopilot: 'Autopilot',
   engineering_data: 'Reading engineering data',
   equipment_preparation: 'Preparing equipment',
   equipment: 'Pricing equipment',

@@ -6,6 +6,7 @@ import { api, post } from './use-assessment';
 import { EquipmentInspector } from './equipment-inspector';
 import { OriginChip, Panel, RunBar, type StageProps } from './flow';
 import { matchChip, pending, QuickMatchPanel, useQuickMatches } from './quick-match';
+import { AutopilotCard } from './autopilot';
 
 const WORKBOOK = /\.(xlsx|xls|xlsm)$/i;
 
@@ -218,6 +219,7 @@ export function EntryBoard(props: StageProps) {
       </div>
 
       <div className="gf-lane gf-lane-cards" aria-live="polite">
+        {cards.length > 0 && <AutopilotCard props={props} />}
         <div className="gf-lane-head">
           <span className="gf-kicker">02 · EQUIPMENT FROM YOUR WORKBOOK</span>
           {cards.length > 0 && (

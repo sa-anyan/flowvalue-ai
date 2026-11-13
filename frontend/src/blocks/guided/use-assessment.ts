@@ -78,7 +78,8 @@ export function useAssessment() {
         const next = await api<Assessment>('assessments/' + id);
         if (disposed) return;
         setState(next);
-        if (next.running) timer = setTimeout(refresh, 1200);
+        const auto = (next as Row).autopilot as Row | undefined;
+        if (next.running || auto?.status === 'queued' || auto?.status === 'running') timer = setTimeout(refresh, 1200);
       } catch (e) {
         if (!disposed) setError((e as Error).message);
       }

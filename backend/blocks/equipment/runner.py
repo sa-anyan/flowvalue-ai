@@ -75,7 +75,8 @@ def prepare(ctx):
     from backend.equipment_matching.library_preference import user_selected_model
 
     extracted = {e["key"] for e in report.get("entities", []) if e.get("kind") == "equipment"}
-    chosen = {r["equipment_key"] for r in plan.get("equipment", []) if user_selected_model(r)}
+    chosen = {r["equipment_key"] for r in plan.get("equipment", [])
+              if user_selected_model(r) or (r.get("model_selection") or {}).get("origin") == "autopilot"}
     # Quick match: when the user has confirmed a model for every item, an AI
     # rematch would only be shown for review and is skipped to save time.
     all_confirmed = bool(extracted) and extracted <= chosen
