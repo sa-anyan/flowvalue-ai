@@ -387,7 +387,7 @@ def test_monte_carlo_uses_canonical_scoped_costs_without_llm(tmp_path):
     b = run(report, "Continuous synthetic water treatment", plan, [])
     assert a == b
     assert a["coverage"]["priced"] == 1
-    assert a["equipment_costs"]
+    assert any(row["price_coverage"] == "priced" for row in a["equipment_records"])
 
 
 def test_published_pressure_limit_is_checked_when_condition_is_supplied():

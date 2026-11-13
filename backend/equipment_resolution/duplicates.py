@@ -2,7 +2,7 @@
 
 Source registers are never mutated. Only identical normalized tags or a plain
 numbered tag with its AB counterpart are combined; semantic similarities are
-not evidence of duplication. Restored rows remain separate until re-excluded.
+not evidence of duplication. Restored rows remain visible for review.
 """
 
 import copy
@@ -48,6 +48,12 @@ def reconcile(report, plan):
     for key, (dest, reason) in destinations.items():
         e, survivor = by_key[key], by_key[dest]
         restored = rows.get(key, {}).get("duplicate_action") == "restore"
+        row = rows.get(key, {})
+        confirmation = row.get("alias_confirmation") or row.get("scope_confirmation") or {}
+        distinct = (
+            confirmation.get("status") == "user_confirmed_distinct"
+            and bool(str(confirmation.get("rationale") or "").strip())
+        )
         audit.append(
             {
                 "equipment_key": key,
@@ -55,13 +61,13 @@ def reconcile(report, plan):
                 "retained_equipment_key": dest,
                 "retained_tag": survivor["identifier"],
                 "reason": reason,
-                "status": "restored" if restored else "dropped",
+                "status": "confirmed_distinct" if distinct else "restored" if restored else "dropped",
                 "source": e.get("id_evidence"),
                 "stream_keys": e.get("stream_keys", []),
                 "notice": "User-defined tag convention; not independently verified physical identity.",
             }
         )
-        if restored:
+        if restored or distinct:
             continue
         dropped.add(key)
         survivor["stream_keys"] = list(
