@@ -16,6 +16,14 @@ PAYMENT_OWNERS = ("project", "customer", "third_party")
 DEFAULT_ESCALATION = "Study price basis and financial escalation policy; no line-specific escalation"
 
 
+class PriceNeeded(ValueError):
+    """A proposed item whose quantity is known but whose price is not."""
+
+    def __init__(self, message, quantity, unit):
+        super().__init__(message)
+        self.annual_quantity, self.unit = quantity, unit
+
+
 def _costs_for_year(report, config, basis, hours, ramp, year, *, partial=False):
     costs = []
     detail = {
@@ -61,6 +69,8 @@ def _costs_for_year(report, config, basis, hours, ramp, year, *, partial=False):
                     "status": "pending",
                     "reason": str(exc),
                     "excluded_from_known_subtotal": True,
+                    **({"annual_quantity": float(exc.annual_quantity), "unit": exc.unit}
+                       if isinstance(exc, PriceNeeded) else {}),
                 }
             )
 
@@ -174,9 +184,10 @@ def _costs_for_year(report, config, basis, hours, ramp, year, *, partial=False):
                 quantity = lineage["annual_quantity"]
             if item.get("unit_price") in (None, ""):
                 # A proposed feed keeps its quantity visible; the price is a question, never 0.
-                raise ValueError(
+                raise PriceNeeded(
                     f"Price needed for {item.get('name') or item['id']}: "
-                    f"{float(quantity):,.0f} {item['quantity_unit']}/year from the M&E balance"
+                    f"{float(quantity):,.0f} {item['quantity_unit']}/year from the M&E balance",
+                    quantity, item["quantity_unit"],
                 )
             add(
                 "feed:" + item["id"],
@@ -207,9 +218,10 @@ def _costs_for_year(report, config, basis, hours, ramp, year, *, partial=False):
                 demand = equipment_energy_cost(
                     {**item, "tariff_per_kwh": 0}, report, operating_hours=hours, throughput_fraction=ramp
                 )
-                raise ValueError(
+                raise PriceNeeded(
                     f"Electricity tariff needed for {item.get('name') or item['id']}: "
-                    f"{float(demand['annual_energy_kwh']):,.0f} kWh/year from study data"
+                    f"{float(demand['annual_energy_kwh']):,.0f} kWh/year from study data",
+                    demand["annual_energy_kwh"], "kWh",
                 )
             result = equipment_energy_cost(
                 item, report, operating_hours=hours, throughput_fraction=ramp

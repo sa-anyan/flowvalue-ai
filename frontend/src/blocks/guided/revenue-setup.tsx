@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { list, obj, text, type Row } from '@/lib/guided-flow';
+import { compact, list, obj, text, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
 import type { StageProps } from './flow';
 
@@ -13,17 +13,35 @@ import type { StageProps } from './flow';
 type Sale = { name: string; stream_key: string; component: string; unit_price: string; quantity_unit: string };
 const UNITS = ['kg', 'tonne', 'lb', 'm3', 'L'];
 
-function streamsOf(report: Row) {
+const flowOf = (v: Row | undefined): number | null => {
+  const n = v && typeof v.normalized_value === 'number' ? v.normalized_value : null;
+  return n !== null && Number.isFinite(n) && n >= 0 ? n : null;
+};
+
+/** Streams that can be sold: only those with a usable mass flow (kg/h) in the workbook. */
+export function streamsOf(report: Row) {
   return list(report.entities)
     .filter((e) => e.kind === 'material')
     .map((e) => {
       const values = list(e.values);
       const label = text(values.find((v) => ['name', 'description'].includes(text(v.property)))?.original_value);
-      const components = Array.from(
-        new Set(values.filter((v) => /^component_(mass|volume)_flow$/.test(text(v.property)) && v.component).map((v) => text(v.component))),
-      );
-      return { key: text(e.key), tag: text(e.identifier), label, components };
-    });
+      const total = flowOf(values.find((v) => text(v.property) === 'mass_flow' && !v.component));
+      const components = values
+        .filter((v) => text(v.property) === 'component_mass_flow' && v.component && flowOf(v) !== null && (flowOf(v) as number) > 0)
+        .map((v) => ({ name: text(v.component), flow: flowOf(v) as number }));
+      return { key: text(e.key), tag: text(e.identifier), label, total, components };
+    })
+    .filter((s) => (s.total !== null && s.total > 0) || s.components.length > 0);
+}
+
+const PER_KG: Record<string, number> = { kg: 1, tonne: 0.001, lb: 2.20462 };
+
+/** Yearly revenue preview (Python calculates the real figure): kg/h × hours × price per unit. */
+export function revenuePreview(flowKgPerHour: number | null, price: string, unit: string, days: string, hours: string): number | null {
+  const p = Number(price),
+    perKg = PER_KG[unit];
+  if (flowKgPerHour === null || price === '' || !Number.isFinite(p) || perKg === undefined) return null;
+  return flowKgPerHour * (Number(days) || 0) * (Number(hours) || 0) * perKg * p;
 }
 
 export function RevenueSetup({ props }: { props: StageProps }) {
@@ -111,7 +129,8 @@ export function RevenueSetup({ props }: { props: StageProps }) {
                 {streams.map((x) => (
                   <option key={x.key} value={x.key}>
                     {x.tag}
-                    {x.label ? ` · ${x.label.slice(0, 60)}` : ''}
+                    {x.label ? ` · ${x.label.slice(0, 50)}` : ''}
+                    {x.total !== null ? ` · ${compact(x.total)} kg/h` : ''}
                   </option>
                 ))}
               </select>
@@ -119,10 +138,10 @@ export function RevenueSetup({ props }: { props: StageProps }) {
             <label className="gf-field">
               <span>What is sold</span>
               <select value={s.component} onChange={(e) => change(i, { component: e.target.value })} disabled={!stream}>
-                <option value="">Whole stream</option>
+                {(!stream || stream.total !== null) && <option value="">Whole stream</option>}
                 {(stream?.components || []).map((c) => (
-                  <option key={c} value={c}>
-                    {c}
+                  <option key={c.name} value={c.name}>
+                    {c.name} · {compact(c.flow)} kg/h
                   </option>
                 ))}
               </select>
@@ -143,6 +162,15 @@ export function RevenueSetup({ props }: { props: StageProps }) {
                 ))}
               </select>
             </label>
+            {(() => {
+              const flow = s.component ? (stream?.components.find((c) => c.name === s.component)?.flow ?? null) : (stream?.total ?? null);
+              const year = revenuePreview(flow, s.unit_price, s.quantity_unit, days, hours);
+              return year === null ? null : (
+                <small className="gf-muted gf-rev-preview">
+                  ≈ {compact(year)} {currency}/year ({compact(flow)} kg/h × {Number(days) * Number(hours)} h × {s.unit_price} per {s.quantity_unit})
+                </small>
+              );
+            })()}
             {sales.length > 1 && (
               <button type="button" className="gf-link" onClick={() => setSales(sales.filter((_, j) => j !== i))}>
                 Remove

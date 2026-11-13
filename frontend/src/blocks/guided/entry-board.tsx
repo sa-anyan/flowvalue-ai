@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 import { MAX_WORKBOOK_BYTES } from '@/lib/upload-limits';
-import { equipmentCards, list, obj, text, type EquipmentCardModel, type Row } from '@/lib/guided-flow';
+import { equipmentCards, list, obj, strings, text, type EquipmentCardModel, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
 import { EquipmentInspector } from './equipment-inspector';
 import { OriginChip, Panel, RunBar, type StageProps } from './flow';
@@ -277,8 +277,15 @@ export function EntryBoard(props: StageProps) {
             </li>
           ))}
         </ul>
-        {list(state?.revenue_questions).length > 0 && (
-          <p className="gf-note">Revenue needs a choice: set what the project sells under “How does this project earn money?”.</p>
+        {strings(state?.revenue_questions).length > 0 && (
+          <div className="gf-note" role="status">
+            <strong>Revenue needs your input under “How does this project earn money?”</strong>
+            <ul className="gf-issue-list">
+              {strings(state?.revenue_questions).map((q) => (
+                <li key={q}>{q}</li>
+              ))}
+            </ul>
+          </div>
         )}
       </div>
 

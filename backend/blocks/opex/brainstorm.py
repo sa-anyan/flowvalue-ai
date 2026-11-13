@@ -128,6 +128,8 @@ def _refresh_questions(config):
             item = items[ident]
             if item.get("tariff_per_kwh" if "tariff_per_kwh" in item else "unit_price") is None:
                 kept.append(q)
+        elif str(ident).startswith(("ref-feed-", "ref-power-", "ref-specific-energy-")):
+            pass  # its item was replaced or dropped; nothing left to ask
         elif ident == "ref-specific-energy":
             if not config.get("energy"):
                 kept.append(q)
@@ -162,8 +164,21 @@ def merge(config, proposed):
             items = current if isinstance(current, list) else []
             if items and not all(isinstance(i, dict) and i.get("origin") == "reference_default" for i in items):
                 continue  # the user or an earlier AI proposal owns this list
-            if items:
-                # Keep reference-default items the AI did not cover (e.g. a feed).
+            if items and field == "materials":
+                # The AI reviewed what is actually bought: a reference feed it
+                # left out (air, water to be treated, ...) is not costed, but is
+                # listed so the user can add it back.
+                covered = {i.get("stream_key") for i in value if isinstance(i, dict)} - {None}
+                keep = []
+                dropped = [{"stream_key": i.get("stream_key"), "name": i.get("name"),
+                            "reason": "Not in the AI's list of purchased materials."}
+                           for i in items if i.get("stream_key") not in covered]
+                record = config.setdefault("reference_defaults", {})
+                record["not_costed"] = [*(record.get("not_costed") or []), *dropped]
+                for i in items:
+                    owners.pop(f"materials.{i.get('id')}", None)
+            elif items:
+                # Keep reference-default items the AI did not cover (e.g. a power reading).
                 covered = {i.get("stream_key") for i in value if isinstance(i, dict)} - {None}
                 keep = [i for i in items if i.get("stream_key") not in covered or not i.get("stream_key")]
                 if field == "energy":
