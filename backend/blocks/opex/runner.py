@@ -16,6 +16,12 @@ from backend.opex.annual_phasing import phase_fixed_costs
 
 def calculate(ctx):
     config, meta = operating_proposal(ctx, "opex")
+    # Reference defaults fill only what is still missing (no AI, no network).
+    from backend.opex.reference_defaults import for_study
+
+    capital = (ctx.state.get("results", {}).get("stages", {}).get("capex", {}) or {}).get("result") or {}
+    cells = (ctx.upstream.get("engineering_data") or ctx.state.get("stage_outputs", {}).get("engineering_data") or {}).get("source_cells")
+    config, _ = for_study(config, ctx.report, cells, capital, (ctx.state.get("plan") or {}).get("cost_translation"))
     original = config
     try:
         config, audit = translate_inputs(ctx, config, "opex")
