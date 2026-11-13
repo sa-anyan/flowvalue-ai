@@ -315,18 +315,32 @@ def calculate_total_cost(
         )
         for key, rows in sorted(groups.items())
     )
-    issues = []
+    # The equipment total is the purchased-equipment cost on one dated basis.
+    # Lines priced as installed packages or unit capital are a different cost
+    # scope: kept as their own subtotal (CAPEX adds them once), noted, and never
+    # blocking the purchased total. Purchased lines on different currencies or
+    # dates do block it, and the message names them.
+    issues, notes = [], []
     if not items:
         issues.append("No equipment supplied; no total can be calculated")
     if any(line.amount is None for line in lines):
         issues.append(
             "Unresolved equipment: subtotals are partial; complete total unavailable"
         )
-    if len(subtotals) > 1:
+    purchased = [s for s in subtotals if s.cost_scope == "purchased_equipment"]
+    if len(purchased) > 1:
+        bases = "; ".join(f"{s.currency} {s.period}: {', '.join(s.equipment_tags)}" for s in purchased)
         issues.append(
-            "Different currencies, index/date bases or cost scopes must be reconciled before a combined total"
+            "Different currencies, index/date bases or cost scopes must be reconciled before a combined total ("
+            + bases + "). Date typed prices at the study cost date."
         )
-    total = subtotals[0].amount if len(subtotals) == 1 and not issues else None
+    for s in subtotals:
+        if s.cost_scope != "purchased_equipment":
+            notes.append(
+                f"{', '.join(s.equipment_tags)}: priced as {s.cost_scope.replace('_', ' ')} "
+                f"({s.amount:,.0f} {s.currency}), kept separate from purchased equipment; CAPEX adds it once"
+            )
+    total = purchased[0].amount if len(purchased) == 1 and not issues else None
     status = (
         "needs_review"
         if issues
@@ -336,6 +350,7 @@ def calculate_total_cost(
             else "calculated"
         )
     )
+    issues = issues + notes
     component_groups = {}
     installation_issues = []
     for line in lines:
@@ -382,12 +397,18 @@ def calculate_total_cost(
         and len(component_groups) == 1
         and all(line.amount is not None for line in lines)
     )
-    equipment_total = _complete_sum(lines, "equipment_cost") if compatible else None
+    # Installed packages / unit capital have no separate purchase cost by
+    # definition; they are reported on their own, not as a missing purchase.
+    purchased_lines = [
+        line for line in lines
+        if not is_scoped_capital(line.cost_scope, line.calculation.evidence if line.calculation else None)
+    ]
+    equipment_total = _complete_sum(purchased_lines, "equipment_cost") if compatible and purchased_lines else None
     installation_total = (
-        _complete_sum(lines, "installation_cost") if compatible else None
+        _complete_sum(purchased_lines, "installation_cost") if compatible and purchased_lines else None
     )
     combined_total = (
-        _complete_sum(lines, "equipment_and_installation_cost") if compatible else None
+        _complete_sum(purchased_lines, "equipment_and_installation_cost") if compatible and purchased_lines else None
     )
     if len(component_groups) > 1:
         installation_issues.append(

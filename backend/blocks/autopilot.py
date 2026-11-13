@@ -102,7 +102,7 @@ def review_queue(state, picked, auto_approved):
     capex = (stages.get("capex") or {}).get("result") or {}
     if capex.get("python_defaults"):
         queue.append({"stage": "capex", "kind": "defaults",
-                      "text": "CAPEX settings filled with Python defaults (process type, delivery, mid-range Garrett factors)."})
+                      "text": "CAPEX settings filled with Python defaults (process type, delivered equipment, mid-range Garrett factors, offsite facilities 0)."})
     if (runs.get("capex") or {}).get("status") == "ready" and capex.get("total_capex") is None:
         reason = next((str(i) for i in capex.get("issues") or [] if "bases differ" in str(i)), None) \
             or next((str(i) for i in capex.get("issues") or []), "a required input is missing")

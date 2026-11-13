@@ -11,16 +11,14 @@ missing keys:
   "fluids";
 * delivery basis "delivered" (catalogue purchase costs are treated as
   delivered equipment; stated, reviewable);
-* each additive factor at the midpoint of its published range for that
-  process type (Garrett, Chemical Engineering Economics, Table 3-4).
+* factors at the midpoint of their published ranges (the engine's
+  "midpoint" mode, Garrett Table 3-4), with offsite facilities at 0 until the
+  user confirms they are not counted twice.
 
 Every default is recorded with its basis so the user can review it; a value
 the user or the AI already set is never replaced.
 """
 
-from decimal import Decimal
-
-from backend.capex import get_factor_ranges
 
 SOLIDS_FAMILIES = {"dryer", "centrifuge", "crusher", "conveyor", "screen", "cyclone"}
 FLUID_FAMILIES = {"pump", "compressor", "heat_exchanger", "tank", "vessel", "reactor", "column",
@@ -60,18 +58,15 @@ def fill_missing(capex, report):
         capex["delivery_basis"] = "delivered"
         applied.append({"setting": "delivery_basis", "value": "delivered",
                         "basis": "catalogue purchase costs treated as delivered equipment"})
-    # Only when no factor choice exists: "minimum"/"maximum" selections need no list.
-    if not capex.get("selected_factors") and capex.get("factor_selection", "selected") == "selected":
-        factors = {}
-        for f in get_factor_ranges("garrett", capex["process_type"]):
-            if not f.get("additive") or f.get("minimum") is None or f.get("maximum") is None:
-                continue
-            mid = (Decimal(str(f["minimum"])) + Decimal(str(f["maximum"]))) / 2
-            factors[f["id"]] = float(mid)
-        capex["selected_factors"] = factors
-        capex.setdefault("factor_selection", "selected")
-        applied.append({"setting": "selected_factors", "value": factors,
-                        "basis": "midpoint of each published Garrett range for this process type (Table 3-4)"})
+    # Only when no factor choice exists: use the engine's own "midpoint" mode
+    # (each factor recorded as a range-midpoint assumption). Offsite facilities
+    # stay at 0: including them needs the user's confirmation that utilities and
+    # buildings are not counted twice.
+    if not capex.get("selected_factors") and not capex.get("factor_selection"):
+        capex["factor_selection"] = "midpoint"
+        capex["selected_factors"] = {"offsite_facilities": 0.0}
+        applied.append({"setting": "factor_selection", "value": "midpoint",
+                        "basis": "midpoint of each published Garrett range (Table 3-4); offsite facilities 0 until you confirm them"})
     if applied:
         capex.setdefault("working_capital", {"method": "model_default",
                                              "rationale": "Garrett documented default; provisional planning basis"})

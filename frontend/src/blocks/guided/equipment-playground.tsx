@@ -42,8 +42,8 @@ export function EquipmentPlayground(props: StageProps) {
       <div className="gf-kpis">
         <div>
           <small>Purchased equipment</small>
-          <strong>{num(result.equipment_cost_total) === null ? 'Incomplete' : compact(result.equipment_cost_total)}</strong>
-          <span>{num(result.equipment_cost_total) === null ? `${cards.length - priced} items still unpriced — not counted as zero` : currency}</span>
+          <strong>{num(result.equipment_cost_total) === null ? (cards.length - priced > 0 ? 'Incomplete' : 'Not combined') : compact(result.equipment_cost_total)}</strong>
+          <span>{num(result.equipment_cost_total) !== null ? currency : totalReason(result.issues, cards.length - priced)}</span>
         </div>
         <div>
           <small>Installed (equipment + installation)</small>
@@ -210,4 +210,13 @@ export function EquipmentPlayground(props: StageProps) {
 
 function FragmentRow({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
+}
+
+/** Why the purchased total is not shown, in one line the user can act on. */
+function totalReason(issues: unknown, unpriced: number): string {
+  if (unpriced > 0) return `${unpriced} items still unpriced — not counted as zero`;
+  const first = Array.isArray(issues) && issues.length ? String(issues[0]) : '';
+  const dates = first.match(/\(([^)]*)\)\. Date typed prices/);
+  if (dates) return `Items on different dates (${dates[1]}). Open the odd item and set its price date to the study date.`;
+  return first || 'Recalculate equipment';
 }
