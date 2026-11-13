@@ -84,7 +84,8 @@ def test_capex_runs_with_python_defaults_when_nothing_was_chosen():
                             "values": [{"property": "name", "normalized_value": "Feed pump"}]}]}
     filled, applied = fill_missing({}, report)
     assert filled["process_type"] == "mixed" and filled["delivery_basis"] == "delivered"
-    assert filled["selected_factors"] and {a["setting"] for a in applied} == {"process_type", "delivery_basis", "selected_factors"}
+    assert filled["factor_selection"] == "midpoint" and filled["selected_factors"] == {"offsite_facilities": 0.0}
+    assert {a["setting"] for a in applied} == {"process_type", "delivery_basis", "factor_selection"}
     kept, applied = fill_missing({"process_type": "fluids", "delivery_basis": "ex_works", "selected_factors": {"piping": 0.3}}, report)
     assert kept["delivery_basis"] == "ex_works" and kept["selected_factors"] == {"piping": 0.3} and applied == []
 
@@ -109,3 +110,19 @@ def test_user_price_on_the_study_date_adds_into_the_capex_total():
     total, _ = _basis(SimpleNamespace(equipment=(cost("A", "US_CPI_U_NSA_1982_84", "336.9"),
                                                  cost("B", "PRICE_BASIS:USD:2026", "1", period="2026"))), False, issues)
     assert total is None and "B is costed in USD 2026" in issues[0]
+
+
+def _price(tag, amount, period, scope="purchased_equipment"):
+    return {"equipment_tag": tag, "curve_id": None, "size": None, "size_unit": None, "quantity": 1,
+            "manual_price": {"amount": amount, "currency": "USD", "price_period": period, "cost_scope": scope,
+                             "source": "User-entered equipment price", "notes": "test", "approved": True}}
+
+
+def test_equipment_total_keeps_packages_separate_and_names_date_mismatches():
+    from backend.equipment_costing.total_cost.calculator import calculate_total_cost
+
+    total = calculate_total_cost([_price("T-1", 1000.0, "2026-09"), _price("T-2", 500.0, "2026-09")])
+    assert total.equipment_cost_total == 1500.0
+    mixed = calculate_total_cost([_price("T-1", 1000.0, "2026-09"), _price("T-2", 500.0, "2026")])
+    assert mixed.equipment_cost_total is None
+    assert "USD 2026: T-2" in mixed.issues[0] and "USD 2026-09: T-1" in mixed.issues[0]
