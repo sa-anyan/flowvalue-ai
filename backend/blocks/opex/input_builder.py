@@ -172,6 +172,12 @@ def _costs_for_year(report, config, basis, hours, ramp, year, *, partial=False):
                     throughput_fraction=ramp,
                 )
                 quantity = lineage["annual_quantity"]
+            if item.get("unit_price") in (None, ""):
+                # A proposed feed keeps its quantity visible; the price is a question, never 0.
+                raise ValueError(
+                    f"Price needed for {item.get('name') or item['id']}: "
+                    f"{float(quantity):,.0f} {item['quantity_unit']}/year from the M&E balance"
+                )
             add(
                 "feed:" + item["id"],
                 item["category"],
@@ -197,6 +203,14 @@ def _costs_for_year(report, config, basis, hours, ramp, year, *, partial=False):
         with boundary("energy", item):
             if item["equipment_key"] not in equipment_keys:
                 raise ValueError("Energy item must link to an actual equipment record")
+            if item.get("tariff_per_kwh") in (None, ""):
+                demand = equipment_energy_cost(
+                    {**item, "tariff_per_kwh": 0}, report, operating_hours=hours, throughput_fraction=ramp
+                )
+                raise ValueError(
+                    f"Electricity tariff needed for {item.get('name') or item['id']}: "
+                    f"{float(demand['annual_energy_kwh']):,.0f} kWh/year from study data"
+                )
             result = equipment_energy_cost(
                 item, report, operating_hours=hours, throughput_fraction=ramp
             )
@@ -280,8 +294,11 @@ def _costs_for_year(report, config, basis, hours, ramp, year, *, partial=False):
         )
     itemized = {c.category for c in costs}
     # Explicit zero allowances only for categories whose study decision is none, never missing coverage.
+    # A proposed item that is only waiting for a price already covers its category.
+    awaiting = {"materials": "raw_materials", "energy": "utilities", "labour": "operating_labor"}
+    covered = {awaiting[p["group"]] for p in detail["pending_items"] if p.get("group") in awaiting}
     for key in ("raw_materials", "utilities", "operating_labor"):
-        if key not in itemized:
+        if key not in itemized and key not in covered:
             message = (
                 "Engineering operating plan needs "
                 + key

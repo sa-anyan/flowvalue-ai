@@ -123,3 +123,36 @@ test('guided CSS honours reduced motion',()=>{
  const css=fs.readFileSync(path.join(src,'blocks/guided/guided.css'),'utf8');
  assert.match(css,/@media \(prefers-reduced-motion: reduce\)[^}]*animation: none !important/);
 });
+
+test('OPEX headline never shows 0 while categories are pending',()=>{
+ const factors=[{id:'raw_materials'},{id:'maintenance'},{id:'administration'},{id:'other_manufacturing',required:false}];
+ const none=lib.opexProgress([],factors);
+ assert.deepEqual(none,{priced:0,total:3});
+ const empty=lib.opexHeadline({complete:false,known_cash_opex_subtotal:'0'},none);
+ assert.equal(empty.value,'Pending');
+ assert.equal(empty.label,'Pending — 0 of 3 categories priced');
+ const some=lib.opexProgress([{category:'maintenance',amount:'1200'},{category:'administration',amount:null}],factors);
+ assert.deepEqual(some,{priced:1,total:3});
+ const partial=lib.opexHeadline({complete:false,known_cash_opex_subtotal:'1200'},some);
+ assert.match(partial.label,/1 of 3 categories priced/);
+ assert.equal(partial.note,'Partial subtotal of priced lines only');
+ const done=lib.opexHeadline({complete:true,first_year_cash_opex:'5000'},{priced:3,total:3});
+ assert.equal(done.label,'Annual cash OPEX · year 1');
+ assert.equal(done.note,'');
+});
+
+test('only reference defaults are offered for review, with source and range',()=>{
+ const config={
+  garrett_factors:{
+   maintenance:{fraction:0.06,origin:'reference_default',source:'Garrett',page:'p.52',low:'.02',high:'.10',value_basis:'midpoint'},
+   supervision:{fraction:0.2,origin:'user'},
+  },
+  energy:[{id:'e1',name:'EL-1 electricity',origin:'reference_default',tariff_per_kwh:null,rationale:'55.5 kWh/kg × H2 flow'}],
+  materials:[{id:'m1',name:'User feed',origin:'user',unit_price:1}],
+ };
+ const rows=lib.opexProposals(config);
+ assert.deepEqual(rows.map(r=>r.id),['maintenance','e1']);
+ assert.equal(rows[0].source,'Garrett, p.52');
+ assert.match(rows[0].detail,/midpoint of 2\.0%–10\.0%/);
+ assert.equal(rows[1].value,'price needed');
+});

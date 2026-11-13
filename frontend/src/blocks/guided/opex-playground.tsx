@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { strings, compact, list, money, num, obj, percent, text, words, type Row } from '@/lib/guided-flow';
+import { strings, compact, list, money, num, obj, opexHeadline, opexProgress, opexProposals, percent, text, words, type OpexProposal, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
 import { Issues, OriginChip, Panel, RunBar, StageHeading, type StageProps } from './flow';
 
@@ -55,6 +55,34 @@ export function OpexPlayground(props: StageProps) {
       await hook.runStage('opex');
     });
   }
+  const progress = opexProgress(lines, factors);
+  const headline = opexHeadline(result, progress);
+  const proposals = opexProposals(config);
+  /** Accept, edit or exclude one proposed reference default; the value becomes yours. */
+  const review = (p: OpexProposal, action: 'accept' | 'exclude' | 'edit', value?: number | null) => {
+    if (p.root === 'garrett_factors') {
+      const entry = obj(obj(config.garrett_factors)[p.id]);
+      const next =
+        action === 'exclude'
+          ? { ...entry, fraction: 0, override: true, override_reason: 'Excluded by user', origin: 'user', status: 'excluded by user', rationale: 'Excluded by user' }
+          : action === 'edit'
+            ? { ...entry, fraction: value, origin: 'user', status: 'edited by user', rationale: 'User-selected factor within the published range' }
+            : { ...entry, origin: 'user', status: 'accepted by user', rationale: `Accepted by user: ${text(entry.rationale)}` };
+      set({ garrett_factors: { ...obj(config.garrett_factors), [p.id]: next } });
+      return;
+    }
+    const items = list(config[p.root]);
+    if (action === 'exclude') return set({ [p.root]: items.filter((i) => text(i.id) !== p.id) });
+    const priceKey = p.root === 'energy' ? 'tariff_per_kwh' : 'unit_price';
+    set({
+      [p.root]: items.map((i) =>
+        text(i.id) !== p.id
+          ? i
+          : { ...i, ...(action === 'edit' ? { [priceKey]: value } : {}), origin: 'user', status: action === 'edit' ? 'edited by user' : 'accepted by user' },
+      ),
+    });
+  };
+  const questions = pending.filter((q) => !/categories priced/.test(q));
   const shift = (id: string, amount: unknown) => (before && before[id] !== undefined && before[id] !== money(amount, '—') ? ` · was ${before[id]}` : '');
   return (
     <div className="gf-play">
@@ -85,9 +113,10 @@ export function OpexPlayground(props: StageProps) {
       </section>
       <div className="gf-kpis">
         <div className="gf-kpi-hero">
-          <small>{result.complete === false ? 'Known cash OPEX subtotal · year 1' : 'Annual cash OPEX · year 1'}</small>
-          <strong>{num(result.first_year_cash_opex ?? result.known_cash_opex_subtotal) === null ? 'Pending' : compact(result.first_year_cash_opex ?? result.known_cash_opex_subtotal)}</strong>
+          <small>{stage.result ? headline.label : 'Annual cash OPEX · year 1'}</small>
+          <strong>{stage.result ? headline.value : 'Pending'}</strong>
           <span>
+            {headline.note ? `${headline.note} · ` : ''}
             {text(result.currency)} {text(result.price_period)}
             {before && before.total !== compact(result.first_year_cash_opex ?? result.known_cash_opex_subtotal) ? ` · was ${before.total}` : ''}
           </span>
@@ -104,7 +133,43 @@ export function OpexPlayground(props: StageProps) {
         </div>
       </div>
       {!stage.result && <p className="gf-note">OPEX has not been calculated yet.</p>}
-      <Issues items={[...strings(stage.issues), ...strings(obj(obj(result.years)[firstYear]).issues), ...pending]} />
+      {proposals.length > 0 && (
+        <section className="gf-card-block gf-review" aria-labelledby="gf-opex-review">
+          <h2 id="gf-opex-review">Review {proposals.length} proposed assumption{proposals.length === 1 ? '' : 's'}</h2>
+          <p className="gf-muted">Proposed by Python from the reference library and your study data, without AI. Accept, edit or exclude each one.</p>
+          <ul className="gf-lines">
+            {proposals.map((p) => (
+              <li key={p.root + p.id} className="gf-line gf-review-row">
+                <div className="gf-line-main">
+                  <div>
+                    <strong>{p.label}</strong>
+                    <OriginChip origin="Reference default · review" />
+                    <small>
+                      {p.source} · {p.detail}
+                    </small>
+                  </div>
+                  <div className="gf-line-value">
+                    <strong>{p.value}</strong>
+                  </div>
+                </div>
+                <div className="gf-line-actions">
+                  <button type="button" className="gf-secondary" onClick={() => review(p, 'accept')}>
+                    Accept
+                  </button>
+                  <label className="gf-field gf-field-sm">
+                    <span>{p.root === 'garrett_factors' ? 'Edit (fraction)' : p.root === 'energy' ? 'Tariff per kWh' : 'Price per unit'}</span>
+                    <input type="number" step="any" min="0" onChange={(e) => review(p, 'edit', e.target.value === '' ? null : Number(e.target.value))} />
+                  </label>
+                  <button type="button" className="gf-link" onClick={() => review(p, 'exclude')}>
+                    Exclude
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+      <Issues title="Questions" items={[...strings(stage.issues), ...strings(obj(obj(result.years)[firstYear]).issues), ...questions]} />
 
       {groups.map(([root, title, preferred]) => {
         const items = list(config[root]);

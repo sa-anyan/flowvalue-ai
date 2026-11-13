@@ -353,3 +353,64 @@ export function cashBands(summary: unknown, field = 'fcff'): Band[] {
 export function availablePercentiles(metric: unknown): string[] {
   return Object.keys(obj(metric)).filter((k) => /^p\d+$/.test(k) && num(obj(metric)[k]) !== null);
 }
+
+/* ------------------------------------------------------------------ OPEX review */
+
+/** Categories with a calculated line out of the required categories (never "0 of nothing"). */
+export function opexProgress(lines: unknown, factors: unknown): { priced: number; total: number } {
+  const required = list(factors)
+    .filter((f) => f.required !== false)
+    .map((f) => text(f.id));
+  const priced = new Set(
+    list(lines)
+      .filter((l) => num(l.amount) !== null)
+      .map((l) => text(l.category)),
+  );
+  return { priced: required.filter((id) => priced.has(id)).length, total: required.length };
+}
+
+/** Year-1 headline: the full total when complete, otherwise pending with a labelled partial subtotal. */
+export function opexHeadline(result: Row, progress: { priced: number; total: number }): { label: string; value: string; note: string } {
+  const full = num(result.first_year_cash_opex);
+  if (result.complete !== false && full !== null) return { label: 'Annual cash OPEX · year 1', value: compact(full), note: '' };
+  const partial = num(result.known_cash_opex_subtotal);
+  return {
+    label: `Pending — ${progress.priced} of ${progress.total} categories priced`,
+    value: partial !== null && partial > 0 ? compact(partial) : 'Pending',
+    note: partial !== null && partial > 0 ? 'Partial subtotal of priced lines only' : 'No category priced yet',
+  };
+}
+
+export type OpexProposal = { root: 'garrett_factors' | 'energy' | 'materials'; id: string; label: string; value: string; source: string; detail: string };
+
+/** Reference-default values still awaiting the user's review. */
+export function opexProposals(config: Row): OpexProposal[] {
+  const out: OpexProposal[] = [];
+  for (const [id, raw] of Object.entries(obj(config.garrett_factors))) {
+    const e = obj(raw);
+    if (e.origin !== 'reference_default') continue;
+    out.push({
+      root: 'garrett_factors',
+      id,
+      label: words(id),
+      value: percent(e.fraction),
+      source: `${text(e.source)}, ${text(e.page)}`,
+      detail: `${text(e.value_basis) || 'value'} of ${percent(e.low)}–${percent(e.high)}`,
+    });
+  }
+  for (const root of ['energy', 'materials'] as const) {
+    for (const item of list(config[root])) {
+      if (item.origin !== 'reference_default') continue;
+      const price = root === 'energy' ? item.tariff_per_kwh : item.unit_price;
+      out.push({
+        root,
+        id: text(item.id),
+        label: text(item.name || item.id),
+        value: num(price) === null ? 'price needed' : `${text(price)} per ${root === 'energy' ? 'kWh' : text(item.quantity_unit)}`,
+        source: 'Study data',
+        detail: text(item.rationale),
+      });
+    }
+  }
+  return out;
+}

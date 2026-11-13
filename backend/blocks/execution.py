@@ -445,6 +445,23 @@ def _run_stage(
             state["results"]["screening_comparisons"] = plain(
                 product.payload.get("screening_comparisons", [])
             )
+            # OPEX is populated with reference defaults as soon as CAPEX is
+            # known, so the OPEX page opens with proposals, not blanks. Only
+            # missing inputs are filled; nothing existing is replaced.
+            from backend.opex.reference_defaults import for_study
+
+            try:
+                outputs = state.get("stage_outputs", {}).get("engineering_data", {})
+                proposed, _ = for_study(
+                    (state.get("plan") or {}).get("operating_economics") or {},
+                    outputs.get("report") or {},
+                    outputs.get("source_cells"),
+                    value if isinstance(value, dict) else {},
+                    (state.get("plan") or {}).get("cost_translation"),
+                )
+                state.setdefault("plan", {})["operating_economics"] = proposed
+            except (ValueError, TypeError, KeyError):
+                pass  # defaults are a convenience; the OPEX run proposes again
     else:
         _apply(state, block, error.updates)
         receipt.update(

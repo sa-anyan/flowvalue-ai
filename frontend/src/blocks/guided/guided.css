@@ -396,3 +396,5 @@ polyline.gf-tone-c { stroke: var(--gf-tone-c); }
 .gf-ok { color: var(--gf-user); font-weight: 600; font-size: 13px; }
 @media (max-width: 600px) { .gf-rev-row { grid-template-columns: 1fr; } }
 .gf-rev-effects { margin: 0 0 12px; font-size: 13px; }
+.gf-review { border-color: var(--gf-accent); }
+.gf-review-row .gf-line-actions { align-items: flex-end; flex-wrap: wrap; gap: 8px; }

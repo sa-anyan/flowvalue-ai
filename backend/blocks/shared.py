@@ -78,6 +78,31 @@ def proposal(ctx, sections, *, basis_only=False, allow_missing_opex=False):
     }, meta
 
 
+def _holds_reference_defaults(current):
+    if isinstance(current, dict):
+        return any((v or {}).get("origin") == "reference_default" for v in current.values() if isinstance(v, dict))
+    if isinstance(current, list):
+        return any((v or {}).get("origin") == "reference_default" for v in current if isinstance(v, dict))
+    return False
+
+
+def _refine_reference_defaults(field, current, proposed, config):
+    owners = config.setdefault("value_owners", {})
+    if field == "garrett_factors" and isinstance(current, dict) and isinstance(proposed, dict):
+        merged = copy.deepcopy(current)
+        for key, choice in proposed.items():
+            if (merged.get(key) or {}).get("origin") == "reference_default":
+                merged[key] = dict(copy.deepcopy(choice), origin="ai")
+                owners[f"garrett_factors.{key}"] = "ai"
+        return merged
+    if isinstance(current, list) and current and all((i or {}).get("origin") == "reference_default" for i in current) \
+            and isinstance(proposed, list) and proposed:
+        for item in proposed:
+            owners[f"{field}.{item.get('id')}"] = "ai"
+        return [dict(copy.deepcopy(i), origin="ai") for i in proposed]
+    return current
+
+
 def operating_proposal(ctx, owner):
     from backend.blocks.cashflow.schedule import apply_policy
 
@@ -111,6 +136,12 @@ def operating_proposal(ctx, owner):
     }[owner]
     for field in owned:
         if field not in value or (fill_locked_opex and field in config):
+            continue
+        current = config.get(field)
+        if owner == "opex" and _holds_reference_defaults(current):
+            # Reference defaults (no AI) may be refined by the AI; values owned
+            # by the user or an earlier AI proposal are never replaced here.
+            config[field] = _refine_reference_defaults(field, current, value[field], config)
             continue
         config[field] = copy.deepcopy(value[field])
         proposed_basis = value.get("price_basis")
