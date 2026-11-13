@@ -179,3 +179,35 @@ test('background brainstorm notice reflects running, ready and failed states, an
  assert.match(failed.text,/Reference defaults still apply/);
  assert.equal(lib.brainstormNotice(null,true),null);
 });
+
+test('Entry lists only streams with a usable flow and previews yearly revenue',()=>{
+ const {streamsOf,revenuePreview}=require('../src/blocks/guided/revenue-setup.tsx');
+ const report={entities:[
+  {kind:'material',key:'s18',identifier:'18',values:[{property:'description',original_value:'Fermented Mash'},{property:'mass_flow',original_value:'#REF!',normalized_value:null},{property:'component_mass_flow',component:'Fibre',original_value:'#REF!',normalized_value:null}]},
+  {kind:'material',key:'s13',identifier:'13',values:[{property:'description',original_value:'Treated Water'},{property:'mass_flow',normalized_value:125027.6},{property:'component_mass_flow',component:'Lignin',normalized_value:25},{property:'component_mass_flow',component:'Ash',normalized_value:0}]},
+ ]};
+ const streams=streamsOf(report);
+ assert.deepEqual(streams.map(s=>s.tag),['13']);
+ assert.deepEqual(streams[0].components.map(c=>c.name),['Lignin']);
+ // 125,027.6 kg/h × 7,920 h × 23 USD/kg ≈ 22.8 bn USD/year: a unit slip is visible before saving.
+ assert.ok(Math.abs(revenuePreview(125027.6,'23','kg','330','24')-22.774e9)<0.01e9);
+ assert.equal(revenuePreview(25,'17','tonne','330','24'),25*7920*0.001*17);
+ assert.equal(revenuePreview(25,'','kg','330','24'),null);
+});
+
+test('OPEX review rows show the unit, the yearly quantity and the yearly cost',()=>{
+ const quantities=lib.opexQuantities(
+  [{id:'feed:sucrose',quantity:'528000',unit:'kg'}],
+  [{id:'ref-feed-3',annual_quantity:198201960,unit:'kg'}],
+ );
+ const config={materials:[
+  {id:'ref-feed-3',name:'Wastewater',quantity_unit:'kg',unit_price:1,origin:'reference_default'},
+  {id:'sucrose',name:'Sucrose',quantity_unit:'kg',unit_price:0.5,origin:'ai'},
+ ]};
+ const rows=lib.opexProposals(config,quantities);
+ const feed=rows.find(r=>r.id==='ref-feed-3');
+ assert.equal(feed.editLabel,'Price per kg');
+ assert.deepEqual(feed.quantity,{amount:198201960,unit:'kg'});
+ assert.equal(feed.quantity.amount*feed.price,198201960);
+ assert.equal(rows.find(r=>r.id==='sucrose').quantity.amount,528000);
+});

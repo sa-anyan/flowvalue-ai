@@ -128,3 +128,34 @@ def test_ai_off_opex_is_complete_except_genuine_price_questions():
                             startup_expenses=Decimal("500000"))
     result = _opex(capex, basis, costs, Decimal("5000000"), allow_partial=True)
     assert result.annual_cash_opex is not None and result.annual_cash_opex > 0
+
+
+def test_air_and_water_to_be_treated_are_not_proposed_as_purchased_feeds():
+    from backend.orchestration.ingest import parse
+
+    book = openpyxl.Workbook()
+    sheet = book.active
+    sheet.title = "Balance"
+    sheet.append(["Stream ID", "Description", "Mass flow (kg/h)", "Temperature (C)", "Pressure (bar)"])
+    sheet.append(["3", "Wastewater Influent to Buffer Tank B-001", 125000, 20, 1])
+    sheet.append(["10", "Pressurised Sterile Air to Bioreactor R-001", 74, 25, 2])
+    sheet.append(["6", "Sucrose from Supplier to Bioreactor R-001", 66, 25, 1])
+    sheet.append(["4", "Treated water from Bioreactor R-001", 125000, 25, 1])
+    data = BytesIO()
+    book.save(data)
+    report = parse(data.getvalue(), "plant.xlsx")["report"]
+    config, summary = propose(dict(BASE_CONFIG), report)
+    names = [f["name"] for f in config.get("materials") or []]
+    assert any("Sucrose" in n for n in names)
+    assert not any("Wastewater" in n or "Air" in n for n in names)
+    skipped = " ".join(n["name"] for n in config["reference_defaults"]["not_costed"])
+    assert "Wastewater" in skipped and "Air" in skipped
+
+
+def test_pending_price_items_carry_their_yearly_quantity():
+    report = _report()
+    config, _ = propose(dict(BASE_CONFIG), report, design_basis_rows=SPECIFIC_ENERGY)
+    basis = Basis("USD", "2026-09")
+    _, detail = _costs_for_year(report, config, basis, Decimal(330 * 24), Decimal(1), 1, partial=True)
+    energy = next(p for p in detail["pending_items"] if p["group"] == "energy")
+    assert energy["unit"] == "kWh" and energy["annual_quantity"] == pytest.approx(100 * 55.5 * 330 * 24)

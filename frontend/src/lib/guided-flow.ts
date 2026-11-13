@@ -391,12 +391,35 @@ export type OpexProposal = {
   by: 'reference' | 'ai';
   /** The input the edit box writes (fraction, tariff, price, headcount or amount). */
   editKey: string;
+  /** Edit-box label with its unit, e.g. "Price per kg". */
+  editLabel: string;
+  /** Yearly quantity the price applies to (from Python), when known. */
+  quantity: { amount: number; unit: string } | null;
+  /** Current price/tariff, for the live yearly-cost preview. */
+  price: number | null;
 };
+
+export type Quantities = Record<string, { amount: number; unit: string }>;
+
+/** Yearly quantities per OPEX item id, from Python's lines and pending price questions. */
+export function opexQuantities(lines: Row[], pending: Row[]): Quantities {
+  const out: Quantities = {};
+  for (const l of lines) {
+    const [kind, ...rest] = text(l.id).split(':');
+    const q = num(l.quantity);
+    if ((kind === 'feed' || kind === 'energy') && q !== null) out[rest.join(':')] = { amount: q, unit: text(l.unit) || (kind === 'energy' ? 'kWh' : '') };
+  }
+  for (const p of pending) {
+    const q = num(p.annual_quantity);
+    if (q !== null) out[text(p.id)] = { amount: q, unit: text(p.unit) };
+  }
+  return out;
+}
 
 const proposedBy = (origin: unknown): 'reference' | 'ai' | null => (origin === 'reference_default' ? 'reference' : origin === 'ai' ? 'ai' : null);
 
 /** Reference-default and AI-proposed values still awaiting the user's review. */
-export function opexProposals(config: Row): OpexProposal[] {
+export function opexProposals(config: Row, quantities: Quantities = {}): OpexProposal[] {
   const out: OpexProposal[] = [];
   for (const [id, raw] of Object.entries(obj(config.garrett_factors))) {
     const e = obj(raw),
@@ -411,21 +434,27 @@ export function opexProposals(config: Row): OpexProposal[] {
       detail: by === 'reference' ? `${text(e.value_basis) || 'value'} of ${percent(e.low)}–${percent(e.high)}` : text(e.rationale),
       by,
       editKey: 'fraction',
+      editLabel: 'Edit (fraction)',
+      quantity: null,
+      price: null,
     });
   }
   for (const root of ['energy', 'materials', 'labour', 'additional_expenses'] as const) {
     for (const item of list(config[root])) {
       const by = proposedBy(item.origin);
       if (!by) continue;
-      let value: string, editKey: string;
+      let value: string, editKey: string, editLabel: string;
       if (root === 'labour') {
         editKey = 'headcount_fte';
+        editLabel = 'Headcount (FTE)';
         value = `${text(item.headcount_fte) || '?'} FTE${num(item.annual_base_salary) === null ? '' : ` × ${money(item.annual_base_salary)}/yr`}`;
       } else if (root === 'additional_expenses') {
         editKey = item.annual_amount !== undefined ? 'annual_amount' : item.amount !== undefined ? 'amount' : 'unit_price';
+        editLabel = editKey === 'unit_price' ? 'Price per unit' : 'Annual amount';
         value = num(item[editKey]) === null ? 'amount needed' : money(item[editKey]);
       } else {
         editKey = root === 'energy' ? 'tariff_per_kwh' : 'unit_price';
+        editLabel = root === 'energy' ? 'Tariff per kWh' : `Price per ${text(item.quantity_unit) || 'unit'}`;
         const price = item[editKey];
         value = num(price) === null ? 'price needed' : `${text(price)} per ${root === 'energy' ? 'kWh' : text(item.quantity_unit)}`;
       }
@@ -438,6 +467,9 @@ export function opexProposals(config: Row): OpexProposal[] {
         detail: text(item.rationale),
         by,
         editKey,
+        editLabel,
+        quantity: root === 'energy' || root === 'materials' ? (quantities[text(item.id)] ?? null) : null,
+        price: root === 'energy' || root === 'materials' ? num(item[editKey]) : null,
       });
     }
   }

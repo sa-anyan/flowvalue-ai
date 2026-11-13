@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { brainstormNotice, stageStatus, strings, compact, list, money, num, obj, opexHeadline, opexProgress, opexProposals, percent, text, words, type OpexProposal, type Row } from '@/lib/guided-flow';
+import { brainstormNotice, opexQuantities, stageStatus, strings, compact, list, money, num, obj, opexHeadline, opexProgress, opexProposals, percent, text, words, type OpexProposal, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
 import { Issues, OriginChip, Panel, RunBar, StageHeading, type StageProps } from './flow';
 
@@ -10,14 +10,6 @@ const groups = [
   ['labour', 'Labour', ['headcount_fte', 'annual_base_salary', 'allocation_fraction']],
   ['additional_expenses', 'Additional expenses', ['amount', 'annual_amount', 'unit_price', 'quantity']],
 ] as const;
-const EDIT_LABELS: Record<string, string> = {
-  fraction: 'Edit (fraction)',
-  tariff_per_kwh: 'Tariff per kWh',
-  unit_price: 'Price per unit',
-  headcount_fte: 'Headcount (FTE)',
-  annual_amount: 'Annual amount',
-  amount: 'Amount',
-};
 const hidden = new Set(['id', 'stream_key', 'equipment_key', 'source_key', 'component', 'property', 'price_basis']);
 
 /** Value origin for an OPEX input, read from its own recorded source/status fields. */
@@ -65,7 +57,7 @@ export function OpexPlayground(props: StageProps) {
   }
   const progress = opexProgress(lines, factors);
   const headline = opexHeadline(result, progress);
-  const proposals = opexProposals(config);
+  const proposals = opexProposals(config, opexQuantities(lines, list(obj(obj(obj(result.operating_detail).years)[firstYear]).pending_items)));
   /** Accept, edit or exclude one proposed reference default; the value becomes yours. */
   const review = (p: OpexProposal, action: 'accept' | 'exclude' | 'edit', value?: number | null) => {
     if (p.root === 'garrett_factors') {
@@ -195,9 +187,15 @@ export function OpexPlayground(props: StageProps) {
                     Accept
                   </button>
                   <label className="gf-field gf-field-sm">
-                    <span>{EDIT_LABELS[p.editKey] || 'Edit'}</span>
+                    <span>{p.editLabel}</span>
                     <input type="number" step="any" min="0" onChange={(e) => review(p, 'edit', e.target.value === '' ? null : Number(e.target.value))} />
                   </label>
+                  {p.quantity && (
+                    <small className="gf-muted gf-review-cost">
+                      {compact(p.quantity.amount)} {p.quantity.unit}/yr
+                      {p.price !== null ? ` × ${p.price} = ${compact(p.quantity.amount * p.price)} ${text(basis.currency)}/yr` : ' × price'}
+                    </small>
+                  )}
                   <button type="button" className="gf-link" onClick={() => review(p, 'exclude')}>
                     Exclude
                   </button>
@@ -206,6 +204,15 @@ export function OpexPlayground(props: StageProps) {
             ))}
           </ul>
         </section>
+      )}
+      {list(obj(config.reference_defaults).not_costed).length > 0 && (
+        <p className="gf-note gf-not-costed">
+          <strong>Not costed as purchased materials: </strong>
+          {list(obj(config.reference_defaults).not_costed)
+            .map((n) => text(n.name))
+            .join('; ')}
+          . They enter the plant but are not bought (air, or water/waste the plant treats). Add one under Raw materials if it does cost money.
+        </p>
       )}
       <Issues title="Questions" items={[...strings(stage.issues), ...strings(obj(obj(result.years)[firstYear]).issues), ...questions]} />
 

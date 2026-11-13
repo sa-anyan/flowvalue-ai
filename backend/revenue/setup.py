@@ -26,6 +26,60 @@ def _stream(report, key):
     return entity
 
 
+def _label(stream):
+    for v in stream.get("values", []):
+        if v.get("property") in ("description", "name") and v.get("original_value") not in (None, ""):
+            return f"{stream.get('identifier')} ({str(v['original_value'])[:60]})"
+    return str(stream.get("identifier"))
+
+
+def _check_flow(report, stream, component, unit):
+    """The chosen stream (or component) must have a usable workbook flow."""
+    from .product_basis import product_observation
+
+    try:
+        product_observation(report, {"stream_key": stream["key"], "component": component, "quantity_unit": unit})
+    except (ValueError, KeyError, TypeError):
+        prop = "volume" if unit in {"m3", "L"} else "mass"
+        raw = [str(v.get("original_value")) for v in stream.get("values", [])
+               if v.get("property") in (f"{prop}_flow", f"component_{prop}_flow")
+               and (not component or v.get("component") == component)]
+        why = (" — its cells show " + raw[0]) if raw and all(r.startswith("#") for r in raw) else ""
+        what = f"{component} in stream {_label(stream)}" if component else f"stream {_label(stream)}"
+        raise ValueError(
+            f"{what[0].upper() + what[1:]} has no usable {prop} flow in the workbook{why}. "
+            "Choose the stream (or component) that actually carries the product."
+        ) from None
+
+
+def _review_shared_streams(report, sales):
+    """Several products from one stream: distinct components are fine (and recorded
+    as reviewed); a whole stream plus a part of it would count that part twice."""
+    by_stream = {}
+    for sale in sales:
+        by_stream.setdefault(sale["stream_key"], []).append(sale)
+    for key, items in by_stream.items():
+        if len(items) < 2:
+            continue
+        stream = _stream(report, key)
+        whole = [i["name"] for i in items if not i["component"]]
+        if whole:
+            parts = [i["name"] for i in items if i["component"]] or whole[1:]
+            raise ValueError(
+                f"{whole[0]} is the whole of stream {_label(stream)}, which already includes "
+                f"{', '.join(parts)}. Sell each product as its own component of the stream instead."
+            )
+        components = [i["component"] for i in items]
+        if len(set(components)) != len(components):
+            raise ValueError(f"The same component is sold twice from stream {_label(stream)}.")
+        for i in items:
+            i["shared_stream_review"] = {
+                "basis": f"Different components of stream {stream.get('identifier')} chosen on the Entry page: "
+                         + ", ".join(components) + "; no quantity is counted twice.",
+                "origin": "entry_page",
+            }
+
+
 def sentence(sale, stream_tag):
     what = sale["name"] + (f" ({sale['component']} in stream {stream_tag})" if sale.get("component")
                            else f" (stream {stream_tag})")
@@ -57,13 +111,14 @@ def apply(store, key, revision, setup):
             raise ValueError("Choose kg, tonne, lb, m3 or L as the selling unit")
         component = str(raw.get("component") or "").strip() or None
         name = str(raw.get("name") or component or stream.get("identifier") or "Product").strip()
+        _check_flow(report, stream, component, unit)
         sale = {"name": name, "component": component, "unit_price": price, "currency": currency, "quantity_unit": unit}
         quote = sentence(sale, stream.get("identifier"))
         ident = _slug(name)
         while any(s["id"] == ident for s in sales):
             ident += "-2"
         sales.append({
-            "id": ident, "intent_id": ident, "name": name, "role": "main_product" if not sales else "co_product",
+            "id": ident, "intent_id": ident, "name": name, "role": "main_product" if not sales else "byproduct",
             "stream_key": stream["key"], "component": component, "quantity_unit": unit,
             "price_mode": "assumed_price", "unit_price": price,
             "allocation_fraction": 1, "saleable_fraction": 1, "sold_fraction": 1, "cost_markup_fraction": 0,
@@ -80,6 +135,7 @@ def apply(store, key, revision, setup):
         sentences.append(quote)
     if not sales:
         raise ValueError("Add at least one product the project sells")
+    _review_shared_streams(report, sales)
     config = copy.deepcopy((state.get("plan") or {}).get("operating_economics") or {})
     config["sales"] = sales
     config["commercial_lines"] = []  # the set-up defines all payments

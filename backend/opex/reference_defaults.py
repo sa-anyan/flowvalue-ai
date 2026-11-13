@@ -28,6 +28,9 @@ from .indexes.garrett.model import CATEGORIES
 
 OWNER = "reference_default"
 STATUS = "proposed — needs review"
+# Streams that enter the plant but are not bought: process air and the waste
+# or water the plant exists to treat (it may earn a gate fee, never a feed cost).
+NOT_PURCHASED = re.compile(r"\bair\b|waste ?water|effluent|influent|sewage|leachate|run-?off|storm ?water|sludge", re.I)
 UTILITY_WORDS = re.compile(r"cooling[- ]water|chilled water|steam|condensate|instrument air|plant air|nitrogen blanket", re.I)
 FORMULA_NAMES = {"h2": "hydrogen", "o2": "oxygen", "co2": "carbon dioxide", "nh3": "ammonia", "h2o": "water", "ch4": "methane"}
 
@@ -141,8 +144,12 @@ def utility_defaults(report, design_basis_rows, workbook_params):
 
 
 def material_defaults(report):
-    """Feed streams (destination equipment, no source equipment) as quantity-only items."""
-    items, questions = [], []
+    """Feed streams (destination equipment, no source equipment) as quantity-only items.
+
+    Returns (items, questions, not_costed); streams that are clearly not bought
+    (air, wastewater to be treated, ...) are listed as not costed instead.
+    """
+    items, questions, not_costed = [], [], []
     ends = _ends(report)
     for e in report.get("entities", []):
         if e.get("kind") != "material" or not _has(e, "mass_flow"):
@@ -150,6 +157,10 @@ def material_defaults(report):
         end = ends.get(e["key"]) or {}
         name = _text(e, ("name", "description")) or e.get("identifier")
         if end.get("source") or not end.get("destination") or UTILITY_WORDS.search(name):
+            continue
+        if NOT_PURCHASED.search(name):
+            not_costed.append({"stream_key": e["key"], "name": name[:80],
+                               "reason": "Enters the plant but is not a purchased material (air or water/waste to be treated)."})
             continue
         ident = "ref-feed-" + str(e["identifier"]).lower()
         items.append({"id": ident, "name": name[:80], "category": "raw_materials", "stream_key": e["key"],
@@ -159,14 +170,14 @@ def material_defaults(report):
                       "uncertainty": "Quantity from the M&E balance; price to be entered.",
                       "origin": OWNER, "status": STATUS})
         questions.append({"id": ident, "question": f"Price per kg for feed {e['identifier']} ({name[:60]})."})
-    return items, questions
+    return items, questions, not_costed
 
 
 def propose(config, report, *, design_basis_rows=(), workbook_params=(), price_basis=None):
     """Return (config with missing OPEX inputs proposed, summary). Never overwrites."""
     config = copy.deepcopy(config or {})
     owners = dict(config.get("value_owners") or {})
-    summary = {"factors": [], "utilities": [], "materials": [], "questions": [], "labour": None}
+    summary = {"factors": [], "utilities": [], "materials": [], "questions": [], "labour": None, "not_costed": []}
     if not config.get("price_basis") and price_basis:
         config["price_basis"] = dict(price_basis)
         owners["price_basis"] = OWNER
@@ -183,7 +194,7 @@ def propose(config, report, *, design_basis_rows=(), workbook_params=(), price_b
             owners.update({f"energy.{i['id']}": OWNER for i in items})
         summary["utilities"], summary["questions"] = items, summary["questions"] + questions
     if not config.get("materials"):
-        items, questions = material_defaults(report)
+        items, questions, summary["not_costed"] = material_defaults(report)
         if items:
             config["materials"] = items
             owners.update({f"materials.{i['id']}": OWNER for i in items})
@@ -196,8 +207,10 @@ def propose(config, report, *, design_basis_rows=(), workbook_params=(), price_b
             summary["questions"].append({"id": "operating_labor", "question":
                                          "Operating labour: enter operators (FTE) and salary. No page-checked staffing rule is loaded."})
     config["value_owners"] = owners
+    previous = config.get("reference_defaults") or {}
     config["reference_defaults"] = {"version": "opex-reference-defaults-1", "status": STATUS,
-                                    "questions": summary["questions"]}
+                                    "questions": summary["questions"],
+                                    "not_costed": summary["not_costed"] or previous.get("not_costed") or []}
     return config, summary
 
 

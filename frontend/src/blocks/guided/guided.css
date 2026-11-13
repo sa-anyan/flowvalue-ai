@@ -409,3 +409,6 @@ polyline.gf-tone-c { stroke: var(--gf-tone-c); }
 }
 @keyframes gf-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .gf-spinner { animation: none; } }
+
+/* Live previews: yearly revenue on Entry, yearly cost on OPEX review rows */
+.gf-rev-preview, .gf-review-cost { display: block; grid-column: 1 / -1; font-variant-numeric: tabular-nums; }

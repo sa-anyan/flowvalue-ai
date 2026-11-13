@@ -72,8 +72,15 @@ def _revenue_project(report, description, config, basis, hours, ramp, prices):
 
         unit = quantity_unit(item)
         v = product_observation(report, item)
+        # A component sale is its own quantity: key it by stream and component so
+        # two components of one stream neither overwrite each other's flow nor
+        # count as 2 × 100 % of the same stream.
+        component = item.get("component") or v.get("component")
+        stream_id = item.get("stream_key") or ("user-rate:" + item["id"])
+        if component and item.get("stream_key"):
+            stream_id += "#" + component
         stream = Stream(
-            item.get("stream_key") or ("user-rate:" + item["id"]),
+            stream_id,
             item["name"],
             _a(
                 v["normalized_value"],

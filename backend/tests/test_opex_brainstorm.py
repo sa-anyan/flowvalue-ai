@@ -171,3 +171,24 @@ def test_a_read_taken_just_before_the_save_still_says_running(tmp_path, monkeypa
     assert brainstorm.kick(store, key, provider=object(), executor=Now()) is True
     assert brainstorm.status(key, stale)["status"] == "running"
     assert brainstorm.status(key, store.get(key))["status"] == "ready"
+
+
+def test_ai_materials_list_replaces_reference_feeds_and_lists_the_rest_as_not_costed():
+    config = {
+        "materials": [
+            {"id": "ref-feed-3", "name": "Wastewater influent", "stream_key": "s3", "origin": "reference_default"},
+            {"id": "ref-feed-6", "name": "Sucrose feed", "stream_key": "s6", "origin": "reference_default"},
+        ],
+        "reference_defaults": {"questions": [{"id": "ref-feed-3", "question": "price?"},
+                                             {"id": "ref-feed-6", "question": "price?"}]},
+        "value_owners": {"materials.ref-feed-3": "reference_default", "materials.ref-feed-6": "reference_default"},
+    }
+    ai = {"materials": [{"id": "sucrose", "name": "Sucrose", "stream_key": "s6", "unit_price": 0.5}]}
+    merged, added = brainstorm.merge(config, ai)
+    assert [m["id"] for m in merged["materials"]] == ["sucrose"]
+    assert [n["stream_key"] for n in merged["reference_defaults"]["not_costed"]] == ["s3"]
+    assert merged["reference_defaults"]["questions"] == []
+    assert "materials.ref-feed-3" not in merged["value_owners"]
+    # An empty AI list keeps the reference feeds (nothing reviewed, nothing dropped).
+    kept, _ = brainstorm.merge(config, {"materials": []})
+    assert len(kept["materials"]) == 2
