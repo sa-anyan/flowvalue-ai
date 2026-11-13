@@ -169,6 +169,14 @@ def calculate(ctx):
     result["identity_register"] = identity_register(
         ctx.report, report, plan, duplicate_review, ctx.plan
     )
+    # Headline: purchased equipment plus installed packages / unit capital
+    # (both are equipment cost; CAPEX applies its factors to purchased only).
+    packages = [r.get("amount") for r in result.get("equipment", [])
+                if r.get("equipment_cost") is None and r.get("amount") is not None
+                and is_scoped_capital(r.get("cost_scope"), (r.get("calculation") or {}).get("evidence"))]
+    if result.get("equipment_cost_total") is not None:
+        result["packages_total"] = sum(packages) if packages else 0.0
+        result["equipment_total_with_packages"] = result["equipment_cost_total"] + result["packages_total"]
     result["duplicate_review"] = duplicate_review
     result["input_resolution"] = input_resolution
     result["matching_register"] = matching or {

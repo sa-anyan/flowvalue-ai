@@ -108,8 +108,8 @@ def test_user_price_on_the_study_date_adds_into_the_capex_total():
     assert issues == [] and total == Decimal("2000")
     issues = []
     total, _ = _basis(SimpleNamespace(equipment=(cost("A", "US_CPI_U_NSA_1982_84", "336.9"),
-                                                 cost("B", "PRICE_BASIS:USD:2026", "1", period="2026"))), False, issues)
-    assert total is None and "B is costed in USD 2026" in issues[0]
+                                                 cost("B", "PRICE_BASIS:USD:2024", "1", period="2024"))), False, issues)
+    assert total is None and "B is costed in USD 2024" in issues[0]
 
 
 def _price(tag, amount, period, scope="purchased_equipment"):
@@ -123,6 +123,16 @@ def test_equipment_total_keeps_packages_separate_and_names_date_mismatches():
 
     total = calculate_total_cost([_price("T-1", 1000.0, "2026-09"), _price("T-2", 500.0, "2026-09")])
     assert total.equipment_cost_total == 1500.0
-    mixed = calculate_total_cost([_price("T-1", 1000.0, "2026-09"), _price("T-2", 500.0, "2026")])
+    mixed = calculate_total_cost([_price("T-1", 1000.0, "2026-09"), _price("T-2", 500.0, "2024")])
     assert mixed.equipment_cost_total is None
-    assert "USD 2026: T-2" in mixed.issues[0] and "USD 2026-09: T-1" in mixed.issues[0]
+    assert "USD 2024: T-2" in mixed.issues[0] and "USD 2026-09: T-1" in mixed.issues[0]
+
+
+def test_year_only_user_price_counts_on_the_study_basis():
+    from backend.equipment_costing.total_cost.calculator import calculate_total_cost
+
+    total = calculate_total_cost([_price("T-1", 1000.0, "2026-09"), _price("T-2", 500.0, "2026")])
+    assert total.equipment_cost_total == 1500.0
+    assert any("T-2: dated 2026, counted on the 2026-09 basis" in i for i in total.issues)
+    other_year = calculate_total_cost([_price("T-1", 1000.0, "2026-09"), _price("T-2", 500.0, "2024")])
+    assert other_year.equipment_cost_total is None

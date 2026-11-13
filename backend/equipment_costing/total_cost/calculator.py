@@ -328,6 +328,20 @@ def calculate_total_cost(
             "Unresolved equipment: subtotals are partial; complete total unavailable"
         )
     purchased = [s for s in subtotals if s.cost_scope == "purchased_equipment"]
+    # A year-only date in the same year as the others (e.g. a typed price dated
+    # "2026" with a 2026-09 study basis) is counted on that basis, with a note.
+    if len(purchased) > 1 and len({s.currency for s in purchased}) == 1 \
+            and len({str(s.period)[:4] for s in purchased}) == 1 \
+            and len({s.period for s in purchased if len(str(s.period)) > 4}) <= 1:
+        dated = [s for s in purchased if len(str(s.period)) > 4]
+        main = dated[0] if dated else purchased[0]
+        for s in purchased:
+            if s is not main:
+                notes.append(f"{', '.join(s.equipment_tags)}: dated {s.period}, counted on the {main.period} basis")
+        purchased = [CostSubtotal(main.currency, main.cost_index, main.period, main.cost_scope,
+                                  fsum(s.amount for s in purchased),
+                                  tuple(t for s in purchased for t in s.equipment_tags),
+                                  index_series=main.index_series)]
     if len(purchased) > 1:
         bases = "; ".join(f"{s.currency} {s.period}: {', '.join(s.equipment_tags)}" for s in purchased)
         issues.append(
@@ -392,9 +406,15 @@ def calculate_total_cost(
         )
         for key, rows in sorted(component_groups.items())
     )
+    keys = list(component_groups)
+    same_basis = len(keys) == 1 or (
+        len({k[0] for k in keys}) == 1  # one currency
+        and len({str(k[2])[:4] for k in keys}) == 1  # one year
+        and len({k[2] for k in keys if len(str(k[2])) > 4}) <= 1  # at most one full date
+    )
     compatible = (
         bool(lines)
-        and len(component_groups) == 1
+        and same_basis
         and all(line.amount is not None for line in lines)
     )
     # Installed packages / unit capital have no separate purchase cost by
@@ -410,7 +430,7 @@ def calculate_total_cost(
     combined_total = (
         _complete_sum(purchased_lines, "equipment_and_installation_cost") if compatible and purchased_lines else None
     )
-    if len(component_groups) > 1:
+    if not same_basis:
         installation_issues.append(
             "Component totals require a common currency and index/date basis"
         )

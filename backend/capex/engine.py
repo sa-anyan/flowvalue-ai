@@ -26,14 +26,20 @@ def compatible_basis(a, b):
     """Same currency and date, and either the same cost index or one side is a
     user price (a dated amount with no index of its own). Two different indices
     are never mixed."""
-    if a[:2] != b[:2]:
+    if a[0] != b[0]:
         return False
+    if a[1] != b[1]:
+        # A user price dated by year only, in the same year as the others
+        # (e.g. "2026" with a 2026-09 basis), is counted on that basis.
+        year_only = (_is_user_price(a) and len(str(a[1])) == 4) or (_is_user_price(b) and len(str(b[1])) == 4)
+        return year_only and str(a[1])[:4] == str(b[1])[:4]
     return a[2:] == b[2:] or _is_user_price(a) or _is_user_price(b)
 
 
 def preferred_basis(current, new):
     """Report the index-based basis when a user price joins index-based costs."""
-    if current is None or (_is_user_price(current) and not _is_user_price(new)):
+    if current is None or (_is_user_price(current) and not _is_user_price(new)) \
+            or (len(str(current[1])) == 4 and len(str(new[1])) > 4):
         return new
     return current
 
