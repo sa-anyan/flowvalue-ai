@@ -244,7 +244,7 @@ def discover(state):
                 )
             )
     operating = plan.get("operating_economics", {})
-    currency = operating.get("price_basis", {}).get("currency", "")
+    currency = (operating.get("price_basis") or {}).get("currency") or ""  # may be saved as null
     for group, field, unit in [
         ("sales", "unit_price", currency + "/unit"),
         ("materials", "unit_price", currency + "/unit"),

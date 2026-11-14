@@ -224,3 +224,23 @@ test('analyst slot: researching placeholder, then the briefing; nothing without 
  assert.equal(analystRunning({analyst:{capex:{status:'ready'},opex:{status:'running'}}}),true);
  assert.equal(analystRunning({analyst:{capex:{status:'ready'}}}),false);
 });
+
+test('held AI estimates are listed with both sizes, and the user decides',()=>{
+ const conv={enabled:true,inputs:{volumetric_productivity_kg_m3_h:0.2}};
+ const rows=[
+  {equipment_key:'eq:r1',unit_conversion:{enabled:true,inputs:{volumetric_productivity_kg_m3_h:2}},ai_estimate_guard:{status:'held',
+   anchor:{size:15.625,size_unit:'m3',basis:'b'},held:{size:156.25,size_unit:'m3',drift:9,conversion:conv,at:'t',assumptions:[{name:'volumetric_productivity_kg_m3_h',value:0.2,unit:'kg/m3/h'}]}}},
+  {equipment_key:'eq:t1',ai_estimate_guard:{status:'stable',anchor:{size:10,size_unit:'m3'}}},
+ ];
+ const held=lib.heldEstimates(rows);
+ assert.equal(held.length,1);
+ assert.deepEqual([held[0].anchorSize,held[0].newSize,held[0].unit,held[0].drift],[15.625,156.25,'m3',9]);
+ const kept=lib.decideHeld(rows,'eq:r1','keep');
+ assert.equal(kept[0].ai_estimate_guard.status,'stable');
+ assert.equal(kept[0].unit_conversion.inputs.volumetric_productivity_kg_m3_h,2);
+ assert.equal(lib.heldEstimates(kept).length,0);
+ const used=lib.decideHeld(rows,'eq:r1','use');
+ assert.equal(used[0].unit_conversion,conv);
+ assert.deepEqual([used[0].ai_estimate_guard.anchor.size,used[0].ai_estimate_guard.anchor.basis,used[0].ai_estimate_guard.anchor.by],[156.25,'b','user_accepted_ai']);
+ assert.equal(used[1],rows[1]);
+});

@@ -488,3 +488,56 @@ export function brainstormNotice(record: unknown, aiEnabled: boolean): { tone: '
   }
   return null;
 }
+
+/* ----------------------------------------------------- AI estimate guard */
+
+export type HeldEstimate = {
+  key: string;
+  anchorSize: number;
+  newSize: number;
+  unit: string;
+  drift: number;
+  assumptions: { name: string; value: number; unit: string }[];
+};
+
+/** AI size estimates held back because they jumped against the anchored estimate for the same M&E. */
+export function heldEstimates(rows: Row[]): HeldEstimate[] {
+  return rows.flatMap((row) => {
+    const g = obj(row.ai_estimate_guard),
+      held = obj(g.held),
+      anchor = obj(g.anchor);
+    const anchorSize = num(anchor.size),
+      newSize = num(held.size);
+    if (g.status !== 'held' || anchorSize === null || newSize === null) return [];
+    return [
+      {
+        key: text(row.equipment_key),
+        anchorSize,
+        newSize,
+        unit: text(held.size_unit || anchor.size_unit),
+        drift: num(held.drift) ?? Math.abs(newSize - anchorSize) / anchorSize,
+        assumptions: list(held.assumptions).map((a) => ({ name: text(a.name), value: num(a.value) ?? 0, unit: text(a.unit) })),
+      },
+    ];
+  });
+}
+
+/** The user's decision on a held estimate: use the new one (it becomes the anchor) or keep the anchored one. */
+export function decideHeld(rows: Row[], key: string, decision: 'use' | 'keep'): Row[] {
+  return rows.map((row) => {
+    if (text(row.equipment_key) !== key) return row;
+    const g = obj(row.ai_estimate_guard),
+      held = obj(g.held);
+    if (decision === 'keep') return { ...row, ai_estimate_guard: { ...g, status: 'stable', held: null, kept_by_user: true } };
+    return {
+      ...row,
+      unit_conversion: held.conversion,
+      ai_estimate_guard: {
+        ...g,
+        status: 'anchored',
+        held: null,
+        anchor: { ...obj(g.anchor), size: held.size, size_unit: held.size_unit, conversion: held.conversion, by: 'user_accepted_ai', at: held.at },
+      },
+    };
+  });
+}

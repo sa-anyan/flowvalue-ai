@@ -159,6 +159,16 @@ def calculate(ctx):
             total, rows = calculate_equipment(
                 report, plan, plan.get("cost_translation")
             )
+    # Stability: an AI size that jumps against its anchored estimate for the same
+    # M&E is held for review and the anchored estimate is used instead.
+    from .estimate_guard import guard
+
+    guarded, held = guard(plan, rows, report)
+    if guarded != plan:
+        plan = guarded
+        updates["plan"] = {"equipment": plan["equipment"]}
+        if held:
+            total, rows = calculate_equipment(report, plan, plan.get("cost_translation"))
     result = plain(total)
     for line in result.get("equipment", []):
         sizing = (line.get("parsed_source") or {}).get("sizing") or {}
@@ -179,6 +189,12 @@ def calculate(ctx):
         result["equipment_total_with_packages"] = result["equipment_cost_total"] + result["packages_total"]
     result["duplicate_review"] = duplicate_review
     result["input_resolution"] = input_resolution
+    result["estimate_guard"] = [
+        {"equipment_key": r["equipment_key"], **{k: v for k, v in (r.get("ai_estimate_guard") or {}).items() if k != "anchor"},
+         "anchor_size": ((r.get("ai_estimate_guard") or {}).get("anchor") or {}).get("size"),
+         "anchor_size_unit": ((r.get("ai_estimate_guard") or {}).get("anchor") or {}).get("size_unit")}
+        for r in plan.get("equipment", []) if r.get("ai_estimate_guard")
+    ]
     result["matching_register"] = matching or {
         "matches": [
             p["matching"] for p in plan.get("equipment", []) if p.get("matching")
