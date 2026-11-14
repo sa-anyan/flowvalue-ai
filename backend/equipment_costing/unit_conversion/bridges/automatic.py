@@ -12,8 +12,10 @@ from .. import convert, ConversionContext
 from .service import describe, evaluate, model_contract, PARAMETERS, RECIPES
 from .derivations import METHODS, derive, discover
 
-VERSION = "equipment-input-resolution-26-workbook-parameters"
-PROMPT = """WORKBOOK PARAMETERS FIRST: an equipment item may carry workbook_parameters, values the workbook itself states (id = worksheet!cell), found by a label search. Before proposing any assumed parameter (residence or batch time, efficiency, density, heat-transfer coefficient, loading, latent or specific heat, vessel volume, heat capacity ratio), check that list. When a listed value fits the parameter's meaning, units and this item's service, use it, cite its id in the rationale and label it a workbook statement; convert units explicitly through the declared parameter units. A label match can be wrong (another stream, chemical, temperature or unit): reject it with a short reason. Propose an assumption only when no listed value fits, and say so.
+VERSION = "equipment-input-resolution-27-assumption-ranges"
+PROMPT = """ASSUMPTION RANGES: for every assumption also give low and high in the same unit: the range an experienced engineer would accept for this service and equipment type (typical design practice, not a fixed percentage around your value), with low <= value <= high. Use null for both only when no defensible range exists. Monte Carlo varies the value across this range.
+
+WORKBOOK PARAMETERS FIRST: an equipment item may carry workbook_parameters, values the workbook itself states (id = worksheet!cell), found by a label search. Before proposing any assumed parameter (residence or batch time, efficiency, density, heat-transfer coefficient, loading, latent or specific heat, vessel volume, heat capacity ratio), check that list. When a listed value fits the parameter's meaning, units and this item's service, use it, cite its id in the rationale and label it a workbook statement; convert units explicitly through the declared parameter units. A label match can be wrong (another stream, chemical, temperature or unit): reject it with a short reason. Propose an assumption only when no listed value fits, and say so.
 For a dryer model requiring evaporation rate, use dryer_evaporation: measurement_id is feed water COMPONENT mass flow and outlet_measurement_id is product water COMPONENT mass flow. Python subtracts and converts them. Confirm the selected drying boundary has no other water paths/reaction; disclose this scope assumption. Never use total wet-feed flow as evaporation. Carrier-gas inlet/outlet water can independently check the calculated evaporation; do not confuse those roles with feed/product.
 For OpenPyTEA power coordinates use electrical_to_shaft_power / shaft_to_electrical_power with explicit motor_efficiency, or pump_hydraulic_power, when the power role differs. Shaft power is not electrical input power. For OpenPyTEA correlations, preserve exact required parameter roles (shaft/fluid/electrical power, actual/standard flow, composite design coordinates). Never substitute an uncalculated feed rate for a composite coordinate. Two-variable models require secondary_input: choose its measurement_id independently, or provide an explicit assumed value/unit/rationale; Python converts it. Missing second input remains MISSING_SIZING_INPUT. Disabled models cannot be selected. No automatic size clamping or parallelisation.
 LIBRARY PREFERENCE: among compatible candidates whose published domain covers the calculated size, choose an OpenPyTEA model before any Garrett model. Use Garrett only when no OpenPyTEA candidate applies. OpenPyTEA correlations have strict published capacity limits and do not accept Garrett extrapolation options. BELOW-RANGE SIZES: when the physically calculated size is BELOW a correlation's published minimum, keep the best-matching OpenPyTEA (or Garrett) model; Python prices it at that minimum size and records the floor as an explicit assumption. Do not switch library only because the size is small. If the size is ABOVE a correlation's maximum, choose a conceptually compatible supplied alternative with an applicable domain or a Garrett model supporting disclosed boundary extrapolation. Never change a source quantity or tune residence time, efficiency or density just to fit a cost curve. Keep extrapolation_exponent null for non-Garrett models.
@@ -287,6 +289,8 @@ SCHEMA = obj(
                             {
                                 "name": TEXT,
                                 "value": {"type": "number"},
+                                "low": {"type": ["number", "null"]},
+                                "high": {"type": ["number", "null"]},
                                 "unit": TEXT,
                                 "rationale": TEXT,
                                 "limitations": TEXT,
@@ -386,6 +390,10 @@ def normalize_response(response):
             if isinstance(decision, dict):
                 decision.setdefault("operating_mode", None)
                 decision.setdefault("secondary_input", None)
+                for assumption in decision.get("assumptions") or []:
+                    if isinstance(assumption, dict):
+                        assumption.setdefault("low", None)  # responses before ranges existed
+                        assumption.setdefault("high", None)
             if isinstance(decision, dict) and isinstance(
                 decision.get("thermal_basis"), dict
             ):
@@ -423,10 +431,19 @@ def normalize_assumption(assumption):
             raise ValueError(
                 "Unsupported assumption unit for " + name + ": " + a["unit"]
             )
+        bounds = {}
+        for side in ("low", "high"):
+            if isinstance(a.get(side), (int, float)):
+                bounds[side] = convert(a[side], a["unit"], target).value
         a.update(
-            original_value=a["value"], original_unit=a["unit"], value=converted.value
+            original_value=a["value"], original_unit=a["unit"], value=converted.value, **bounds
         )
     a["unit"] = target
+    low, high = a.get("low"), a.get("high")
+    if not (isinstance(low, (int, float)) and isinstance(high, (int, float))
+            and math.isfinite(low) and math.isfinite(high) and low <= a["value"] <= high and low < high):
+        a.pop("low", None)  # no usable range: Monte Carlo keeps this value fixed
+        a.pop("high", None)
     return a
 
 
