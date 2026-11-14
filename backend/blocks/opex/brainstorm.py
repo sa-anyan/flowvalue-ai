@@ -67,11 +67,13 @@ def ai_available():
         return False
 
 
-def wanted(state):
-    """True when approved data has no brainstorm for its current fingerprint."""
+def wanted(state, require_approval=True):
+    """True when the (approved) data has no brainstorm for its current fingerprint."""
     from backend.blocks.stage_workflow import approved
 
-    if not approved(state) or "operating_economics" in (state.get("locked") or []):
+    if (require_approval and not approved(state)) or "operating_economics" in (state.get("locked") or []):
+        return False
+    if not _report(state).get("entities"):
         return False
     return (state.get("opex_brainstorm") or {}).get("fingerprint") != fingerprint(state)
 
@@ -257,7 +259,7 @@ def run(store, key, stage_lock=None, provider=None):
                 _live[key] = {**_live[key], **outcome, "finished_at": _now()}
 
 
-def kick(store, key, stage_lock=None, provider=None, *, executor=None):
+def kick(store, key, stage_lock=None, provider=None, *, executor=None, require_approval=True):
     """Start a brainstorm if the approved data has none; never blocks the caller."""
     try:
         state = store.get(key)
@@ -265,7 +267,7 @@ def kick(store, key, stage_lock=None, provider=None, *, executor=None):
         return False
     if provider is None and not ai_available():
         return False
-    if not wanted(state):
+    if not wanted(state, require_approval):
         return False
     stamp = fingerprint(state)
     with _guard:

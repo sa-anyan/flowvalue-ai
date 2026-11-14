@@ -21,6 +21,7 @@ import { strings,
 import { api, post, type Assessment } from './use-assessment';
 import { BarChart, FanChart, LineChart } from './charts';
 import { Issues, Panel, StageHeading, type StageProps } from './flow';
+import { AnalystCard } from './analyst-card';
 
 type ChartId = 'cumulative' | 'fcff' | 'income' | 'mc-fan' | 'mc-npv';
 const chartTitles: Record<ChartId, string> = {
@@ -118,6 +119,7 @@ export function FinancialPlayground(props: StageProps) {
       >
         Investment performance from the Python financial ledger. Try changes on the scenario tab; your baseline stays intact until you save.
       </StageHeading>
+      <AnalystCard stage="financial" hook={props.hook} />
       <div className="gf-fin-layout">
         {pins.length > 0 && (
           <div className="gf-pins" role="complementary" aria-label="Pinned charts">

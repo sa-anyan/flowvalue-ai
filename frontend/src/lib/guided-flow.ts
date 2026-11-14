@@ -480,7 +480,7 @@ export function opexProposals(config: Row, quantities: Quantities = {}): OpexPro
 export function brainstormNotice(record: unknown, aiEnabled: boolean): { tone: 'running' | 'ready' | 'failed' | 'off'; text: string } | null {
   const r = obj(record);
   if (!aiEnabled) return null;
-  if (r.status === 'running') return { tone: 'running', text: 'AI is researching OPEX assumptions in the background (labour, utilities, materials). Reference defaults are shown meanwhile.' };
+  if (r.status === 'running') return null; // the analyst slot shows the research in place
   if (r.status === 'failed') return { tone: 'failed', text: `AI research did not finish (${text(r.error) || 'unknown error'}). Reference defaults still apply.` };
   if (r.status === 'ready') {
     const n = list(r.added).length;

@@ -5,6 +5,7 @@ import { assessmentHref } from '@/lib/assessment-navigation';
 import { strings, compact, list, money, num, obj, text, words, type Row } from '@/lib/guided-flow';
 import { api, post, type Assessment } from './use-assessment';
 import { Issues, OriginChip, Panel, RunBar, StageHeading, type StageProps } from './flow';
+import { AnalystCard } from './analyst-card';
 
 const categories = [
   ['processing_services', 'Processing / treatment service'],
@@ -49,6 +50,7 @@ export function RevenuePlayground(props: StageProps) {
       <StageHeading kicker="STAGE 05 · REVENUE" title="Revenue playground">
         Income comes only from what you set on the Entry board and the explicit revenue worksheet. Prices you give are your assumptions; unpriced income stays unpriced.
       </StageHeading>
+      <AnalystCard stage="revenue" hook={props.hook} />
       <p className="gf-warn gf-rev-effects" role="note">
         Changing revenue also changes the OPEX lines that are a share of revenue (administration, distribution &amp; sales, R&amp;D, royalties), so variable
         operating cost (VCOP), total OPEX and the cash flow move with it. Fixed operating cost (FCOP) is not affected. Run OPEX and Financial again after a change.

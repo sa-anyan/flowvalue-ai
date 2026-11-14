@@ -33,7 +33,8 @@ class EngineeringProvider:
             "instructions": instructions,
             "input": json.dumps(context),
             "store": False,
-            "max_output_tokens": (3500 if context.get("specialist") else
+            "max_output_tokens": (2500 if context.get("analyst_version") else
+                                  3500 if context.get("specialist") else
                                   8000 if context.get("requested_sections") == ["equipment", "capex"] else 12000),
             "reasoning": {"effort": "low"},
             "text": {

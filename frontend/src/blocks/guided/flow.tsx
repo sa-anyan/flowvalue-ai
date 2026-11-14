@@ -144,9 +144,10 @@ export function GuidedFlow() {
   const asked = useRef('');
   useEffect(() => {
     const id = text(state?.id);
-    if (!id || !hook.aiEnabled || state?.engineering_data_approved !== true || obj(state).opex_brainstorm || asked.current === id) return;
+    const started = Object.keys(obj(obj(state).analyst)).length > 0 || obj(state).opex_brainstorm;
+    if (!id || !hook.aiEnabled || started || asked.current === id) return;
     asked.current = id;
-    void api(`assessments/${id}/opex-brainstorm`, post({}))
+    void api(`assessments/${id}/analyst`, post({}))
       .then(() => hook.reload())
       .catch(() => {});
   }, [state, hook]);
