@@ -296,13 +296,20 @@ def run_stage(
 
     token = progress.begin(key, block)
     try:
-        return _run_stage(
+        state = _run_stage(
             store, key, block, use_ai=use_ai, provider=provider,
             observation_collector=observation_collector,
             observation_scenario_id=observation_scenario_id,
         )
     finally:
         progress.end(key, token)
+    if block == "engineering_data" and (state.get("stage_runs") or {}).get(block, {}).get("status") == "ready":
+        # The workbook is readable: start the background analyst now, while the
+        # user reviews the Entry board and answers the quick questions.
+        from .analyst import kick
+
+        kick(store, key)
+    return state
 
 
 def _run_stage(

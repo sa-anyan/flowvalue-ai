@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { brainstormNotice, opexQuantities, stageStatus, strings, compact, list, money, num, obj, opexHeadline, opexProgress, opexProposals, percent, text, words, type OpexProposal, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
 import { Issues, OriginChip, Panel, RunBar, StageHeading, type StageProps } from './flow';
+import { AnalystCard } from './analyst-card';
 
 const groups = [
   ['materials', 'Raw materials', ['unit_price', 'annual_quantity_assumption']],
@@ -85,11 +86,13 @@ export function OpexPlayground(props: StageProps) {
   // Calculate on arrival: when CAPEX is current and OPEX is not (never run, or
   // new background AI proposals made it stale), Python recalculates once.
   const receipts = obj(state?.stage_runs);
-  const capexReady = stageStatus(receipts.capex, obj(obj(state?.results).stages).capex).tone === 'ready';
+  // A stale CAPEX (e.g. the analyst refined its factors) is recalculated in the same run.
+  const capexReady = ['ready', 'stale'].includes(stageStatus(receipts.capex, obj(obj(state?.results).stages).capex).tone);
   const opexTone = stageStatus(receipts.opex, stage).tone;
   const autoRan = useRef('');
   useEffect(() => {
-    const stamp = `${text(state?.id)}:${text(state?.revision)}`;
+    // Once on arrival and once per new background result: a blocked run never loops.
+    const stamp = `${text(state?.id)}:${text(obj(obj(state).opex_brainstorm).finished_at)}:${text(obj(obj(obj(state).analyst).capex).finished_at)}`;
     if (!state || state.running || hook.busy || operating.dirty || !capexReady || !['stale', 'idle'].includes(opexTone) || autoRan.current === stamp) return;
     autoRan.current = stamp;
     void hook.action(() => hook.runStage('opex'));
@@ -101,6 +104,7 @@ export function OpexPlayground(props: StageProps) {
       <StageHeading kicker="STAGE 04 · OPEX" title="OPEX playground">
         Operating costs with the inputs behind each one. Your edits are saved with a rationale and Python recalculates. Missing inputs stay missing, never zero.
       </StageHeading>
+      <AnalystCard stage="opex" hook={props.hook} headline={stage.result ? `${headline.label}: ${headline.value} (Python).` : undefined} />
       <section className="gf-card-block" aria-labelledby="gf-opex-basis">
         <h2 id="gf-opex-basis">Shared operating basis</h2>
         <div className="gf-grid-4">

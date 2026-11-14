@@ -8,6 +8,7 @@ import { OriginChip, Panel, RunBar, type StageProps } from './flow';
 import { matchChip, pending, QuickMatchPanel, useQuickMatches } from './quick-match';
 import { AutopilotCard } from './autopilot';
 import { RevenueSetup } from './revenue-setup';
+import { QuickQuestions } from './quick-questions';
 
 const WORKBOOK = /\.(xlsx|xls|xlsm)$/i;
 
@@ -173,6 +174,7 @@ export function EntryBoard(props: StageProps) {
         <button type="button" className="gf-primary gf-extract" disabled={running || (!file && !hook.id)} onClick={() => void hook.action(extract)}>
           {file ? `Extract equipment from ${file.name}` : !state ? 'Extract equipment' : 'Re-extract with this brief'}
         </button>
+        {state && !previous && <QuickQuestions props={props} />}
         {state && !previous && <RevenueSetup props={props} />}
         {previous && (
           <p className="gf-note">

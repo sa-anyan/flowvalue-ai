@@ -48,6 +48,9 @@ lock = threading.Lock()
 from backend.blocks.opex import brainstorm as _opex_brainstorm  # noqa: E402
 
 _opex_brainstorm.STAGE_LOCK = lock  # background AI results are written only between stages
+from backend.blocks import analyst as _analyst  # noqa: E402
+
+_analyst.STAGE_LOCK = lock
 
 
 class Edit(BaseModel):
@@ -413,16 +416,41 @@ def get(key: str, historical: bool = False, currency: str | None = None):
         project_assessment_identity(currency_view(view(saved), currency), saved)
     )
     out["opex_brainstorm"] = _opex_brainstorm.status(key, saved)
+    out["analyst"] = _analyst.status(key, saved)
     return out
 
 
 @app.post("/api/assessments/{key}/opex-brainstorm", status_code=202)
-def start_opex_brainstorm(key: str):
-    """Start (or restart after a change) the background AI OPEX brainstorm."""
+@app.post("/api/assessments/{key}/analyst", status_code=202)
+def start_analyst(key: str):
+    """Start the background analyst for any stage whose inputs changed (AI only)."""
     if not _opex_brainstorm.ai_available():
         raise HTTPException(409, "AI is not enabled on this server; reference defaults apply")
-    started = _opex_brainstorm.kick(store, key)
-    return {"started": started, "opex_brainstorm": _opex_brainstorm.status(key, store.get(key))}
+    started = _analyst.kick(store, key)
+    saved = store.get(key)
+    return {"started": started, "analyst": _analyst.status(key, saved),
+            "opex_brainstorm": _opex_brainstorm.status(key, saved)}
+
+
+class ProjectContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    location: str | None = Field(default=None, max_length=120)
+    project_type: str | None = Field(default=None, max_length=40)
+
+
+@app.post("/api/assessments/{key}/project-context")
+def save_project_context(key: str, answers: ProjectContext):
+    """Entry quick questions (site, new build or retrofit); the analyst reads them."""
+    if not lock.acquire(timeout=20):
+        raise HTTPException(409, "A calculation is running; try again in a moment")
+    try:
+        state = store.get(key)
+        state["project_context"] = {k: v.strip() for k, v in answers.model_dump().items() if v and v.strip()}
+        state = store.put(state, state["revision"])
+    finally:
+        lock.release()
+    _analyst.kick(store, key)
+    return {"project_context": state["project_context"], "revision": state["revision"]}
 
 
 @app.patch("/api/assessments/{key}")

@@ -412,3 +412,30 @@ polyline.gf-tone-c { stroke: var(--gf-tone-c); }
 
 /* Live previews: yearly revenue on Entry, yearly cost on OPEX review rows */
 .gf-rev-preview, .gf-review-cost { display: block; grid-column: 1 / -1; font-variant-numeric: tabular-nums; }
+
+/* Analyst briefing: a slot reserved from the start, filled in place (no layout jump). */
+.gf-analyst {
+  min-height: 8.5rem; padding: 1rem 1.25rem; margin: 0 0 1.25rem;
+  border: 1px solid var(--gf-line); border-radius: var(--gf-radius);
+  background: var(--gf-raised);
+}
+.gf-analyst-head { display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 0.5rem; }
+.gf-analyst-summary { margin: 0 0 0.6rem; line-height: 1.55; }
+.gf-analyst-points { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.35rem; line-height: 1.5; }
+.gf-analyst-points details, .gf-analyst-factors { margin-top: 0.25rem; }
+.gf-analyst-points summary, .gf-analyst-factors summary { cursor: pointer; font-size: 0.85em; opacity: 0.8; }
+.gf-analyst-factors ul { margin: 0.4rem 0 0; padding-left: 1.1rem; display: grid; gap: 0.3rem; }
+.gf-analyst-questions { margin: 0.6rem 0 0; }
+.gf-analyst-skeleton { display: grid; gap: 0.55rem; padding-top: 0.25rem; }
+.gf-analyst-skeleton span {
+  display: block; height: 0.8rem; border-radius: 6px;
+  background: linear-gradient(90deg, rgba(127,127,127,0.12), rgba(127,127,127,0.24), rgba(127,127,127,0.12));
+  background-size: 200% 100%; animation: gf-shimmer 1.6s ease-in-out infinite;
+}
+.gf-analyst-skeleton span:nth-child(2) { width: 85%; }
+.gf-analyst-skeleton span:nth-child(3) { width: 60%; }
+@keyframes gf-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .gf-analyst-skeleton span { animation: none; } }
+
+.gf-quick-questions { display: grid; gap: 10px; margin-top: 14px; padding: 14px; border: 1px solid var(--gf-line); border-radius: var(--gf-radius); background: var(--gf-raised); }
+.gf-quick-questions h3 { margin: 0; font-size: 16px; }

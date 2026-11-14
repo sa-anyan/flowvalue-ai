@@ -1,8 +1,9 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
-import { strings, capexLines, compact, list, money, num, obj, percent, text, words, type CapexLine, type Row } from '@/lib/guided-flow';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { stageStatus, strings, capexLines, compact, list, money, num, obj, percent, text, words, type CapexLine, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
 import { Issues, OriginChip, Panel, RunBar, StageHeading, type StageProps } from './flow';
+import { AnalystCard } from './analyst-card';
 
 const basisFields = [
   { key: 'model_id', label: 'Method', options: [['garrett', 'Garrett factorial'], ['nottingham', 'Nottingham detailed']] },
@@ -20,6 +21,18 @@ export function CapexPlayground(props: StageProps) {
   const { hook, capex } = props;
   const state = hook.state;
   const stage = obj(obj(obj(state?.results).stages).capex);
+  // Calculate on arrival: when equipment is current and CAPEX is not (never run,
+  // or the analyst's factor positions made it stale), Python recalculates once.
+  const equipmentReady = stageStatus(obj(state?.stage_runs).equipment, obj(obj(state?.results).stages).equipment).tone === 'ready';
+  const capexTone = stageStatus(obj(state?.stage_runs).capex, stage).tone;
+  const autoRan = useRef('');
+  useEffect(() => {
+    // Once on arrival and once per new analyst result: a blocked run never loops.
+    const stamp = `${text(state?.id)}:${text(obj(obj(obj(state).analyst).capex).finished_at)}`;
+    if (!state || state.running || hook.busy || capex.dirty || !equipmentReady || !['stale', 'idle'].includes(capexTone) || autoRan.current === stamp) return;
+    autoRan.current = stamp;
+    void hook.action(() => hook.runStage('capex'));
+  }, [state, hook, capex.dirty, equipmentReady, capexTone]);
   const result = obj(stage.result);
   const config = capex.value;
   const [factors, setFactors] = useState<Row[]>([]),
@@ -80,6 +93,7 @@ export function CapexPlayground(props: StageProps) {
       <StageHeading kicker="STAGE 03 · CAPEX" title="CAPEX playground">
         Every capital line, where its value came from, and what you can change. Python recalculates the totals; nothing here is computed in your browser.
       </StageHeading>
+      <AnalystCard stage="capex" hook={props.hook} headline={num(result.total_capex) === null ? undefined : `CAPEX estimate ${compact(result.total_capex)} ${text(result.currency)} (Python).`} />
       <section className="gf-card-block" aria-labelledby="gf-capex-basis">
         <h2 id="gf-capex-basis">Estimate basis</h2>
         <div className="gf-grid-4">

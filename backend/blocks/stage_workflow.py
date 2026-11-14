@@ -57,9 +57,9 @@ def approve(store, key, revision):
 
 
 def _brainstorm(store, key):
-    """Start the background OPEX brainstorm for newly approved data (AI only)."""
+    """Start (or top up) the background analyst for this study (AI only)."""
     try:
-        from backend.blocks.opex.brainstorm import kick
+        from backend.blocks.analyst import kick
 
         kick(store, key)
     except Exception:

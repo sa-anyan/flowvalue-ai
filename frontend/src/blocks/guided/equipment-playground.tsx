@@ -4,6 +4,7 @@ import { QuickPriceOverride } from '@/blocks/equipment/quick-price-override';
 import { compact, equipmentCards, equipmentMapping, money, num, obj, patchEquipment, text, type EquipmentCardModel, type Row } from '@/lib/guided-flow';
 import { EquipmentInspector } from './equipment-inspector';
 import { Issues, OriginChip, RunBar, StageHeading, type StageProps } from './flow';
+import { AnalystCard } from './analyst-card';
 
 /**
  * Equipment playground: every item's Python-calculated cost, with price,
@@ -39,6 +40,7 @@ export function EquipmentPlayground(props: StageProps) {
       <StageHeading kicker="STAGE 02 · EQUIPMENT" title="Equipment costs">
         Every item priced by Python from its saved model. Adjust the price, the units or the design inputs behind it, then recalculate to see the effect.
       </StageHeading>
+      <AnalystCard stage="equipment" hook={props.hook} />
       <div className="gf-kpis">
         <div>
           <small>Purchased equipment</small>

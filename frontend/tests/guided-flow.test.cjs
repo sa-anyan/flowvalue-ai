@@ -172,7 +172,7 @@ test('AI proposals from the background brainstorm are offered for review; user v
 
 test('background brainstorm notice reflects running, ready and failed states, and stays silent without AI',()=>{
  assert.equal(lib.brainstormNotice({status:'running'},false),null);
- assert.equal(lib.brainstormNotice({status:'running'},true).tone,'running');
+ assert.equal(lib.brainstormNotice({status:'running'},true),null); // shown by the analyst slot instead
  assert.match(lib.brainstormNotice({status:'ready',added:['labour.a','energy.b']},true).text,/AI added 2 proposals/);
  const failed=lib.brainstormNotice({status:'failed',error:'timeout'},true);
  assert.equal(failed.tone,'failed');
@@ -210,4 +210,17 @@ test('OPEX review rows show the unit, the yearly quantity and the yearly cost',(
  assert.deepEqual(feed.quantity,{amount:198201960,unit:'kg'});
  assert.equal(feed.quantity.amount*feed.price,198201960);
  assert.equal(rows.find(r=>r.id==='sucrose').quantity.amount,528000);
+});
+
+test('analyst slot: researching placeholder, then the briefing; nothing without AI',()=>{
+ const {analystView,analystRunning}=require('../src/blocks/guided/analyst-card.tsx');
+ assert.equal(analystView(undefined,false),'off');
+ assert.equal(analystView(undefined,true),'researching');
+ assert.equal(analystView({status:'running'},true),'researching');
+ assert.equal(analystView({status:'running',summary:'old'},true),'updating');
+ assert.equal(analystView({status:'ready',summary:'Compact plant'},true),'ready');
+ assert.equal(analystView({status:'ready',summary:'Compact plant'},false),'ready'); // saved briefing stays visible
+ assert.equal(analystView({status:'failed'},true),'failed');
+ assert.equal(analystRunning({analyst:{capex:{status:'ready'},opex:{status:'running'}}}),true);
+ assert.equal(analystRunning({analyst:{capex:{status:'ready'}}}),false);
 });
