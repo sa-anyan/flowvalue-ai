@@ -114,7 +114,7 @@ body:has(.genesis-theme-inline) > .genesis-theme-dock { display: none; }
    These rules change the shell geometry, not engineering or financial behaviour. */
 :root { --genesis-outer:#f1eee9; }
 html[data-genesis-theme="dark"] { --genesis-outer:#0b141b; }
-body:has(.shell) { background:var(--genesis-outer); }
+body:has(.shell), body:has(.gf) { display: flow-root; background:var(--genesis-outer); }
 @media (min-width:901px) {
   .shell {
     display:grid;
@@ -210,11 +210,11 @@ a.genesis-hero-card:hover{border-color:var(--genesis-sea);transform:translateY(-
 .genesis-hero-metric strong[data-negative="true"]{color:var(--genesis-danger)}
 .genesis-hero-unit{font-size:12px;color:var(--genesis-muted)}
 .genesis-hero-card-foot{display:flex;justify-content:space-between;gap:8px;margin-top:auto;font-size:11px;color:var(--genesis-muted)}
-.genesis-hero-comparison-bars{display:grid;gap:20px;margin:auto 0}
-.genesis-hero-comparison-bars>div>span{display:flex;justify-content:space-between;font-size:11px;color:var(--genesis-muted);gap:12px;margin-bottom:8px}
+.genesis-hero-comparison-bars{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:auto 0}
+.genesis-hero-comparison-bars>div>span{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;font-size:11px;color:var(--genesis-muted);gap:2px 6px;margin-top:7px}
 .genesis-hero-comparison-bars b{color:var(--genesis-text);font-size:14px;font-variant-numeric:tabular-nums}
-.genesis-hero-track{height:17px;border-radius:5px;background:var(--genesis-sea-soft);overflow:hidden}
-.genesis-hero-track i{display:block;height:100%;background:var(--genesis-sea);border-radius:5px;transition:width .35s ease}
+.genesis-hero-comparison-bars>div{display:flex;flex-direction:column-reverse}.genesis-hero-track{height:95px;display:flex;align-items:flex-end;border-radius:7px;background:var(--genesis-sea-soft);overflow:hidden}
+.genesis-hero-track i{display:block;width:100%;background:var(--genesis-sea);border-radius:7px 7px 0 0;transition:height .35s ease}
 .genesis-hero-comparison-bars>div:nth-child(2) .genesis-hero-track i{background:color-mix(in srgb,var(--genesis-sea) 47%,var(--genesis-muted))}
 .genesis-hero-empty{font-size:12px;color:var(--genesis-muted);margin:auto 0}
 .genesis-hero-wide{padding:24px 27px;margin:0}
@@ -250,3 +250,96 @@ a.genesis-hero-card:hover{border-color:var(--genesis-sea);transform:translateY(-
 }
 .genesis-hero-toolbar .genesis-hero-active{background:var(--genesis-sea-soft);color:var(--genesis-sea);border-color:var(--genesis-sea);font-weight:650}
 .genesis-hero-toolbar a:hover{border-color:var(--genesis-sea);color:var(--genesis-sea)}
+
+/* Shared workspace geometry. Guided stages retain their horizontal step rail. */
+body:has(.gf) { background: var(--genesis-outer); }
+.gf {
+  width: min(100% - 48px, 1760px); margin: 24px auto;
+  min-height: calc(100dvh - 48px); border: 1px solid var(--genesis-border);
+  border-radius: 20px; box-shadow: 0 8px 28px #182b3509;
+}
+.gf .gf-top { border-radius: 20px 20px 0 0; padding-inline: clamp(1rem, 2.7vw, 2rem); }
+.gf .gf-stage { max-width: 100%; padding-inline: clamp(1rem, 2.7vw, 2rem); }
+.gf .gf-runbar { left: max(24px, calc((100% - 1760px) / 2)); right: max(24px, calc((100% - 1760px) / 2)); }
+.shell .genesis-nav-mobile, .shell .genesis-nav-drawer:not([open]) { display: none; }
+.shell .genesis-navigation :is(nav, .genesis-simple-desktop)[hidden] { display: none; }
+@media (min-width: 901px) {
+  .shell:has(> aside .genesis-navigation[data-collapsed="true"]) { grid-template-columns: 68px minmax(0, 1fr); }
+  .shell:has(> aside .genesis-navigation[data-collapsed="true"]) > aside { width: 68px; padding-inline: 12px; }
+  .shell > aside:has(.genesis-navigation[data-collapsed="true"]) > :not(.genesis-navigation),
+  .shell .genesis-navigation[data-collapsed="true"] .genesis-navigation-heading > span { display: none; }
+  .shell[data-page="overview"]:has(.genesis-overview-hero) > main > .content > :is(.page-heading, .stage-journey) { display: none; }
+}
+@media (max-width: 900px) {
+  .shell { display: block; width: min(100%, 860px); margin-inline: auto; }
+  .shell > aside { position: relative; inset: auto; width: auto; display: flex; flex-direction: row; align-items: center; flex-wrap: wrap; gap: .55rem 1rem; padding: .75rem 1rem; border: 0; border-bottom: 1px solid var(--genesis-border); }
+  .shell > aside > :is(.eyebrow,.project,.aside-note) { display: none; }
+  .shell > aside > .brand { width: auto; margin: 0; text-align: start; }
+  .shell > aside > .genesis-navigation { margin-inline-start: auto; }
+  .shell > main { margin-inline-start: 0; }
+  .shell .genesis-navigation :is(.genesis-navigation-heading,.genesis-nav-desktop,.genesis-simple-desktop) { display: none; }
+  .shell .genesis-nav-mobile { display: inline-flex; align-items: center; gap: .55rem; background: var(--genesis-sea-soft); color: var(--genesis-sea); border-color: var(--genesis-border); }
+  .shell .genesis-nav-drawer {
+    position: fixed; inset: 0 auto 0 0; margin: 0; padding: 0;
+    box-sizing: border-box; width: min(340px, 92vw); max-width: none;
+    height: 100dvh; max-height: none; overflow: auto;
+    background: var(--genesis-surface); color: var(--genesis-text);
+    border: 0; border-inline-end: 1px solid var(--genesis-border);
+    animation: genesis-drawer-in .22s ease-out both;
+  }
+  .shell .genesis-nav-drawer::backdrop { background: #0b141b80; }
+  .shell .genesis-nav-drawer-content { padding: 1rem; }
+  .shell .genesis-nav-drawer-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+  .shell .genesis-nav-drawer nav, .shell .genesis-nav-drawer .genesis-nav-group { display: grid; overflow: visible; }
+  .shell .genesis-nav-drawer .genesis-nav-group-label { display: block; }
+  .shell .genesis-nav-drawer nav a { white-space: normal; }
+  .shell[data-page="overview"]:has(.genesis-overview-hero) > main > .content > .page-heading { display: none; }
+  .gf { margin: 0; width: 100%; border: 0; border-radius: 0; min-height: 100dvh; }
+  .gf .gf-top { border-radius: 0; }
+  .gf .gf-runbar { left: 0; right: 0; }
+}
+@keyframes genesis-drawer-in { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .shell .genesis-nav-drawer { animation: none; }
+}
+
+.genesis-hero-heading h1 { font-size: 26px; letter-spacing: -.045em; line-height: 1.15; margin: 0 0 6px; }
+.shell[data-page="overview"] > main > .content > .stage-journey { display: none; }
+.shell[data-page="overview"] > main > .content > .currency-toolbar {
+  padding: .35rem 0; margin: 0; border: 0; background: transparent; box-shadow: none;
+}
+.genesis-hero-spark { width: 100%; max-height: 42px; margin-block: .15rem; }
+.genesis-hero-spark line { stroke: var(--genesis-sea); stroke-width: 2; stroke-linecap: round; }
+.genesis-hero-series { animation: genesis-reveal .35s ease both; }
+.genesis-hero-mode button { transition: color .16s ease, background-color .16s ease, border-color .16s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .genesis-hero-series { animation: none; }
+  .genesis-hero-mode button { transition: none; }
+}
+
+.gf .gf-top { display: grid; height: auto; min-height: 0; gap: .2rem; padding-block: .45rem; }
+.gf-command {
+  display: flex; align-items: center; min-width: 0; gap: .65rem;
+  min-height: 48px; padding-block: .25rem; border-bottom: 1px solid var(--genesis-border);
+}
+.gf-project-name {
+  min-width: 0; max-width: 22ch; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; color: var(--genesis-muted); font-size: .75rem;
+}
+.gf-command .gf-top-actions { margin-inline-start: auto; flex-wrap: wrap; justify-content: end; }
+.gf .gf-rail { min-width: 0; min-height: 44px; width: 100%; overflow-x: auto; }
+.gf .gf-rail ol { width: max-content; margin: 0; }
+.gf .gf-rail button { min-height: 40px; }
+.gf .gf-runbar { gap: .5rem .75rem; padding-block: .55rem; flex-wrap: wrap; box-shadow: 0 -5px 16px #182b350c; }
+@media (max-width: 600px) {
+  .gf-project-name { display: none; }
+  .gf-command { gap: .4rem; }
+  .gf .gf-brand { font-size: .95rem; }
+  .gf-command .gf-top-actions { gap: .35rem; }
+  .gf-command .gf-top-actions :is(button,a) { font-size: .72rem; }
+  .gf .gf-runbar-status small { display: none; }
+  .gf .gf-fin-layout { grid-template-columns: minmax(0, 1fr); }
+  .gf .gf-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gf .gf-chart-grid { grid-template-columns: minmax(0, 1fr); }
+  .gf .gf-kpis strong { overflow-wrap: anywhere; }
+}

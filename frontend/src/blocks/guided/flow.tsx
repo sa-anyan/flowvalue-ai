@@ -238,10 +238,25 @@ export function GuidedFlow() {
       <a className="skip-link" href="#gf-stage">
         Skip to {current.label}
       </a>
-      <div className="gf-top">
+      <header className="gf-top">
+        <div className="gf-command">
         <Link className="gf-brand" href={assessmentHref('/flow', hook.id)}>
           ≋ flowvalue <small>AI</small>
         </Link>
+        {state?.filename && <span className="gf-project-name" title={String(state.filename)}>{String(state.filename)}</span>}
+
+        <div className="gf-top-actions">
+          {state && <span className="gf-project" title={state.filename}>{state.filename}</span>}
+          <Link className="gf-ghost" href={assessmentHref('/data/equipment', hook.id)}>
+            Advanced workspace ↗
+          </Link>
+          <GenesisThemeToggle inline />
+          <button type="button" className="gf-ghost" aria-label="Reset FlowValue" title="Clear local history and start again"
+            onClick={() => { setResetError(''); setResetOpen(true); }}>
+            <span aria-hidden="true">↻</span> Reset
+          </button>
+        </div>
+        </div>
         <nav className="gf-rail" aria-label="Assessment stages">
           <ol>
             {guidedStages.map((s, i) => {
@@ -263,18 +278,7 @@ export function GuidedFlow() {
             })}
           </ol>
         </nav>
-        <div className="gf-top-actions">
-          {state && <span className="gf-project" title={state.filename}>{state.filename}</span>}
-          <Link className="gf-ghost" href={assessmentHref('/data/equipment', hook.id)}>
-            Advanced workspace ↗
-          </Link>
-          <GenesisThemeToggle inline />
-          <button type="button" className="gf-ghost" aria-label="Reset FlowValue" title="Clear local history and start again"
-            onClick={() => { setResetError(''); setResetOpen(true); }}>
-            <span aria-hidden="true">↻</span> Reset
-          </button>
-        </div>
-      </div>
+      </header>
       {resetOpen && <Panel title="Reset FlowValue?" kicker="START AGAIN" onClose={() => { if (!resetting) setResetOpen(false); }}
         footer={<>
           <button type="button" className="gf-secondary" disabled={resetting} onClick={() => setResetOpen(false)}>Cancel</button>
