@@ -9,7 +9,7 @@ from backend.equipment_costing.registry import list_equipment_models
 from backend.revenue.advisor import TEXT, obj
 from backend.orchestration.equipment_advisor import validate as validate_shape
 
-VERSION = "equipment-concept-matcher-10-no-project-rules"
+VERSION = "equipment-concept-matcher-11-current-run-review"
 # Bound request/response size so one unavailable review cannot erase the plant.
 BATCH_SIZE = 8
 PROMPT = """Search all registered libraries. LIBRARY PREFERENCE: when an OpenPyTEA model and a Garrett model both describe the same equipment function and configuration, select the OpenPyTEA model and keep the Garrett model as a candidate. Select Garrett only when no OpenPyTEA model fits the function, configuration or size inputs, and say why. Rank physical function, configuration, required measurements, valid domain, cost scope, source and assumptions; price year does not determine suitability. A tag prefix does not establish function (a P- tag is not necessarily a pump): function and target-bound process evidence take precedence over tag prefixes. Correlation ranges are strict; any assumed geometry or mechanical scope must be justified.
@@ -526,12 +526,15 @@ def apply_matches(previous, matching):
             continue
         from .library_preference import user_selected_model
 
-        if user_selected_model(row):
+        provenance = (row.get("unit_conversion") or {}).get("input_provenance") or {}
+        user_sizing = any(isinstance(p, dict) and p.get("status") == "user_input"
+                          for p in provenance.values())
+        if user_selected_model(row) or user_sizing:
             # A model the user chose is never replaced by an AI rerun or by the
             # OpenPyTEA preference. The new proposal is kept for review only.
             row["matching_attempt"] = copy.deepcopy(match)
             row["matching_preservation_reason"] = (
-                "User-selected model retained; the new AI proposal is shown for review only."
+                "Current user inputs retained; the new AI proposal is shown for review only."
             )
             rows.append(row)
             continue

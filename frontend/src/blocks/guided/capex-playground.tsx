@@ -162,8 +162,8 @@ export function CapexPlayground(props: StageProps) {
                   </div>
                   {line.editable && !line.excluded && (
                     <div className="gf-line-actions">
-                      <button type="button" className="gf-secondary" disabled={line.fraction === null || line.origin.startsWith('Selected by you')} onClick={() => useLine(line)}>
-                        {line.origin.startsWith('Selected by you') ? 'In use ✓' : 'Use'}
+                      <button type="button" className="gf-secondary" disabled={line.fraction === null || line.inUse} onClick={() => useLine(line)}>
+                        {line.inUse ? 'In use ✓' : 'Use'}
                       </button>
                       <button type="button" className="gf-secondary" onClick={() => setResearch(line)}>
                         Research with AI

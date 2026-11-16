@@ -27,6 +27,8 @@ def review_registers(report):
             declarations=[v for v in report.declarations if v.sheet == sheet],
         )
         validate(scoped)
+        for check in scoped.checks:
+            check.scope = f"{sheet} · {check.scope}"
         # Register graph, rather than a name-only heuristic, owns connectivity issues.
         # A sheet holding only equipment (for example a unit identified on a cover
         # page) is not evidence that the workbook lacks stream tables.

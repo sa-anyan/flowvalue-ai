@@ -1,5 +1,7 @@
 """Entry revenue-only orchestration using the canonical parser and revenue engine."""
 
+from backend.revenue.authority import commercial_text
+
 import copy
 import json
 
@@ -19,7 +21,7 @@ from .workbook_review import review
 def _interpret_box(store, state, report, provider):
     """Identical fresh commercial interpretation for Entry and saved Box edits."""
     parsed = dict(state["parsed"], effective_report=report,
-                  revenue_box=state.get("revenue_description", ""), revenue_edit=True)
+                  revenue_box=commercial_text(state), revenue_edit=True)
     locked = [name for name in state.get("locked", []) if name != "operating_economics"]
     response, metadata = propose(parsed, state["description"], state["plan"], locked,
                                  store, provider, requested_sections=("revenue",), force_refresh=True)
@@ -43,7 +45,7 @@ def reinterpret_revenue(store, state, *, provider=None):
     try:
         if not state.get("parsed"):
             raise ValueError("Upload and parse a mass and energy balance first")
-        if not state.get("revenue_description", "").strip():
+        if not commercial_text(state).strip():
             raise ValueError("Describe how this project earns revenue before interpreting it")
         if provider is None:
             from .provider import EngineeringProvider
@@ -146,7 +148,7 @@ def execute_revenue(store, state, *, content=None, use_ai=False, provider=None):
                 state["ai"].update(status="connected", revenue=metadata)
                 progress("revenue_planning", "proposed")
         config = copy.deepcopy(state["plan"].get("operating_economics", {}))
-        state["revenue_questions"] = questions(config, state.get("revenue_description", ""), report,
+        state["revenue_questions"] = questions(config, commercial_text(state), report,
                                                approval=state.get("revenue_approval"))
         progress("revenue", "running")
         stage = {"status": "pending_user_input", "result": None, "issues": state["revenue_questions"]}

@@ -1,5 +1,7 @@
 """Read-only current-price calculation view; saved inputs and evidence stay intact."""
 
+from backend.revenue.authority import commercial_text
+
 import copy
 import json
 from functools import lru_cache
@@ -31,7 +33,7 @@ def current_price_view(saved):
         )
         pending = questions(
             saved.get("plan", {}).get("operating_economics", {}),
-            saved.get("revenue_description", ""),
+            commercial_text(saved),
             report,
             approval=saved.get("revenue_approval"),
         )
@@ -69,7 +71,7 @@ def _legacy_current_price_view_for_reference(saved):
     if "revenue_description" in state:
         state["revenue_questions"] = questions(
             state.get("plan", {}).get("operating_economics", {}),
-            state.get("revenue_description", ""),
+            commercial_text(state),
             report or {},
             approval=state.get("revenue_approval"),
         )
@@ -128,7 +130,7 @@ def _revenue_current_price_view(saved):
     if "revenue_description" in state:
         state["revenue_questions"] = questions(
             state.get("plan", {}).get("operating_economics", {}),
-            state.get("revenue_description", ""),
+            commercial_text(state),
             report or {},
             approval=state.get("revenue_approval"),
         )

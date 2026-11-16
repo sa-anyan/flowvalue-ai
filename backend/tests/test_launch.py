@@ -52,6 +52,7 @@ def test_one_save_reads_approves_and_runs_every_stage(client):
     assert state["engineering_approval"]["by"] == launch.VERSION and state["engineering_approval"]["provisional"]
     assert set(state["stage_runs"]) >= {"engineering_data", "equipment", "capex", "revenue", "opex", "financial"}
     assert state["running"] is False
+    assert state["ai_background_enabled"] is False
 
 
 def test_revenue_saved_while_busy_is_queued_then_applied(client):
@@ -85,6 +86,19 @@ def test_upload_and_quick_answers_are_never_refused_while_another_run_holds_the_
         assert second.status_code == 202
         out = client.post(f"/api/assessments/{first}/project-context", json={"location": "Ghana"}).json()
         assert out["queued"] is True and launch.pending(first) == ["project_context"]
+
+
+def test_busy_save_is_delivered_even_without_a_launch_thread(client):
+    key = _upload(client)
+    with api.lock:
+        response = client.post(f"/api/assessments/{key}/project-context", json={"location": "Ghana"})
+        assert response.status_code == 200 and response.json()["queued"]
+        assert launch.pending(key) == ["project_context"]
+    end = time.time() + 5
+    while time.time() < end and launch.pending(key):
+        time.sleep(.02)
+    assert api.store.get(key)["project_context"]["location"] == "Ghana"
+    assert launch.pending(key) == []
 
 
 def test_revenue_that_arrives_after_the_revenue_step_is_calculated(monkeypatch, tmp_path):

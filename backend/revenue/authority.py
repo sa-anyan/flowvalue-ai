@@ -1,4 +1,4 @@
-"""Server-owned Revenue Box authority and revision-bound user approval.
+"""Server-owned project description authority and revision-bound user approval.
 
 No model calls, market prices or inferred revenue sources. Draft economics may
 exist, but only the approved commercial inputs can enter a financial calculation.
@@ -13,13 +13,20 @@ from decimal import Decimal, InvalidOperation
 from .commercial_intent import validate_intent
 
 
+def commercial_text(state):
+    """Use the merged brief; preserve legacy authority until its user edits it."""
+    process = state.get("process_description", state.get("description", "")) or ""
+    legacy = state.get("revenue_description") or ""
+    return legacy if legacy.strip() else process
+
+
 def bind(state):
     """Keep policy outside editable assumptions so proposals cannot approve themselves."""
     if "id" in state:
         state.setdefault("revenue_description", "")
     if "revenue_description" in state:
         state.setdefault("plan", {})["revenue_authority"] = {
-            "text": state.get("revenue_description", ""),
+            "text": commercial_text(state),
             "approval": state.get("revenue_approval"),
         }
     return state
@@ -66,11 +73,11 @@ def fingerprint(config, text, report):
 def questions(config, text, report, *, approval=None, require_approval=True):
     if not text.strip():
         return [
-            "How will this project earn revenue? Enter each payment source in the Revenue Box."
+            "How will this project earn revenue? State the payment sources in the process description."
         ]
     if not config:
         return [
-            "Which streams, prices and operating hours apply to the revenue sources in the Revenue Box?"
+            "Which streams, prices and operating hours apply to the revenue sources in the project description?"
         ]
     problems = []
     for pending in config.get("pending_inputs", []):
@@ -88,18 +95,18 @@ def questions(config, text, report, *, approval=None, require_approval=True):
             raise ValueError("Identify the stated payment methods first")
         validate_intent(config, text)
     except (ValueError, KeyError, TypeError) as exc:
-        problems.append("Clarify the Revenue Box payment methods: " + str(exc))
+        problems.append("Clarify the project description payment methods: " + str(exc))
     if config.get("commercial_intent", {}).get("status") == "needs_clarification":
         problems.extend(
             config["commercial_intent"].get("questions", [])
             or ["Which payment sources should this project use?"]
         )
-    # Manual-edit rationales cannot substitute for the Revenue Box itself.
+    # Manual-edit rationales cannot substitute for the project description itself.
     for mechanism in config.get("commercial_intent", {}).get("mechanisms", []):
         quote = mechanism.get("context_quote", "").strip()
         if not quote or quote.casefold() not in text.casefold():
             problems.append(
-                "Which Revenue Box statement authorises "
+                "Which project description statement authorises "
                 + mechanism.get("id", "this payment")
                 + "?"
             )
@@ -121,7 +128,7 @@ def questions(config, text, report, *, approval=None, require_approval=True):
         name = sale.get("name", sale.get("id", "product"))
         quote = sale.get("context_quote", "").strip()
         if not quote or quote.casefold() not in text.casefold():
-            problems.append("Confirm the sale of " + name + " in the Revenue Box.")
+            problems.append("Confirm the sale of " + name + " in the project description.")
         if sale.get("price_mode") != "assumed_price" or not number(
             sale.get("unit_price")
         ):
@@ -150,7 +157,7 @@ def questions(config, text, report, *, approval=None, require_approval=True):
         quote = line.get("context_quote", "").strip()
         name = line.get("name", line.get("id", "service"))
         if not quote or quote.casefold() not in text.casefold():
-            problems.append("Confirm the payment for " + name + " in the Revenue Box.")
+            problems.append("Confirm the payment for " + name + " in the project description.")
         if not line.get("years") or any(
             not number(y.get(k))
             for y in line.get("years", [])
@@ -275,7 +282,7 @@ def runtime(config, policy, report):
 def require(config):
     policy = config.get("_revenue_authority")
     if policy and policy["questions"]:
-        raise ValueError("Revenue Box: " + "; ".join(policy["questions"]))
+        raise ValueError("project description: " + "; ".join(policy["questions"]))
 
 
 MAX_REVENUE_REVIEW_LENGTH = 48_000
@@ -286,7 +293,7 @@ def update(store, key, revision, *, text=None, approve=False, clarifications=())
     if state.get("running") or state["revision"] != revision:
         raise ValueError("Wait for completion or reload the current revision")
     if clarifications:
-        base = state.get("revenue_description", "") if text is None else text
+        base = commercial_text(state) if text is None else text
         block = "\n\n".join(
             f"Question: {question.strip()}\nMy answer: {answer.strip()}"
             for question, answer in clarifications
@@ -300,7 +307,7 @@ def update(store, key, revision, *, text=None, approve=False, clarifications=())
     if text is not None:
         from .price_edits import reconcile_product_price
 
-        previous_text = state.get("revenue_description", "")
+        previous_text = commercial_text(state)
         config = state.get("plan", {}).get("operating_economics", {})
         revised = reconcile_product_price(config, previous_text, text)
         if revised is not None:
@@ -318,11 +325,7 @@ def update(store, key, revision, *, text=None, approve=False, clarifications=())
                 state["plan"], state.get("assumptions", {})
             )
         state["revenue_description"] = text
-        state["description"] = (
-            state.get("process_description", state.get("description", ""))
-            + "\n\nUSER REVENUE DESCRIPTION:\n"
-            + text
-        )
+        state["description"] = commercial_text(state)
         state.pop("revenue_approval", None)
     config = state.get("plan", {}).get("operating_economics", {})
     if state.get("analysis_schedule"):
@@ -335,7 +338,7 @@ def update(store, key, revision, *, text=None, approve=False, clarifications=())
         or state.get("effective_report")
         or state.get("parsed", {}).get("report", {})
     )
-    text = state.get("revenue_description", "")
+    text = commercial_text(state)
     if approve:
         missing = questions(config, text, report, require_approval=False)
         if missing:
@@ -383,6 +386,6 @@ def update(store, key, revision, *, text=None, approve=False, clarifications=())
     state["status"] = (
         "Revenue approved; Run Again required"
         if approve
-        else "Revenue Box updated; review commercial assumptions"
+        else "project description updated; review commercial assumptions"
     )
     return store.put(state, revision)

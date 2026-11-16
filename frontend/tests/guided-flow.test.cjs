@@ -17,6 +17,100 @@ const compile=(module,file,jsx)=>module._compile(ts.transpileModule(fs.readFileS
 require.extensions['.ts']=(m,f)=>compile(m,f,false);
 require.extensions['.tsx']=(m,f)=>compile(m,f,true);
 const lib=require('../src/lib/guided-flow.ts');
+test('Unsaved revenue blocks leaving when Cancel is chosen and allows explicit discard',()=>{
+ const {allowRevenueLeave,unsavedRevenueMessage}=require('../src/lib/unsaved-revenue.ts');
+ let prompts=0;
+ assert.equal(allowRevenueLeave(false,()=>{throw Error('Pristine forms must not prompt');}),true);
+ assert.equal(allowRevenueLeave(true,message=>{prompts++;assert.equal(message,unsavedRevenueMessage);return false;}),false);
+ assert.equal(allowRevenueLeave(true,()=>{prompts++;return true;}),true);
+ assert.equal(prompts,2);
+});
+test('Revenue dirty tracking includes stream, component, price, units and operating schedule',()=>{
+ const {revenueDraftSignature}=require('../src/lib/unsaved-revenue.ts');
+ const sale={name:'Water',stream_key:'water-stream',component:'Water',unit_price:'0.2',quantity_unit:'m3'};
+ const saved=revenueDraftSignature([sale],'USD','314','24');
+ assert.equal(saved,revenueDraftSignature([{...sale}],'USD','314','24'));
+ for(const patch of [{name:'Treated water'},{stream_key:'other'},{component:''},{unit_price:'0'},{quantity_unit:'kg'}])
+  assert.notEqual(saved,revenueDraftSignature([{...sale,...patch}],'USD','314','24'));
+ assert.notEqual(saved,revenueDraftSignature([sale],'GBP','314','24'));
+ assert.notEqual(saved,revenueDraftSignature([sale],'USD','330','24'));
+ assert.notEqual(saved,revenueDraftSignature([sale],'USD','314','12'));
+ assert.notEqual(saved,revenueDraftSignature([],'USD','314','24'));
+ // A newer edit remains dirty against the exact snapshot submitted by Save.
+ const submitted=revenueDraftSignature([{...sale,unit_price:'0.3'}],'USD','314','24');
+ const typedWhileSaving=revenueDraftSignature([{...sale,unit_price:'0.4'}],'USD','314','24');
+ assert.notEqual(submitted,typedWhileSaving);
+});
+test('Reset clears FlowValue history while preserving theme and unrelated data',()=>{
+ const {clearFlowValueHistory,freshEntryUrl}=require('../src/lib/reset-history.ts');
+ const storage=(entries)=>{
+  const values=new Map(Object.entries(entries));
+  return {get length(){return values.size},key:i=>Array.from(values.keys())[i]??null,
+   getItem:k=>values.get(k)??null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)};
+ };
+ const local=storage({'flowvalue-assessment':'old','flowvalue-pinned-charts':'{}','flowvalue-currency':'GBP','flowvalue-theme':'dark','auth-token':'keep'});
+ const session=storage({'flowvalue-draft':'old','other-app':'keep'});
+ clearFlowValueHistory(local,session);
+ assert.equal(local.getItem('flowvalue-assessment'),null);
+ assert.equal(local.getItem('flowvalue-pinned-charts'),null);
+ assert.equal(local.getItem('flowvalue-currency'),null);
+ assert.equal(local.getItem('flowvalue-theme'),'dark');
+ assert.equal(local.getItem('auth-token'),'keep');
+ assert.equal(session.getItem('flowvalue-draft'),null);
+ assert.equal(session.getItem('other-app'),'keep');
+ assert.ok(local.getItem('flowvalue-reset-at'));
+ const {assessmentFromUrl}=require('../src/lib/assessment-navigation.ts');
+ assert.equal(assessmentFromUrl(freshEntryUrl,'a'.repeat(32)),'');
+});
+test('Revenue shows the Python 100% annual baseline instead of a year-one forecast',()=>{
+ const {RevenuePlayground}=require('../src/blocks/guided/revenue-playground.tsx');
+ const result={basis:{currency:'USD',price_period:'2026'},annual:[{year:1,sales_revenue:200}],full_operation:{annual:[{year:1,sales_revenue:1000}],commercial:[{year:1,line_id:'fee',revenue:1000,quantity:500,quantity_unit:'m3'}]}};
+ const state={id:'test',plan:{operating_economics:{commercial_lines:[{id:'fee',name:'Treatment',years:[{rate:2}],quantity_unit:'m3'}]}},results:{stages:{revenue:{result}}}};
+ const html=renderToStaticMarkup(React.createElement(RevenuePlayground,{hook:{state,aiEnabled:false}}));
+ assert.match(html,/100% annual revenue/);assert.match(html,/1k/);assert.match(html,/500/);
+ assert.doesNotMatch(html,/Sales revenue · operating year 1|Unpriced — not counted as zero/);
+ assert.match(html,/>Edit<\/button>/);
+});
+test('editing a revenue line opens its saved price, stream, units and approval',()=>{
+ const {RevenueLineEditor}=require('../src/blocks/guided/revenue-playground.tsx');
+ const existing={id:'fee-original',name:'Treatment fee',category:'processing_services',stream_key:'waste',quantity_unit:'m3',price_basis:{currency:'USD',price_period:'2026'},years:[{year:1,rate:.02},{year:2,rate:.02}]};
+ const state={id:'test',revision:42,revenue_approval:{fingerprint:'approved'},plan:{operating_economics:{commercial_lines:[existing],operating:{days_per_year:314,hours_per_day:24}}},effective_report:{entities:[{key:'waste',identifier:'S-1',kind:'material',values:[{property:'volume_flow',normalized_value:125,normalized_unit:'m3/h'}]}]}};
+ const html=renderToStaticMarkup(React.createElement(RevenueLineEditor,{state,existing,onClose:()=>{},props:{hook:{state,id:'test'}}}));
+ assert.match(html,/Edit Treatment fee/);assert.match(html,/value="0.02"/);assert.match(html,/value="m3"/);
+ assert.match(html,/selected="" value="waste:volume_flow"|value="waste:volume_flow" selected=""/);
+ assert.match(html,/Save &amp; recalculate/);assert.match(html,/checked=""/);
+});
+test('OPEX recalculation watches Revenue outputs but does not repeat for polling revisions',()=>{
+ const state={id:'test',revision:1,stage_runs:{capex:{output_hash:'capital'},revenue:{output_hash:'old'}}};
+ const first=lib.opexDependencyStamp(state);
+ assert.equal(lib.opexDependencyStamp({...state,revision:2}),first);
+ assert.notEqual(lib.opexDependencyStamp({...state,stage_runs:{...state.stage_runs,revenue:{output_hash:'new'}}}),first);
+});
+test('OPEX explains root dependencies once instead of cascading engine diagnostics',()=>{
+ const q=lib.opexQuestions(['garrett:administration: Missing named calculation base: annual_revenue','garrett:royalties: Missing named calculation base: annual_revenue','garrett:supervision: Missing category base: operating_labor','Missing assumption or explicit exclusion: supervision','Missing assumption or explicit exclusion: operating_labor']);
+ assert.equal(q.length,2);
+ assert.match(q[0],/resolved once Revenue is reconciled and OPEX is recalculated/);
+ assert.match(q[0],/subtotal excludes these allowances/);
+ assert.match(q[1],/staffing estimate/);
+ assert.deepEqual(lib.opexQuestions(['Missing assumption or explicit exclusion: maintenance']),['Review the maintenance allowance.']);
+});
+test('AI price filling a previously accepted blank stays visible for review',()=>{
+ const rows=lib.opexProposals({materials:[{id:'acid',name:'Acid',origin:'user',unit_price:0.4,quantity_unit:'kg',ai_price_proposal:{origin:'ai',rationale:'Unverified preliminary price'}}]});
+ assert.equal(rows.length,1);assert.equal(rows[0].by,'ai');assert.equal(rows[0].editKey,'unit_price');
+ assert.match(rows[0].detail,/Unverified/);
+});
+test('OPEX decimal prices remain editable while evidence and invalid values stay text',()=>{
+ assert.equal(lib.opexInputValue('0.125',true),true);
+ assert.equal(lib.opexInputValue('0',true),true);
+ assert.equal(lib.opexInputValue(null,true),true);
+ for(const value of ['', 'NaN', 'Infinity', true, {amount:10}])assert.equal(lib.opexInputValue(value,true),false);
+ assert.equal(lib.opexInputValue('123',false),false);
+});
+test('additional-expense review edits the annual allowance consumed by Python',()=>{
+ const proposals=lib.opexProposals({additional_expenses:[{id:'waste',name:'Waste',annual_allowance:'1500',origin:'reference_default',status:'proposed'}]});
+ assert.equal(proposals[0].editKey,'annual_allowance');
+ assert.match(proposals[0].value,/1,500/);
+});
 const {FanChart,LineChart}=require('../src/blocks/guided/charts.tsx');
 
 test('stages advance in the founder order and runs map to backend stages',()=>{
@@ -79,7 +173,7 @@ test('CAPEX lines label their origin and editability from plan and register',()=
  const result={lines:[{id:'piping',amount:'10',fraction:'0.2',base:'purchased_equipment',status:'source_factor'},{id:'land',amount:'0',status:'excluded'},{id:'equipment_installation',amount:null,status:'embedded'},{id:'contingency',amount:'5',fraction:'0.1',status:'source_factor'}]};
  const plan={factor_selection:'minimum',selected_factors:{contingency:0.1},exclusions:{land:'owned'},overrides:{}};
  const factors=[{id:'piping',minimum:'.15',maximum:'.70',stage:'direct'},{id:'equipment_installation',additive:false}];
- const register=[{path:'capex.selected_factors.contingency',origin:'ai_proposal'}];
+ const register=[{path:'capex.selected_factors.contingency',origin:'ai_proposal'},{path:'capex.exclusions.land',origin:'user'}];
  const lines=lib.capexLines(result,plan,factors,register);
  const by=Object.fromEntries(lines.map(l=>[l.id,l]));
  assert.equal(by.piping.origin,'Source range · Minimum');
@@ -88,6 +182,21 @@ test('CAPEX lines label their origin and editability from plan and register',()=
  assert.equal(by.land.excluded,true);
  assert.equal(by.equipment_installation.editable,false);
  assert.equal(by.contingency.origin,'Selected by AI · provisional');
+ assert.equal(by.contingency.inUse,true);
+ assert.equal(by.piping.inUse,false);
+ assert.equal(by.land.inUse,false);
+});
+
+test('CAPEX never attributes a saved selection to the user without provenance',()=>{
+ const result={lines:[{id:'piping'},{id:'land'},{id:'contingency'}]};
+ const plan={selected_factors:{piping:0.2},exclusions:{land:'existing'},overrides:{contingency:100}};
+ const lines=lib.capexLines(result,plan,[],[]);
+ assert.equal(lines[0].origin,'Provisional selection · review');
+ assert.equal(lines[1].origin,'Scope exclusion · review');
+ assert.equal(lines[2].origin,'Saved override · review');
+ assert.equal(lines[0].inUse,true);
+ assert.equal(lines[2].inUse,true);
+ assert.ok(lines.every(l=>!l.origin.includes('by you')&&!l.origin.includes('Your')));
 });
 
 test('financial metrics read the ledger list and stay pending when undefined',()=>{
@@ -245,6 +354,41 @@ test('held AI estimates are listed with both sizes, and the user decides',()=>{
  assert.equal(used[1],rows[1]);
 });
 
+test('edited sizing assumptions show User changed while untouched AI inputs keep their origin',()=>{
+ const {EquipmentInspector}=require('../src/blocks/guided/equipment-inspector.tsx');
+ const state={id:'test',revision:1,effective_report:{entities:[{key:'tank',identifier:'T-1',kind:'equipment',values:[]}]},results:{stages:{equipment:{result:{equipment:[{equipment_tag:'T-1',parsed_source:{equipment_key:'tank'},equipment_cost:50,calculation:{estimate:{size:.01,size_unit:'m3'},evidence:{below_range_floor:{policy:'minimum_size_floor',requested_size:.01,priced_at_size:.4,size_unit:'m3'}}}}]}}}}};
+ const conversion={enabled:true,method:'vessel_volume',inputs:{residence_time_h:1,working_fraction:.8},input_provenance:{residence_time_h:{status:'user_input',value:1,unit:'h'},working_fraction:{status:'llm_estimate',value:.8,unit:'fraction'}}};
+ const plan=[{equipment_key:'tank',unit_conversion:conversion}];
+ const card=lib.equipmentCards(state,plan)[0];
+ assert.equal(card.assumptions[0].origin,'user');
+ assert.equal(card.assumptions[1].origin,'ai');
+ const html=renderToStaticMarkup(React.createElement(EquipmentInspector,{card,props:{hook:{state,catalogue:[]},equipment:{value:plan,dirty:true}},onClose:()=>{},onRun:()=>{}}));
+ assert.match(html,/User changed/);assert.match(html,/AI · provisional/);
+ assert.match(html,/Size and cost below show the last calculation/);
+ assert.match(html,/minimum of 0.4 m3/);assert.match(html,/does not lower this model/);
+ assert.match(html,/Holding \/ residence time/);
+});
+
+test('minimum-price explanation is shown only for a Python minimum-size floor',()=>{
+ assert.equal(lib.equipmentPriceFloor(null,'missing'),null);
+ const state={results:{stages:{equipment:{result:{equipment:[{parsed_source:{equipment_key:'tank'},calculation:{evidence:{}}}]}}}}};
+ assert.equal(lib.equipmentPriceFloor(state,'tank'),null);
+});
+
+test('Financial exposes proposed values and identifies changed values without rewriting the ledger',()=>{
+ const {FinancialPlayground}=require('../src/blocks/guided/financial-playground.tsx');
+ const policy={discount_rate:.08,tax_rate:.25,closure_allowance:0};
+ const provenance={discount_rate:{origin:'ai',value:.1,rationale:'Preliminary discount scenario'},tax_rate:{origin:'ai',value:.25,rationale:'Flat tax scenario, not verified law'},closure_allowance:{origin:'ai',value:0,rationale:'Closure scope not quantified'}};
+ const state={id:'test',plan:{operating_economics:{financial:policy,financial_input_provenance:provenance,price_basis:{currency:'USD'}}},results:{stages:{financial:{result:{currency:'USD',ledger:[{period:{year:0},fcff:'-100',cumulative_project_cash:'-100'}]}}}}};
+ const before=JSON.stringify(state);
+ const html=renderToStaticMarkup(React.createElement(FinancialPlayground,{hook:{state}}));
+ assert.match(html,/Financial planning assumptions · review/);
+ assert.match(html,/Discount rate: 8.0%/);assert.match(html,/User changed/);
+ assert.match(html,/Tax rate: 25.0%/);assert.match(html,/AI proposed/);
+ assert.match(html,/Closure scope not quantified/);
+ assert.equal(JSON.stringify(state),before);
+});
+
 test('Save & go status line follows the background run and the queued revenue',()=>{
  assert.deepEqual(lib.launchStatus({launch:{status:'running',step:'equipment'}}),{tone:'working',text:'Picking and pricing equipment…'});
  assert.match(lib.launchStatus({launch:{status:'running',step:'capex'},inbox:['revenue_setup']}).text,/your revenue is saved and applies after this step/);
@@ -253,4 +397,40 @@ test('Save & go status line follows the background run and the queued revenue',(
  assert.match(lib.launchStatus({launch:{status:'finished'},plan:{operating_economics:{sales:[{id:'x'}]}}}).text,/Continue to Equipment\.$/);
  assert.match(lib.launchStatus({launch:{status:'failed',error:'boom'}}).text,/stopped: boom/);
  assert.equal(lib.launchStatus({}).tone,'idle');
+});
+
+test('Save and go starts with only upload, AI choice and Save',()=>{
+ const {EntryStart}=require('../src/blocks/guided/entry-start.tsx');
+ const html=renderToStaticMarkup(React.createElement(EntryStart,{hook:{state:null,aiEnabled:true,aiStatus:'enabled'}}));
+ assert.match(html,/Upload your mass/);assert.match(html,/type="file"/);assert.match(html,/type="checkbox"/);assert.match(html,/>Save<\/button>/);
+ assert.doesNotMatch(html,/Describe your process|Analysis years|Construction years|Extract equipment|Run Autopilot/);
+});
+
+test('parsed streams show revenue setup while equipment work continues',()=>{
+ const {EntryStart}=require('../src/blocks/guided/entry-start.tsx');
+ const state={id:'test',revision:2,launch:{status:'running',step:'equipment'},stage_outputs:{engineering_data:{report:{entities:[{kind:'material',key:'water',identifier:'S-1',values:[{property:'mass_flow',normalized_value:100,normalized_unit:'kg/h'}]}]}}}};
+ const html=renderToStaticMarkup(React.createElement(EntryStart,{hook:{state,aiEnabled:true},go:()=>{}}));
+ assert.match(html,/HOW DOES THIS PROJECT EARN MONEY/);assert.match(html,/Product sales/);assert.match(html,/Continue to Equipment/);
+ assert.doesNotMatch(html,/Reading your workbook|Another assessment is running/);
+});
+
+test('Equipment shows the priced-item subtotal and unpriced count rather than hiding the amount',()=>{
+ const {EquipmentPlayground}=require('../src/blocks/guided/equipment-playground.tsx');
+ const state={id:'test',effective_report:{entities:[{key:'tank',kind:'equipment',identifier:'T-1',values:[]},{key:'reactor',kind:'equipment',identifier:'R-1',values:[]}]},results:{stages:{equipment:{result:{equipment_cost_total:null,equipment_total_with_packages:null,equipment:[{parsed_source:{equipment_key:'tank'},equipment_tag:'T-1',equipment_cost:100,amount:100},{parsed_source:{equipment_key:'reactor'},equipment_tag:'R-1',equipment_cost:null,amount:null}],priced_summary:{amounts:[{amount:'100',currency:'USD',period:'2026'}],unpriced_count:1,priced_count:1},issues:['Unresolved equipment: subtotals are partial; complete total unavailable']}}}}};
+ const html=renderToStaticMarkup(React.createElement(EquipmentPlayground,{hook:{state,catalogue:[]},equipment:{value:[],dirty:false}}));
+ assert.match(html,/Equipment estimate · priced items/);assert.match(html,/>100<\/strong>/);assert.match(html,/Items not priced/);
+ assert.match(html,/excludes 1 item not priced/);assert.doesNotMatch(html,/Incomplete|complete total unavailable/);
+});
+test('Financial sensitivity renders original calculation values and isolated reset controls',()=>{
+ const {ScenarioTab}=require('../src/blocks/guided/financial-playground.tsx');
+ const props={hook:{state:{id:'test',plan:{operating_economics:{financial:{tax_rate:.99}}}},busy:false}};
+ const base={baseline_snapshot_id:'a'.repeat(64),policy:{tax_rate:'.25',discount_rate:'.1',depreciation_years:'10',salvage_fraction:'0',working_capital_recovery_fraction:'1',closure_allowance:'0'}};
+ const render=(overrides,original=base)=>renderToStaticMarkup(React.createElement(ScenarioTab,{props,base:original,baseError:'',overrides,setOverrides:()=>{},onResult:()=>{},onUpdating:()=>{}}));
+ const original=render({});
+ assert.match(original,/value="25"/);assert.doesNotMatch(original,/value="99"/);
+ assert.match(original,/disabled="">Reset to original/);
+ const changed=render({tax_rate:.35});assert.match(changed,/value="35"/);
+ assert.match(changed,/>Reset to original/);assert.match(changed,/saved as separate versions/);
+ assert.doesNotMatch(changed,/Apply &amp; recalculate/);
+ assert.match(render({},null),/type="range" disabled=""/);
 });

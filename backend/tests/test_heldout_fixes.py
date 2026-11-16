@@ -199,7 +199,7 @@ def test_equipment_only_sheet_does_not_claim_the_workbook_has_no_streams():
     assert not [i for i in report.issues if i.code == "missing_material_streams"]
 
 
-def test_register_decisions_carry_over_to_a_reupload_of_the_same_file(tmp_path):
+def test_register_decisions_do_not_carry_over_even_for_the_same_file(tmp_path):
     from backend.equipment_resolution.register_completeness import carry_over
 
     store = Store(tmp_path / "s.sqlite")
@@ -208,14 +208,9 @@ def test_register_decisions_carry_over_to_a_reupload_of_the_same_file(tmp_path):
     store.create({"source_sha256": "other", "plan": {"register_review": {
         "pump": {"decision": "not_equipment", "basis": "x"}}}}, b"")
     again = {"id": "new", "source_sha256": "abc", "plan": {}}
-    assert carry_over(store, again) == 1
-    decision = again["plan"]["register_review"]["reverse_osmosis"]
-    assert decision["decision"] == "out_of_scope" and decision["basis"] == "Site supplies purified water"
-    assert decision["carried_over_from"]["assessment"] == first["id"]
-    assert again["assumptions"]["register_review"]["status"] == "carried_over"
-    # The carried decision resolves the flag exactly as the original did.
-    report = parse(_workbook(), "ro.xlsx")["report"]
-    assert check(report, plan=again["plan"])["status"] == "no_unregistered_units_named"
+    assert carry_over(store, again) == 0
+    assert not again["plan"].get("register_review")
+    assert store.get(first["id"])["plan"]["register_review"]
 
 
 def test_carry_over_needs_the_exact_same_file_and_never_overwrites(tmp_path):
@@ -232,7 +227,7 @@ def test_carry_over_needs_the_exact_same_file_and_never_overwrites(tmp_path):
     assert own["plan"]["register_review"]["reverse_osmosis"]["decision"] == "included_in"
 
 
-def test_upload_endpoint_carries_decisions_for_the_same_workbook(tmp_path, monkeypatch):
+def test_upload_endpoint_does_not_carry_decisions_for_the_same_workbook(tmp_path, monkeypatch):
     from fastapi.testclient import TestClient
 
     import backend.api.app as api
@@ -247,6 +242,6 @@ def test_upload_endpoint_carries_decisions_for_the_same_workbook(tmp_path, monke
     saved["plan"]["register_review"] = {"reverse_osmosis": {"decision": "out_of_scope", "basis": "Founder decision"}}
     store.put(saved, saved["revision"])
     second = client.post("/api/assessments", files={"file": ("pem.xlsx", content)}, data={"description": "Test"})
-    carried = store.get(second.json()["id"])["plan"]["register_review"]["reverse_osmosis"]
-    assert carried["decision"] == "out_of_scope"
-    assert carried["carried_over_from"]["assessment"] == first.json()["id"]
+    fresh = store.get(second.json()["id"])
+    assert not fresh["plan"].get("register_review")
+    assert store.get(first.json()["id"])["plan"]["register_review"]["reverse_osmosis"]["decision"] == "out_of_scope"

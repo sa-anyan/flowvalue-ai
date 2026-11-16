@@ -1,5 +1,7 @@
 """Explicit revenue worksheet edits; canonical approval and Python calculation stay in charge."""
 
+from backend.revenue.authority import commercial_text
+
 import copy
 from datetime import date
 from typing import Literal
@@ -138,7 +140,7 @@ def save_rates(store, key, request):
     intent["mechanisms"] = [
         r for r in intent.get("mechanisms", []) if r.get("id") not in intents_removed
     ]
-    text = state.get("revenue_description") or ""
+    text = commercial_text(state)
     report = (
         state.get("scoped_report")
         or state.get("effective_report")
@@ -226,6 +228,18 @@ def save_rates(store, key, request):
             common["price_review"] = validate_review(
                 line.price_review, line.price, line.price_unit, common["price_basis"]
             )
+        elif previous.get("price_review"):
+            from backend.opex.consumption import decimal
+
+            previous_price = previous.get("unit_price") if line.kind == "product" else (previous.get("years") or [{}])[0].get("rate")
+            try:
+                same_price = decimal(previous_price) == decimal(line.price)
+            except (ValueError, TypeError):
+                same_price = False
+            if not same_price or (previous.get("quantity_unit"), previous.get("price_basis")) != (line.price_unit, common["price_basis"]):
+                # A reviewed range/selection applies to the old price, not a
+                # newly entered value. Its evidence remains in version history.
+                common.pop("price_review", None)
         # An explicit worksheet price supersedes an old researched observation.
         # The prior observation remains recoverable in the saved version history.
         common.pop("price_observation", None)

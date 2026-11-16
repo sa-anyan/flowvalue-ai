@@ -23,7 +23,7 @@ from . import progress
 from .execution import fresh
 from .stage_workflow import approve, approved
 
-VERSION = "autopilot-1"
+VERSION = "autopilot-2-proposals"
 
 
 def _now():
@@ -47,12 +47,23 @@ def _pick_models(state):
         if user_selected_model(row) or row.get("manual_price"):
             continue
         if row.get("curve_id"):
-            # Keep the model already there; marking it settled skips a slow AI re-match.
+            # Keep the current input as a provisional proposal. The equipment
+            # stage still performs its batched AI review when enabled.
             if not row.get("model_selection"):
                 row["model_selection"] = {"origin": "autopilot", "curve_id": row["curve_id"]}
                 rows[m["equipment_key"]] = row
             continue
         if not m["options"]:
+            continue
+        if m["status"] == "prefix_only":
+            # A P tag does not establish liquid pumping. Keep quick suggestions
+            # visible, but let the AI use process evidence before selecting.
+            row.update(equipment_key=m["equipment_key"],
+                       candidate_curve_ids=[o["model_id"] for o in m["options"]],
+                       quick_match={"version": result["version"], "status": "prefix_only",
+                                    "family": m["family"], "basis": m["family_basis"],
+                                    "picked_by": VERSION})
+            rows[m["equipment_key"]] = row
             continue
         best = m["options"][0]
         row.update(

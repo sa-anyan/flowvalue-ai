@@ -46,6 +46,7 @@ else:
     executor = ThreadPoolExecutor(max_workers=1)
 lock = threading.Lock()
 from backend.blocks.opex import brainstorm as _opex_brainstorm  # noqa: E402
+from backend.revenue.authority import commercial_text  # noqa: E402
 
 _opex_brainstorm.STAGE_LOCK = lock  # background AI results are written only between stages
 from backend.blocks import analyst as _analyst  # noqa: E402
@@ -76,7 +77,7 @@ class EngineeringRun(Rerun):
     # Entry includes automatic assumption population unless explicitly opted out.
     use_ai: bool = True
     process_description: str | None = Field(default=None, max_length=12000)
-    revenue_description: str | None = Field(default=None, max_length=6000)
+    revenue_description: str | None = Field(default=None, max_length=12000)
 
 
 class RegisterEdit(BaseModel):
@@ -342,10 +343,8 @@ async def upload(
     import hashlib
 
     state["source_sha256"] = hashlib.sha256(content).hexdigest()
-    # Equipment-scope decisions follow a re-upload of the same file.
-    from backend.equipment_resolution.register_completeness import carry_over
-
-    carry_over(store, state)
+    # Every upload is a fresh study, even for identical workbook bytes. Never
+    # inherit another assessment's scope exclusions or review confirmations.
     state = initialize(state)
     state.update(
         running=False, status="Source loaded. Run a stage explicitly.", progress=[]
@@ -419,6 +418,12 @@ def get(key: str, historical: bool = False, currency: str | None = None):
     )
     out["opex_brainstorm"] = _opex_brainstorm.status(key, saved)
     out["analyst"] = _analyst.status(key, saved)
+    from backend.engineering_status import project_status
+
+    project_status(out)
+    from backend.blocks.equipment.presentation import project as project_equipment_prices
+
+    project_equipment_prices(out)
     out["inbox"] = _launch.pending(key)  # user inputs waiting for the current background step
     out["launch_running"] = _launch.running(key)
     return out
@@ -427,6 +432,50 @@ def get(key: str, historical: bool = False, currency: str | None = None):
 class Launch(BaseModel):
     model_config = ConfigDict(extra="forbid")
     use_ai: bool = False
+
+
+class FinancialSensitivity(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    baseline_snapshot_id: str = Field(min_length=64, max_length=64)
+    overrides: dict
+    name: str = Field(default="", max_length=120)
+
+
+@app.get("/api/assessments/{key}/financial-sensitivity")
+def sensitivity_baseline(key: str):
+    from backend.scenarios_and_uncertainty.financial_sensitivity import baseline
+
+    return baseline(store.get(key))
+
+
+@app.post("/api/assessments/{key}/financial-sensitivity")
+def sensitivity_preview(key: str, request: FinancialSensitivity):
+    from backend.scenarios_and_uncertainty.financial_sensitivity import save
+
+    return save(store, key, request.overrides, request.baseline_snapshot_id, request.name)
+
+
+class ResetHistory(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    confirm: bool = False
+
+
+@app.post("/api/assessments/reset")
+def reset_history(options: ResetHistory):
+    if CLOUD or not isinstance(store, Store):
+        raise HTTPException(403, "Workspace reset is available on localhost only.")
+    if options.confirm is not True:
+        raise HTTPException(422, "Confirm clearing all local projects and history.")
+    if not lock.acquire(blocking=False):
+        raise HTTPException(409, "A calculation is still running. Let it finish, then reset.")
+    try:
+        from backend.blocks.reset import clear_history
+
+        return {"reset": True, "cleared": clear_history(store)}
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    finally:
+        lock.release()
 
 
 @app.post("/api/assessments/{key}/launch", status_code=202)
@@ -443,6 +492,17 @@ def _busy(key):
 
 
 @app.post("/api/assessments/{key}/opex-brainstorm", status_code=202)
+def retry_opex_brainstorm(key: str):
+    """Explicit retry regenerates missing OPEX proposals without rerunning all analysts."""
+    if not _opex_brainstorm.ai_available():
+        raise HTTPException(409, "AI is not enabled on this server")
+    if store.get(key).get("running"):
+        raise HTTPException(409, "Wait for the current calculation to finish before retrying OPEX")
+    store.version(key, "Before explicit OPEX assumption retry")
+    started = _opex_brainstorm.kick(store, key, stage_lock=lock, force=True)
+    return {"started": started, "opex_brainstorm": _opex_brainstorm.status(key, store.get(key))}
+
+
 @app.post("/api/assessments/{key}/analyst", status_code=202)
 def start_analyst(key: str):
     """Start the background analyst for any stage whose inputs changed (AI only)."""
@@ -465,7 +525,7 @@ def save_project_context(key: str, answers: ProjectContext):
     """Entry quick questions (site, new build or retrofit); the analyst reads them."""
     context = {k: v.strip() for k, v in answers.model_dump().items() if v and v.strip()}
     if _busy(key) or not lock.acquire(blocking=False):
-        _launch.put(key, "project_context", context)  # applied between background steps
+        _launch.defer(store, key, "project_context", context)
         return {"project_context": context, "queued": True}
     try:
         state = store.get(key)
@@ -496,7 +556,23 @@ from backend.revenue.rate_workspace import RateStudyRequest
 @app.post("/api/assessments/{key}/revenue-rates")
 def revenue_rates(key: str, request: RateStudyRequest):
     from backend.revenue.rate_workspace import save_rates
-    return save_rates(store, key, request)
+    result = save_rates(store, key, request)
+    if request.approve:
+        _recalculate_after_revenue(key)
+        from backend.blocks.execution import view
+        return view(store.get(key))
+    return result
+
+
+def _recalculate_after_revenue(key):
+    """Approved worksheet changes refresh economics using existing runners, without AI."""
+    from backend.blocks.execution import fresh
+    from backend.blocks.stage_workflow import approved
+
+    state = store.get(key)
+    if (state.get("workflow") != "revenue" and state.get("revenue_approval")
+            and not state.get("running") and approved(state) and fresh(state, "equipment")):
+        submit_stage_group(key, Rerun(use_ai=False), economic_only=True, start_analyst=False)
 
 
 @app.post("/api/assessments/{key}/revenue-authority")
@@ -530,6 +606,10 @@ def revenue_authority(key: str, options: RevenueAuthorityRequest):
             state["status"] = "Revenue Box saved; AI interpretation could not start"
             store.put(state, state["revision"])
             raise
+    if options.approve:
+        _recalculate_after_revenue(key)
+        from backend.blocks.execution import view
+        return view(store.get(key))
     return state
 
 
@@ -551,7 +631,7 @@ def revenue_preflight(key: str, request: RevenuePreflight):
         or state.get("parsed", {}).get("report", {})
     )
     config = state.get("plan", {}).get("operating_economics", {})
-    text = state.get("revenue_description", "")
+    text = commercial_text(state)
     result = inspect_revenue(config, text, report)
     if result["questions"]:
         result["annual_projection"] = preview_annual_continuation(config, text, report)
@@ -707,7 +787,7 @@ def revenue_setup(key: str, setup: RevenueSetup):
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
     if _busy(key) or not lock.acquire(blocking=False):
-        _launch.put(key, "revenue_setup", payload)
+        _launch.defer(store, key, "revenue_setup", payload)
         return {"approved": False, "queued": True, "questions": [],
                 "message": "Saved. Revenue is applied as soon as the current background step finishes."}
     try:
@@ -719,7 +799,8 @@ def revenue_setup(key: str, setup: RevenueSetup):
         lock.release()
     if out["approved"] and fresh(store.get(key), "equipment"):
         try:
-            submit_stage_group(key, Rerun(use_ai=False), economic_only=True)  # revenue → OPEX → financial
+            use_ai = bool((store.get(key).get("launch") or {}).get("use_ai"))
+            submit_stage_group(key, Rerun(use_ai=use_ai), economic_only=True, start_analyst=False)
         except HTTPException:
             pass
     return {"approved": out["approved"], "queued": False, "questions": out["questions"],
@@ -764,13 +845,19 @@ def run_all_stages(key: str, options: Rerun):
     return submit_stage_group(key, options)
 
 
-def submit_stage_group(key: str, options: Rerun, *, economic_only=False):
+def submit_stage_group(key: str, options: Rerun, *, economic_only=False, start_analyst=True):
     from backend.blocks.stage_workflow import queue, run
 
-    if not lock.acquire(blocking=False):
+    if not lock.acquire(timeout=0.2):
+        current = store.get(key)
+        workflow = current.get('stage_workflow') or {}
+        if (workflow.get('status') == 'running'
+                and workflow.get('economic_only') == economic_only
+                and workflow.get('use_ai') == options.use_ai):
+            return {'id': key, 'already_running': True}
         raise HTTPException(409, "Another stage is running")
     try:
-        queue(store, key, economic_only=economic_only)
+        queue(store, key, economic_only=economic_only, use_ai=options.use_ai, start_analyst=start_analyst)
     except Exception:
         lock.release()
         raise
@@ -799,7 +886,11 @@ def run_individual_stage(key: str, stage: str, options: Rerun):
         return submit_stage_group(key, options, economic_only=True)
     from backend.blocks.execution import queue_stage, run_stage
 
-    if not lock.acquire(blocking=False):
+    if not lock.acquire(timeout=0.2):
+        current = store.get(key)
+        if (current.get('running') and (current.get('stage_workflow') or {}).get('status') != 'running'
+                and current.get('requested_run') == {'stage': stage, 'use_ai': options.use_ai}):
+            return {'id': key, 'stage': stage, 'already_running': True}
         raise HTTPException(409, "Another stage is running")
     try:
         from backend.blocks.stage_workflow import approved
@@ -808,7 +899,7 @@ def run_individual_stage(key: str, stage: str, options: Rerun):
             raise ValueError(
                 "Review and approve Engineering Data before running downstream stages"
             )
-        queued = queue_stage(store, key, stage)
+        queued = queue_stage(store, key, stage, use_ai=options.use_ai)
     except Exception:
         lock.release()
         raise
@@ -1064,7 +1155,7 @@ async def local_request_guard(request: Request, call_next):
     }:
         return JSONResponse(
             status_code=403,
-            content={"detail": "Cross-origin assessment requests are not allowed"},
+            content={"detail": "This request could not be verified. Reload the project and try again."},
         )
     if request.method in {"POST", "PATCH"}:
         length = request.headers.get("content-length")

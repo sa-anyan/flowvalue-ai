@@ -1,5 +1,7 @@
 """User-owned project calendar and revenue-realization scenarios; no cashflow engine."""
 
+from backend.revenue.authority import commercial_text
+
 import copy
 from decimal import Decimal
 from datetime import datetime, timezone
@@ -11,7 +13,7 @@ def make_policy(horizon, build, previous=None):
         raise ValueError("Project and construction years must be integers")
     previous = previous or {}
     count = horizon - build
-    old = previous.get("production_ramp") or [0.2, 0.4, 0.6, 0.8]
+    old = previous.get("production_ramp") or [1]
     # New studies use an explicit staged planning example. Existing policies
     # without cost timing keep legacy financial weights until the user edits them.
     initial_timing = (
@@ -54,7 +56,7 @@ def make_policy(horizon, build, previous=None):
                 if build < int(y) <= horizon
             },
             "rationale": previous.get("rationale")
-            or "FlowValue editable planning example: fixed capital 30/50/20 across project years 1–3 when two pre-operation construction years are selected; start-up capital and working capital at first operation. Other construction durations use equal capital shares. These percentages are not prescribed by Garrett. Production: 20%, 40%, 60%, then 80% throughput utilization during scheduled operating hours. Annual steps are not published Garrett factors. Garrett pp.45,76,104 discusses downtime, gradual market uptake and historical utilization near 80%; operating hours remain a separate assumption.",
+            or "FlowValue editable planning example: fixed capital 30/50/20 across project years 1–3 when two pre-operation construction years are selected; start-up capital and working capital at first operation. Other construction durations use equal capital shares. These percentages are not prescribed by Garrett. Scheduled operation defaults to 100%; no first-year uptake or production ramp is predicted. Different annual percentages require an explicit user scenario; operating hours remain a separate assumption.",
         },
         {
             "sales": [
@@ -226,7 +228,7 @@ def save(store, key, revision, policy, *, approve_revenue=False):
     if approve_revenue:
         missing = questions(
             revised,
-            state.get("revenue_description", ""),
+            commercial_text(state),
             report,
             require_approval=False,
         )
@@ -236,7 +238,7 @@ def save(store, key, revision, policy, *, approve_revenue=False):
         checked = calculate_revenue(
             _revenue_project(
                 report,
-                state.get("revenue_description", ""),
+                commercial_text(state),
                 revised,
                 Basis(**revised["price_basis"]),
                 hours,
@@ -249,7 +251,7 @@ def save(store, key, revision, policy, *, approve_revenue=False):
             raise ValueError(" ".join(checked.issues))
         approval = {
             "fingerprint": fingerprint(
-                revised, state.get("revenue_description", ""), report
+                revised, commercial_text(state), report
             ),
             "approved_at": datetime.now(timezone.utc).isoformat(),
             "origin": "explicit_user_cashflow_schedule_approval",

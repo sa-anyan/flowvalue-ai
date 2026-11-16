@@ -1079,6 +1079,14 @@ def resolve(
                             + " Alternative model: "
                             + d["rationale"],
                         }
+                        # A new correlation can introduce a native-unit basis
+                        # (e.g. gallons) absent from the old m3 model. Retain all
+                        # physical assumptions; add only an explicitly proposed
+                        # target-unit convention, never replace an existing one.
+                        context = spec["unit_context"] = spec.get("unit_context") or {}
+                        for name in ("target_gallon_basis", "target_ton_basis"):
+                            if not context.get(name) and d["unit_context"].get(name):
+                                context[name] = d["unit_context"][name]
                         audits.append(
                             {
                                 "equipment_key": key,
@@ -1208,6 +1216,7 @@ def repair_pricing(
     attempts = []
     feedback = []
     exhausted = []
+    discoveries = []
     signatures = {}
     for line in total.equipment:
         key = (line.parsed_source or {}).get("equipment_key")
@@ -1220,11 +1229,15 @@ def repair_pricing(
             or (getattr(line, "amount", None) is not None)
             or row.get("manual_price")
             or row.get("external_quote")
+            or row.get("scope_decision") in {"alias", "exclude"}
             or user_selected_model(row)
             or (row.get("size") is not None and not spec.get("enabled"))
         ):
             continue
         match = row.get("matching") or {}
+        if (match.get("conceptual_validation") == "unsuitable"
+                or match.get("model_scope") == "component_only"):
+            continue
         if spec.get("origin") != "llm_selected_python_equation" and not (
             match.get("candidate_model_ids")
             and match.get("match_status") in {"matched", "ambiguous"}
@@ -1251,17 +1264,34 @@ def repair_pricing(
             continue
         record = history.setdefault(key, {"excluded": [], "unresolved": None})
         remaining = None
-        if range_failure and match.get("candidate_model_ids"):
+        if range_failure:
             if row.get("curve_id") and row["curve_id"] not in record["excluded"]:
                 record["excluded"].append(row["curve_id"])
             remaining = [
                 model
-                for model in match["candidate_model_ids"]
+                for model in match.get("candidate_model_ids", [])
                 if model not in record["excluded"]
             ]
+            from backend.equipment_costing.fallback import garrett_candidates
+
+            recovered = garrett_candidates(
+                report, key, row, excluded=record["excluded"],
+                allow_graph=plan.get("equipment_input_policy", {}).get(
+                    "allow_provisional_graph_estimates", True
+                ) and (row.get("costing_options") or {}).get("allow_unverified", True),
+            )
+            remaining = list(dict.fromkeys(remaining + recovered))
+            if recovered:
+                discoveries.append({
+                    "equipment_key": key,
+                    "status": "cost_fallback_candidates_discovered",
+                    "previous_model_id": row.get("curve_id"),
+                    "candidate_model_ids": recovered,
+                    "notice": "Same-family alternatives require configuration/scope review; physical sizing is retained.",
+                })
             if not remaining:
-                # Every reviewed candidate failed its published range; the AI
-                # has nothing new to choose. Keep the genuine exception.
+                # No reviewed or discoverable alternative remains. Keep the
+                # genuine exception without repeating the failed model.
                 exhausted.append(
                     {
                         "equipment_key": key,
@@ -1284,6 +1314,14 @@ def repair_pricing(
             # The chosen correlation failed, not the physical sizing. Reopen
             # conceptually reviewed alternatives, never clamp the measured size.
             retry.pop("curve_id", None)
+            if not retry.get("matching"):
+                retry["matching"] = {
+                    "match_status": "ambiguous",
+                    "match_method": "engineering_equivalence",
+                    "conceptual_validation": "uncertain",
+                    "model_scope": "unresolved",
+                    "reason": "Alternative costing configuration proposed; review service and included scope.",
+                }
             retry["matching"]["candidate_model_ids"] = remaining
         if option_failure:
             for name in ("extrapolation_exponent", "extrapolation_justification"):
@@ -1296,12 +1334,13 @@ def repair_pricing(
                 "reason": "; ".join(line.issues),
                 "previous_conversion": spec,
                 "preserve_physical_basis": range_failure,
-                "instruction": "Preserve valid physical sizing, source bindings and assumptions. For strict-domain failures select a conceptually compatible alternative from supplied candidates; never alter the size to fit a curve. Non-Garrett libraries do not support Garrett extrapolation options. A known operation may use a disclosed preliminary configuration, not an unrelated operation. Supply a defensible Garrett scaling exponent only where supported. Otherwise retain the genuine exception.",
+                "recovered_candidate_model_ids": recovered if range_failure else [],
+                "instruction": "Preserve valid physical sizing, source bindings and assumptions. Recovered candidates are same-family search results, NOT previously approved equipment configurations. Review service, material, pressure and included/excluded scope before selecting one; reject unsuitable options. For strict-domain failures select a conceptually compatible alternative from supplied candidates; never alter the size to fit a curve. Non-Garrett libraries do not support Garrett extrapolation options. A known operation may use a disclosed preliminary configuration, not an unrelated operation. Supply a defensible Garrett scaling exponent only where supported, or retain its printed exponent. Explicitly specify any newly needed gallon/ton convention. Otherwise retain the genuine exception.",
             }
         )
     exhausted = [
         {**a, "pricing_repair": True, "pricing_attempt": attempt + 1}
-        for a in exhausted
+        for a in discoveries + exhausted
     ]
     if not attempts:
         return plan, exhausted

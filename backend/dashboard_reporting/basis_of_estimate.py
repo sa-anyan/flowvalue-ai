@@ -172,7 +172,17 @@ def build_basis_of_estimate(state):
         canonical, unpriced_tags,
         (estimate_class.get("class_characteristics") if estimate_class.get("status") != "invalid_input" else None),
     )
+    # Refresh source-scope diagnostics for older saved runs too; do not carry
+    # unrelated worksheet names forward as missing equipment in exports.
+    from backend.engineering_status import refresh_scope_notes
+
+    report = state.get("scoped_report") or state.get("effective_report")
     completeness = (equipment_view.get("pricing_coverage") or {}).get("register_completeness") or {}
+    if report:
+        completeness = refresh_scope_notes(report, completeness, state.get("plan") or {})
+    if completeness.get("scope_review"):
+        tiers["meets_coverage_target_without_assumptions"] = False
+        open_items.append("Confirm whether the unlinked worksheets belong to this project; their unit names are scope questions, not missing equipment in the connected process")
     if completeness.get("possibly_missing"):
         tiers["meets_coverage_target_without_assumptions"] = False
         tiers["register_completeness"] = "unconfirmed"

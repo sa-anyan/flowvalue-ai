@@ -18,7 +18,7 @@ from backend.revenue.authority import fingerprint
 
 def test_calendar_bounds_and_unknown_sources():
     policy = make_policy(6, 2)
-    assert policy["production_ramp"] == [0.2, 0.4, 0.6, 0.8]
+    assert policy["production_ramp"] == [1, 1, 1, 1]
     for years, construction in [(2, 2), (61, 2), (20, 11), (True, 0)]:
         with pytest.raises(ValueError):
             make_policy(years, construction)
@@ -114,9 +114,8 @@ def test_commercial_source_factor_and_horizon_extension():
 
 def test_default_plateau_and_preservation():
     policy = make_policy(20, 2)
-    assert policy["production_ramp"][:4] == [0.2, 0.4, 0.6, 0.8]
-    assert all(v == 0.8 for v in policy["production_ramp"][3:])
-    assert "not published Garrett" in policy["rationale"]
+    assert policy["production_ramp"] == [1] * 18
+    assert "no first-year uptake or production ramp is predicted" in policy["rationale"]
     assert (
         make_policy(20, 2, {"production_ramp": [0.3, 0.7]})["production_ramp"]
         == [0.3] + [0.7] * 17

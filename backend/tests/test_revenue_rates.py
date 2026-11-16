@@ -103,6 +103,50 @@ def test_full_rate_revenue_handoff_and_no_workbook_fabrication(study, kind):
     assert len(store.versions(key)) >= 1
 
 
+@pytest.mark.parametrize("kind", ["product", "service"])
+def test_selected_stream_uses_measured_rate_instead_of_manual_rate(study, kind):
+    from backend.opex.consumption import observation
+    store, key = study
+    run_stage(store, key, "engineering_data")
+    state = store.get(key)
+    stream_key = state["plan"]["operating_economics"]["sales"][0]["stream_key"]
+    measured = observation(state["parsed"]["report"], stream_key, "mass_flow")
+    assert measured["normalized_unit"] == "kg/h"
+    change = request(state, kind)
+    change.lines[0].stream_key = stream_key
+    change.lines[0].price_unit = "kg"
+    change.lines[0].rate = None  # The dropdown sends the reference, not a copied number.
+    save_rates(store, key, change)
+    saved = store.get(key)
+    config = saved["plan"]["operating_economics"]
+    row = (config["sales"] if kind == "product" else config["commercial_lines"])[0]
+    assert row["stream_key"] == stream_key and "manual_rate" not in row
+    result = run_stage(store, key, "revenue", use_ai=False)
+    annual = result["results"]["stages"]["revenue"]["result"]["annual"][0]
+    expected = D(str(measured["normalized_value"])) * 5 * 314 * 24 * D(str(config["financial"]["production_ramp"][0]))
+    assert D(annual["sales_revenue"]) == expected
+
+
+@pytest.mark.parametrize("kind", ["product", "service"])
+def test_revenue_displays_full_operation_without_overwriting_a_saved_financial_ramp(study, kind):
+    store, key = study
+    run_stage(store, key, "engineering_data")
+    state = store.get(key)
+    state['plan']['operating_economics']['financial']['production_ramp'] = [0.2, 0.8]
+    state = store.put(state, state['revision'])
+    save_rates(store, key, request(state, kind))
+    saved = store.get(key)
+    before = copy.deepcopy(saved['plan'])
+    actual = run_stage(store, key, "revenue", use_ai=False)
+    result = actual['results']['stages']['revenue']['result']
+    full = result['full_operation']['annual'][0]['sales_revenue']
+    assert D(full) == D(2) * 5 * 314 * 24
+    assert D(result['annual'][0]['sales_revenue']) == D(full) * D('0.2')
+    assert actual['plan']['operating_economics']['financial'] == before['operating_economics']['financial']
+    assert actual['plan']['operating_economics'].get('cashflow_schedule') == before['operating_economics'].get('cashflow_schedule')
+    assert result['full_operation_basis']['throughput_fraction'] == '1'
+
+
 def test_missing_rate_or_incompatible_units_do_not_commit_an_approved_model(study):
     store, key = study
     run_stage(store, key, "engineering_data")
@@ -265,3 +309,53 @@ def test_explicit_revenue_period_is_not_relabelled_as_historical_opex(study):
     ]["result"]
     assert result["basis"]["price_period"] == "2026"
     assert D(result["annual"][0]["sales_revenue"]) == D(2 * 5 * 314 * 24)
+
+
+@pytest.mark.parametrize("kind", ["product", "service"])
+def test_price_edit_replaces_one_line_and_updates_linked_opex(study, monkeypatch, kind):
+    from backend.blocks.stage_workflow import approve
+    store, key = study
+    monkeypatch.setattr('backend.blocks.stage_workflow._brainstorm', lambda *args: None)
+    run_stage(store, key, 'engineering_data')
+    approve(store, key, store.get(key)['revision'])
+    run_stage(store, key, 'equipment')
+    run_stage(store, key, 'capex')
+    save_rates(store, key, request(store.get(key), kind))
+    run_stage(store, key, 'revenue')
+    before = run_stage(store, key, 'opex')
+    versions = len(store.versions(key))
+    old_opex = before['results']['stages']['opex']['result']
+    old_revenue = before['results']['stages']['revenue']['result']['full_operation']['annual'][0]['sales_revenue']
+    change = request(before, kind)
+    change.remove = []
+    change.lines[0].price = 10  # Previously 5; same stable id, even after renaming.
+    change.lines[0].name = 'Renamed income'
+    save_rates(store, key, change)
+    saved = store.get(key)
+    rows = [*saved['plan']['operating_economics']['sales'], *saved['plan']['operating_economics']['commercial_lines']]
+    assert len(rows) == 1 and rows[0]['id'] == 'custom-income'
+    assert rows[0]['name'] == 'Renamed income'
+    assert len(store.versions(key)) == versions + 1
+    run_stage(store, key, 'revenue')
+    after = run_stage(store, key, 'opex')
+    assert D(after['results']['stages']['revenue']['result']['full_operation']['annual'][0]['sales_revenue']) == D(old_revenue) * 2
+    new_opex = after['results']['stages']['opex']['result']
+    assert new_opex['first_year_fixed_opex'] == old_opex['first_year_fixed_opex']
+    assert D(new_opex['first_year_variable_opex']) > D(old_opex['first_year_variable_opex'])
+
+
+@pytest.mark.parametrize("price,keep_review", [(10, False), (5, True)])
+def test_price_review_applies_only_to_the_unchanged_price(study, price, keep_review):
+    store, key = study
+    run_stage(store, key, 'engineering_data')
+    save_rates(store, key, request(store.get(key)))
+    state = store.get(key)
+    state['plan']['operating_economics']['sales'][0]['price_review'] = {'selected': 5, 'rationale': 'Old reviewed price'}
+    state = store.put(state, state['revision'])
+    change = request(state)
+    change.remove = []
+    change.lines[0].price = price
+    save_rates(store, key, change)
+    row = store.get(key)['plan']['operating_economics']['sales'][0]
+    assert row['unit_price'] == price
+    assert ('price_review' in row) is keep_review

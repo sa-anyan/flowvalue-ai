@@ -1,4 +1,6 @@
 """Explicit drawer choices become user-supplied routing, never AI interpretation."""
+
+from backend.revenue.authority import commercial_text
 from .validation import CATEGORIES
 
 
@@ -26,7 +28,7 @@ def bind_manual_lines(state, config):
             raise ValueError("A pending payment cannot also be an active payment")
         mechanisms.append({"id": pending["id"], "category": pending["category"],
                            "context_quote": pending["context_quote"], "interpretation": "Pending user-reviewed opportunity"})
-    text = state.get("revenue_description", "")
+    text = commercial_text(state)
     additions = [quote for quote in statements if quote not in text]
     if additions:
         text += "\n\nExplicit drawer selections (current calculation routes):\n" + "\n".join(additions)

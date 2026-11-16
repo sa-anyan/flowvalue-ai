@@ -11,7 +11,14 @@ from .equipment_advisor import NULL_NUMBER, NULL_TEXT, validate
 FACTOR_CATEGORIES = [c for c in CATEGORIES if c.base]
 
 
-def generate(provider, instructions, context, *, revenue_only=False):
+def generate(provider, instructions, context, *, revenue_only=False, opex_only=False):
+    from backend.opex.reference_defaults import resolve_price_basis
+
+    plan = context.get("plan") or {}
+    capital = ((context.get("calculated_stage_summary") or {}).get("capex") or {}).get("result") or {}
+    planning_basis = resolve_price_basis(
+        plan.get("operating_economics"), capital, plan.get("cost_translation")
+    )
     entities = context.get("report", {}).get("entities", [])
     material_keys = [e["key"] for e in entities if e["kind"] == "material"]
     equipment_keys = [e["key"] for e in entities if e["kind"] == "equipment"]
@@ -319,7 +326,7 @@ relevant manufacturing categories and clearly distinguish cash, depreciation and
 financing. Additional expenses supplement scope only where not already covered;
 itemising a factored category REPLACES its blanket factor. Replacing maintenance/laboratory by staff must include materials, supplies and service allowances too, not only salaries. Net freight/packaging deductions replace their blanket distribution/packaging factors to prevent duplicate charges; normally put those costs in OPEX and leave net-price deductions zero. Any remaining selling costs must be explicit additional expenses. No arbitrary new percentages.
 Give operating life, construction spending fractions summing to one, production ramp
-(first years then repeat final fraction), flat planning tax, discount rate, straight-
+(100% scheduled operation by default; different annual fractions only when explicitly supplied by the user, never predict first-year uptake), flat planning tax, discount rate, straight-
 line depreciation life, salvage, WC recovery and closure allowance. These are explicit
 planning policies, not verified tax law. The initial study is unlevered (no loan/debt
 interest), real constant-price economics with the CAPEX reference year as money base.
@@ -426,6 +433,9 @@ the same mechanism in both a pending entry and an executable payment line.
         )
 
     commercial_context = compact_transport(context)
+    if not revenue_only:
+        commercial_context["operating_price_basis"] = planning_basis
+        prompt += "\nOPEX can be prepared before CAPEX finishes. Use operating_price_basis for preliminary prices, salaries and tariffs; do not omit them merely because CAPEX totals are pending. The restriction on missing commercial selling prices applies to revenue, not OPEX planning assumptions. Give reasoned, explicitly UNVERIFIED OPEX estimates with uncertainty where defensible; explain genuinely unresolved inputs. Select capital-based factors now; Python applies them to saved CAPEX when Run OPEX is clicked. Never invent capital totals."
     revenue_box = context.get("revenue_box", "")
     commercial_context["revenue_box"] = revenue_box
     prompt += "\nClassify all explicitly stated income methods into the six MECE categories. Main products and co-products/by-products both use product_sales and the same rate × price × time calculation; retain role=byproduct for co-products. Identify their actual source stream where supported, and retain all identified methods in one reviewable draft. Do not split an item into duplicate income methods.\nThe separate revenue_box is the ONLY authority for income sources. The process description and workbook can supply physical context and quantities, never permission to sell an output. If the Revenue Box is empty, ask how the project earns income. All intent and income context_quote fields must quote the Revenue Box. Missing commercial prices must stay null and become questions, not estimates or cost-plus prices. Drafts require explicit user approval before finance."
@@ -461,12 +471,26 @@ the same mechanism in both a pending entry and an executable payment line.
 
     if revenue_only and context.get("revenue_edit"):
         prompt += "\nThis is a saved Revenue Box edit. Reinterpret ALL current statements, replacing stale payment interpretations. Keep the existing price_basis, operating schedule and operating years/ramp from plan.operating_economics unchanged. Preserve the distinction between sold and produced quantities. Conditional opportunities remain provisional and require targeted questions; never treat a potential buyer or possible contract as confirmed. A rate per kg of powder must not be relabelled as a rate per kg of oxygen. Savings without an existing OPEX target or annual-quantity basis must remain a question, never an invented target or zero saving."
+
+    # The compatibility key now carries the user's merged process/income brief.
+    prompt = prompt.replace("Revenue Box", "project description").replace(
+        "The process description and workbook can supply physical context and quantities, never permission to sell an output.",
+        "The workbook supplies physical context and quantities; the user's project description supplies income intent.",
+    )
+    prompt += "\nThe revenue_box context key contains the user's project description, including how the project earns revenue; it is not a separate input box. OPEX staffing, utility and purchased-feed proposals must proceed independently of missing revenue terms."
+    if opex_only:
+        for field in ("sales", "commercial_lines", "avoided_costs", "commercial_intent"):
+            schema["properties"].pop(field, None)
+        schema["required"] = list(schema["properties"])
+        prompt += "\nThis request is OPEX INPUTS ONLY. Do not interpret, validate or propose revenue. Missing sales prices, revenue terms or saleable quantities must not prevent staffing, chemical-price and utility assumptions. Return the operating fields in the schema, with rationale and uncertainty, independently of commercial readiness."
+
     value = provider.generate(
         instructions=prompt, context=commercial_context, schema=schema
     )
     validate(value, schema)
     try:
-        validate_intent(value, revenue_box, require=True)
+        if not opex_only:
+            validate_intent(value, revenue_box, require=True)
     except ValueError as exc:
         # One bounded correction of the same proposal; never guess a replacement category.
         value = provider.generate(
@@ -512,24 +536,13 @@ the same mechanism in both a pending entry and an executable payment line.
     if not revenue_only:
         value = repair_energy(value, context.get("report", {}), provider)
     value["questions"] = list(
-        dict.fromkeys(value["questions"] + value["commercial_intent"]["questions"])
+        dict.fromkeys(value["questions"] + (value.get("commercial_intent") or {}).get("questions", []))
     )
     value["financial"]["calendar_start_year"] = date.today().year
-    capex_basis = (
-        value["price_basis"]
-        if revenue_only
-        else (
-            context.get("calculated_stage_summary", {}).get("capex", {}).get("result")
-            or {}
-        )
-    )
     value["price_basis"] = (
         value["price_basis"]
         if revenue_only
-        else {
-            "currency": capex_basis.get("currency"),
-            "price_period": capex_basis.get("period"),
-        }
+        else planning_basis
     )
     from backend.currency_conversion import convert_currency
 
@@ -543,6 +556,7 @@ the same mechanism in both a pending entry and an executable payment line.
                     item["unit_price"], currency, target_currency
                 )
                 item["unit_price"] = float(conversion["amount"])
+                item["fx_conversion"] = conversion
                 fx.append({"group": group, "id": item.get("id"), **conversion})
     value["currency_conversions"] = fx
     value.update(

@@ -36,7 +36,13 @@ class Fake:
                 factors = [{"id": r["id"], "fraction": r["minimum"], "position": "low", "reasoning": ["compact layout"]}
                            for r in ranges]
                 factors.append({"id": ranges[0]["id"], "fraction": 99.0, "position": "high", "reasoning": ["bad"]})
-            return {"summary": f"{stage} summary", "factors": factors, "questions": [],
+            return {**({"financial_policy": {"depreciation_years": 10, "discount_rate": .1,
+                                            "tax_rate": .25, "salvage_fraction": 0,
+                                            "working_capital_recovery_fraction": 1, "closure_allowance": 0,
+                                            "rationale": "Synthetic editable scenario",
+                                            "field_rationales": {k: "Synthetic scenario" for k in
+                                              ("depreciation_years", "discount_rate", "tax_rate", "salvage_fraction", "working_capital_recovery_fraction", "closure_allowance")}}} if stage == "financial" else {}),
+                    "summary": f"{stage} summary", "factors": factors, "questions": [],
                     "points": [{"title": "Layout", "text": "Compact plot", "why": ["short transfers"],
                                 "would_change_if": ["remote tie-in"], "evidence": ["T-1", "nonsense-id"]}]}
         finally:
@@ -52,6 +58,23 @@ def _wait(store, key, stages, timeout=10):
             return saved
         time.sleep(0.05)
     raise AssertionError(f"analyst stages not saved: {stages}")
+
+
+def test_financial_analyst_saves_structured_inputs_without_overwriting_user_values(tmp_path):
+    from backend.tests.test_opex_brainstorm import Now
+
+    store, key = _extracted(tmp_path)
+    state = store.get(key)
+    state["plan"].setdefault("operating_economics", {})["financial"] = {"discount_rate": .06, "tax_rate": 0}
+    store.put(state, state["revision"])
+    analyst.kick(store, key, provider=Fake(), stages=("financial",), executor=Now())
+    state = store.get(key)
+    config = state["plan"]["operating_economics"]
+    assert config["financial"]["discount_rate"] == .06 and config["financial"]["tax_rate"] == 0
+    assert config["financial"]["depreciation_years"] == 10
+    assert config["financial_input_provenance"]["depreciation_years"]["origin"] == "ai"
+    assert state["analyst"]["stages"]["financial"]["status"] == "ready"
+    assert "financial" not in state.get("stage_outputs", {})  # no engine run in the background analyst
 
 
 def _quiet_opex(monkeypatch):

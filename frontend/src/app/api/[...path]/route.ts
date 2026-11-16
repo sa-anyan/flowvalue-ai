@@ -1,10 +1,11 @@
 import {MAX_UPLOAD_REQUEST_BYTES} from '../../../lib/upload-limits';
 import {NextResponse,type NextRequest} from 'next/server';
 import {cloudAuthEnabled,requestSession,setSession} from '../../../lib/cloud-auth';
+import {acceptsRequestOrigin} from '../../../lib/request-origin';
 async function proxy(request: NextRequest, context: {params: Promise<{path: string[]}>}) {
   const origin=request.headers.get('origin');
-  if (origin && origin !== request.nextUrl.origin)
-    return Response.json({detail:'Cross-origin assessment requests are not allowed'},{status:403});
+  if (!acceptsRequestOrigin(origin,request.headers.get('host'),request.url))
+    return Response.json({detail:'This request could not be verified. Reload the project and try again.'},{status:403});
   const {path} = await context.params;
   if (!['assessments','versions','catalogue','health','currency'].includes(path[0]) || path.some(p => !/^[a-zA-Z0-9_-]+$/.test(p)))
     return Response.json({detail: 'Unknown endpoint'}, {status:404});

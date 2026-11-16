@@ -72,17 +72,10 @@ def prepare(ctx):
     # Match against the same merged stream evidence that sizing will consume.
     report, plan, duplicate_review = reconcile(ctx.report, plan)
     from backend.blocks.progress import step
-    from backend.equipment_matching.library_preference import user_selected_model
-
-    extracted = {e["key"] for e in report.get("entities", []) if e.get("kind") == "equipment"}
-    chosen = {r["equipment_key"] for r in plan.get("equipment", [])
-              if user_selected_model(r) or (r.get("model_selection") or {}).get("origin") == "autopilot"}
-    # Quick match: when the user has confirmed a model for every item, an AI
-    # rematch would only be shown for review and is skipped to save time.
-    all_confirmed = bool(extracted) and extracted <= chosen
-    if all_confirmed and ctx.use_ai:
-        issues.append("AI model matching skipped: you confirmed a model for every item.")
-    if ctx.use_ai and not all_confirmed and "equipment" not in ctx.state.get("locked", []):
+    # Instant guesses are proposals, never human confirmations. One batched
+    # review uses this run's register/process evidence; saved user inputs are
+    # protected by apply_matches rather than used as an excuse to skip review.
+    if ctx.use_ai and "equipment" not in ctx.state.get("locked", []):
         step("Matching equipment to models (AI)")
         matching = match_report(
             report,
@@ -221,6 +214,9 @@ def calculate(ctx):
         )
         and not (e.parsed_source or {}).get("confirmed_alias")
     ]
+    from .presentation import priced_summary
+
+    result["priced_summary"] = priced_summary(result)
     return Product(
         result,
         {

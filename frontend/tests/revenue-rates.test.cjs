@@ -29,3 +29,15 @@ test('fixed commercial income opens its own terms rather than physical flow fiel
  const [line]=revenueLines({commercial_lines:[{id:'license',category:'other_contractual_income',quantity_unit:'payment',rate_period:'per_unit',years:[{year:1,rate:0,fixed_payment:50},{year:2,rate:0,fixed_payment:50}]}]});
  assert.equal(line.advanced,false);assert.equal(requiresTerms(line),true);
 });
+const {revenueRateSources}=require('../src/blocks/revenue/rate-lines.ts');
+test('rate dropdown exposes actual stream rates with their original units',()=>{
+ const report={entities:[{key:'water',kind:'material',identifier:'S-1',values:[{property:'description',original_value:'Wastewater inlet'},{property:'volume_flow',normalized_value:125,normalized_unit:'m3/h'}]},{key:'solid',kind:'material',identifier:'S-2',values:[{property:'mass_flow',normalized_value:2,normalized_unit:'kg/h'}]}]};
+ const original=JSON.stringify(report),rows=revenueRateSources(report);
+ assert.equal(rows.length,2);assert.equal(rows[0].streamKey,'water');assert.equal(rows[0].rate,125);assert.equal(rows[0].priceUnit,'m3');
+ assert.equal(rows[1].unit,'kg/h');assert.equal(rows[1].priceUnit,'kg');assert.match(rows[0].name,/Wastewater inlet/);
+ assert.equal(JSON.stringify(report),original);
+});
+test('ambiguous and missing rates never become selectable guesses, while zero stays valid',()=>{
+ const report={entities:[{key:'bad',kind:'material',values:[{property:'volume_flow',normalized_value:100,normalized_unit:'m3/h'},{property:'volume_flow',normalized_value:200,normalized_unit:'m3/h'}]},{key:'empty',kind:'material',values:[]},{key:'zero',kind:'material',values:[{property:'mass_flow',normalized_value:0,normalized_unit:'kg/h'}]},{key:'pump',kind:'equipment',values:[{property:'mass_flow',normalized_value:50,normalized_unit:'kg/h'}]}]};
+ const rows=revenueRateSources(report);assert.equal(rows.length,1);assert.equal(rows[0].streamKey,'zero');assert.equal(rows[0].rate,0);
+});

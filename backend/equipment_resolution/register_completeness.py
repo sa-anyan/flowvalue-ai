@@ -63,13 +63,16 @@ def _equipment_text(entity):
 def check(report, description="", plan=None, extra_equipment_text=()):
     """Return {"status", "possibly_missing": [...], "resolved": [...], "notice"}."""
     entities = report.get("entities") or []
+    from backend.engineering_status import process_sheets
+
+    active_sheets, explicit_scope = process_sheets(report)
     registered = set()
     for e in entities:
-        if e.get("kind") == "equipment":
+        if e.get("kind") == "equipment" and (not active_sheets or (e.get("id_evidence") or {}).get("sheet") in active_sheets):
             registered |= _families(_equipment_text(e))
     for text in extra_equipment_text:
         registered |= _families(str(text or ""))
-    evidence = {}
+    evidence, unassigned = {}, {}
     for e in entities:
         if e.get("kind") != "material":
             continue
@@ -78,7 +81,13 @@ def check(report, description="", plan=None, extra_equipment_text=()):
                 continue
             text = str(v.get("normalized_value") or v.get("original_value") or "")
             for family in _families(text) - registered:
-                evidence.setdefault(family, []).append(
+                # A unit name on an unlinked worksheet is a scope question,
+                # not evidence that the current process lacks that unit.
+                sheet = (e.get("id_evidence") or {}).get("sheet")
+                if active_sheets and sheet not in active_sheets and explicit_scope:
+                    continue
+                target = unassigned if active_sheets and sheet not in active_sheets else evidence
+                target.setdefault(family, []).append(
                     {"stream": e.get("identifier"), "text": text[:200],
                      "source": f"{v.get('sheet')}!{v.get('cell')}" if v.get("sheet") else None})
     if description:
@@ -94,47 +103,24 @@ def check(report, description="", plan=None, extra_equipment_text=()):
         else:
             flagged.append(entry)
     return {
-        "status": "unconfirmed" if flagged else "no_unregistered_units_named",
+        "status": "unconfirmed" if flagged else "scope_review_required" if unassigned else "no_unregistered_units_named",
         "possibly_missing": flagged,
         "resolved": resolved,
+        "scope_review": [{"family": family, "label": FAMILIES[family][0], "evidence": items[:10],
+                          "notice": "Named on an unlinked worksheet; confirm project scope before treating this as missing equipment."}
+                         for family, items in sorted(unassigned.items())],
         "notice": ("Units named in the source but absent from the equipment register. They are not priced "
                    "and are not counted as unpriced, so coverage cannot be confirmed until each is added "
-                   "or resolved with a basis. Checked per equipment family."),
+                   "or resolved with a basis. Checked per equipment family." if flagged else
+                   "Additional worksheets need scope confirmation; units named there are not counted as missing process equipment." if unassigned else
+                   "No unregistered equipment families named in the reviewed process scope."),
     }
 
 
 def carry_over(store, state):
-    """Copy equipment-scope decisions from the latest earlier study of the same file.
+    """Retired compatibility boundary: new uploads never inherit prior decisions.
 
-    Founder decision (12 Nov 2026): register decisions follow a re-uploaded
-    workbook. Matching is by the exact source SHA-256, so an edited workbook
-    starts without them. Each copied decision records where it came from and
-    remains editable. Returns the number of decisions copied.
+    Founder decision, 16 November 2026, supersedes the earlier same-file
+    carry-over policy. Existing study/version history remains untouched.
     """
-    sha = state.get("source_sha256")
-    if not sha or (state.get("plan") or {}).get("register_review"):
-        return 0
-    finder = getattr(store, "states_by_source", None)
-    if finder is None:
-        return 0
-    earlier = [s for s in finder(sha) if s.get("id") != state.get("id")
-               and ((s.get("plan") or {}).get("register_review"))]
-    if not earlier:
-        return 0
-    source = earlier[-1]
-    copied = {}
-    for family, decision in source["plan"]["register_review"].items():
-        if family in FAMILIES and isinstance(decision, dict) and decision.get("decision"):
-            copied[family] = {
-                **{k: v for k, v in decision.items() if k != "carried_over_from"},
-                "carried_over_from": {"assessment": source.get("id"), "revision": source.get("revision"),
-                                      "source_sha256": sha},
-            }
-    if copied:
-        state.setdefault("plan", {})["register_review"] = copied
-        state.setdefault("assumptions", {})["register_review"] = {
-            "rationale": f"{len(copied)} equipment-scope decision(s) carried over from study "
-                         f"{source.get('id')} (same source file)",
-            "status": "carried_over",
-        }
-    return len(copied)
+    return 0

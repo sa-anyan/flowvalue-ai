@@ -27,6 +27,9 @@ export function EquipmentPlayground(props: StageProps) {
     .filter((c) => !query || `${c.tag} ${c.name} ${c.model}`.toLowerCase().includes(query.toLowerCase()))
     .filter((c) => filter === 'all' || (filter === 'priced' ? c.cost !== null : c.cost === null));
   const priced = cards.filter((c) => c.cost !== null).length;
+  const summary = obj(result.priced_summary);
+  const amounts = Array.isArray(summary.amounts) ? summary.amounts as Row[] : [];
+  const unpriced = num(summary.unpriced_count) ?? cards.length - priced;
   async function recalculate() {
     setBefore(Object.fromEntries(cards.map((c) => [c.key, c.cost === null ? 'Unpriced' : money(c.cost)])));
     await hook.action(async () => {
@@ -43,26 +46,25 @@ export function EquipmentPlayground(props: StageProps) {
       <AnalystCard stage="equipment" hook={props.hook} />
       <div className="gf-kpis">
         <div>
-          <small>Purchased equipment</small>
-          <strong>{num(result.equipment_cost_total) === null ? (cards.length - priced > 0 ? 'Incomplete' : 'Not combined') : compact(result.equipment_cost_total)}</strong>
-          <span>{num(result.equipment_cost_total) !== null ? currency : totalReason(result.issues, cards.length - priced)}</span>
+          <small>Equipment estimate · priced items</small>
+          <strong>{amounts.length ? amounts.map((amount) => `${amounts.length > 1 ? text(amount.currency) + ' ' : ''}${compact(amount.amount)}`).join(' · ')
+            : num(result.equipment_total_with_packages) !== null ? compact(result.equipment_total_with_packages) : 'Awaiting prices'}</strong>
+          <span>{amounts.length === 1 ? text(amounts[0].currency) : currency} · excludes {unpriced} item{unpriced === 1 ? '' : 's'} not priced</span>
         </div>
         <div>
-          <small>Total equipment cost</small>
-          <strong>{num(result.equipment_total_with_packages) === null ? '—' : compact(result.equipment_total_with_packages)}</strong>
-          <span>
-            {num(result.packages_total) ? `${currency} · includes ${compact(result.packages_total)} installed packages` : `${currency} · installation is added in CAPEX`}
-          </span>
+          <small>Items not priced</small>
+          <strong>{unpriced}</strong>
+          <span>{unpriced ? 'Excluded from the estimate above' : 'All equipment has a price'}</span>
         </div>
         <div>
           <small>Priced items</small>
           <strong>
             {priced} / {cards.length}
           </strong>
-          <span>{text(result.status).replaceAll('_', ' ') || 'Not run yet'}</span>
+          <span>{unpriced ? `${unpriced} awaiting price` : 'All items priced'}</span>
         </div>
       </div>
-      <Issues items={result.issues} title="Equipment notes from Python" />
+      <Issues items={(Array.isArray(result.issues) ? result.issues : []).filter((issue) => !text(issue).startsWith('Unresolved equipment: subtotals are partial; complete total unavailable'))} title="Cost scope notes" />
       {heldEstimates(equipment.value).length > 0 && (
         <section className="gf-card-block gf-held" aria-labelledby="gf-held-h">
           <h2 id="gf-held-h">AI estimate check</h2>
@@ -256,13 +258,4 @@ export function EquipmentPlayground(props: StageProps) {
 
 function FragmentRow({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
-}
-
-/** Why the purchased total is not shown, in one line the user can act on. */
-function totalReason(issues: unknown, unpriced: number): string {
-  if (unpriced > 0) return `${unpriced} items still unpriced — not counted as zero`;
-  const first = Array.isArray(issues) && issues.length ? String(issues[0]) : '';
-  const dates = first.match(/\(([^)]*)\)\. Date typed prices/);
-  if (dates) return `Items on different dates (${dates[1]}). Open the odd item and set its price date to the study date.`;
-  return first || 'Recalculate equipment';
 }

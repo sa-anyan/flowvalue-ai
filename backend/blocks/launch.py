@@ -28,6 +28,7 @@ STAGE_LOCK = threading.Lock()  # replaced by the API's stage lock
 _guard = threading.Lock()
 _inbox = {}  # study key -> {kind: payload}, latest wins per kind
 _threads = {}
+_delivery = set()
 
 
 def _now():
@@ -44,6 +45,42 @@ def put(key, kind, payload):
 def pending(key):
     with _guard:
         return sorted(_inbox.get(key) or {})
+
+
+def defer(store, key, kind, payload):
+    """Deliver a busy save even if the launch finishes before it can drain it.
+
+    A different study or a short analyst save may hold the shared lock. Such a
+    request must not be left waiting in an inbox with no active launch thread.
+    """
+    with _guard:
+        _inbox.setdefault(key, {})[kind] = copy.deepcopy(payload)
+        if key in _delivery:
+            return
+        _delivery.add(key)
+
+    def deliver():
+        try:
+            while True:
+                with STAGE_LOCK:
+                    applied = drain(store, key)
+                    if "revenue_setup" in applied:
+                        from .execution import fresh, run_stage
+
+                        if fresh(store.get(key), "equipment"):
+                            for stage in ("revenue", "opex", "financial"):
+                                use_ai = bool((store.get(key).get("launch") or {}).get("use_ai"))
+                                run_stage(store, key, stage, use_ai=use_ai and stage in {"opex", "financial"})
+                with _guard:
+                    if not _inbox.get(key):
+                        _delivery.discard(key)
+                        return
+        except Exception:
+            with _guard:
+                _delivery.discard(key)
+            raise
+
+    threading.Thread(target=copy_context().run, args=(deliver,), name=f"entry-save-{key[:8]}", daemon=True).start()
 
 
 def _apply_revenue(store, key, payload):
@@ -123,11 +160,11 @@ def run(store, key, *, use_ai=False, provider=None):
             _mark(store, key, step=stage)
             if "revenue_setup" in drain(store, key) and stage in ("opex", "financial"):
                 late = True
-            run_stage(store, key, stage, use_ai=use_ai and stage == "equipment", provider=provider)
+            run_stage(store, key, stage, use_ai=use_ai and stage in {"equipment", "opex", "financial"}, provider=provider)
         if "revenue_setup" in drain(store, key) or late:
             for stage in ("revenue", "opex", "financial"):  # revenue arrived late
                 _mark(store, key, step=stage)
-                run_stage(store, key, stage, use_ai=False, provider=provider)
+                run_stage(store, key, stage, use_ai=use_ai and stage in {"opex", "financial"}, provider=provider)
         return _mark(store, key, status="finished", step="done", finished_at=_now())
     except Exception as exc:
         state = store.get(key)
@@ -152,6 +189,7 @@ def start(store, key, *, use_ai=False, provider=None, stage_lock=None):
     if state.get("running"):
         return False
     state["launch"] = {"status": "queued", "version": VERSION, "use_ai": use_ai, "queued_at": _now(), "step": "waiting"}
+    state["ai_background_enabled"] = use_ai
     store.put(state, state["revision"])
 
     def work():

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MAX_WORKBOOK_BYTES } from '@/lib/upload-limits';
 import { launchStatus, list, obj, strings, studyReport, text, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
@@ -39,7 +39,9 @@ export function EntryStart(props: StageProps) {
         <EntryBoard {...props} />
       </>
     );
-  return <RevenueStep props={props} onReview={() => setReview(true)} onNew={() => setFresh(true)} />;
+  return <RevenueStep props={props}
+    onReview={() => { if (props.confirmRevenueLeave?.() !== false) setReview(true); }}
+    onNew={() => { if (props.confirmRevenueLeave?.() !== false) setFresh(true); }} />;
 }
 
 function UploadStart({ props, onCancel }: { props: StageProps; onCancel?: () => void }) {
@@ -47,7 +49,8 @@ function UploadStart({ props, onCancel }: { props: StageProps; onCancel?: () => 
   const [file, setFile] = useState<File | null>(null),
     [useAI, setUseAI] = useState(false),
     [dragging, setDragging] = useState(false);
-  useEffect(() => setUseAI(hook.aiEnabled), [hook.aiEnabled]);
+  const choiceMade = useRef(false);
+  useEffect(() => { if (hook.aiEnabled && !choiceMade.current) setUseAI(true); }, [hook.aiEnabled]);
   function choose(next: File | undefined | null) {
     if (!next) return;
     if (!WORKBOOK.test(next.name)) return hook.setError('Choose an Excel workbook (.xlsx, .xls or .xlsm).');
@@ -91,10 +94,11 @@ function UploadStart({ props, onCancel }: { props: StageProps; onCancel?: () => 
         <input type="file" accept=".xlsx,.xls,.xlsm" className="gf-sr-only" onChange={(e) => choose(e.target.files?.[0])} />
       </label>
       <label className="gf-check">
-        <input type="checkbox" checked={useAI} disabled={!hook.aiEnabled} onChange={(e) => setUseAI(e.target.checked)} />
+        <input type="checkbox" checked={useAI} disabled={!hook.aiEnabled} onChange={(e) => { choiceMade.current = true; setUseAI(e.target.checked); }} />
         <span>
           Use the AI analyst (reviews the workbook, picks and sizes equipment, explains every stage; usage charges apply).
-          {!hook.aiEnabled && ' AI is switched off on this server.'}
+          {!hook.aiEnabled && (hook.aiStatus === 'checking' ? ' Checking AI availability…' : hook.aiStatus === 'unavailable'
+            ? ' Could not reach the AI availability check. Retrying automatically…' : ' AI is switched off on this server.')}
         </span>
       </label>
       <div className="gf-inline-actions">

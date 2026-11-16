@@ -231,7 +231,11 @@ def _calculate(model_id, definitions, group_checks, inputs):
             if item.method in {"quantity_price", "headcount_salary"}:
                 amount = item.quantity * item.rate
             elif item.method == "percentage":
-                if item.base.startswith("item:"):
+                if item.rate == ZERO:
+                    # A recorded zero needs no missing dependency. Keep a known
+                    # revenue base for the downstream year-reconciliation audit.
+                    base_value = money_bases.get(item.base, ZERO)
+                elif item.base.startswith("item:"):
                     dependency = item.base[5:]
                     if (
                         dependency not in items

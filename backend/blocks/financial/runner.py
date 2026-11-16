@@ -27,7 +27,16 @@ def calculate(ctx):
         int(y): canonical(OpexResult, value)
         for y, value in ctx.upstream["opex"]["years"].items()
     }
-    config, audit = translate_inputs(ctx, ctx.operating, "financial")
+    from .proposal import prepare
+
+    proposed_config, changed = prepare(ctx)
+    config, audit = translate_inputs(ctx, proposed_config, "financial")
+    required = ("depreciation_years", "discount_rate", "tax_rate", "salvage_fraction",
+                "working_capital_recovery_fraction", "closure_allowance", "rationale")
+    policy = config.get("financial") or {}
+    missing = [key.replace("_", " ") for key in required if policy.get(key) is None or policy.get(key) == ""]
+    if missing:
+        raise DataRequired("Review missing financial planning assumptions: " + ", ".join(missing) + ".")
     inputs = prepare_study_financials(
         project_id=ctx.state["id"],
         config=config,
@@ -39,6 +48,7 @@ def calculate(ctx):
     return Product(
         plain(result),
         {"financial_inputs": plain(inputs)},
+        {"plan": {"operating_economics": proposed_config}} if changed else {},
         complete=not result.issues,
         issues=result.issues,
     )

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { MAX_WORKBOOK_BYTES } from '@/lib/upload-limits';
 import { equipmentCards, list, obj, strings, text, type EquipmentCardModel, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
@@ -7,8 +7,8 @@ import { EquipmentInspector } from './equipment-inspector';
 import { OriginChip, Panel, RunBar, type StageProps } from './flow';
 import { matchChip, pending, QuickMatchPanel, useQuickMatches } from './quick-match';
 import { AutopilotCard } from './autopilot';
-import { RevenueSetup } from './revenue-setup';
 import { QuickQuestions } from './quick-questions';
+import { BalanceNote } from './balance-note';
 
 const WORKBOOK = /\.(xlsx|xls|xlsm)$/i;
 
@@ -22,7 +22,6 @@ export function EntryBoard(props: StageProps) {
   const state = hook.state;
   const [file, setFile] = useState<File | null>(null),
     [description, setDescription] = useState(''),
-    [revenue, setRevenue] = useState(''),
     [years, setYears] = useState(20),
     [construction, setConstruction] = useState(2),
     [useAI, setUseAI] = useState(false),
@@ -32,7 +31,8 @@ export function EntryBoard(props: StageProps) {
     [versions, setVersions] = useState<Row[]>([]),
     [briefOpen, setBriefOpen] = useState(false),
     [previous, setPrevious] = useState<{ id: string; name: string } | null>(null);
-  useEffect(() => setUseAI(hook.aiEnabled), [hook.aiEnabled]);
+  const aiChoiceMade = useRef(false);
+  useEffect(() => { if (hook.aiEnabled && !aiChoiceMade.current) setUseAI(true); }, [hook.aiEnabled]);
   useEffect(() => {
     void api<Row[]>('versions')
       .then((v) => setVersions(Array.isArray(v) ? v : []))
@@ -40,8 +40,9 @@ export function EntryBoard(props: StageProps) {
   }, []);
   useEffect(() => {
     if (!state) return;
-    setDescription(text(state.process_description ?? state.description));
-    setRevenue(text(state.revenue_description));
+    const process = text(state.process_description ?? state.description);
+    const legacy = text(state.revenue_description);
+    setDescription(legacy && !process.toLowerCase().includes(legacy.toLowerCase()) ? `${process}\n\n${legacy}` : process);
     const schedule = obj(state.analysis_schedule);
     if (schedule.analysis_years) setYears(Number(schedule.analysis_years));
     if (schedule.construction_years !== undefined) setConstruction(Number(schedule.construction_years));
@@ -64,7 +65,6 @@ export function EntryBoard(props: StageProps) {
       setSelected(null);
       setConfirm(false);
       setDescription('');
-      setRevenue('');
       setYears(20);
       setConstruction(2);
       setBriefOpen(true);
@@ -78,7 +78,6 @@ export function EntryBoard(props: StageProps) {
       const form = new FormData();
       form.set('file', file);
       form.set('description', description);
-      form.set('revenue_description', revenue);
       form.set('use_ai', String(useAI));
       form.set('analysis_years', String(years));
       form.set('construction_years', String(construction));
@@ -90,7 +89,7 @@ export function EntryBoard(props: StageProps) {
     if (!key) throw new Error('Choose a workbook first.');
     await api(
       `assessments/${key}/engineering/run`,
-      post({ use_ai: useAI, process_description: description, revenue_description: revenue, prepare_only: true, analysis_years: years, construction_years: construction }),
+      post({ use_ai: useAI, process_description: description, revenue_description: description, prepare_only: true, analysis_years: years, construction_years: construction }),
     );
   }
   const runEquipment = () => {
@@ -125,7 +124,7 @@ export function EntryBoard(props: StageProps) {
   return (
     <div className={`gf-board ${empty ? 'gf-board-empty' : ''}`}>
       <div className="gf-lane gf-lane-source">
-        <span className="gf-kicker">01 · YOUR PROCESS</span>
+        <div className="gf-source-heading"><span className="gf-kicker">01 · YOUR PROCESS</span><BalanceNote value={state?.balance_summary} /></div>
         <label
           className={`gf-drop ${dragging ? 'gf-drop-active' : ''} ${file ? 'gf-drop-ready' : ''}`}
           onDragOver={(e) => {
@@ -152,6 +151,7 @@ export function EntryBoard(props: StageProps) {
           <label className="gf-field">
             <span>Describe your process</span>
             <textarea value={description} maxLength={12000} onChange={(e) => setDescription(e.target.value)} placeholder="Inputs, outputs, location and design requirements." />
+            <small>Be sure to state how the project earns revenue, including any known prices and units.</small>
           </label>
           <div className="gf-grid-2">
             <label className="gf-field">
@@ -164,10 +164,11 @@ export function EntryBoard(props: StageProps) {
             </label>
           </div>
           <label className="gf-check">
-            <input type="checkbox" checked={useAI} disabled={!hook.aiEnabled} onChange={(e) => setUseAI(e.target.checked)} />
+            <input type="checkbox" checked={useAI} disabled={!hook.aiEnabled} onChange={(e) => { aiChoiceMade.current = true; setUseAI(e.target.checked); }} />
             <span>
               AI analyst interprets the workbook and proposes models (provisional; usage charges apply).
-              {!hook.aiEnabled && ' AI is switched off on this server.'}
+              {!hook.aiEnabled && (hook.aiStatus === 'checking' ? ' Checking AI availability…' : hook.aiStatus === 'unavailable'
+                ? ' Could not reach the AI availability check. Retrying automatically…' : ' AI is switched off on this server.')}
             </span>
           </label>
         </details>
@@ -175,7 +176,6 @@ export function EntryBoard(props: StageProps) {
           {file ? `Extract equipment from ${file.name}` : !state ? 'Extract equipment' : 'Re-extract with this brief'}
         </button>
         {state && !previous && <QuickQuestions props={props} />}
-        {state && !previous && <RevenueSetup props={props} />}
         {previous && (
           <p className="gf-note">
             New study: {previous.name} is saved and unchanged.{' '}
@@ -281,7 +281,7 @@ export function EntryBoard(props: StageProps) {
         </ul>
         {strings(state?.revenue_questions).length > 0 && (
           <div className="gf-note" role="status">
-            <strong>Revenue needs your input under “How does this project earn money?”</strong>
+            <strong>Revenue needs more detail in your process description</strong>
             <ul className="gf-issue-list">
               {strings(state?.revenue_questions).map((q) => (
                 <li key={q}>{q}</li>

@@ -89,6 +89,12 @@ def _costs_for_year(report, config, basis, hours, ramp, year, *, partial=False):
         evidence=(),
         item=None,
     ):
+        source_basis = (item or {}).get("price_basis")
+        if source_basis and source_basis != plain(basis):
+            raise ValueError(key + ": align the item's currency and price period with OPEX before costing")
+        source_currency = (item or {}).get("unit_price_currency") or (item or {}).get("currency")
+        if source_currency and source_currency != basis.currency:
+            raise ValueError(key + ": convert " + str(source_currency) + " to " + basis.currency + " before costing")
         if key in seen:
             raise ValueError("Duplicate operating expense ID: " + key)
         seen.add(key)
@@ -411,6 +417,8 @@ def _costs_for_year(report, config, basis, hours, ramp, year, *, partial=False):
 def _opex(capex, basis, assumptions, annual_sales, *, allow_partial=False):
     bases = []
     if capex is not None:
+        if (getattr(capex, "currency", basis.currency), getattr(capex, "period", basis.price_period)) != (basis.currency, basis.price_period):
+            raise ValueError("CAPEX and OPEX need the same currency and price period before capital-based expenses can be calculated")
         for key, amount in (
             ("fixed_capital", capex.fixed_capital),
             ("purchased_equipment", capex.purchased_equipment),

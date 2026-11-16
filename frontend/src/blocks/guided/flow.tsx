@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { assessmentHref } from '@/lib/assessment-navigation';
 import { stableJson } from '@/lib/stable-json';
+import { clearFlowValueHistory, freshEntryUrl } from '@/lib/reset-history';
+import { allowRevenueLeave } from '@/lib/unsaved-revenue';
 import {
   direction,
   forwardRun,
@@ -74,6 +76,8 @@ export type StageProps = {
   /** Let the AI propose missing sizing inputs when equipment runs (provisional, reviewable). */
   aiSizing: boolean;
   setAiSizing: (on: boolean) => void;
+  setRevenueDirty?: (dirty: boolean) => void;
+  confirmRevenueLeave?: () => boolean;
 };
 
 export function GuidedFlow() {
@@ -82,6 +86,21 @@ export function GuidedFlow() {
   const capex = useDraft<Row>(hook, 'capex', {});
   const operating = useDraft<Row>(hook, 'operating_economics', {});
   const [aiSizing, setAiSizing] = useState(true);
+  const [revenueDirty, setRevenueDirtyState] = useState(false);
+  const revenueDirtyRef = useRef(false);
+  const lastUrl = useRef('');
+  const setRevenueDirty = useCallback((dirty: boolean) => {
+    revenueDirtyRef.current = dirty;
+    setRevenueDirtyState(dirty);
+  }, []);
+  const confirmRevenueLeave = useCallback(() => {
+    if (!allowRevenueLeave(revenueDirtyRef.current, (message) => window.confirm(message))) return false;
+    setRevenueDirty(false);
+    return true;
+  }, [setRevenueDirty]);
+  const [resetOpen, setResetOpen] = useState(false);
+  const [resetting, setResetting] = useState(false);
+  const [resetError, setResetError] = useState('');
   const [stage, setStage] = useState<StageId>('entry'),
     [dir, setDir] = useState<'forward' | 'back'>('forward'),
     [dark, setDark] = useState(false),
@@ -89,11 +108,44 @@ export function GuidedFlow() {
   const title = useRef<HTMLDivElement>(null);
   const stageRef = useRef<StageId>('entry');
   stageRef.current = stage;
+  useEffect(() => { lastUrl.current = window.location.href; }, [hook.id, stage]);
   useEffect(() => {
+    const resetElsewhere = (event: StorageEvent) => {
+      if (event.key === 'flowvalue-reset-at' && event.newValue) {
+        setRevenueDirty(false);
+        window.location.replace(freshEntryUrl);
+      }
+    };
+    window.addEventListener('storage', resetElsewhere);
+    return () => window.removeEventListener('storage', resetElsewhere);
+  }, [setRevenueDirty]);
+  async function resetHistory() {
+    if (resetting) return;
+    setResetting(true);
+    setResetError('');
+    try {
+      await api('assessments/reset', post({ confirm: true }));
+      clearFlowValueHistory(localStorage, sessionStorage);
+      setRevenueDirty(false);
+      window.location.replace(freshEntryUrl);
+    } catch (error) {
+      setResetError((error as Error).message);
+      setResetting(false);
+    }
+  }
+  useEffect(() => {
+    lastUrl.current = window.location.href;
     const requested = new URL(window.location.href).searchParams.get('stage');
     if (isStage(requested)) setStage(requested);
     setDark(localStorage.getItem('flowvalue-theme') === 'dark');
     const back = () => {
+      if (!confirmRevenueLeave()) {
+        // popstate arrives after the URL changes; restore the current page
+        // without remounting or discarding its revenue draft.
+        window.history.pushState(window.history.state, '', lastUrl.current);
+        return;
+      }
+      lastUrl.current = window.location.href;
       const next = new URL(window.location.href).searchParams.get('stage');
       const target = isStage(next) ? next : 'entry';
       setDir(direction(stageRef.current, target));
@@ -102,7 +154,33 @@ export function GuidedFlow() {
     };
     window.addEventListener('popstate', back);
     return () => window.removeEventListener('popstate', back);
-  }, []);
+  }, [confirmRevenueLeave]);
+  useEffect(() => {
+    if (!revenueDirty) return;
+    const unload = (event: BeforeUnloadEvent) => {
+      if (!revenueDirtyRef.current) return;
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    const link = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const anchor = event.target instanceof Element ? event.target.closest('a[href]') : null;
+      if (!(anchor instanceof HTMLAnchorElement) || anchor.target === '_blank' || anchor.hasAttribute('download')) return;
+      const destination = new URL(anchor.href, window.location.href);
+      const current = new URL(window.location.href);
+      if (destination.origin === current.origin && destination.pathname === current.pathname && destination.search === current.search) return;
+      if (!confirmRevenueLeave()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    };
+    window.addEventListener('beforeunload', unload);
+    document.addEventListener('click', link, true);
+    return () => {
+      window.removeEventListener('beforeunload', unload);
+      document.removeEventListener('click', link, true);
+    };
+  }, [revenueDirty, confirmRevenueLeave]);
   useEffect(() => {
     // Move keyboard and screen-reader focus to the new stage after a user-driven transition.
     if (moved) title.current?.focus({ preventScroll: true });
@@ -110,14 +188,16 @@ export function GuidedFlow() {
   const go = useCallback((target: StageId) => {
     const current = stageRef.current;
     if (current === target) return;
+    if (!confirmRevenueLeave()) return;
     setDir(direction(current, target));
     setStage(target);
     const url = new URL(window.location.href);
     url.searchParams.set('stage', target);
     window.history.pushState({ stage: target }, '', url.pathname + url.search);
+    lastUrl.current = window.location.href;
     setMoved(true);
     window.scrollTo({ top: 0, behavior: 'auto' });
-  }, []);
+  }, [confirmRevenueLeave]);
   const advance = useCallback(
     async (prepare?: () => Promise<void>, upstream: string[] = []) => {
       const target = nextStage(stage),
@@ -151,7 +231,7 @@ export function GuidedFlow() {
       .then(() => hook.reload())
       .catch(() => {});
   }, [state, hook]);
-  const props: StageProps = { hook, equipment, capex, operating, advance, go, aiSizing, setAiSizing };
+  const props: StageProps = { hook, equipment, capex, operating, advance, go, aiSizing, setAiSizing, setRevenueDirty, confirmRevenueLeave };
   const current = guidedStages[stageIndex(stage)];
   return (
     <div className={`gf ${dark ? 'dark' : ''}`} data-stage={stage}>
@@ -199,8 +279,21 @@ export function GuidedFlow() {
           >
             {dark ? '☀' : '☾'}
           </button>
+          <button type="button" className="gf-ghost" aria-label="Reset FlowValue" title="Clear local history and start again"
+            onClick={() => { setResetError(''); setResetOpen(true); }}>
+            <span aria-hidden="true">↻</span> Reset
+          </button>
         </div>
       </div>
+      {resetOpen && <Panel title="Reset FlowValue?" kicker="START AGAIN" onClose={() => { if (!resetting) setResetOpen(false); }}
+        footer={<>
+          <button type="button" className="gf-secondary" disabled={resetting} onClick={() => setResetOpen(false)}>Cancel</button>
+          <button type="button" disabled={resetting} onClick={() => void resetHistory()}>{resetting ? 'Clearing…' : 'Clear history & restart'}</button>
+        </>}>
+        <p>This clears all local projects, saved versions, AI response cache and browser drafts, then opens a fresh Entry page.</p>
+        <p>This cannot be undone.</p>
+        {resetError && <p className="gf-error" role="alert">{resetError}</p>}
+      </Panel>}
       {(state?.running || ['queued', 'running'].includes(String(obj(state?.autopilot).status))) && (
         <RunProgress id={hook.id} fallback={String(state?.status || 'Python is calculating')} />
       )}

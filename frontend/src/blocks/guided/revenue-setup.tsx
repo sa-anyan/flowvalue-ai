@@ -1,5 +1,6 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { revenueDraftSignature } from '@/lib/unsaved-revenue';
 import { compact, list, obj, studyReport, text, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
 import type { StageProps } from './flow';
@@ -52,15 +53,24 @@ export function RevenueSetup({ props }: { props: StageProps }) {
   const config = obj(obj(state?.plan).operating_economics);
   const studyDate = text(obj(obj(state?.plan).cost_translation).target_period);
   const saved = list(config.sales);
+  const [savedSignature, setSavedSignature] = useState<string | null>(null);
   const [sales, setSales] = useState<Sale[]>([]),
     [currency, setCurrency] = useState('USD'),
     [days, setDays] = useState('330'),
     [hours, setHours] = useState('24'),
     [result, setResult] = useState<Row | null>(null);
+  const signature = revenueDraftSignature(sales, currency, days, hours);
+  const currentSignature = useRef(signature);
+  currentSignature.current = signature;
+  const notifyDirty = props.setRevenueDirty;
+  const dirty = savedSignature !== null && signature !== savedSignature;
+  useEffect(() => {
+    notifyDirty?.(dirty);
+  }, [dirty, notifyDirty]);
+  useEffect(() => () => notifyDirty?.(false), [notifyDirty]);
 
   useEffect(() => {
-    setSales(
-      saved.length
+    const initialSales = saved.length
         ? saved.map((s) => ({
             name: text(s.name),
             stream_key: text(s.stream_key),
@@ -68,15 +78,20 @@ export function RevenueSetup({ props }: { props: StageProps }) {
             unit_price: text(s.unit_price),
             quantity_unit: text(s.quantity_unit) || 'kg',
           }))
-        : [{ name: '', stream_key: '', component: '', unit_price: '', quantity_unit: 'kg' }],
-    );
-    setCurrency(text(obj(config.price_basis).currency) || 'USD');
-    setDays(text(obj(config.operating).days_per_year) || '330');
-    setHours(text(obj(config.operating).hours_per_day) || '24');
+        : [{ name: '', stream_key: '', component: '', unit_price: '', quantity_unit: 'kg' }];
+    const initialCurrency = text(obj(config.price_basis).currency) || 'USD';
+    const initialDays = text(obj(config.operating).days_per_year) || '330';
+    const initialHours = text(obj(config.operating).hours_per_day) || '24';
+    setSales(initialSales);
+    setCurrency(initialCurrency);
+    setDays(initialDays);
+    setHours(initialHours);
+    setSavedSignature(revenueDraftSignature(initialSales, initialCurrency, initialDays, initialHours));
     setResult(null);
-    // Reset only when another study or a new saved revision arrives.
+    // Background work changes revision frequently. Never erase a revenue draft
+    // while the user is typing; reset only when opening another study.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state?.id, state?.revision]);
+  }, [state?.id]);
 
   if (!state || !streams.length) return null;
   const approved = Boolean(state.revenue_approval);
@@ -84,6 +99,7 @@ export function RevenueSetup({ props }: { props: StageProps }) {
   const ready = sales.length > 0 && sales.every((s) => s.stream_key);
 
   async function save() {
+    const submittedSignature = signature;
     await hook.action(async () => {
       const latest = await api<Row>('assessments/' + hook.id);
       const out = await api<Row>(
@@ -107,6 +123,10 @@ export function RevenueSetup({ props }: { props: StageProps }) {
         }),
       );
       setResult(out);
+      // A validated queued save is accepted too. Failed requests never reach
+      // here; changes typed while saving remain dirty against this snapshot.
+      setSavedSignature(submittedSignature);
+      if (currentSignature.current === submittedSignature) notifyDirty?.(false);
       hook.reload();
     });
   }
@@ -201,8 +221,8 @@ export function RevenueSetup({ props }: { props: StageProps }) {
         </label>
       </div>
       <div className="gf-inline-actions">
-        <span className={approved ? 'gf-ok' : 'gf-muted'}>
-          {approved ? '✓ Revenue set and approved' : saved.length ? 'Not approved yet' : 'Prices dated at the study cost date'}
+        <span className={dirty ? 'gf-warn' : approved ? 'gf-ok' : 'gf-muted'}>
+          {dirty ? 'Unsaved changes — click Save revenue' : approved ? '✓ Revenue set and approved' : saved.length ? 'Not approved yet' : 'Prices dated at the study cost date'}
         </span>
         {/* Never blocked by background work: a save while busy is applied between steps. */}
         <button type="button" className="gf-primary" disabled={!ready || hook.busy} onClick={() => void save()}>

@@ -60,7 +60,10 @@ def calculate(ctx):
             from backend.revenue.economic_savings.avoided_costs import apply_savings
 
             costs = apply_savings(costs, revenue.avoided_costs, year)
-        result = _opex(cap, basis, costs, annual, allow_partial=True)
+        try:
+            result = _opex(cap, basis, costs, annual, allow_partial=True)
+        except ValueError as exc:
+            raise DataRequired(str(exc), updates={"plan": {"operating_economics": original}}) from exc
         result = phase_fixed_costs(result, config, year)
         years[str(year)], details[str(year)] = plain(result), detail
         complete = (
