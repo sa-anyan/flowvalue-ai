@@ -303,12 +303,12 @@ export function GuidedFlow() {
         </p>
       )}
       {hook.error && (
-        <p className="gf-error" role="alert">
-          {hook.error}
-          <button type="button" className="gf-link" onClick={() => hook.setError('')}>
+        <div className="gf-app-alert" role="alert">
+          <div><strong>Something needs attention</strong><span>{hook.error}</span></div>
+          <button type="button" className="gf-secondary" onClick={() => hook.setError('')}>
             Dismiss
           </button>
-        </p>
+        </div>
       )}
       <main id="gf-stage" key={stage} className={`gf-stage gf-enter-${dir}`} aria-labelledby="gf-stage-title">
         <div ref={title} id="gf-stage-title" tabIndex={-1} className="gf-sr-only">

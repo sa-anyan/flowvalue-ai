@@ -453,3 +453,28 @@ polyline.gf-tone-c { stroke: var(--gf-tone-c); }
 .gf-launch-file { margin-left: auto; opacity: 0.65; font-size: 12px; }
 .gf-launch-failed { border-color: var(--gf-warn, #b45309); }
 .gf-start-links { margin: 0; }
+
+
+/* Compact, actionable alerts across guided stages. Avoid full-width loose text. */
+.gf .gf-app-alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 980px;
+  margin: 12px auto 0;
+  padding: 11px 14px;
+  border: 1px solid var(--gf-line);
+  border-left: 3px solid var(--gf-neg);
+  border-radius: 10px;
+  background: var(--gf-surface);
+  box-shadow: var(--gf-shadow);
+}
+.gf .gf-app-alert > div { display: grid; gap: 2px; min-width: 0; }
+.gf .gf-app-alert strong { color: var(--gf-ink); font-size: 12px; }
+.gf .gf-app-alert span { color: var(--gf-muted); font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }
+.gf .gf-app-alert button { flex: 0 0 auto; font-size: 12px; }
+@media (max-width: 700px) {
+  .gf .gf-app-alert { margin: 8px 12px 0; align-items: flex-start; }
+  .gf .gf-app-alert button { padding: 7px 9px; }
+}
