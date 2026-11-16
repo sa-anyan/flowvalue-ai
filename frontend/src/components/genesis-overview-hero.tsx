@@ -47,7 +47,7 @@ export function GenesisOverviewHero({stages,id}:{stages:Stages;id:string}){
  const opexYears=obj(opex.years);
  const latestYear=Object.keys(opexYears).sort((a,b)=>Number(a)-Number(b)).at(-1);
  const cashOpex=latestYear?number(obj(opexYears[latestYear]).annual_cash_opex??obj(opexYears[latestYear]).resolved_cash_subtotal):null;
- const opexTrend=Object.keys(opexYears).sort((a,b)=>Number(a)-Number(b)).map(year=>({year,cost:number(obj(opexYears[year]).annual_cash_opex??obj(opexYears[year]).resolved_cash_subtotal)})).filter((p):p is {year:string;cost:number}=>p.cost!==null).slice(-8);
+ const opexTrend=Object.keys(opexYears).sort((a,b)=>Number(a)-Number(b)).map(year=>({year,cost:number(obj(opexYears[year]).annual_cash_opex??obj(opexYears[year]).resolved_cash_subtotal)})).filter((p):p is {year:string;cost:number}=>p.cost!==null&&p.cost>=0).slice(-8);
  const opexTrendMax=Math.max(1,...opexTrend.map(p=>p.cost));
  const revenueYears=list(revenue.annual);
  const matchingRevenue=revenueYears.find(r=>String(r.year)===latestYear);
