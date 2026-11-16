@@ -38,3 +38,43 @@ class CloudRuntimeTests(unittest.TestCase):
   import backend.api.app as api
   with patch.object(api,'CLOUD',True),patch('backend.cloud.runtime.verified_workspace',side_effect=PermissionError('Invalid')),TestClient(api.app,base_url='https://host.example') as client:
    self.assertEqual(client.get('/api/versions',headers={'Authorization':'Bearer forged'}).status_code,401)
+
+
+ def test_hosted_reset_calls_scoped_rpc_with_caller_token(self):
+  import json
+  from unittest.mock import MagicMock
+  store=CloudStore('https://example.supabase.co','publishable','owner-token','00000000-0000-4000-8000-000000000001')
+  response=MagicMock()
+  response.__enter__.return_value.read.return_value=json.dumps({'assessments':2,'versions':3,'ai_cache':1}).encode()
+  opener=MagicMock()
+  opener.open.return_value=response
+  with patch('backend.cloud.store.build_opener',return_value=opener):
+   counts=store.clear_history()
+  self.assertEqual(counts,{'assessments':2,'versions':3,'ai_cache':1})
+  request=opener.open.call_args.args[0]
+  self.assertEqual(request.full_url,'https://example.supabase.co/rest/v1/rpc/flowvalue_rebuild_reset_history')
+  self.assertEqual(request.get_method(),'POST')
+  self.assertEqual(request.get_header('Authorization'),'Bearer owner-token')
+  self.assertEqual(request.data,b'{}')
+
+ def test_hosted_reset_requires_login_and_confirmation(self):
+  import backend.api.app as api
+  owner=CloudStore('https://example.supabase.co','publishable','owner-token','00000000-0000-4000-8000-000000000001')
+  with patch.object(api,'CLOUD',True),patch.object(api,'store',WorkspaceProxy()),patch.object(owner,'clear_history',return_value={'assessments':1,'versions':2,'ai_cache':3}) as clear,patch('backend.cloud.runtime.verified_workspace',return_value=owner),TestClient(api.app,base_url='https://host.example') as client:
+   self.assertEqual(client.post('/api/assessments/reset',json={'confirm':True}).status_code,401)
+   response=client.post('/api/assessments/reset',json={'confirm':False},headers={'Authorization':'Bearer owner-token'})
+   self.assertEqual(response.status_code,422)
+   clear.assert_not_called()
+   response=client.post('/api/assessments/reset',json={'confirm':True},headers={'Authorization':'Bearer owner-token'})
+   self.assertEqual(response.status_code,200)
+   self.assertEqual(response.json(),{'reset':True,'cleared':{'assessments':1,'versions':2,'ai_cache':3}})
+   clear.assert_called_once_with()
+  self.assertIsNone(workspace.get())
+
+ def test_hosted_reset_fails_closed_if_verified_workspace_not_a_cloud_store(self):
+  import backend.api.app as api
+  scoped=Mock()
+  with patch.object(api,'CLOUD',True),patch.object(api,'store',WorkspaceProxy()),patch('backend.cloud.runtime.verified_workspace',return_value=scoped),TestClient(api.app,base_url='https://host.example') as client:
+   response=client.post('/api/assessments/reset',json={'confirm':True},headers={'Authorization':'Bearer token'})
+   self.assertEqual(response.status_code,403)
+   scoped.clear_history.assert_not_called()
