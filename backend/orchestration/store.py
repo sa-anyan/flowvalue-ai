@@ -66,10 +66,14 @@ class Store:
                 raise ValueError("Assessment changed; reload before editing")
         return state
 
-    def version(self, key, name):
+    def version(self, key, name, *, snapshot=None):
         if not name.strip() or len(name) > 120:
             raise ValueError("Name the version (up to 120 characters)")
-        state = self.get(key)
+        state = self.get(key)  # access/existence check also applies to supplied snapshots
+        if snapshot is not None:
+            if snapshot.get("id") != key:
+                raise ValueError("Snapshot must belong to this assessment")
+            state = snapshot
         if state.get("running"):
             raise ValueError("Wait for the calculation to finish")
         version_id = uuid.uuid4().hex
@@ -155,6 +159,18 @@ class Store:
         if row is None:
             raise KeyError("Assessment not found")
         return row[0]
+
+    def clear_history(self):
+        """Atomically clear this local workspace, retaining its empty schema."""
+        with self.db() as db:
+            db.execute("BEGIN IMMEDIATE")
+            if db.execute("SELECT 1 FROM assessments WHERE json_extract(state, '$.running')=1 LIMIT 1").fetchone():
+                raise ValueError("A calculation is still running. Let it finish, then reset.")
+            counts = {table: db.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+                      for table in ("assessments", "versions", "ai_cache")}
+            for table in ("versions", "assessments", "ai_cache"):
+                db.execute(f"DELETE FROM {table}")
+        return counts
 
     def states_by_source(self, source_sha256):
         """Saved studies of the exact same source file, oldest first."""

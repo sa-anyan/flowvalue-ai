@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { stableJson } from '@/lib/stable-json';
 import { assessmentHref } from '@/lib/assessment-navigation';
 import { type Job, type Settings } from '@/lib/monte-carlo';
 import { strings,
@@ -56,15 +57,30 @@ export function FinancialPlayground(props: StageProps) {
   const { hook } = props;
   const state = hook.state;
   const stage = obj(obj(obj(state?.results).stages).financial);
-  const result = obj(stage.result);
-  const metrics = metricMap(result);
-  const ledger = list(result.ledger);
-  const currency = text(result.currency);
   const [tab, setTab] = useState<Tab>('results'),
     [pins, setPins] = useState<ChartId[]>(['cumulative']),
     [side, setSide] = useState(false),
-    [job, setJob] = useState<Job | null>(null),
-    [before, setBefore] = useState<Record<string, string> | null>(null);
+    [job, setJob] = useState<Job | null>(null);
+  const [scenarioBase, setScenarioBase] = useState<Row | null>(null);
+  const [scenario, setScenario] = useState<Row | null>(null);
+  const [overrides, setOverrides] = useState<Row>({});
+  const [scenarioUpdating, setScenarioUpdating] = useState(false);
+  const [scenarioBaseError, setScenarioBaseError] = useState('');
+  const financialSnapshot = text(obj(stage.result).snapshot_id);
+  useEffect(() => {
+    setScenario(null); setOverrides({}); setScenarioBase(null); setScenarioBaseError('');
+    if (!state?.id || !financialSnapshot) return;
+    const controller = new AbortController();
+    void api<Row>(`assessments/${state.id}/financial-sensitivity`, { signal: controller.signal })
+      .then((value) => { if (!controller.signal.aborted) setScenarioBase(value); })
+      .catch((error) => { if (!controller.signal.aborted) setScenarioBaseError(error.message); });
+    return () => controller.abort();
+  }, [state?.id, financialSnapshot]);
+  const result = tab === 'scenario' ? obj(scenario?.result || scenarioBase?.result || stage.result) : obj(stage.result);
+  const metrics = metricMap(result);
+  const originalMetrics = metricMap(obj(scenarioBase?.result));
+  const ledger = list(result.ledger);
+  const currency = text(result.currency);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   useEffect(() => {
     const saved = readPins();
@@ -100,7 +116,6 @@ export function FinancialPlayground(props: StageProps) {
     if (id === 'mc-fan') return <FanChart title={chartTitles[id]} height={height} rows={cashBands(summary) as unknown as Row[]} />;
     return <PercentileStrip metric={obj(obj(summary.metrics).npv)} currency={text(summary.currency) || currency} />;
   };
-  const snapshot = () => Object.fromEntries(financialMetricKeys.map(([, key, kind]) => [key, metricText(metrics.get(key), kind)]));
   return (
     <div className={`gf-play gf-fin ${side && pins.length ? 'gf-fin-side' : ''}`}>
       <StageHeading
@@ -117,10 +132,10 @@ export function FinancialPlayground(props: StageProps) {
           </div>
         }
       >
-        Investment performance from the Python financial ledger. Try changes on the scenario tab; your baseline stays intact until you save.
+        Investment performance from the Python financial ledger. Scenario calculations are saved separately and never replace your original project results.
       </StageHeading>
       <AnalystCard stage="financial" hook={props.hook} />
-      <FinancialPlanningNote config={obj(obj(state?.plan).operating_economics)} />
+      {tab !== 'scenario' && <FinancialPlanningNote config={obj(obj(state?.plan).operating_economics)} />}
       <div className="gf-fin-layout">
         {pins.length > 0 && (
           <div className="gf-pins" role="complementary" aria-label="Pinned charts">
@@ -147,14 +162,15 @@ export function FinancialPlayground(props: StageProps) {
                   <strong>{value}</strong>
                   <span>
                     {kind === 'money' ? currency : text(metrics.get(key)?.unit)}
-                    {before && before[key] !== value ? ` · was ${before[key]}` : ''}
+                    {tab === 'scenario' && Object.keys(overrides).length > 0 ? ` · original ${metricText(originalMetrics.get(key), kind)}` : ''}
                   </span>
                 </div>
               );
             })}
           </div>
           {!stage.result && <p className="gf-note">The financial model has not been calculated yet. Complete CAPEX, OPEX and Revenue, then run Financial.</p>}
-          <Issues items={[...strings(stage.issues), ...strings(result.issues)]} />
+          {tab === 'scenario' && <p className="gf-note" role="status">{scenarioUpdating ? 'Updating scenario — displayed values are from the last completed calculation.' : scenario ? 'Independent scenario results · original CAPEX, OPEX and Revenue unchanged.' : 'Original calculated financial results.'}</p>}
+          <Issues items={tab === 'scenario' ? strings(result.issues) : [...strings(stage.issues), ...strings(result.issues)]} />
           <div className="gf-tabs" role="tablist" aria-label="Financial views">
             {tabs.map(([id, label], i) => (
               <button
@@ -191,7 +207,13 @@ export function FinancialPlayground(props: StageProps) {
                 ))}
               </div>
             )}
-            {tab === 'scenario' && <ScenarioTab props={props} onBeforeRun={() => setBefore(snapshot())} />}
+            {tab === 'scenario' && <>
+              <ScenarioTab props={props} base={scenarioBase} baseError={scenarioBaseError} overrides={overrides}
+                setOverrides={setOverrides} onResult={setScenario} onUpdating={setScenarioUpdating} completedKey={scenario ? stableJson(scenario.overrides) : ""} />
+              <div className="gf-chart-grid">{(['cumulative', 'fcff', 'income'] as ChartId[]).map((id) => (
+                <ChartCard key={id} title={chartTitles[id]} pinned={pins.includes(id)} onPin={() => togglePin(id)}>{chart(id)}</ChartCard>
+              ))}</div>
+            </>}
             {tab === 'monte' && (
               <MonteCarloTab props={props} job={job} setJob={setJob} pins={pins} onPin={togglePin} chart={chart} />
             )}
@@ -204,16 +226,16 @@ export function FinancialPlayground(props: StageProps) {
         </button>
         <div className="gf-runbar-status">
           <strong>{stage.result ? 'Financial model calculated by Python' : 'Financial model pending'}</strong>
-          <small>Reports and exports use the same saved assessment.</small>
+          <small>{tab === 'scenario' ? 'Scenario calculations are stored separately. Reset restores the original calculation.' : 'Reports and exports use the same saved assessment.'}</small>
         </div>
-        {stage.result ? (
+        {stage.result && tab !== 'scenario' ? (
           <a className="gf-secondary gf-button-link" href={`/api/assessments/${hook.id}/report`} target="_blank" rel="noreferrer">
             Open TEA report ↗
           </a>
         ) : null}
-        <button type="button" className="gf-primary gf-run" disabled={hook.busy || Boolean(state?.running)} onClick={() => void hook.action(() => hook.runStage('financial'))}>
+        {tab !== 'scenario' && <button type="button" className="gf-primary gf-run" disabled={hook.busy || Boolean(state?.running)} onClick={() => void hook.action(() => hook.runStage('financial'))}>
           Recalculate financials
-        </button>
+        </button>}
       </div>
     </div>
   );
@@ -252,10 +274,37 @@ function PercentileStrip({ metric, currency }: { metric: Row; currency: string }
 
 /* --------------------------------------------------------------- scenario */
 
-function ScenarioTab({ props, onBeforeRun }: { props: StageProps; onBeforeRun: () => void }) {
-  const { hook, operating } = props;
+export function ScenarioTab({ props, base, baseError, overrides, setOverrides, onResult, onUpdating, completedKey = "" }: {
+  props: StageProps; base: Row | null; baseError: string; overrides: Row; completedKey?: string;
+  setOverrides: (value: Row) => void; onResult: (value: Row | null) => void; onUpdating: (value: boolean) => void;
+}) {
+  const { hook } = props;
   const state = hook.state!;
-  const policy = obj(operating.value.financial);
+  const policy = { ...obj(base?.policy), ...overrides };
+  const [error, setError] = useState('');
+  const [updating, setUpdating] = useState(false);
+  const overrideKey = stableJson(overrides);
+  const snapshotId = text(base?.baseline_snapshot_id);
+  useEffect(() => {
+    setError('');
+    if (!snapshotId || !Object.keys(overrides).length || overrideKey === completedKey) { onUpdating(false); setUpdating(false); return; }
+    let disposed = false;
+    const controller = new AbortController();
+    setUpdating(true); onUpdating(true);
+    const timer = setTimeout(() => {
+      void api<Row>(`assessments/${state.id}/financial-sensitivity`, { ...post({ baseline_snapshot_id: snapshotId, overrides }), signal: controller.signal })
+        .then((value) => {
+          if (disposed) return;
+          onResult(value);
+          void api<Row[]>(`assessments/${state.id}/versions`).then(setTemplates).catch(() => {});
+        })
+        .catch((failure) => { if (!disposed) setError(failure.message); })
+        .finally(() => { if (!disposed) { setUpdating(false); onUpdating(false); } });
+    }, 400);
+    return () => { disposed = true; clearTimeout(timer); controller.abort(); onUpdating(false); };
+    // Canonical signature keeps the effect independent of object identity.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [overrideKey, snapshotId, state.id, completedKey]);
   const [templates, setTemplates] = useState<Row[]>([]),
     [name, setName] = useState(''),
     [comparison, setComparison] = useState<Row | null>(null),
@@ -272,11 +321,7 @@ function ScenarioTab({ props, onBeforeRun }: { props: StageProps; onBeforeRun: (
         .then((all) => setBaselineId(text((Array.isArray(all) ? all : []).find((v) => v.id === state.parent_version)?.assessment_id)))
         .catch(() => {});
   }, [state.id, state.revision, state.parent_version]);
-  const setLever = (key: string, value: number) => operating.set({ ...operating.value,
-    financial: { ...policy, [key]: value, rationale: 'User scenario adjustment in the Financial playground' },
-    financial_input_provenance: { ...obj(operating.value.financial_input_provenance),
-      [key]: { ...obj(obj(operating.value.financial_input_provenance)[key]), origin: 'user', status: 'user_input', value,
-        rationale: 'User changed this financial planning assumption' } } });
+  const setLever = (key: string, value: number) => setOverrides({ ...overrides, [key]: value });
   const report = obj(state.scoped_report || state.effective_report || obj(state.parsed).report);
   const equipment = list(report.entities).filter((e) => e.kind === 'equipment');
   async function register(edit: Row) {
@@ -287,7 +332,7 @@ function ScenarioTab({ props, onBeforeRun }: { props: StageProps; onBeforeRun: (
       <section className="gf-card-block" aria-labelledby="gf-levers">
         <div className="gf-block-head">
           <h2 id="gf-levers">Key parameters</h2>
-          <span className="gf-muted">{operating.dirty ? 'Unsaved changes' : 'Saved values'}</span>
+          <span className="gf-muted">{updating ? 'Calculating scenario…' : Object.keys(overrides).length ? 'Independent scenario' : 'Original calculated values'}</span>
         </div>
         <div className="gf-levers">
           {financialLevers.map((lever) => {
@@ -298,9 +343,10 @@ function ScenarioTab({ props, onBeforeRun }: { props: StageProps; onBeforeRun: (
                   {lever.label} {value === null && <em className="gf-required">Not set</em>}
                 </label>
                 <div>
-                  <input id={`gf-l-${lever.key}`} type="range" min={lever.min} max={lever.max} step={lever.step} value={value ?? lever.min} onChange={(e) => setLever(lever.key, Number(e.target.value))} />
+                  <input id={`gf-l-${lever.key}`} type="range" disabled={!base} min={lever.min} max={lever.max} step={lever.step} value={value ?? lever.min} onChange={(e) => setLever(lever.key, Number(e.target.value))} />
                   <input
                     type="number"
+                    disabled={!base}
                     aria-label={`${lever.label}${lever.percent ? ', percent' : ''}`}
                     step={lever.percent ? 0.1 : lever.step}
                     value={value === null ? '' : lever.percent ? Number((value * 100).toFixed(2)) : value}
@@ -313,31 +359,20 @@ function ScenarioTab({ props, onBeforeRun }: { props: StageProps; onBeforeRun: (
           })}
         </div>
         <label className="gf-field">
-          <span>Closure allowance ({text(obj(operating.value.price_basis).currency) || 'project currency'})</span>
-          <input type="number" min="0" step="any" value={num(policy.closure_allowance) ?? ''}
+          <span>Closure allowance ({text(obj(obj(state.plan.operating_economics).price_basis).currency) || 'project currency'})</span>
+          <input type="number" disabled={!base} min="0" step="any" value={num(policy.closure_allowance) ?? ''}
             onChange={(event) => event.target.value !== '' && setLever('closure_allowance', Number(event.target.value))} />
           <small>One-time end-of-project allowance. A zero is a planning assumption, not a confirmed free closure.</small>
         </label>
         <div className="gf-line-actions">
-          <button type="button" className="gf-secondary" disabled={!operating.dirty || hook.busy} onClick={() => operating.reset()}>
-            Reset
-          </button>
-          <button
-            type="button"
-            className="gf-primary"
-            disabled={!operating.dirty || hook.busy || Boolean(state.running)}
-            onClick={() => {
-              onBeforeRun();
-              void hook.action(async () => {
-                await operating.save('User adjusted financial levers in the Financial playground');
-                await hook.runStage('financial');
-              });
-            }}
-          >
-            Apply & recalculate
+          <button type="button" className="gf-secondary" disabled={!Object.keys(overrides).length}
+            onClick={() => { setOverrides({}); onResult(null); setError(''); onUpdating(false); }}>
+            Reset to original
           </button>
         </div>
-        {!isCopy && <small className="gf-muted">These change the current assessment. Save a template first to keep the current analysis for comparison.</small>}
+        {(error || baseError) && <p className="gf-error" role="alert">{error || baseError}</p>}
+        {!base && !baseError && <p className="gf-muted">Loading the original calculated financial inputs…</p>}
+        <small className="gf-muted">Changes calculate automatically in Python after a short pause and are saved as separate versions. Original inputs and upstream results stay unchanged.</small>
       </section>
 
       <section className="gf-card-block" aria-labelledby="gf-templates">
@@ -350,7 +385,8 @@ function ScenarioTab({ props, onBeforeRun }: { props: StageProps; onBeforeRun: (
             disabled={!name.trim() || hook.busy || Boolean(state.running)}
             onClick={() =>
               void hook.action(async () => {
-                await api(`assessments/${state.id}/versions`, post({ name: name.trim() }));
+                if (Object.keys(overrides).length) await api(`assessments/${state.id}/financial-sensitivity`, post({ baseline_snapshot_id: snapshotId, overrides, name: name.trim() }));
+                else await api(`assessments/${state.id}/versions`, post({ name: name.trim() }));
                 setName('');
                 setTemplates(await api<Row[]>(`assessments/${state.id}/versions`));
               })

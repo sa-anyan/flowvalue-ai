@@ -1,9 +1,8 @@
 """Founder rule (11 Nov 2026): prefer OpenPyTEA over Garrett for the same equipment.
 
-When the matcher selects a Garrett model but also lists a usable OpenPyTEA model
-of the same equipment family, the OpenPyTEA model is selected and the Garrett
-model stays as an alternative. Python enforces this so it does not depend on the
-language model following the instruction. A user-confirmed selection is never
+OpenPyTEA alternatives are ranked first for suitability review. A library name
+or shared family never overrides an explicitly reviewed configuration; sizing
+must check its function, configuration, domain and cost scope. A user-confirmed selection is never
 changed here: confirmed rows are protected later by retain_approved.
 """
 
@@ -114,8 +113,8 @@ def openpytea_first(ids, model_by_id):
 def apply_preference(decision, model_by_id):
     """Return (decision, audit). audit is None when the rule did not apply.
 
-    Order: a usable OpenPyTEA model the AI listed; otherwise usable OpenPyTEA
-    models of the same family from the catalogue; otherwise keep Garrett.
+    Rank available OpenPyTEA alternatives first while retaining the selected
+    configuration until the sizing review checks equivalence.
     """
     decision = dict(decision)
     decision["candidate_model_ids"] = openpytea_first(decision.get("candidate_model_ids", []), model_by_id)
@@ -128,34 +127,21 @@ def apply_preference(decision, model_by_id):
         if model_by_id[i].get("source") == "openpytea" and openpytea_category(model_by_id[i]) in families
     ]
     computable = [i for i in listed if usable(model_by_id[i])]
-    if computable:
-        decision["selected_model_id"] = computable[0]
-        return decision, {
-            "rule": "prefer_openpytea_over_garrett",
-            "applied": True,
-            "replaced": selected["model_id"],
-            "selected": computable[0],
-            "reason": "Founder rule: OpenPyTEA is preferred when it covers the same equipment family; the Garrett model stays as an alternative.",
-        }
-    # The AI listed no usable OpenPyTEA option. Look in the catalogue itself, so
-    # "OpenPyTEA first" does not depend on what the AI happened to list.
-    found = catalogue_family(selected, model_by_id)
-    if not found:
-        if listed:
-            return decision, {
-                "rule": "prefer_openpytea_over_garrett",
-                "applied": False,
-                "kept": selected["model_id"],
-                "reason": "Same-family OpenPyTEA models exist but none can be sized: " + ", ".join(listed),
-            }
+    found = [] if computable else catalogue_family(selected, model_by_id)
+    if not computable and not found:
         return decision, None
-    decision["candidate_model_ids"] = found + [i for i in decision["candidate_model_ids"] if i not in found]
-    decision["selected_model_id"] = None
+    decision["candidate_model_ids"] = found + [
+        i for i in decision["candidate_model_ids"] if i not in found
+    ]
+    # Family membership and numerical availability do not establish equivalent
+    # pressure, agitation, material, scope or valid size. Keep the AI's reviewed
+    # configuration; the sizing specialist sees OpenPyTEA alternatives first and
+    # may select one only after checking those requirements.
     return decision, {
         "rule": "prefer_openpytea_over_garrett",
-        "applied": True,
-        "replaced": selected["model_id"],
-        "selected": None,
+        "applied": False,
+        "kept": selected["model_id"],
+        "selected": selected["model_id"],
         "added_from_catalogue": found,
-        "reason": "Founder rule: OpenPyTEA models of the same family exist in the catalogue; the configuration is chosen at sizing, OpenPyTEA first, with the Garrett model kept as the fallback.",
+        "reason": "OpenPyTEA alternatives ranked first for sizing review; library preference alone cannot replace the reviewed configuration or establish its size/material/pressure/scope suitability.",
     }

@@ -7,7 +7,7 @@ configurations and references, without costs, curves or numerical sizing data.
 
 The prompt applies exact-word hints, semantic equivalence, operational knowledge,
 process context and conceptual suitability review in one bounded model request per
-32 entries. Python checks the response structure, catalogue references and source
+8 entries. Python checks the response structure, catalogue references and source
 IDs; it cannot certify the model's engineering judgement. No second reviewer,
 hardcoded family-compatibility matrix or full-design validation is involved.
 
@@ -37,3 +37,14 @@ Tests: focused matching, compatibility, stage integration and engineering-review
 suite: 43 passed. Frontend production build passed. Local browser confirmed a
 selected spray-dryer model and the matching explanation. New live projects still
 need engineering review; a prompt and schema do not guarantee correct matches.
+
+## Current-run review (16 November 2026)
+
+Save-and-go keeps instant guesses provisional and runs the existing batched AI
+review when enabled. Tag-only guesses do not select models. Each stage uses a
+new RunStore: no AI response is read from or written to the persistent cache,
+while duplicate work within the execution can reuse an in-memory response.
+Identical re-uploads no longer inherit equipment-scope decisions. Current explicit
+user models and sizing remain inputs, with alternatives shown for review; they
+are never inferred confirmations. Library preference orders candidates without
+overriding reviewed configurations. See [current-run checks](../../docs/current-run-model-review.md).

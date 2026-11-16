@@ -17,6 +17,51 @@ const compile=(module,file,jsx)=>module._compile(ts.transpileModule(fs.readFileS
 require.extensions['.ts']=(m,f)=>compile(m,f,false);
 require.extensions['.tsx']=(m,f)=>compile(m,f,true);
 const lib=require('../src/lib/guided-flow.ts');
+test('Unsaved revenue blocks leaving when Cancel is chosen and allows explicit discard',()=>{
+ const {allowRevenueLeave,unsavedRevenueMessage}=require('../src/lib/unsaved-revenue.ts');
+ let prompts=0;
+ assert.equal(allowRevenueLeave(false,()=>{throw Error('Pristine forms must not prompt');}),true);
+ assert.equal(allowRevenueLeave(true,message=>{prompts++;assert.equal(message,unsavedRevenueMessage);return false;}),false);
+ assert.equal(allowRevenueLeave(true,()=>{prompts++;return true;}),true);
+ assert.equal(prompts,2);
+});
+test('Revenue dirty tracking includes stream, component, price, units and operating schedule',()=>{
+ const {revenueDraftSignature}=require('../src/lib/unsaved-revenue.ts');
+ const sale={name:'Water',stream_key:'water-stream',component:'Water',unit_price:'0.2',quantity_unit:'m3'};
+ const saved=revenueDraftSignature([sale],'USD','314','24');
+ assert.equal(saved,revenueDraftSignature([{...sale}],'USD','314','24'));
+ for(const patch of [{name:'Treated water'},{stream_key:'other'},{component:''},{unit_price:'0'},{quantity_unit:'kg'}])
+  assert.notEqual(saved,revenueDraftSignature([{...sale,...patch}],'USD','314','24'));
+ assert.notEqual(saved,revenueDraftSignature([sale],'GBP','314','24'));
+ assert.notEqual(saved,revenueDraftSignature([sale],'USD','330','24'));
+ assert.notEqual(saved,revenueDraftSignature([sale],'USD','314','12'));
+ assert.notEqual(saved,revenueDraftSignature([],'USD','314','24'));
+ // A newer edit remains dirty against the exact snapshot submitted by Save.
+ const submitted=revenueDraftSignature([{...sale,unit_price:'0.3'}],'USD','314','24');
+ const typedWhileSaving=revenueDraftSignature([{...sale,unit_price:'0.4'}],'USD','314','24');
+ assert.notEqual(submitted,typedWhileSaving);
+});
+test('Reset clears FlowValue history while preserving theme and unrelated data',()=>{
+ const {clearFlowValueHistory,freshEntryUrl}=require('../src/lib/reset-history.ts');
+ const storage=(entries)=>{
+  const values=new Map(Object.entries(entries));
+  return {get length(){return values.size},key:i=>Array.from(values.keys())[i]??null,
+   getItem:k=>values.get(k)??null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)};
+ };
+ const local=storage({'flowvalue-assessment':'old','flowvalue-pinned-charts':'{}','flowvalue-currency':'GBP','flowvalue-theme':'dark','auth-token':'keep'});
+ const session=storage({'flowvalue-draft':'old','other-app':'keep'});
+ clearFlowValueHistory(local,session);
+ assert.equal(local.getItem('flowvalue-assessment'),null);
+ assert.equal(local.getItem('flowvalue-pinned-charts'),null);
+ assert.equal(local.getItem('flowvalue-currency'),null);
+ assert.equal(local.getItem('flowvalue-theme'),'dark');
+ assert.equal(local.getItem('auth-token'),'keep');
+ assert.equal(session.getItem('flowvalue-draft'),null);
+ assert.equal(session.getItem('other-app'),'keep');
+ assert.ok(local.getItem('flowvalue-reset-at'));
+ const {assessmentFromUrl}=require('../src/lib/assessment-navigation.ts');
+ assert.equal(assessmentFromUrl(freshEntryUrl,'a'.repeat(32)),'');
+});
 test('Revenue shows the Python 100% annual baseline instead of a year-one forecast',()=>{
  const {RevenuePlayground}=require('../src/blocks/guided/revenue-playground.tsx');
  const result={basis:{currency:'USD',price_period:'2026'},annual:[{year:1,sales_revenue:200}],full_operation:{annual:[{year:1,sales_revenue:1000}],commercial:[{year:1,line_id:'fee',revenue:1000,quantity:500,quantity_unit:'m3'}]}};
@@ -128,7 +173,7 @@ test('CAPEX lines label their origin and editability from plan and register',()=
  const result={lines:[{id:'piping',amount:'10',fraction:'0.2',base:'purchased_equipment',status:'source_factor'},{id:'land',amount:'0',status:'excluded'},{id:'equipment_installation',amount:null,status:'embedded'},{id:'contingency',amount:'5',fraction:'0.1',status:'source_factor'}]};
  const plan={factor_selection:'minimum',selected_factors:{contingency:0.1},exclusions:{land:'owned'},overrides:{}};
  const factors=[{id:'piping',minimum:'.15',maximum:'.70',stage:'direct'},{id:'equipment_installation',additive:false}];
- const register=[{path:'capex.selected_factors.contingency',origin:'ai_proposal'}];
+ const register=[{path:'capex.selected_factors.contingency',origin:'ai_proposal'},{path:'capex.exclusions.land',origin:'user'}];
  const lines=lib.capexLines(result,plan,factors,register);
  const by=Object.fromEntries(lines.map(l=>[l.id,l]));
  assert.equal(by.piping.origin,'Source range · Minimum');
@@ -137,6 +182,21 @@ test('CAPEX lines label their origin and editability from plan and register',()=
  assert.equal(by.land.excluded,true);
  assert.equal(by.equipment_installation.editable,false);
  assert.equal(by.contingency.origin,'Selected by AI · provisional');
+ assert.equal(by.contingency.inUse,true);
+ assert.equal(by.piping.inUse,false);
+ assert.equal(by.land.inUse,false);
+});
+
+test('CAPEX never attributes a saved selection to the user without provenance',()=>{
+ const result={lines:[{id:'piping'},{id:'land'},{id:'contingency'}]};
+ const plan={selected_factors:{piping:0.2},exclusions:{land:'existing'},overrides:{contingency:100}};
+ const lines=lib.capexLines(result,plan,[],[]);
+ assert.equal(lines[0].origin,'Provisional selection · review');
+ assert.equal(lines[1].origin,'Scope exclusion · review');
+ assert.equal(lines[2].origin,'Saved override · review');
+ assert.equal(lines[0].inUse,true);
+ assert.equal(lines[2].inUse,true);
+ assert.ok(lines.every(l=>!l.origin.includes('by you')&&!l.origin.includes('Your')));
 });
 
 test('financial metrics read the ledger list and stay pending when undefined',()=>{
@@ -352,4 +412,25 @@ test('parsed streams show revenue setup while equipment work continues',()=>{
  const html=renderToStaticMarkup(React.createElement(EntryStart,{hook:{state,aiEnabled:true},go:()=>{}}));
  assert.match(html,/HOW DOES THIS PROJECT EARN MONEY/);assert.match(html,/Product sales/);assert.match(html,/Continue to Equipment/);
  assert.doesNotMatch(html,/Reading your workbook|Another assessment is running/);
+});
+
+test('Equipment shows the priced-item subtotal and unpriced count rather than hiding the amount',()=>{
+ const {EquipmentPlayground}=require('../src/blocks/guided/equipment-playground.tsx');
+ const state={id:'test',effective_report:{entities:[{key:'tank',kind:'equipment',identifier:'T-1',values:[]},{key:'reactor',kind:'equipment',identifier:'R-1',values:[]}]},results:{stages:{equipment:{result:{equipment_cost_total:null,equipment_total_with_packages:null,equipment:[{parsed_source:{equipment_key:'tank'},equipment_tag:'T-1',equipment_cost:100,amount:100},{parsed_source:{equipment_key:'reactor'},equipment_tag:'R-1',equipment_cost:null,amount:null}],priced_summary:{amounts:[{amount:'100',currency:'USD',period:'2026'}],unpriced_count:1,priced_count:1},issues:['Unresolved equipment: subtotals are partial; complete total unavailable']}}}}};
+ const html=renderToStaticMarkup(React.createElement(EquipmentPlayground,{hook:{state,catalogue:[]},equipment:{value:[],dirty:false}}));
+ assert.match(html,/Equipment estimate · priced items/);assert.match(html,/>100<\/strong>/);assert.match(html,/Items not priced/);
+ assert.match(html,/excludes 1 item not priced/);assert.doesNotMatch(html,/Incomplete|complete total unavailable/);
+});
+test('Financial sensitivity renders original calculation values and isolated reset controls',()=>{
+ const {ScenarioTab}=require('../src/blocks/guided/financial-playground.tsx');
+ const props={hook:{state:{id:'test',plan:{operating_economics:{financial:{tax_rate:.99}}}},busy:false}};
+ const base={baseline_snapshot_id:'a'.repeat(64),policy:{tax_rate:'.25',discount_rate:'.1',depreciation_years:'10',salvage_fraction:'0',working_capital_recovery_fraction:'1',closure_allowance:'0'}};
+ const render=(overrides,original=base)=>renderToStaticMarkup(React.createElement(ScenarioTab,{props,base:original,baseError:'',overrides,setOverrides:()=>{},onResult:()=>{},onUpdating:()=>{}}));
+ const original=render({});
+ assert.match(original,/value="25"/);assert.doesNotMatch(original,/value="99"/);
+ assert.match(original,/disabled="">Reset to original/);
+ const changed=render({tax_rate:.35});assert.match(changed,/value="35"/);
+ assert.match(changed,/>Reset to original/);assert.match(changed,/saved as separate versions/);
+ assert.doesNotMatch(changed,/Apply &amp; recalculate/);
+ assert.match(render({},null),/type="range" disabled=""/);
 });

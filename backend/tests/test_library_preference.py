@@ -32,11 +32,11 @@ def test_family_map_matches_the_live_catalogue():
     assert set().union(*FAMILY_TO_OPENPYTEA.values()) <= openpytea
 
 
-def test_garrett_selection_switches_to_same_family_openpytea():
+def test_preference_ranks_openpytea_without_overriding_reviewed_configuration():
     result, audit = apply_preference(decision(GARRETT_PUMP, [GARRETT_PUMP, OPENPYTEA_PUMP]), BY_ID)
-    assert result["selected_model_id"] == OPENPYTEA_PUMP
+    assert result["selected_model_id"] == GARRETT_PUMP
     assert result["candidate_model_ids"] == [OPENPYTEA_PUMP, GARRETT_PUMP]  # Garrett kept as alternative
-    assert audit["applied"] is True and audit["replaced"] == GARRETT_PUMP
+    assert audit["applied"] is False and audit["kept"] == GARRETT_PUMP
 
 
 def test_openpytea_of_another_family_is_never_chosen():
@@ -54,7 +54,7 @@ def test_disabled_listed_model_falls_through_to_usable_catalogue_models():
     # search when the catalogue holds usable cyclone/dust-collector models.
     assert BY_ID[DISABLED_CYCLONE]["availability"] == "disabled"
     result, audit = apply_preference(decision(GARRETT_CYCLONE, [GARRETT_CYCLONE, DISABLED_CYCLONE]), BY_ID)
-    assert result["selected_model_id"] is None
+    assert result["selected_model_id"] == GARRETT_CYCLONE
     assert result["candidate_model_ids"][0] == "openpytea:cyclone_scrubber_turton_2001"
     assert DISABLED_CYCLONE not in audit["added_from_catalogue"]
     assert result["candidate_model_ids"][-2:] == [GARRETT_CYCLONE, DISABLED_CYCLONE] or GARRETT_CYCLONE in result["candidate_model_ids"]
@@ -62,11 +62,11 @@ def test_disabled_listed_model_falls_through_to_usable_catalogue_models():
 
 def test_catalogue_lookup_when_the_ai_lists_no_openpytea_model():
     result, audit = apply_preference(decision(GARRETT_PUMP, [GARRETT_PUMP]), BY_ID)
-    assert result["selected_model_id"] is None  # configuration chosen at sizing
+    assert result["selected_model_id"] == GARRETT_PUMP  # alternatives reviewed at sizing
     assert all(BY_ID[i]["source"] == "openpytea" for i in result["candidate_model_ids"][:-1])
     assert result["candidate_model_ids"][-1] == GARRETT_PUMP  # Garrett kept as fallback
     assert "centrifugal" in result["candidate_model_ids"][0]
-    assert audit["replaced"] == GARRETT_PUMP and len(audit["added_from_catalogue"]) <= 8
+    assert audit["kept"] == GARRETT_PUMP and len(audit["added_from_catalogue"]) <= 8
 
 
 def test_family_without_openpytea_equivalent_keeps_garrett():
@@ -132,7 +132,7 @@ class GarrettChoosingProvider:
         }]}
 
 
-def test_matcher_enforces_preference_even_when_the_model_picks_garrett(tmp_path):
+def test_matcher_retains_reviewed_choice_and_ranks_preferred_alternatives(tmp_path):
     report = {"entities": [
         {"key": "e1", "identifier": "P-1", "kind": "equipment",
          "values": [{"property": "name", "normalized_value": "Transfer pump"}],
@@ -144,6 +144,7 @@ def test_matcher_enforces_preference_even_when_the_model_picks_garrett(tmp_path)
     with patch("backend.equipment_matching.service.catalogue", return_value=models):
         result = match_report(report, "Water transfer", Store(tmp_path / "c.sqlite"), GarrettChoosingProvider())
     match = result["matches"][0]
-    assert match["selected_model_id"] == OPENPYTEA_PUMP
-    assert match["source"] == "openpytea"
-    assert match["library_preference"]["replaced"] == GARRETT_PUMP
+    assert match["selected_model_id"] == GARRETT_PUMP
+    assert match["source"] == "garrett"
+    assert match["candidate_model_ids"][0] == OPENPYTEA_PUMP
+    assert match["library_preference"]["kept"] == GARRETT_PUMP

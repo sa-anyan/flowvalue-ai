@@ -295,6 +295,11 @@ def run_stage(
 ):
     """Run one stage, publishing live progress for the UI while it runs."""
     from . import progress
+    from .run_store import RunStore
+
+    # Inputs and responses belong to this execution, not a previous upload or
+    # a persisted AI answer. Background analysts inherit the same run scope.
+    store = RunStore(store)
 
     token = progress.begin(key, block)
     try:

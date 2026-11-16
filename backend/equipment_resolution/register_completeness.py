@@ -118,37 +118,9 @@ def check(report, description="", plan=None, extra_equipment_text=()):
 
 
 def carry_over(store, state):
-    """Copy equipment-scope decisions from the latest earlier study of the same file.
+    """Retired compatibility boundary: new uploads never inherit prior decisions.
 
-    Founder decision (12 Nov 2026): register decisions follow a re-uploaded
-    workbook. Matching is by the exact source SHA-256, so an edited workbook
-    starts without them. Each copied decision records where it came from and
-    remains editable. Returns the number of decisions copied.
+    Founder decision, 16 November 2026, supersedes the earlier same-file
+    carry-over policy. Existing study/version history remains untouched.
     """
-    sha = state.get("source_sha256")
-    if not sha or (state.get("plan") or {}).get("register_review"):
-        return 0
-    finder = getattr(store, "states_by_source", None)
-    if finder is None:
-        return 0
-    earlier = [s for s in finder(sha) if s.get("id") != state.get("id")
-               and ((s.get("plan") or {}).get("register_review"))]
-    if not earlier:
-        return 0
-    source = earlier[-1]
-    copied = {}
-    for family, decision in source["plan"]["register_review"].items():
-        if family in FAMILIES and isinstance(decision, dict) and decision.get("decision"):
-            copied[family] = {
-                **{k: v for k, v in decision.items() if k != "carried_over_from"},
-                "carried_over_from": {"assessment": source.get("id"), "revision": source.get("revision"),
-                                      "source_sha256": sha},
-            }
-    if copied:
-        state.setdefault("plan", {})["register_review"] = copied
-        state.setdefault("assumptions", {})["register_review"] = {
-            "rationale": f"{len(copied)} equipment-scope decision(s) carried over from study "
-                         f"{source.get('id')} (same source file)",
-            "status": "carried_over",
-        }
-    return len(copied)
+    return 0

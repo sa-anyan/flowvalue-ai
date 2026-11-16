@@ -343,10 +343,8 @@ async def upload(
     import hashlib
 
     state["source_sha256"] = hashlib.sha256(content).hexdigest()
-    # Equipment-scope decisions follow a re-upload of the same file.
-    from backend.equipment_resolution.register_completeness import carry_over
-
-    carry_over(store, state)
+    # Every upload is a fresh study, even for identical workbook bytes. Never
+    # inherit another assessment's scope exclusions or review confirmations.
     state = initialize(state)
     state.update(
         running=False, status="Source loaded. Run a stage explicitly.", progress=[]
@@ -423,6 +421,9 @@ def get(key: str, historical: bool = False, currency: str | None = None):
     from backend.engineering_status import project_status
 
     project_status(out)
+    from backend.blocks.equipment.presentation import project as project_equipment_prices
+
+    project_equipment_prices(out)
     out["inbox"] = _launch.pending(key)  # user inputs waiting for the current background step
     out["launch_running"] = _launch.running(key)
     return out
@@ -431,6 +432,50 @@ def get(key: str, historical: bool = False, currency: str | None = None):
 class Launch(BaseModel):
     model_config = ConfigDict(extra="forbid")
     use_ai: bool = False
+
+
+class FinancialSensitivity(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    baseline_snapshot_id: str = Field(min_length=64, max_length=64)
+    overrides: dict
+    name: str = Field(default="", max_length=120)
+
+
+@app.get("/api/assessments/{key}/financial-sensitivity")
+def sensitivity_baseline(key: str):
+    from backend.scenarios_and_uncertainty.financial_sensitivity import baseline
+
+    return baseline(store.get(key))
+
+
+@app.post("/api/assessments/{key}/financial-sensitivity")
+def sensitivity_preview(key: str, request: FinancialSensitivity):
+    from backend.scenarios_and_uncertainty.financial_sensitivity import save
+
+    return save(store, key, request.overrides, request.baseline_snapshot_id, request.name)
+
+
+class ResetHistory(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    confirm: bool = False
+
+
+@app.post("/api/assessments/reset")
+def reset_history(options: ResetHistory):
+    if CLOUD or not isinstance(store, Store):
+        raise HTTPException(403, "Workspace reset is available on localhost only.")
+    if options.confirm is not True:
+        raise HTTPException(422, "Confirm clearing all local projects and history.")
+    if not lock.acquire(blocking=False):
+        raise HTTPException(409, "A calculation is still running. Let it finish, then reset.")
+    try:
+        from backend.blocks.reset import clear_history
+
+        return {"reset": True, "cleared": clear_history(store)}
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    finally:
+        lock.release()
 
 
 @app.post("/api/assessments/{key}/launch", status_code=202)

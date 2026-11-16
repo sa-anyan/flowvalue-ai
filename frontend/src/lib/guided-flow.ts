@@ -281,6 +281,7 @@ export type CapexLine = {
   origin: string;
   editable: boolean;
   excluded: boolean;
+  inUse: boolean;
 };
 
 /** Labels where each CAPEX line's value came from, using the saved assumption register. */
@@ -293,16 +294,18 @@ export function capexLines(result: unknown, plan: unknown, factors: Row[] = [], 
   return list(obj(result).lines).map((line) => {
     const id = text(line.id),
       factor = factors.find((f) => f.id === id) || {};
-    const entry = registerOrigin(`capex.overrides.${id}`) || registerOrigin(`capex.selected_factors.${id}`);
+    const entry = registerOrigin(`capex.overrides.${id}`) || registerOrigin(`capex.selected_factors.${id}`) || registerOrigin(`capex.exclusions.${id}`);
+    const recordedOrigin = text(entry?.origin);
+    const userOrigin = /^(user|user_input|user_override|user_assumption|user_confirmed|manual)$/i.test(recordedOrigin);
     const origin =
       id in exclusions
-        ? 'Removed by you'
+        ? userOrigin ? 'Removed by you' : 'Scope exclusion · review'
         : id in overrides
-          ? 'Your override'
+          ? userOrigin ? 'Your override' : 'Saved override · review'
           : id in selected
-            ? entry && /ai|llm|propos/i.test(text(entry.origin))
+            ? entry && /ai|llm|propos/i.test(recordedOrigin)
               ? 'Selected by AI · provisional'
-              : 'Selected by you'
+              : userOrigin ? 'Selected by you' : 'Provisional selection · review'
             : line.status === 'source_factor'
               ? `Source range · ${words(config.factor_selection || 'selection')}`
               : words(line.status);
@@ -319,6 +322,7 @@ export function capexLines(result: unknown, plan: unknown, factors: Row[] = [], 
       origin,
       editable: factor.additive !== false && !['embedded', 'not_separately_published'].includes(text(line.status)),
       excluded: id in exclusions,
+      inUse: !(id in exclusions) && (id in selected || id in overrides),
     };
   });
 }

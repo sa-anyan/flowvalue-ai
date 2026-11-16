@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { stableJson } from '@/lib/stable-json';
 import { assessmentHref } from '@/lib/assessment-navigation';
 import { strings, compact, list, money, num, obj, text, words, type Row } from '@/lib/guided-flow';
 import { api, post, type Assessment } from './use-assessment';
@@ -219,7 +220,8 @@ export function RevenuePlayground(props: StageProps) {
 
 export function RevenueLineEditor({ state, existing, onClose, props }: { state: Assessment; existing?: Row; onClose: () => void; props: StageProps }) {
   const { hook } = props;
-  const [openingRevision] = useState(state.revision);
+  const [openingRevision, setOpeningRevision] = useState(state.revision);
+  const [editorId] = useState(() => existing ? text(existing.id) : 'user-' + crypto.randomUUID());
   const [saveError, setSaveError] = useState('');
   const operating = obj(obj(state.plan?.operating_economics).operating);
   const report = obj(state.scoped_report || state.effective_report || obj(state.parsed).report || obj(obj(state.stage_outputs).engineering_data).report);
@@ -245,16 +247,24 @@ export function RevenueLineEditor({ state, existing, onClose, props }: { state: 
   const [days, setDays] = useState(text(operating.days_per_year || '')),
     [hours, setHours] = useState(text(operating.hours_per_day || '')),
     [approve, setApprove] = useState(Boolean(existing && state.revenue_approval));
+  const editorSignature = stableJson({ line, rateSource, days, hours, approve });
+  const [savedEditorSignature, setSavedEditorSignature] = useState(editorSignature);
+  const latestEditorSignature = useRef(editorSignature);
+  latestEditorSignature.current = editorSignature;
+  const notifyDirty = props.setRevenueDirty;
+  useEffect(() => { notifyDirty?.(editorSignature !== savedEditorSignature); }, [editorSignature, savedEditorSignature, notifyDirty]);
+  useEffect(() => () => notifyDirty?.(false), [notifyDirty]);
+  const discard = () => { if (props.confirmRevenueLeave?.() !== false) onClose(); };
   const valid = line.name.trim() && Number.isFinite(Number(line.price)) && Number(line.price) >= 0 && line.price !== '' && (selectedSource || (manualRate && Number.isFinite(Number(line.rate)) && Number(line.rate) >= 0 && line.rate !== '')) && Number(days) > 0 && Number(hours) > 0;
   const set = (patch: Partial<typeof line>) => setLine({ ...line, ...patch });
   return (
     <Panel
       title={existing ? `Edit ${text(existing.name) || 'revenue line'}` : 'Add a priced revenue line'}
       kicker="REVENUE WORKSHEET"
-      onClose={onClose}
+      onClose={discard}
       footer={
         <>
-          <button type="button" className="gf-secondary" onClick={onClose}>
+          <button type="button" className="gf-secondary" onClick={discard}>
             Cancel
           </button>
           <button
@@ -266,8 +276,7 @@ export function RevenueLineEditor({ state, existing, onClose, props }: { state: 
                 .action(async () => {
                   setSaveError('');
                   try {
-                  hook.setState(
-                    await api<Assessment>(
+                  const updated = await api<Assessment>(
                       `assessments/${hook.id}/revenue-rates`,
                       post({
                         revision: openingRevision,
@@ -276,7 +285,7 @@ export function RevenueLineEditor({ state, existing, onClose, props }: { state: 
                         approve,
                         lines: [
                           {
-                            id: existing ? text(existing.id) : 'user-' + crypto.randomUUID(),
+                            id: editorId,
                             name: line.name.trim(),
                             kind: line.kind,
                             category: line.category,
@@ -295,14 +304,21 @@ export function RevenueLineEditor({ state, existing, onClose, props }: { state: 
                           },
                         ],
                       }),
-                    ),
-                  );
+                    );
+                  hook.setState(updated);
+                  setOpeningRevision(updated.revision);
+                  setSavedEditorSignature(editorSignature);
                   } catch (error) {
                     setSaveError(error instanceof Error ? error.message : 'Could not save. Your edits are retained.');
                     throw error;
                   }
                 })
-                .then((ok) => ok && onClose())
+                .then((ok) => {
+                  if (ok && latestEditorSignature.current === editorSignature) {
+                    notifyDirty?.(false);
+                    onClose();
+                  }
+                })
             }
           >
             {existing ? approve ? 'Save & recalculate' : 'Save draft' : 'Save line'}

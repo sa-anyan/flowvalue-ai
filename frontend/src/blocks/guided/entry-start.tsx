@@ -39,7 +39,9 @@ export function EntryStart(props: StageProps) {
         <EntryBoard {...props} />
       </>
     );
-  return <RevenueStep props={props} onReview={() => setReview(true)} onNew={() => setFresh(true)} />;
+  return <RevenueStep props={props}
+    onReview={() => { if (props.confirmRevenueLeave?.() !== false) setReview(true); }}
+    onNew={() => { if (props.confirmRevenueLeave?.() !== false) setFresh(true); }} />;
 }
 
 function UploadStart({ props, onCancel }: { props: StageProps; onCancel?: () => void }) {

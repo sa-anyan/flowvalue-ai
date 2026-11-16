@@ -93,10 +93,14 @@ class CloudStore:
             raise ValueError("Assessment changed; reload before editing")
         return state
 
-    def version(self, key, name):
+    def version(self, key, name, *, snapshot=None):
         if not name.strip() or len(name) > 120:
             raise ValueError("Name the version (up to120 characters)")
-        state = self.get(key)
+        state = self.get(key)  # authenticated, owner-scoped existence check
+        if snapshot is not None:
+            if snapshot.get("id") != key:
+                raise ValueError("Snapshot must belong to this assessment")
+            state = copy.deepcopy(snapshot)
         if state.get("running"):
             raise ValueError("Wait for calculation completion")
         version = uuid.uuid4().hex
