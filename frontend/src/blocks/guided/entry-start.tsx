@@ -122,7 +122,7 @@ function RevenueStep({ props, onReview, onNew }: { props: StageProps; onReview: 
   const streams = list(studyReport(state).entities).filter((e) => e.kind === 'material');
   const revenueSet = list(obj(obj(state?.plan).operating_economics).sales).length > 0 || strings(state?.inbox).includes('revenue_setup');
   return (
-    <div className="gf-start">
+    <div className="gf-start gf-revenue-stage">
       <p className={`gf-launch gf-launch-${status.tone}`} role="status" aria-live="polite">
         {status.tone === 'working' && <span className="gf-spinner" aria-hidden="true" />}
         <span>{status.text}</span>
@@ -140,7 +140,10 @@ function RevenueStep({ props, onReview, onNew }: { props: StageProps; onReview: 
       ) : (
         <>
           <RevenueSetup props={props} />
-          <QuickQuestions props={props} />
+          <details className="gf-entry-context">
+            <summary>Two optional questions to improve estimates</summary>
+            <QuickQuestions props={props} />
+          </details>
         </>
       )}
       <p className="gf-muted gf-start-links">
