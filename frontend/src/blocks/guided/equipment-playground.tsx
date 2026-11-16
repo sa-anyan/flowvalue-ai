@@ -43,10 +43,10 @@ export function EquipmentPlayground(props: StageProps) {
   return (
     <div className="gf-play">
       <StageHeading kicker="STAGE 02 · EQUIPMENT" title="Equipment costs">
-        Every item priced by Python from its saved model. Adjust the price, the units or the design inputs behind it, then recalculate to see the effect.
+        Review equipment prices and adjust anything that needs attention.
       </StageHeading>
       <AnalystCard stage="equipment" hook={props.hook} />
-      <div className="gf-kpis">
+      <div className="gf-equipment-overview">      <div className="gf-kpis">
         <div>
           <small>Equipment cost · priced items</small>
           <strong>{amounts.length ? amounts.map((amount) => `${amounts.length > 1 ? `${text(amount.currency)} ${text(amount.period)} ` : ''}${compact(amount.amount)}`).join(' · ')
@@ -66,50 +66,7 @@ export function EquipmentPlayground(props: StageProps) {
           <span>{unpriced ? `${unpriced} awaiting price` : 'All items priced'}</span>
         </div>
       </div>
-      <EquipmentCostBreakdown summary={summary} installation={list(capexResult.lines).find((line) => line.id === "equipment_installation")} />
-      <Issues items={(Array.isArray(result.issues) ? result.issues : []).filter((issue) => !text(issue).startsWith('Unresolved equipment: subtotals are partial; complete total unavailable')).map((issue) => text(issue).replace(/: priced as unit capital \(([^)]+)\), kept separate from purchased equipment; CAPEX adds it once$/, ': system price ($1), included in equipment cost and counted once in CAPEX.'))} title="Cost scope notes" />
-      {heldEstimates(equipment.value).length > 0 && (
-        <section className="gf-card-block gf-held" aria-labelledby="gf-held-h">
-          <h2 id="gf-held-h">AI estimate check</h2>
-          <p className="gf-muted">
-            A new AI estimate jumped by more than 25% for the same M&amp;E, so the earlier (anchored) estimate is still used. Choose which one to keep.
-          </p>
-          <ul className="gf-lines">
-            {heldEstimates(equipment.value).map((h) => {
-              const tag = cards.find((c) => c.key === h.key)?.tag || h.key;
-              const decide = (d: 'use' | 'keep') =>
-                void hook.action(async () => {
-                  const rows = decideHeld(equipment.value, h.key, d);
-                  equipment.set(rows);
-                  await hook.saveSection('equipment', rows, d === 'use' ? `User accepted the new AI estimate for ${tag}` : `User kept the anchored AI estimate for ${tag}`);
-                  if (d === 'use') await hook.runStage('equipment');
-                });
-              return (
-                <li key={h.key} className="gf-line">
-                  <div className="gf-line-main">
-                    <div>
-                      <strong>{tag}</strong>
-                      <small>
-                        Used: {compact(h.anchorSize)} {h.unit} · New AI estimate: {compact(h.newSize)} {h.unit} ({h.newSize > h.anchorSize ? '+' : '−'}
-                        {Math.round(Math.abs(h.drift) * 100)}%)
-                        {h.assumptions.length > 0 && ` · new assumptions: ${h.assumptions.map((a) => `${a.name.replaceAll('_', ' ')} ${a.value} ${a.unit}`).join(', ')}`}
-                      </small>
-                    </div>
-                  </div>
-                  <div className="gf-line-actions">
-                    <button type="button" className="gf-secondary" disabled={hook.busy} onClick={() => decide('keep')}>
-                      Keep {compact(h.anchorSize)} {h.unit}
-                    </button>
-                    <button type="button" className="gf-link" disabled={hook.busy} onClick={() => decide('use')}>
-                      Use {compact(h.newSize)} {h.unit}
-                    </button>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      )}
+      </div>
       <div className="gf-toolbar">
         <input type="search" aria-label="Find equipment" placeholder="Find equipment…" value={query} onChange={(e) => setQuery(e.target.value)} />
         <div role="group" aria-label="Filter equipment" className="gf-segment">
@@ -225,7 +182,53 @@ export function EquipmentPlayground(props: StageProps) {
           </tbody>
         </table>
       </div>
-      <div className="gf-inline-actions">
+      <details className="gf-equipment-deep-dive"><summary>Cost breakdown, scope notes &amp; estimate reviews <span aria-hidden="true">⌄</span></summary><div className="gf-equipment-deep-body">
+      <EquipmentCostBreakdown summary={summary} installation={list(capexResult.lines).find((line) => line.id === "equipment_installation")} />
+      <Issues items={(Array.isArray(result.issues) ? result.issues : []).filter((issue) => !text(issue).startsWith('Unresolved equipment: subtotals are partial; complete total unavailable')).map((issue) => text(issue).replace(/: priced as unit capital \(([^)]+)\), kept separate from purchased equipment; CAPEX adds it once$/, ': system price ($1), included in equipment cost and counted once in CAPEX.'))} title="Cost scope notes" />
+      {heldEstimates(equipment.value).length > 0 && (
+        <section className="gf-card-block gf-held" aria-labelledby="gf-held-h">
+          <h2 id="gf-held-h">AI estimate check</h2>
+          <p className="gf-muted">
+            A new AI estimate jumped by more than 25% for the same M&amp;E, so the earlier (anchored) estimate is still used. Choose which one to keep.
+          </p>
+          <ul className="gf-lines">
+            {heldEstimates(equipment.value).map((h) => {
+              const tag = cards.find((c) => c.key === h.key)?.tag || h.key;
+              const decide = (d: 'use' | 'keep') =>
+                void hook.action(async () => {
+                  const rows = decideHeld(equipment.value, h.key, d);
+                  equipment.set(rows);
+                  await hook.saveSection('equipment', rows, d === 'use' ? `User accepted the new AI estimate for ${tag}` : `User kept the anchored AI estimate for ${tag}`);
+                  if (d === 'use') await hook.runStage('equipment');
+                });
+              return (
+                <li key={h.key} className="gf-line">
+                  <div className="gf-line-main">
+                    <div>
+                      <strong>{tag}</strong>
+                      <small>
+                        Used: {compact(h.anchorSize)} {h.unit} · New AI estimate: {compact(h.newSize)} {h.unit} ({h.newSize > h.anchorSize ? '+' : '−'}
+                        {Math.round(Math.abs(h.drift) * 100)}%)
+                        {h.assumptions.length > 0 && ` · new assumptions: ${h.assumptions.map((a) => `${a.name.replaceAll('_', ' ')} ${a.value} ${a.unit}`).join(', ')}`}
+                      </small>
+                    </div>
+                  </div>
+                  <div className="gf-line-actions">
+                    <button type="button" className="gf-secondary" disabled={hook.busy} onClick={() => decide('keep')}>
+                      Keep {compact(h.anchorSize)} {h.unit}
+                    </button>
+                    <button type="button" className="gf-link" disabled={hook.busy} onClick={() => decide('use')}>
+                      Use {compact(h.newSize)} {h.unit}
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
+      </div></details>
+      <div className="gf-inline-actions gf-equipment-recalculate">
         <span className="gf-muted">{equipment.dirty ? 'You have unsaved equipment changes.' : before ? 'Rows with a previous value changed in the last recalculation.' : 'Changes are saved with a rationale and recalculated by Python.'}</span>
         <button type="button" className="gf-secondary" disabled={!equipment.dirty || hook.busy} onClick={() => equipment.reset()}>
           Discard changes
