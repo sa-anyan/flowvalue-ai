@@ -173,7 +173,7 @@ export function RevenueSetup({ props }: { props: StageProps }) {
           return (
             <article className="fv-sales-product" key={i} aria-label={'Product ' + (i + 1)}>
               <div className="fv-sales-product-head">
-                <button type="button" aria-expanded={isOpen} aria-controls={'fv-sales-product-' + i} onClick={() => setExpanded(isOpen ? -1 : i)}>
+                <button type="button" aria-expanded={isOpen} onClick={() => setExpanded(isOpen ? -1 : i)}>
                   <span className="fv-sales-index">{i + 1}</span>
                   <span className="fv-sales-product-title">
                     <strong>{productName}</strong>
@@ -208,7 +208,7 @@ export function RevenueSetup({ props }: { props: StageProps }) {
                   {stream && <label className="fv-sales-field">
                     <span>What is being sold?</span>
                     <select value={s.component} onChange={(e) => change(i, { component: e.target.value })}>
-                      {stream.total !== null && <option value="">Whole stream</option>}
+                      {stream.total !== null ? <option value="">Whole stream</option> : <option value="">Choose a component…</option>}
                       {stream.components.map((c) => <option key={c.name} value={c.name}>{c.name} · {compact(c.flow)} kg/h</option>)}
                     </select>
                   </label>}
@@ -227,7 +227,7 @@ export function RevenueSetup({ props }: { props: StageProps }) {
                   </label>
                 </div>
 
-                <div className="fv-sales-preview" aria-live="polite">
+                <div className="fv-sales-preview">
                   <span>Estimated annual sales</span>
                   <strong>{preview === null ? 'Not available yet' : '≈ ' + compact(preview) + ' ' + currency + '/year'}</strong>
                   <small>{preview === null ? 'Enter a price and a supported mass-based unit for a preview.' : 'Indicative only. The saved Python model produces the authoritative result.'}</small>
