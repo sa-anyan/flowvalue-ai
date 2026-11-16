@@ -377,3 +377,64 @@ body:has(.gf) { background: var(--genesis-outer); }
   content:"≋";display:block;font-size:25px;color:var(--genesis-sea);
  }
 }
+
+/* Genesis fidelity pass — reference-style control row and calm card rhythm. */
+.genesis-hero-top-controls{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.genesis-hero-periods{display:flex;align-items:center;gap:6px;max-width:100%;overflow-x:auto}
+.genesis-hero-periods>span{font-size:11px;color:var(--genesis-muted);margin-right:5px;white-space:nowrap}
+.genesis-hero-periods button{
+ flex:0 0 auto;font-size:12px;min-height:32px;padding:6px 12px;border-radius:8px;
+ background:transparent;border:1px solid var(--genesis-border);color:var(--genesis-muted);
+ transition:background-color .18s ease,color .18s ease,border-color .18s ease;
+}
+.genesis-hero-periods button:hover{color:var(--genesis-sea);border-color:var(--genesis-sea)}
+.genesis-hero-periods button[aria-pressed="true"]{
+ background:var(--genesis-sea-soft);color:var(--genesis-sea);border-color:var(--genesis-sea);font-weight:700;
+}
+.shell[data-page="overview"]:has(.genesis-overview-hero) > main > .content > .page-heading,
+.shell[data-page="overview"]:has(.genesis-overview-hero) > main > .content > .stage-journey{display:none}
+.shell[data-page="overview"] .genesis-hero-heading h1{margin:0 0 7px;font-size:clamp(25px,2.2vw,31px);letter-spacing:-.05em}
+.shell[data-page="overview"] .genesis-overview-hero{gap:23px;margin-top:20px}
+.shell[data-page="overview"] .genesis-hero-card{min-height:255px}
+.shell[data-page="overview"] .genesis-hero-wide{min-height:340px}
+.shell[data-page="overview"] .genesis-hero-wide .genesis-hero-line-chart{max-height:360px}
+.shell[data-page="overview"] .genesis-hero-card-head h3{font-weight:700}
+.shell[data-page="overview"] .genesis-hero-card-head p{line-height:1.45}
+.shell[data-page="overview"] .genesis-hero-wide .genesis-hero-line{stroke-width:2.6}
+.shell[data-page="overview"] .genesis-hero-legend{margin-top:23px}
+.shell[data-page="overview"] .genesis-hero-metric strong{font-size:clamp(32px,3.1vw,47px)}
+.shell[data-page="overview"] .genesis-hero-npv .genesis-hero-spark{margin-top:3px}
+.shell .genesis-hero-card:focus-visible,.shell .genesis-hero-toolbar a:focus-visible{outline:3px solid var(--genesis-sea);outline-offset:3px}
+@media(max-width:700px){
+ .shell[data-page="overview"] .genesis-overview-hero{margin-top:12px}
+ .genesis-hero-top-controls{align-items:flex-start}
+ .genesis-hero-periods{width:100%;padding-bottom:4px}
+ .shell[data-page="overview"] .genesis-hero-card{min-height:195px}
+}
+@media(prefers-reduced-motion:reduce){.genesis-hero-periods button{transition:none!important}}
+/* One design vocabulary for the entire six-stage Simple workspace. */
+.gf .gf-stage{padding-top:28px;padding-bottom:76px}
+.gf .gf-rail{border-radius:0;scrollbar-width:thin}
+.gf .gf-rail ol{gap:7px}
+.gf .gf-rail button{
+ border-radius:9px;border:1px solid transparent;min-height:39px;
+ padding:8px 14px;transition:background-color .2s ease,border-color .2s ease;
+}
+.gf .gf-rail button[aria-current="step"]{
+ background:var(--genesis-sea-soft);color:var(--genesis-sea);
+ border-color:var(--genesis-border);font-weight:700;
+}
+.gf .gf-rail button:not([aria-current="step"]):hover{
+ background:var(--genesis-soft);border-color:var(--genesis-border);
+}
+.gf .gf-card,.gf .gf-card-block,.gf .gf-kpis>div{
+ border-radius:14px;box-shadow:0 1px 4px rgba(10,43,55,.035);
+}
+.gf .gf-card:hover{box-shadow:0 7px 24px rgba(15,69,85,.085)}
+.gf .gf-kpis>div{padding:19px}
+.gf .gf-kpis strong{font-size:clamp(24px,2.4vw,36px);letter-spacing:-.05em}
+.gf .gf-kpis .gf-kpi-hero{background:var(--genesis-sea-soft);border-color:var(--genesis-border)}
+.gf .gf-card-block{padding:22px!important}
+.gf .gf-enter-forward,.gf .gf-enter-back{animation-duration:270ms;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+@media(max-width:600px){.gf .gf-stage{padding-top:16px}.gf .gf-kpis>div{padding:12px}.gf .gf-card-block{padding:14px!important}}
+@media(prefers-reduced-motion:reduce){.gf .gf-rail button{transition:none}.gf .gf-enter-forward,.gf .gf-enter-back{animation:none}}
