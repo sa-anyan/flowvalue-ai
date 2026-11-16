@@ -22,6 +22,7 @@ import {EquipmentDataExplorer} from '@/blocks/engineering_data/view';
 import {AssessmentProgress} from '@/components/assessment-progress';
 import {CostPlayground} from '@/blocks/shared/cost-playground';
 import {TeaDashboardCharts} from '@/blocks/overview/charts';
+import {GenesisOverviewHero} from '@/components/genesis-overview-hero';
 import {PremiumEquipmentWorkspace, type EquipmentCard} from '@/blocks/equipment/view';
 import {StageVisuals,WorkspaceIcon} from '@/components/workspace-visuals';
 import {CommercialStrategy} from '@/blocks/revenue/strategy';
@@ -375,7 +376,8 @@ function AssessmentOverview({state}:{state:Assessment}) {
     {(state.running||!ready||missing>0)&&<p className="snapshot-status">{state.running?'Assessment in progress':`${stageCount} / 4 calculation areas available · ${missing} headline values unavailable`}</p>}
     {!!state.results?.exclusions.length&&<p className="snapshot-status">{state.results.exclusions.length} equipment {state.results.exclusions.length===1?'item':'items'} excluded from the priced scope · inspect assumptions & methods</p>}
     {record(capex.cost_translation).is_proxy===true&&<p className="snapshot-status">CPI purchasing-power estimate · {display(capex.period)} {display(capex.currency)} · not CEPCI equipment escalation</p>}
-    <div className="genesis-kpis">
+    <GenesisOverviewHero stages={stages} id={state.id}/>
+    <details className="genesis-overview-details"><summary>Detailed indicators and cost breakdowns</summary><div className="genesis-overview-details-body"><div className="genesis-kpis">
       {cards.map(([label, value, href, context], index) => {
         const metricCurrency = index === 2 ? revenueCurrency : currency;
         const valueLabel = value == null ? 'Not available' : Number.isFinite(Number(value)) && index < 4
@@ -387,7 +389,7 @@ function AssessmentOverview({state}:{state:Assessment}) {
           href={assessmentHref(href, state.id)} />;
       })}
     </div>
-    <TeaDashboardCharts stages={stages} revenueConfig={state.plan.operating_economics} onExplore={setPanel}/>
+    <TeaDashboardCharts stages={stages} revenueConfig={state.plan.operating_economics} onExplore={setPanel}/></div></details>
     {!state.running&&!financial.ledger&&<p className="error">This upload has not produced a complete financial model. Review the stage issues above; missing results are not a completed assessment.</p>}
     {panel&&<div className="tea-drawer-backdrop" onMouseDown={e=>{if(e.currentTarget===e.target)setPanel(null)}}><aside className="tea-overview-drawer" role="dialog" aria-modal="true" aria-label="Model details"><div className="tea-drawer-head"><div><span className="tea-eyebrow">MODEL EXPLORER</span><h2>{({capex:'Capital investment',opex:'Operating economics',revenue:'Revenue assumptions',financial:'Financial performance'} as Record<string,string>)[panel]}</h2></div><button type="button" className="peq-drawer-close" aria-label="Close model explorer" onClick={()=>setPanel(null)}>✕</button></div><div className="tea-drawer-body"><span className="tea-module-state" data-status={stages[panel]?.issues?.length?'warning':stages[panel]?.result?'ready':'pending'}>{stages[panel]?.status||'Awaiting results'}</span><p>{({capex:'Review purchased equipment, installed capital, start-up and working capital.',opex:'Explore materials, utilities, labour and other annual operating requirements.',revenue:'Inspect user-defined income methods, quantities and commercial assumptions.',financial:'Investigate NPV, IRR, payback and the complete financial model.'} as Record<string,string>)[panel]}</p>{panel==='financial'&&irr&&<div className="tea-drawer-insight"><small>Project IRR</small><strong>{irr.value===null?display(irr.status):amount(Number(irr.value)*100)+'%'}</strong></div>}{panel==='capex'&&<div className="tea-drawer-insight"><small>{capex.complete===false?'Known CAPEX subtotal':'Total CAPEX'}</small><strong>{capex.total_capex==null?'Not available':amount(capex.total_capex)}</strong></div>}{panel==='opex'&&<div className="tea-drawer-insight"><small>Year 1 cash OPEX</small><strong>{annual.annual_cash_opex==null?'Not available':amount(annual.annual_cash_opex)}</strong></div>}{panel==='revenue'&&<div className="tea-drawer-insight"><small>Last modelled operating year revenue</small><strong>{stableRevenue==null?'Not available':amount(stableRevenue)}</strong></div>}{!!stages[panel]?.issues?.length&&<div className="tea-drawer-warnings"><strong>Items to review</strong>{stages[panel].issues!.map((issue,i)=><p key={i}>{issue}</p>)}</div>}<Link className="tea-drawer-link" href={assessmentHref(routes[panel],state.id)}>Open full {panel==='financial'?'financial model':panel.toUpperCase()+' model'} →</Link><p className="muted">The full model contains its editable assumptions, detailed outputs and evidence. This preview does not change calculations.</p></div></aside></div>}
     {pageEvidence(state)}
