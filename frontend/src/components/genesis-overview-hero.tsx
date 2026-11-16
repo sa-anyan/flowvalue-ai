@@ -47,6 +47,8 @@ export function GenesisOverviewHero({stages,id}:{stages:Stages;id:string}){
  const opexYears=obj(opex.years);
  const latestYear=Object.keys(opexYears).sort((a,b)=>Number(a)-Number(b)).at(-1);
  const cashOpex=latestYear?number(obj(opexYears[latestYear]).annual_cash_opex??obj(opexYears[latestYear]).resolved_cash_subtotal):null;
+ const opexTrend=Object.keys(opexYears).sort((a,b)=>Number(a)-Number(b)).map(year=>({year,cost:number(obj(opexYears[year]).annual_cash_opex??obj(opexYears[year]).resolved_cash_subtotal)})).filter((p):p is {year:string;cost:number}=>p.cost!==null).slice(-8);
+ const opexTrendMax=Math.max(1,...opexTrend.map(p=>p.cost));
  const revenueYears=list(revenue.annual);
  const matchingRevenue=revenueYears.find(r=>String(r.year)===latestYear);
  const cashRevenue=number(matchingRevenue?.sales_revenue);
@@ -65,9 +67,9 @@ export function GenesisOverviewHero({stages,id}:{stages:Stages;id:string}){
     <span className="genesis-hero-card-foot">Inspect capital basis <span aria-hidden="true">↗</span></span>
    </Link>
    <div className="genesis-hero-card genesis-hero-comparison">
-    <div className="genesis-hero-card-head"><span className="genesis-hero-symbol" aria-hidden="true">▥</span><div><h3>Operating comparison</h3><p>{latestYear?'Modelled operating year '+latestYear:'Model year unavailable'}</p></div></div>
-    {comparable?<div className="genesis-hero-comparison-bars"><div><span>Revenue <b>{format(cashRevenue)}</b></span><div className="genesis-hero-track"><i style={{height:(cashRevenue!/scale*100)+'%'}}/></div></div><div><span>Cash OPEX <b>{format(cashOpex)}</b></span><div className="genesis-hero-track"><i style={{height:(cashOpex!/scale*100)+'%'}}/></div></div></div>:<p className="genesis-hero-empty">Comparable annual revenue and operating costs are not available on the same currency, price period and year basis.</p>}
-    <span className="genesis-hero-card-foot">{comparable?opexCurrency+' / year · '+String(opex.price_period):'Requires comparable saved results'}</span>
+    <div className="genesis-hero-card-head"><span className="genesis-hero-symbol" aria-hidden="true">▥</span><div><h3>{comparable?'Operating comparison':'Operating costs'}</h3><p>{latestYear?'Modelled operating year '+latestYear:'Model year unavailable'}</p></div></div>
+    {comparable?<div className="genesis-hero-comparison-bars"><div><span>Revenue <b>{format(cashRevenue)}</b></span><div className="genesis-hero-track"><i style={{height:(cashRevenue!/scale*100)+'%'}}/></div></div><div><span>Cash OPEX <b>{format(cashOpex)}</b></span><div className="genesis-hero-track"><i style={{height:(cashOpex!/scale*100)+'%'}}/></div></div></div>:opexTrend.length>0?<div className="genesis-hero-opex-trend" aria-label="Saved operating cost by year">{opexTrend.map(p=><div className="genesis-hero-opex-year" key={p.year} title={`Year ${p.year}: ${p.cost.toLocaleString('en-GB')} ${String(opexCurrency??'')}`}><span className="genesis-hero-opex-plot"><i style={{height:`${Math.max(3,p.cost/opexTrendMax*100)}%`}}/></span><small>{p.year}</small></div>)}</div>:<p className="genesis-hero-empty">Comparable annual revenue and operating costs are not available on the same currency, price period and year basis.</p>}
+    <span className="genesis-hero-card-foot">{comparable?opexCurrency+' / year · '+String(opex.price_period):opexTrend.length>0?String(opexCurrency??'')+' · Saved annual costs'+(opex.complete===false?' · incomplete scope':''):'Requires comparable saved results'}</span>
    </div>
    <Link className="genesis-hero-card genesis-hero-metric genesis-hero-npv" href={assessmentHref('/financial-modelling',id)}>
     <div className="genesis-hero-card-head"><span className="genesis-hero-symbol" aria-hidden="true">⌁</span><div><h3>Net present value</h3><p>{financialStale?'Stale · recalculation required':'Discounted project lifetime'}</p></div></div>
