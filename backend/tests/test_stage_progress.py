@@ -53,7 +53,7 @@ def test_progress_endpoint(tmp_path, monkeypatch):
     assert body["running"] and body["stage"] == "equipment"
 
 
-def test_equipment_run_skips_ai_matching_when_every_model_is_confirmed(monkeypatch):
+def test_equipment_run_reviews_current_evidence_even_with_saved_model_choices(monkeypatch):
     import backend.blocks.equipment.runner as runner
 
     called = []
@@ -70,9 +70,12 @@ def test_equipment_run_skips_ai_matching_when_every_model_is_confirmed(monkeypat
 
     monkeypatch.setattr("backend.equipment_costing.unit_conversion.bridges.automatic.resolve",
                         lambda report, plan, *a, **k: (plan, []))
-    _, _, _, issues, matching, _, _ = runner.prepare(Ctx())
-    assert called == [] and matching is None
-    assert any("you confirmed a model for every item" in i for i in issues)
+    _, plan, _, issues, matching, _, _ = runner.prepare(Ctx())
+    assert called == [1] and matching == {"matches": [], "batches": []}
+    # Reviewing current evidence does not overwrite this study's user choice.
+    assert plan["equipment"][0]["curve_id"] == "G296-122"
+    assert plan["equipment"][0]["model_selection"]["origin"] == "user"
+    assert not any("you confirmed a model for every item" in i for i in issues)
 
 
 def test_model_reference_without_inputs_is_not_treated_as_user_inputs():
