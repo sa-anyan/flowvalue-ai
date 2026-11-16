@@ -462,13 +462,23 @@ class ResetHistory(BaseModel):
 
 @app.post("/api/assessments/reset")
 def reset_history(options: ResetHistory):
-    if CLOUD or not isinstance(store, Store):
-        raise HTTPException(403, "Workspace reset is available on localhost only.")
     if options.confirm is not True:
-        raise HTTPException(422, "Confirm clearing all local projects and history.")
+        raise HTTPException(422, "Confirm clearing your saved projects and history.")
     if not lock.acquire(blocking=False):
         raise HTTPException(409, "A calculation is still running. Let it finish, then reset.")
     try:
+        if CLOUD:
+            # The request middleware has verified the caller's Supabase session
+            # and bound an RLS-protected CloudStore to this request context.
+            from backend.cloud.runtime import workspace
+            from backend.cloud.store import CloudStore
+
+            scoped = workspace.get()
+            if not isinstance(scoped, CloudStore):
+                raise HTTPException(403, "Authenticated cloud workspace required.")
+            return {"reset": True, "cleared": scoped.clear_history()}
+        if not isinstance(store, Store):
+            raise HTTPException(403, "A local workspace is required.")
         from backend.blocks.reset import clear_history
 
         return {"reset": True, "cleared": clear_history(store)}
