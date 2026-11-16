@@ -109,3 +109,78 @@ body:has(.genesis-theme-inline) > .genesis-theme-dock { display: none; }
   .genesis-kpi, .genesis-chart *, .genesis-navigation * { animation: none !important; transition: none !important; }
   .genesis-kpi:is(:hover,:focus-visible) { transform: none; }
 }
+
+/* Genesis v2 — reconstruct the advanced desktop canvas and slim navigation.
+   These rules change the shell geometry, not engineering or financial behaviour. */
+:root { --genesis-outer:#f1eee9; }
+html[data-genesis-theme="dark"] { --genesis-outer:#0b141b; }
+body:has(.shell) { background:var(--genesis-outer); }
+@media (min-width:901px) {
+  .shell {
+    display:grid;
+    grid-template-columns:220px minmax(0,1fr);
+    min-height:calc(100vh - 48px);
+    max-width:1760px;
+    width:calc(100% - 48px);
+    margin:24px auto;
+    border:1px solid var(--genesis-border);
+    border-radius:20px;
+    background:var(--genesis-surface);
+    box-shadow:0 10px 45px rgba(22,44,54,.055);
+    overflow:clip;
+  }
+  .shell > aside {
+    position:sticky;
+    inset:auto;
+    top:0;
+    width:220px;
+    max-height:calc(100vh - 50px);
+    overflow-y:auto;
+    padding:24px 15px;
+    background:var(--genesis-surface);
+    border-right:1px solid var(--genesis-border);
+  }
+  .shell > main {margin:0;min-width:0;max-width:100%}
+  .shell > main > header {min-height:66px;height:auto;padding:16px 30px;border-bottom:0}
+  .shell > main > .content {max-width:none;padding:8px 30px 65px}
+  .shell .brand {display:inline-flex;gap:5px;align-items:baseline;font-size:23px;letter-spacing:-.04em}
+  .shell > aside > .eyebrow {margin-top:26px;font-size:10px;letter-spacing:.13em}
+  .shell > aside > .project {font-size:12px;padding:12px;border-radius:10px;border-color:var(--genesis-border)}
+  .shell .aside-note {font-size:11px;margin-top:30px;letter-spacing:.02em}
+}
+.shell .genesis-navigation-heading {margin-top:18px;font-size:10px}
+.shell .genesis-nav-group {display:grid;gap:2px;margin:15px 0 20px}
+.shell .genesis-nav-group-label {
+  margin:0 0 7px;padding:0 10px;font-size:10px;font-weight:650;
+  letter-spacing:.035em;color:var(--genesis-muted);
+}
+.shell .genesis-navigation nav {display:block;margin:0;overflow:visible;padding:0}
+.shell .genesis-navigation nav a {
+  display:flex;align-items:center;gap:9px;min-height:35px;padding:7px 10px;
+  font-size:12px;font-weight:500;line-height:1.35;border-radius:8px;
+  white-space:normal;text-decoration:none;
+}
+.shell .genesis-navigation nav a[aria-current="page"] {
+  box-shadow:none;background:var(--genesis-sea-soft);color:var(--genesis-sea);font-weight:680;
+}
+.shell .genesis-nav-group .mc-nav-children {padding-left:14px}
+.shell .genesis-navigation .genesis-simple-link {
+  display:flex;align-items:center;justify-content:flex-start;margin-top:12px;
+  border:1px solid var(--genesis-border);border-radius:9px;
+  padding:9px 10px;font-size:12px;
+}
+.shell .content .page-heading h1 {letter-spacing:-.035em}
+@media (max-width:900px) and (min-width:601px) {
+ .shell > aside {width:185px;padding:20px 12px}
+ .shell > main {margin-left:185px}
+ .shell .genesis-navigation nav {display:block}
+ .shell .genesis-navigation nav a {white-space:normal}
+ .shell .genesis-nav-group-label {padding-left:7px}
+}
+@media (max-width:600px) {
+ .shell .genesis-navigation nav {display:flex;gap:10px;overflow-x:auto}
+ .shell .genesis-nav-group {display:flex;flex:0 0 auto;gap:5px;margin:5px 0}
+ .shell .genesis-nav-group-label {display:none}
+ .shell .genesis-navigation nav a {white-space:nowrap;padding:7px 9px;min-height:34px}
+}
+@media(prefers-reduced-motion:reduce){.shell .genesis-navigation *{transition:none!important}}
