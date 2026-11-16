@@ -12,14 +12,16 @@ type Point={year:number;annual:number|null;cumulative:number|null};
 export function GenesisOverviewHero({stages,id}:{stages:Stages;id:string}){
  const [mode,setMode]=useState<'annual'|'cumulative'>('annual');
  const [selected,setSelected]=useState<number|null>(null);
+ const [range,setRange]=useState<'all'|'early'|'recent'>('all');
  const capex=obj(stages.capex?.result),opex=obj(stages.opex?.result),revenue=obj(stages.revenue?.result),financial=obj(stages.financial?.result);
  const metrics=Array.isArray(financial.metrics)?financial.metrics.filter(Array.isArray):[];
  const npv=obj(metrics.find(metric=>metric[0]==='project_npv')?.[1]);
  const led=list(financial.ledger);
- const points:Point[]=led.flatMap(r=>{
+ const allPoints:Point[]=led.flatMap(r=>{
   const year=number(obj(r.period).year ?? r.year);
   return year===null?[]:[{year,annual:number(r.fcff??r.project_cash_flow),cumulative:number(r.cumulative_project_cash)}];
  }).sort((a,b)=>a.year-b.year);
+ const points=range==='early'?allPoints.slice(0,5):range==='recent'?allPoints.slice(-5):allPoints;
  const firstYear=points[0]?.year??0,lastYear=points.at(-1)?.year??firstYear;
  const values=points.flatMap(p=>p[mode]===null?[]:[p[mode]]);
  const lowest=Math.min(0,...values),highest=Math.max(0,...values),span=highest-lowest||1;
@@ -54,7 +56,7 @@ export function GenesisOverviewHero({stages,id}:{stages:Stages;id:string}){
  const capexValue=number(capex.total_capex);
  const npvValue=number(npv?.value);
  return <div className="genesis-overview-hero">
-  <nav className="genesis-hero-toolbar" aria-label="Analytics destinations"><span className="genesis-hero-toolbar-label">Explore</span><span className="genesis-hero-active" aria-current="page">Overview</span><Link href={assessmentHref('/capex',id)}>Capital</Link><Link href={assessmentHref('/financial-modelling',id)}>Financial</Link></nav>
+  <div className="genesis-hero-top-controls"><nav className="genesis-hero-toolbar" aria-label="Analytics destinations"><span className="genesis-hero-toolbar-label">Explore</span><span className="genesis-hero-active" aria-current="page">Overview</span><Link href={assessmentHref('/capex',id)}>Capital</Link><Link href={assessmentHref('/financial-modelling',id)}>Financial</Link></nav><div className="genesis-hero-periods" role="group" aria-label="Cash flow period"><span>Period</span><button type="button" aria-pressed={range==='all'} onClick={()=>{setRange('all');setSelected(null)}}>All years</button>{allPoints.length>5&&<><button type="button" aria-pressed={range==='early'} onClick={()=>{setRange('early');setSelected(null)}}>First 5</button><button type="button" aria-pressed={range==='recent'} onClick={()=>{setRange('recent');setSelected(null)}}>Last 5</button></>}</div></div>
   <div className="genesis-hero-heading"><div><p className="genesis-hero-kicker">PROJECT ANALYTICS</p><h1>TEA overview</h1><p>Investment, operating performance and modelled project cash flow</p></div><span className="genesis-hero-basis">{currency} · Saved assessment</span></div>
   <div className="genesis-hero-trio">
    <Link className="genesis-hero-card genesis-hero-metric" href={assessmentHref('/capex',id)}>
@@ -84,7 +86,7 @@ export function GenesisOverviewHero({stages,id}:{stages:Stages;id:string}){
   </div>
   <section className="genesis-hero-wide" aria-label="Project cash flow chart">
    <div className="genesis-hero-wide-top"><div><h3>Project cash flow</h3><p>{financialStale?'Saved cash flow is stale · recalculate to update':'Calculated cash-flow trajectory by model year'}</p></div><div className="genesis-hero-mode" aria-label="Cash flow display"><button aria-pressed={mode==='annual'} onClick={()=>{setMode('annual');setSelected(null)}}>Annual</button><button aria-pressed={mode==='cumulative'} onClick={()=>{setMode('cumulative');setSelected(null)}}>Cumulative</button></div></div>
-   <div className="genesis-hero-legend"><span><i/> {mode==='annual'?'Annual project cash flow':'Cumulative project cash flow'}</span><span>{currency} · saved Python ledger</span></div>
+   <div className="genesis-hero-legend"><span><i/> {mode==='annual'?'Annual project cash flow':'Cumulative project cash flow'}</span><span>{currency} · saved Python ledger · {points.length} year{points.length===1?'':'s'} shown</span></div>
    {chartPoints.length>1?<><svg className="genesis-hero-line-chart" viewBox="0 0 760 270" role="group" aria-label={mode+' cash flow chart; keyboard accessible year data points'}>
     {[0,.25,.5,.75,1].map(t=><g key={t}><line x1="64" x2="704" y1={52+t*168} y2={52+t*168} className="genesis-hero-grid"/><text x="4" y={56+t*168} className="genesis-hero-axis">{format(highest-t*span)}</text></g>)}
     <line x1="64" x2="704" y1={220-(0-lowest)/span*168} y2={220-(0-lowest)/span*168} className="genesis-hero-zero"/>
