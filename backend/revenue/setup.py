@@ -88,15 +88,17 @@ def sentence(sale, stream_tag):
     return f"We sell {what} at {sale['unit_price']:g} {sale['currency']} per {sale['quantity_unit']}."
 
 
-def apply(store, key, revision, setup):
-    """Save the set-up as revenue inputs and approve them when complete.
+def build(state, setup):
+    """Check the set-up against the study and return (revenue inputs, Revenue Box text).
 
-    Returns {"state", "approved", "questions"}.
+    Pure: writes nothing, so the Entry page can check a set-up at once even
+    while the background run holds the study. Raises ValueError with a reason.
     """
-    state = store.get(key)
     report = state.get("scoped_report") or state.get("effective_report") or (state.get("parsed") or {}).get("report") or {}
     currency = str(setup.get("currency") or "USD").upper()
-    period = str(setup.get("price_period") or (state.get("plan", {}).get("cost_translation") or {}).get("target_period") or "")
+    # Before CAPEX has set the study cost date, prices are dated this month.
+    period = str(setup.get("price_period") or (state.get("plan", {}).get("cost_translation") or {}).get("target_period")
+                 or date.today().strftime("%Y-%m"))
     if not re.fullmatch(r"[A-Z]{3}", currency) or not re.fullmatch(r"\d{4}(?:-\d{2})?", period):
         raise ValueError("Enter a three-letter currency and a price date (YYYY or YYYY-MM)")
     sales, mechanisms, sentences = [], [], []
@@ -150,9 +152,19 @@ def apply(store, key, revision, setup):
     config.setdefault("assumption_date", date.today().isoformat())
     config["revenue_setup"] = {"origin": "entry_page", "sales": [
         {k: s[k] for k in ("id", "name", "stream_key", "component", "unit_price", "quantity_unit")} for s in sales]}
+    return config, "\n".join(sentences)
+
+
+def apply(store, key, revision, setup):
+    """Save the set-up as revenue inputs and approve them when complete.
+
+    Returns {"state", "approved", "questions"}.
+    """
+    state = store.get(key)
+    config, text = build(state, setup)
+    sales = config["sales"]
     state["plan"]["operating_economics"] = config
     state = store.put(state, revision)
-    text = "\n".join(sentences)
     state = update(store, key, state["revision"], text=text)
     if all(s["unit_price"] is not None for s in sales):
         try:

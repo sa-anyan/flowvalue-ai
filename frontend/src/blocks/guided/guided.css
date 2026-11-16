@@ -439,3 +439,11 @@ polyline.gf-tone-c { stroke: var(--gf-tone-c); }
 
 .gf-quick-questions { display: grid; gap: 10px; margin-top: 14px; padding: 14px; border: 1px solid var(--gf-line); border-radius: var(--gf-radius); background: var(--gf-raised); }
 .gf-quick-questions h3 { margin: 0; font-size: 16px; }
+
+/* Save & go Entry */
+.gf-start { display: grid; gap: 14px; max-width: 760px; margin: 0 auto; width: 100%; }
+.gf-start h2 { margin: 0; }
+.gf-launch { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin: 0; padding: 10px 14px; border: 1px solid var(--gf-line); border-radius: var(--gf-radius); background: var(--gf-raised); font-size: 14px; }
+.gf-launch-file { margin-left: auto; opacity: 0.65; font-size: 12px; }
+.gf-launch-failed { border-color: var(--gf-warn, #b45309); }
+.gf-start-links { margin: 0; }

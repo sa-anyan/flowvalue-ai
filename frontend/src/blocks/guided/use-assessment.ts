@@ -80,7 +80,10 @@ export function useAssessment() {
         setState(next);
         const auto = (next as Row).autopilot as Row | undefined;
         const brainstorm = (next as Row).opex_brainstorm as Row | undefined;
+        const launch = (next as Row).launch as Row | undefined;
         if (next.running || auto?.status === 'queued' || auto?.status === 'running') timer = setTimeout(refresh, 1200);
+        // Save & go: follow the background run quietly until it finishes.
+        else if (launch?.status === 'queued' || launch?.status === 'running' || (next as Row).launch_running) timer = setTimeout(refresh, 2000);
         // Background AI research: check back slowly until its proposals are saved.
         else if (brainstorm?.status === 'running' || Object.values(((next as Row).analyst as Row) || {}).some((r) => (r as Row)?.status === 'running'))
           timer = setTimeout(refresh, 4000);

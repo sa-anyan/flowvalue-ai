@@ -51,6 +51,9 @@ _opex_brainstorm.STAGE_LOCK = lock  # background AI results are written only bet
 from backend.blocks import analyst as _analyst  # noqa: E402
 
 _analyst.STAGE_LOCK = lock
+from backend.blocks import launch as _launch  # noqa: E402
+
+_launch.STAGE_LOCK = lock
 
 
 class Edit(BaseModel):
@@ -316,8 +319,7 @@ async def upload(
     name = Path(file.filename or "workbook").name
     if Path(name).suffix.lower() not in {".xlsx", ".xls", ".xlsm"}:
         raise HTTPException(422, "Choose .xlsx, .xls or .xlsm")
-    if lock.locked():
-        raise HTTPException(409, "Another assessment is running")
+    # Creating a study never waits for another study's run (Save & go queues the work).
     policy = None
     if analysis_years is not None:
         from backend.blocks.cashflow.schedule import make_policy, apply_policy
@@ -417,7 +419,27 @@ def get(key: str, historical: bool = False, currency: str | None = None):
     )
     out["opex_brainstorm"] = _opex_brainstorm.status(key, saved)
     out["analyst"] = _analyst.status(key, saved)
+    out["inbox"] = _launch.pending(key)  # user inputs waiting for the current background step
+    out["launch_running"] = _launch.running(key)
     return out
+
+
+class Launch(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    use_ai: bool = False
+
+
+@app.post("/api/assessments/{key}/launch", status_code=202)
+def launch_study(key: str, options: Launch):
+    """Save & go: read the workbook, then run every stage in the background."""
+    use_ai = options.use_ai and _opex_brainstorm.ai_available()
+    started = _launch.start(store, key, use_ai=use_ai)
+    return {"started": started, "use_ai": use_ai}
+
+
+def _busy(key):
+    """True while a background step holds the study; user inputs then go to the inbox."""
+    return _launch.running(key) or lock.locked() or bool(store.get(key).get("running"))
 
 
 @app.post("/api/assessments/{key}/opex-brainstorm", status_code=202)
@@ -441,16 +463,18 @@ class ProjectContext(BaseModel):
 @app.post("/api/assessments/{key}/project-context")
 def save_project_context(key: str, answers: ProjectContext):
     """Entry quick questions (site, new build or retrofit); the analyst reads them."""
-    if not lock.acquire(timeout=20):
-        raise HTTPException(409, "A calculation is running; try again in a moment")
+    context = {k: v.strip() for k, v in answers.model_dump().items() if v and v.strip()}
+    if _busy(key) or not lock.acquire(blocking=False):
+        _launch.put(key, "project_context", context)  # applied between background steps
+        return {"project_context": context, "queued": True}
     try:
         state = store.get(key)
-        state["project_context"] = {k: v.strip() for k, v in answers.model_dump().items() if v and v.strip()}
+        state["project_context"] = context
         state = store.put(state, state["revision"])
     finally:
         lock.release()
     _analyst.kick(store, key)
-    return {"project_context": state["project_context"], "revision": state["revision"]}
+    return {"project_context": state["project_context"], "revision": state["revision"], "queued": False}
 
 
 @app.patch("/api/assessments/{key}")
@@ -668,16 +692,38 @@ class RevenueSetup(BaseModel):
 
 @app.post("/api/assessments/{key}/revenue-setup")
 def revenue_setup(key: str, setup: RevenueSetup):
-    """Entry-page revenue: user-chosen stream, price and unit; approved when complete."""
-    from backend.revenue.setup import apply
+    """Entry-page revenue: user-chosen stream, price and unit; approved when complete.
 
-    if store.get(key).get("running"):
-        raise HTTPException(409, "Wait for the current calculation to finish")
+    Never refused because work is running: the set-up is checked at once (so a
+    mistake is shown immediately) and, while the study is busy, held and applied
+    between background steps.
+    """
+    from backend.blocks.execution import fresh
+    from backend.revenue.setup import apply, build
+
+    payload = setup.model_dump()
     try:
-        out = apply(store, key, setup.revision, setup.model_dump())
+        build(store.get(key), payload)
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
-    return {"approved": out["approved"], "questions": out["questions"], "revision": out["state"]["revision"]}
+    if _busy(key) or not lock.acquire(blocking=False):
+        _launch.put(key, "revenue_setup", payload)
+        return {"approved": False, "queued": True, "questions": [],
+                "message": "Saved. Revenue is applied as soon as the current background step finishes."}
+    try:
+        payload["revision"] = store.get(key)["revision"]
+        out = apply(store, key, payload["revision"], payload)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    finally:
+        lock.release()
+    if out["approved"] and fresh(store.get(key), "equipment"):
+        try:
+            submit_stage_group(key, Rerun(use_ai=False), economic_only=True)  # revenue → OPEX → financial
+        except HTTPException:
+            pass
+    return {"approved": out["approved"], "queued": False, "questions": out["questions"],
+            "revision": out["state"]["revision"]}
 
 
 @app.post("/api/assessments/{key}/autopilot", status_code=202)
