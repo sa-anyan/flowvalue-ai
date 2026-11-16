@@ -1456,14 +1456,29 @@ def monte_job(key: str, job_id: str):
     return get_job(store, key, job_id)
 
 
+@app.get("/api/assessments/{key}/monte-carlo/jobs/{job_id}/runs")
+def monte_run_index(key: str, job_id: str):
+    from backend.scenarios_and_uncertainty.monte_carlo.service import get_results
+    from backend.scenarios_and_uncertainty.monte_carlo.inspection import run_index
+
+    return run_index(get_results(store, key, job_id))
+
+
 @app.get("/api/assessments/{key}/monte-carlo/jobs/{job_id}/runs/{index}")
-def monte_sample(key: str, job_id: str, index: int):
+def monte_sample(key: str, job_id: str, index: int, download: bool = False):
     from backend.scenarios_and_uncertainty.monte_carlo.service import get_results
 
     result = get_results(store, key, job_id)
     if not 0 <= index < len(result["runs"]):
         raise HTTPException(404, "Run not found")
-    return result["runs"][index]
+    from backend.scenarios_and_uncertainty.monte_carlo.inspection import inspect_calculations
+
+    inspected = inspect_calculations(result, index)
+    if download:
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse(inspected, headers={"Content-Disposition": f'attachment; filename="FlowValue-variation-{index + 1}.json"', "Cache-Control": "no-store"})
+    return inspected
 
 
 @app.get("/api/assessments/{key}/monte-carlo/jobs/{job_id}/export")
@@ -1473,8 +1488,8 @@ def monte_export(key: str, job_id: str, format: str = "csv"):
     from backend.scenarios_and_uncertainty.monte_carlo.exports import export
     from backend.scenarios_and_uncertainty.monte_carlo.service import get_results
 
-    if format not in {"csv", "xlsx"}:
-        raise HTTPException(422, "Choose csv or xlsx")
+    if format not in {"csv", "xlsx", "json"}:
+        raise HTTPException(422, "Choose csv, xlsx or json")
     data, mime = export(get_results(store, key, job_id), format)
     return Response(
         data,

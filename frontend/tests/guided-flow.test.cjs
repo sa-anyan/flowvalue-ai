@@ -9,6 +9,7 @@ const {renderToStaticMarkup}=require('react-dom/server');
 const src=path.join(__dirname,'..','src');
 const resolve=Module._resolveFilename;
 Module._resolveFilename=function(request,...rest){
+ if(request.startsWith('.')&&rest[0]?.filename&&!path.extname(request)){const base=path.resolve(path.dirname(rest[0].filename),request);for(const ext of ['.ts','.tsx'])if(fs.existsSync(base+ext))return base+ext;}
  if(request.startsWith('@/')){const base=path.join(src,request.slice(2));for(const ext of ['.ts','.tsx'])if(fs.existsSync(base+ext))return base+ext;}
  return resolve.call(this,request,...rest);
 };
@@ -418,7 +419,7 @@ test('Equipment shows the priced-item subtotal and unpriced count rather than hi
  const {EquipmentPlayground}=require('../src/blocks/guided/equipment-playground.tsx');
  const state={id:'test',effective_report:{entities:[{key:'tank',kind:'equipment',identifier:'T-1',values:[]},{key:'reactor',kind:'equipment',identifier:'R-1',values:[]}]},results:{stages:{equipment:{result:{equipment_cost_total:null,equipment_total_with_packages:null,equipment:[{parsed_source:{equipment_key:'tank'},equipment_tag:'T-1',equipment_cost:100,amount:100},{parsed_source:{equipment_key:'reactor'},equipment_tag:'R-1',equipment_cost:null,amount:null}],priced_summary:{amounts:[{amount:'100',currency:'USD',period:'2026'}],unpriced_count:1,priced_count:1},issues:['Unresolved equipment: subtotals are partial; complete total unavailable']}}}}};
  const html=renderToStaticMarkup(React.createElement(EquipmentPlayground,{hook:{state,catalogue:[]},equipment:{value:[],dirty:false}}));
- assert.match(html,/Equipment estimate · priced items/);assert.match(html,/>100<\/strong>/);assert.match(html,/Items not priced/);
+ assert.match(html,/Equipment cost · priced items/);assert.match(html,/>100<\/strong>/);assert.match(html,/Items not priced/);
  assert.match(html,/excludes 1 item not priced/);assert.doesNotMatch(html,/Incomplete|complete total unavailable/);
 });
 test('Financial sensitivity renders original calculation values and isolated reset controls',()=>{
@@ -433,4 +434,84 @@ test('Financial sensitivity renders original calculation values and isolated res
  assert.match(changed,/>Reset to original/);assert.match(changed,/saved as separate versions/);
  assert.doesNotMatch(changed,/Apply &amp; recalculate/);
  assert.match(render({},null),/type="range" disabled=""/);
+});
+test('Equipment cost breakdown reconciles purchase-only and package costs explicitly',()=>{
+ const {EquipmentCostBreakdown}=require('../src/blocks/guided/equipment-cost-breakdown.tsx');
+ const summary={amounts:[{amount:'1624335.5531074136',currency:'USD',period:'2026-09',components:[
+  {cost_scope:'purchased_equipment',amount:'1329281.5085903038',equipment_tags:['T-001','R-001']},
+  {cost_scope:'unit_capital',amount:'295054.0445171098',equipment_tags:['P-001']}
+ ]}]};
+ const html=renderToStaticMarkup(React.createElement(EquipmentCostBreakdown,{summary,installation:{status:"embedded"}}));
+ for(const label of ['1,329,281.51','295,054.04','1,624,335.55','Individual equipment prices · purchase-only factor basis','Equipment systems priced together','P-001','2026-09','does not add another installation factor']) assert.ok(html.includes(label),label);
+ assert.match(html,/not split into purchase and installation/);
+ assert.match(html,/includes installation within its direct-cost allowances/);
+ assert.equal(renderToStaticMarkup(React.createElement(EquipmentCostBreakdown,{summary:{}})),'');
+});
+
+test('CAPEX uses one equipment headline from its own saved result',()=>{
+ const {CapexPlayground}=require('../src/blocks/guided/capex-playground.tsx');
+ const state={id:'test',plan:{},results:{stages:{equipment:{result:{priced_summary:{amounts:[{amount:'9999999'}]}}},capex:{result:{purchased_equipment:'1329281.51',lines:[{id:'unit_capital:P-001',amount:'295054.04',base:'pre_costed_unit_capital'}],equipment_summary:{amounts:[{amount:'1624335.55',currency:'USD',period:'2026-09'}]},total_capex:'7090118.21',currency:'USD',period:'2026-09'}}}}};
+ const html=renderToStaticMarkup(React.createElement(CapexPlayground,{hook:{state},capex:{value:{},dirty:false}}));
+ assert.match(html,/<small>Equipment cost<\/small><strong>1.62m/);
+ assert.doesNotMatch(html,/<small>Purchased equipment<\/small>|9.99m|Unit capital:P-001/);
+});
+test('Monte Carlo condensed selector shows every stage, baseline and named configuration choices',()=>{
+ const {ParameterMatrix,ConfigurationChoices}=require('../src/blocks/uncertainty/parameter-matrix.tsx');
+ const p={id:'config',label:'R-1 · model',baseline:'model-a',unit:'model_id',kind:'configuration',distribution:'discrete',choices:['model-a'],probabilities:[1],choice_labels:{'model-a':'Stainless fermenter','model-b':'Carbon steel reactor'},targets:[['equipment',0,'curve_id']],source:'Saved catalogue',rationale:'Review configuration',uncertainty:'Provisional',confidence:'Uncalibrated',enabled:true};
+ const html=renderToStaticMarkup(React.createElement(ParameterMatrix,{parameters:[p,{...p,id:'price',label:'Water sale',baseline:2,unit:'USD/m3',kind:'economic',targets:[['operating_economics','sales',0,'unit_price']],distribution:'triangular',minimum:1,mode:2,maximum:3}],disabled:false,onChange:()=>{}}));
+ for(const text of ['Equipment','Revenue','Baseline','200 variations','Edit Water sale','Edit R-1'])assert.ok(html.includes(text),text);
+ assert.doesNotMatch(html,/<details open=|Water sale minimum/);
+ const choices=renderToStaticMarkup(React.createElement(ConfigurationChoices,{parameter:p,disabled:false,onChange:()=>{}}));
+ for(const text of ['Stainless fermenter','Carbon steel reactor','Use only this'])assert.ok(choices.includes(text),text);
+ assert.doesNotMatch(html,/Choices \(JSON array\)/);
+});
+test('Monte Carlo histogram filters preserve metric eligibility and exact bin boundaries',()=>{
+ const {visibleRuns}=require('../src/blocks/uncertainty/run-explorer.tsx');
+ const runs=[{index:0,status:'complete',metrics:{npv:10},metric_eligible:['npv']},{index:1,status:'complete',metrics:{npv:20},metric_eligible:['npv']},{index:2,status:'failed',metrics:{npv:15},metric_eligible:[]}];
+ assert.deepEqual(visibleRuns(runs,'all','',{metric:'npv',low:10,high:20,includeHigh:false},null).map(r=>r.index),[0]);
+ assert.deepEqual(visibleRuns(runs,'all','',{metric:'npv',low:10,high:20,includeHigh:true},null).map(r=>r.index),[0,1]);
+ assert.deepEqual(visibleRuns(runs,'all','',null,[1]).map(r=>r.index),[1]);
+});
+test('Monte Carlo inspection shows applied and fixed configuration with source lineage',()=>{
+ const {RunConfiguration}=require('../src/blocks/uncertainty/run-explorer.tsx');
+ const run={index:4,status:'complete',configuration:{hash:'verified-hash',fingerprint_verified:true,seed:42,baseline_revision:8,plan:{equipment:[{curve_id:'fermenter',size:105}],capex:{model_id:'garrett'},operating_economics:{materials:[{unit_price:2}],commercial_lines:[{name:'Water'}]}}},metrics:{npv:100}};
+ const html=renderToStaticMarkup(React.createElement(RunConfiguration,{run,id:'study',jobId:'job'}));
+ for(const text of ['Variation 5','verified-hash','including those held fixed','CAPEX method and factors','Commercial revenue','download=true'])assert.ok(html.includes(text),text);
+});
+
+test('Monte Carlo inspection uses an accessible drawer instead of an inline panel',()=>{
+ const {AnalysisDrawer}=require('../src/blocks/uncertainty/analysis-drawer.tsx');
+ const html=renderToStaticMarkup(React.createElement(AnalysisDrawer,{open:true,title:'Variation 31',onClose:()=>{}},React.createElement('p',null,'Exact saved configuration')));
+ assert.match(html,/<dialog[^>]+aria-label="Variation 31"/);
+ assert.match(html,/Close analysis drawer/);assert.match(html,/Exact saved configuration/);
+ const closed=renderToStaticMarkup(React.createElement(AnalysisDrawer,{open:false,title:'Variation 31',onClose:()=>{}},'Exact saved configuration'));
+ assert.doesNotMatch(closed,/Exact saved configuration/);
+});
+test('equipment histogram filters omit unpriced assets and preserve record identity',()=>{
+ const {visibleRuns}=require('../src/blocks/uncertainty/run-explorer.tsx');
+ const runs=[{index:0,status:'complete',equipment_costs:{'pump-a':100}},{index:1,status:'partial',equipment_costs:{'pump-a':null}},{index:2,status:'partial',equipment_costs:{'pump-b':100}}];
+ assert.deepEqual(visibleRuns(runs,'all','',{metric:'equipment:pump-a',low:90,high:110,includeHigh:true},null).map(r=>r.index),[0]);
+});
+test('Monte Carlo breakdown shows saved factor bases and charges instead of only technical JSON',()=>{
+ const {CalculationBreakdown}=require('../src/blocks/uncertainty/calculation-breakdown.tsx');
+ const run={trace_verification:{notice:'Verified frozen variation'},calculation_trace:{capex:{currency:'USD',period:'2026-09',model_id:'garrett',total_capex:'15000',purchased_equipment:'10000',lines:[{id:'piping',amount:'4500',fraction:'.45',base:'purchased_equipment',base_amount:'10000',formula:'fraction * purchased_equipment',source:{reference:'Garrett test source'},status:'source_factor'}]}}};
+ const html=renderToStaticMarkup(React.createElement(CalculationBreakdown,{run}));
+ for(const text of ['What built these totals?','Equipment','CAPEX','OPEX','Revenue','Verified frozen variation','45%','10,000','4,500','15,000','Garrett test source','successive subtotals']) assert.ok(html.includes(text),text);
+ const missing=renderToStaticMarkup(React.createElement(CalculationBreakdown,{run:{trace_verification:{notice:'Replay mismatch'}}}));
+ assert.match(missing,/Replay mismatch/);assert.doesNotMatch(missing,/<table/);
+});
+test('guided saved-project startup shows a loading state instead of a new upload form',()=>{
+ const {GuidedFlow}=require('../src/blocks/guided/flow.tsx');
+ const html=renderToStaticMarkup(React.createElement(GuidedFlow));
+ assert.match(html,/Opening your saved project/);
+ assert.match(html,/Loading saved stage/);
+ assert.doesNotMatch(html,/Drop your mass|Checking AI availability|Not run/);
+});
+test('completed analyst research waiting for a safe boundary is labelled clearly',()=>{
+ const {AnalystCard,analystRunning}=require('../src/blocks/guided/analyst-card.tsx');
+ const state={analyst:{capex:{status:'ready',summary:'Saved research result',pending_application:true}}};
+ const html=renderToStaticMarkup(React.createElement(AnalystCard,{stage:'capex',hook:{state,aiEnabled:true}}));
+ assert.match(html,/AI research finished/);assert.match(html,/applies after the current calculation/);
+ assert.match(html,/Saved research result/);assert.doesNotMatch(html,/gf-analyst-skeleton/);
+ assert.equal(analystRunning(state),true);
 });

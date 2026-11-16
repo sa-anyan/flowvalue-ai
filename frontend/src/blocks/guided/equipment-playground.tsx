@@ -1,7 +1,8 @@
 'use client';
 import { useMemo, useState } from 'react';
 import { QuickPriceOverride } from '@/blocks/equipment/quick-price-override';
-import { compact, decideHeld, heldEstimates, equipmentCards, equipmentMapping, money, num, obj, patchEquipment, text, type EquipmentCardModel, type Row } from '@/lib/guided-flow';
+import { compact, decideHeld, heldEstimates, equipmentCards, equipmentMapping, money, num, obj, list, patchEquipment, text, type EquipmentCardModel, type Row } from '@/lib/guided-flow';
+import { EquipmentCostBreakdown } from './equipment-cost-breakdown';
 import { EquipmentInspector } from './equipment-inspector';
 import { Issues, OriginChip, RunBar, StageHeading, type StageProps } from './flow';
 import { AnalystCard } from './analyst-card';
@@ -16,6 +17,7 @@ export function EquipmentPlayground(props: StageProps) {
   const state = hook.state;
   const cards = useMemo(() => equipmentCards(state, equipment.value, hook.catalogue), [state, equipment.value, hook.catalogue]);
   const result = obj(obj(obj(obj(state?.results).stages).equipment).result);
+  const capexResult = obj(obj(obj(obj(state?.results).stages).capex).result);
   const [open, setOpen] = useState(''),
     [inspect, setInspect] = useState<EquipmentCardModel | null>(null),
     [before, setBefore] = useState<Record<string, string> | null>(null),
@@ -46,8 +48,8 @@ export function EquipmentPlayground(props: StageProps) {
       <AnalystCard stage="equipment" hook={props.hook} />
       <div className="gf-kpis">
         <div>
-          <small>Equipment estimate · priced items</small>
-          <strong>{amounts.length ? amounts.map((amount) => `${amounts.length > 1 ? text(amount.currency) + ' ' : ''}${compact(amount.amount)}`).join(' · ')
+          <small>Equipment cost · priced items</small>
+          <strong>{amounts.length ? amounts.map((amount) => `${amounts.length > 1 ? `${text(amount.currency)} ${text(amount.period)} ` : ''}${compact(amount.amount)}`).join(' · ')
             : num(result.equipment_total_with_packages) !== null ? compact(result.equipment_total_with_packages) : 'Awaiting prices'}</strong>
           <span>{amounts.length === 1 ? text(amounts[0].currency) : currency} · excludes {unpriced} item{unpriced === 1 ? '' : 's'} not priced</span>
         </div>
@@ -64,7 +66,8 @@ export function EquipmentPlayground(props: StageProps) {
           <span>{unpriced ? `${unpriced} awaiting price` : 'All items priced'}</span>
         </div>
       </div>
-      <Issues items={(Array.isArray(result.issues) ? result.issues : []).filter((issue) => !text(issue).startsWith('Unresolved equipment: subtotals are partial; complete total unavailable'))} title="Cost scope notes" />
+      <EquipmentCostBreakdown summary={summary} installation={list(capexResult.lines).find((line) => line.id === "equipment_installation")} />
+      <Issues items={(Array.isArray(result.issues) ? result.issues : []).filter((issue) => !text(issue).startsWith('Unresolved equipment: subtotals are partial; complete total unavailable')).map((issue) => text(issue).replace(/: priced as unit capital \(([^)]+)\), kept separate from purchased equipment; CAPEX adds it once$/, ': system price ($1), included in equipment cost and counted once in CAPEX.'))} title="Cost scope notes" />
       {heldEstimates(equipment.value).length > 0 && (
         <section className="gf-card-block gf-held" aria-labelledby="gf-held-h">
           <h2 id="gf-held-h">AI estimate check</h2>
@@ -126,7 +129,7 @@ export function EquipmentPlayground(props: StageProps) {
               <th scope="col">Size</th>
               <th scope="col">Qty</th>
               <th scope="col" className="gf-num">
-                Purchased cost
+                Estimated cost
               </th>
               {before && (
                 <th scope="col" className="gf-num">
@@ -168,6 +171,7 @@ export function EquipmentPlayground(props: StageProps) {
                     <td className="gf-num">
                       {c.cost === null ? <em className="gf-missing">Unpriced</em> : money(c.cost)}
                       {c.cost !== null && <small>{c.currency}</small>}
+                      {c.cost !== null && <small>{text(line.cost_scope) === "purchased_equipment" ? "Purchase only" : text(line.cost_scope) === "unit_capital" ? "Package price" : text(line.cost_scope) === "installed_equipment" ? "Includes installation" : "See cost scope"}</small>}
                     </td>
                     {before && <td className="gf-num gf-muted">{changed ? before[c.key] : '—'}</td>}
                     <td className="gf-row-actions">

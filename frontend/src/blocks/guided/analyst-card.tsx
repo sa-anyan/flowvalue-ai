@@ -28,8 +28,9 @@ export function AnalystCard({ stage, hook, headline }: { stage: string; hook: As
     <section className={`gf-analyst gf-analyst-${view}`} aria-live="polite" aria-busy={view === 'researching'} aria-label="Analyst summary">
       <div className="gf-analyst-head">
         <span className="gf-kicker">ANALYST</span>
+        {record.pending_application === true && <small className="gf-muted">AI research finished · applies after the current calculation</small>}
         {view === 'updating' && <small className="gf-muted">Updating for your latest inputs…</small>}
-        {view === 'ready' && record.cached !== true && text(record.finished_at) && <small className="gf-muted">Researched in the background</small>}
+        {view === 'ready' && record.pending_application !== true && record.cached !== true && text(record.finished_at) && <small className="gf-muted">Researched in the background</small>}
       </div>
       {view === 'researching' && (
         <div className="gf-analyst-skeleton" aria-hidden="true">
@@ -104,7 +105,7 @@ export function AnalystCard({ stage, hook, headline }: { stage: string; hook: As
                     <strong>
                       {words(text(f.id))} · {percent(f.fraction)}
                     </strong>{' '}
-                    <span className="gf-muted">({text(f.position)} of range{strings(record.applied).includes(text(f.id)) ? ', applied' : ', not applied: your value stays'})</span>
+                    <span className="gf-muted">({text(f.position)} of range{record.pending_application === true ? ', awaiting application' : strings(record.applied).includes(text(f.id)) ? ', applied' : ', not applied: your value stays'})</span>
                     {strings(f.reasoning).length > 0 && <span> — {strings(f.reasoning).join(' ')}</span>}
                   </li>
                 ))}
@@ -122,5 +123,5 @@ export function AnalystCard({ stage, hook, headline }: { stage: string; hook: As
 
 /** True while any stage's analyst research is in flight (for slower polling). */
 export function analystRunning(state: Row | null | undefined): boolean {
-  return Object.values(obj(obj(state).analyst)).some((r) => obj(r).status === 'running');
+  return Object.values(obj(obj(state).analyst)).some((r) => obj(r).status === 'running' || obj(r).pending_application === true);
 }

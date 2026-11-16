@@ -9,7 +9,7 @@ from backend.equipment_costing.registry import list_equipment_models
 from backend.revenue.advisor import TEXT, obj
 from backend.orchestration.equipment_advisor import validate as validate_shape
 
-VERSION = "equipment-concept-matcher-11-current-run-review"
+VERSION = "equipment-concept-matcher-13-evidence-binding"
 # Bound request/response size so one unavailable review cannot erase the plant.
 BATCH_SIZE = 8
 PROMPT = """Search all registered libraries. LIBRARY PREFERENCE: when an OpenPyTEA model and a Garrett model both describe the same equipment function and configuration, select the OpenPyTEA model and keep the Garrett model as a candidate. Select Garrett only when no OpenPyTEA model fits the function, configuration or size inputs, and say why. Rank physical function, configuration, required measurements, valid domain, cost scope, source and assumptions; price year does not determine suitability. A tag prefix does not establish function (a P- tag is not necessarily a pump): function and target-bound process evidence take precedence over tag prefixes. Correlation ranges are strict; any assumed geometry or mechanical scope must be justified.
@@ -74,6 +74,13 @@ Do not infer specific technology from a generic name when several functions rema
 plausible: return ambiguous candidates and a clear explanation. A missing catalogue
 family is no_suitable_model, not missing sizing. Name apparent aliases in caveats,
 without merging register entries or assuming quantities from AB suffixes.
+Use deterministic_proposals as the reproducible first-pass shortlist. Check the
+item's actual wording and source context before accepting it. auto is a lexical
+classification, not proof of scope, design suitability or a valid size range.
+Do not treat the first candidate, a tag prefix or a prior user choice as approval.
+Preserve an explicitly supported configuration when suitable; explain departures
+from that shortlist using this run's supplied evidence. An ambiguous family stays
+provisional. No lowest-price selection is allowed.
 Return one decision for every equipment_key. Use only supplied catalogue model IDs.
 Do not return numeric sizes, prices, factors, equations, uncertainty percentages or
 new physical connections. No external research tools are provided: do not claim to
@@ -310,6 +317,17 @@ def match_report(report, description, store, provider=None):
     register, models = equipment_register(report), [
         m for m in catalogue() if m.get("availability") != "disabled"
     ]
+    # Claude's existing deterministic matcher supplies stable proposals, not
+    # engineering approval. Never seed this pass with a past user's choices.
+    from .deterministic import match_register
+    quick = match_register(report)
+    canonical_ids = {m['model_id'] for m in models}
+    proposals = {r['equipment_key']: {
+        'status': r['status'], 'family': r.get('family'), 'family_basis': r.get('family_basis'),
+        'reason': r.get('reason'),
+        'ordered_candidate_model_ids': [o['model_id'] for o in r.get('options', []) if o['model_id'] in canonical_ids],
+        'notice': 'Stable lexical shortlist only; not a price, numeric confidence, confirmed configuration or evidence of applicability.'
+    } for r in quick['matches']}
     contexts = contextual_descriptions(report)
     for row in register:
         entity = next(
@@ -342,6 +360,7 @@ def match_report(report, description, store, provider=None):
     output, batches = [], []
     from backend.blocks.progress import step
 
+    requests = []
     for start in range(0, len(register), BATCH_SIZE):
         batch = register[start : start + BATCH_SIZE]
         step("Matching equipment to models (AI)", start, len(register))
@@ -350,6 +369,7 @@ def match_report(report, description, store, provider=None):
             "task": VERSION,
             "model": getattr(provider, "model", None),
             "equipment_register": batch,
+            "deterministic_proposals": {k: proposals[k] for k in keys if k in proposals},
             "costing_catalogue": compact_catalogue(models),
             "lexical_candidates": {
                 e["equipment_key"]: lexical_candidates(e, models) for e in batch
@@ -361,18 +381,24 @@ def match_report(report, description, store, provider=None):
             "scope": "Conceptual model matching only. No numerical engineering data, sizing or costing.",
         }
         schema = _schema(keys, list(model_by_id))
+        requests.append((start, batch, context, schema))
+
+    def fetch(request):
+        _, _, context, schema = request
+        if provider_error is not None:
+            raise provider_error
+        def call():
+            value = provider.generate(instructions=PROMPT, context=context, schema=schema)
+            validate_shape(value, schema)
+            return value
+        return store.cached(context, call)
+
+    from backend.orchestration.parallel_ai import ordered_prefetch
+    for request, future in ordered_prefetch(requests, fetch):
+        start, batch, context, schema = request
+        step("Matching equipment to models (AI)", start, len(register))
         try:
-            if provider_error is not None:
-                raise provider_error
-
-            def call():
-                value = provider.generate(
-                    instructions=PROMPT, context=context, schema=schema
-                )
-                validate_shape(value, schema)
-                return value
-
-            response, cached = store.cached(context, call)
+            response, cached = future.result()
             validate_shape(response, schema)
             returned = response["matches"]
             batches.append(
@@ -423,15 +449,37 @@ def match_report(report, description, store, provider=None):
                 ]
                 for d in stream["descriptions"]
             )
-            if (
-                any(i not in allowed_evidence for i in decision["context_evidence_ids"])
-                or not decision["reason"].strip()
-            ):
+            # Repair only the exact redundant namespace spelling for THIS item's
+            # supplied identity. Never fuzzy-match IDs or borrow another item's source.
+            identity_id = contexts[source["equipment_key"]]["identity_evidence_id"]
+            redundant_id = "equipment-evidence:" + source["equipment_key"]
+            corrections = []
+            evidence_ids = []
+            for evidence_id in decision["context_evidence_ids"]:
+                canonical = evidence_id
+                if (evidence_id not in allowed_evidence
+                        and evidence_id == redundant_id
+                        and isinstance(identity_id, str)
+                        and identity_id == redundant_id.replace("equipment-evidence:equipment:", "equipment-evidence:", 1)
+                        and identity_id in allowed_evidence):
+                    canonical = identity_id
+                    corrections.append({"returned_id": evidence_id, "canonical_id": canonical})
+                if canonical not in evidence_ids:
+                    evidence_ids.append(canonical)
+            decision["context_evidence_ids"] = evidence_ids
+            if corrections:
+                decision["evidence_reference_corrections"] = corrections
+            invalid_ids = [i for i in evidence_ids if i not in allowed_evidence]
+            if invalid_ids or not decision["reason"].strip():
+                original_reason = decision["reason"]
                 decision.update(
                     match_status="ambiguous",
                     selected_model_id=None,
                     conceptual_validation="uncertain",
-                    reason="Matching reasoning or source references require clarification.",
+                    reason=(original_reason + " " if original_reason.strip() else "")
+                        + ("Model selection was withheld because source references were not supplied for this equipment."
+                           if invalid_ids else "Model selection was withheld because its explanation was missing."),
+                    evidence_validation={"invalid_ids": invalid_ids, "original_reason": original_reason},
                 )
             if any(i not in model_by_id for i in decision["candidate_model_ids"]) or (
                 decision["selected_model_id"] is not None
@@ -487,6 +535,7 @@ def match_report(report, description, store, provider=None):
         "version": VERSION,
         "model": getattr(provider, "model", None),
         "equipment_register": register,
+        "deterministic_first_pass": {"version": quick["version"], "proposals": proposals},
         "matches": output,
         "summary": {
             "equipment_count": len(register),

@@ -1,6 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { ParameterMatrix } from '@/blocks/uncertainty/parameter-matrix';
+import { canSample } from '@/blocks/uncertainty/variation-scope';
 import { stableJson } from '@/lib/stable-json';
 import { assessmentHref } from '@/lib/assessment-navigation';
 import { type Job, type Settings } from '@/lib/monte-carlo';
@@ -625,9 +627,9 @@ function MonteCarloTab({
                 <input value={settings.label} onChange={(e) => setSettings({ ...settings, label: e.target.value })} />
               </label>
               <label className="gf-field">
-                <span>Iterations</span>
+                <span>Variations · fixed at 200</span>
                 <select value={settings.iterations} onChange={(e) => setSettings({ ...settings, iterations: Number(e.target.value) })}>
-                  {[1000, 5000, 10000].map((n) => (
+                  {[200].map((n) => (
                     <option key={n} value={n}>
                       {n.toLocaleString('en-GB')}
                     </option>
@@ -645,56 +647,15 @@ function MonteCarloTab({
                 </strong>
               </div>
             </div>
-            <details className="gf-details">
-              <summary>Choose drivers</summary>
-              <input type="search" aria-label="Find a driver" placeholder="Find a driver…" value={query} onChange={(e) => setQuery(e.target.value)} />
-              <ul className="gf-drivers">
-                {shown.map((p) => (
-                  <li key={p.id}>
-                    <label className="gf-check">
-                      <input
-                        type="checkbox"
-                        checked={p.enabled}
-                        onChange={(e) => {
-                          setPreflight(null);
-                          setSettings({ ...settings, parameters: settings.parameters.map((x) => (x.id === p.id ? { ...x, enabled: e.target.checked } : x)) });
-                        }}
-                      />
-                      <span>
-                        {p.label}
-                        <small>
-                          {p.distribution} · {p.minimum ?? '—'} / {p.mode ?? '—'} / {p.maximum ?? '—'} {p.unit} · {p.source}
-                        </small>
-                      </span>
-                    </label>
-                    {p.enabled && (
-                      <div className="gf-range" role="group" aria-label={`${p.label} range`}>
-                        {(['minimum', 'mode', 'maximum'] as const).map((field) => (
-                          <label key={field} className="gf-field gf-field-sm">
-                            <span>{{ minimum: 'Low', mode: 'Most likely', maximum: 'High' }[field]}</span>
-                            <input
-                              type="number"
-                              step="any"
-                              value={p[field] ?? ''}
-                              onChange={(e) => {
-                                setPreflight(null);
-                                const value = e.target.value === '' ? null : Number(e.target.value);
-                                setSettings({ ...settings, parameters: settings.parameters.map((x) => (x.id === p.id ? { ...x, [field]: value } : x)) });
-                              }}
-                            />
-                          </label>
-                        ))}
-                      </div>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </details>
+            <ParameterMatrix parameters={settings.parameters} disabled={busy || active} onChange={(key, patch) => {
+              setPreflight(null);
+              setSettings({ ...settings, parameters: settings.parameters.map((parameter) => parameter.id === key ? { ...parameter, ...patch } : parameter) });
+            }} />
             <div className="gf-line-actions">
               <button type="button" className="gf-secondary" disabled={busy || active} onClick={() => void run(async () => setPreflight(await api<Row>(`assessments/${id}/monte-carlo/preflight`, post(settings))))}>
                 Check setup
               </button>
-              <button type="button" className="gf-primary" disabled={busy || active || hook.busy} onClick={() => void run(async () => setJob(await api<Job>(`assessments/${id}/monte-carlo/run`, post(settings))))}>
+              <button type="button" className="gf-primary" disabled={busy || active || hook.busy || !enabled || settings.parameters.some(p => p.enabled && !canSample(p))} onClick={() => void run(async () => setJob(await api<Job>(`assessments/${id}/monte-carlo/run`, post(settings))))}>
                 Run Monte Carlo
               </button>
               {active && job && (
@@ -752,6 +713,7 @@ function MonteCarloTab({
               </ChartCard>
             ))}
           </div>
+          <Link className="gf-link" href={assessmentHref('/monte-carlo/overview', id) + `&job=${job.id}`}>Explore all variations, sensitivities and full configurations ↗</Link>
           <p className="gf-muted">
             {text(summary.percentile_convention)} The backend currently reports P10/P50/P90, so the 80% band is shown. 50% (P25–P75) and 90% (P5–P95) bands appear automatically once
             those percentiles are reported.

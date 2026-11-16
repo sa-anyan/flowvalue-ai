@@ -5,6 +5,7 @@ from backend.equipment_costing.registry import model_source
 import copy
 import json
 import math
+import re
 from backend.equipment_costing.registry import list_equipment_models
 from backend.orchestration.equipment_advisor import validate
 from backend.revenue.advisor import obj, TEXT, safe_ai_reason
@@ -12,13 +13,13 @@ from .. import convert, ConversionContext
 from .service import describe, evaluate, model_contract, PARAMETERS, RECIPES
 from .derivations import METHODS, derive, discover
 
-VERSION = "equipment-input-resolution-27-assumption-ranges"
+VERSION = "equipment-input-resolution-29-floor-policy"
 PROMPT = """ASSUMPTION RANGES: for every assumption also give low and high in the same unit: the range an experienced engineer would accept for this service and equipment type (typical design practice, not a fixed percentage around your value), with low <= value <= high. Use null for both only when no defensible range exists. Monte Carlo varies the value across this range.
 
 WORKBOOK PARAMETERS FIRST: an equipment item may carry workbook_parameters, values the workbook itself states (id = worksheet!cell), found by a label search. Before proposing any assumed parameter (residence or batch time, efficiency, density, heat-transfer coefficient, loading, latent or specific heat, vessel volume, heat capacity ratio), check that list. When a listed value fits the parameter's meaning, units and this item's service, use it, cite its id in the rationale and label it a workbook statement; convert units explicitly through the declared parameter units. A label match can be wrong (another stream, chemical, temperature or unit): reject it with a short reason. Propose an assumption only when no listed value fits, and say so.
 For a dryer model requiring evaporation rate, use dryer_evaporation: measurement_id is feed water COMPONENT mass flow and outlet_measurement_id is product water COMPONENT mass flow. Python subtracts and converts them. Confirm the selected drying boundary has no other water paths/reaction; disclose this scope assumption. Never use total wet-feed flow as evaporation. Carrier-gas inlet/outlet water can independently check the calculated evaporation; do not confuse those roles with feed/product.
-For OpenPyTEA power coordinates use electrical_to_shaft_power / shaft_to_electrical_power with explicit motor_efficiency, or pump_hydraulic_power, when the power role differs. Shaft power is not electrical input power. For OpenPyTEA correlations, preserve exact required parameter roles (shaft/fluid/electrical power, actual/standard flow, composite design coordinates). Never substitute an uncalculated feed rate for a composite coordinate. Two-variable models require secondary_input: choose its measurement_id independently, or provide an explicit assumed value/unit/rationale; Python converts it. Missing second input remains MISSING_SIZING_INPUT. Disabled models cannot be selected. No automatic size clamping or parallelisation.
-LIBRARY PREFERENCE: among compatible candidates whose published domain covers the calculated size, choose an OpenPyTEA model before any Garrett model. Use Garrett only when no OpenPyTEA candidate applies. OpenPyTEA correlations have strict published capacity limits and do not accept Garrett extrapolation options. BELOW-RANGE SIZES: when the physically calculated size is BELOW a correlation's published minimum, keep the best-matching OpenPyTEA (or Garrett) model; Python prices it at that minimum size and records the floor as an explicit assumption. Do not switch library only because the size is small. If the size is ABOVE a correlation's maximum, choose a conceptually compatible supplied alternative with an applicable domain or a Garrett model supporting disclosed boundary extrapolation. Never change a source quantity or tune residence time, efficiency or density just to fit a cost curve. Keep extrapolation_exponent null for non-Garrett models.
+For OpenPyTEA power coordinates use electrical_to_shaft_power / shaft_to_electrical_power with explicit motor_efficiency, or pump_hydraulic_power, when the power role differs. Shaft power is not electrical input power. For OpenPyTEA correlations, preserve exact required parameter roles (shaft/fluid/electrical power, actual/standard flow, composite design coordinates). Never substitute an uncalculated feed rate for a composite coordinate. Two-variable models require secondary_input: choose its measurement_id independently, or provide an explicit assumed value/unit/rationale; Python converts it. Missing second input remains MISSING_SIZING_INPUT. Disabled models cannot be selected. Never change physical size or invent parallel units to fit a correlation. A disclosed minimum PRICE floor is separate from physical sizing.
+LIBRARY PREFERENCE: among compatible candidates whose published domain covers the calculated size, choose an OpenPyTEA model before any Garrett model. Use Garrett only when no OpenPyTEA candidate applies. OpenPyTEA correlations reject upper-range extrapolation and do not accept Garrett extrapolation options. Canonical Python supports a disclosed minimum-price floor below the lower bound; this is not extrapolation or a change to physical size. Do not switch library only because the size is small. BELOW-RANGE SIZES: first assess supplied alternatives whose published domains cover the unchanged physical size. Select an in-domain alternative only if its equipment function, configuration, material, pressure/temperature basis and included/excluded scope are suitable for this service; explain any provisional configuration change. Do not choose by lowest price, shared units or library alone. When no suitable in-domain alternative exists, assess supplied compatible models with a closer minimum-size bound before retaining a larger floor; disclose any remaining minimum-price floor. When a compatible supplied model is below its lower size bound, still return status=proposed with the real source measurement, physical recipe and assumptions. Python calculates the real size and prices at the published minimum. Do not return unresolved solely because that real size is below the minimum. Unknown function, incompatible service and missing physical inputs still remain unresolved. Domain proximity never overrides service, material, pressure or scope suitability. Never inflate physical size to fit a correlation. If the size is ABOVE a correlation's maximum, choose a conceptually compatible supplied alternative with an applicable domain or a Garrett model supporting disclosed boundary extrapolation. Never change a source quantity or tune residence time, efficiency or density just to fit a cost curve. Keep extrapolation_exponent null for non-Garrett models.
 For the Turton fermenter, specify operating_mode from process evidence, or an explicit provisional operating assumption. Flow-to-volume sizing requires continuous mode, residence time and working fraction. Batch/unknown requires directly documented per-vessel volume. Never extrapolate beyond 35 m3. For a clarifier use clarifier_area (hydraulic_loading_m_h is surface overflow rate). A generic settler does not prove mechanical equipment exists. A mechanically equipped clarifier may be proposed as an explicit preliminary configuration scenario for a compatible settling duty, with geometry, mechanical scope and uncertainty disclosed; never label that configuration as extracted or verified. Likewise a biofilm reactor may use a defensible vessel-core costing proxy with biofilm media/aeration/internals explicitly excluded or unresolved; it is not a complete validated bioreactor package.
 You are the chemical-engineering input-resolution specialist AFTER equipment matching.
 Apply these five skills in order for every conversion-matching decision:
@@ -693,6 +694,7 @@ def resolve(
     by_key = {r["equipment_key"]: r for r in rows}
     from backend.blocks.progress import step
 
+    requests = []
     for start in range(0, len(pending), 4):
         group = pending[start : start + 4]
         step("Proposing sizing inputs (AI)", start, len(pending))
@@ -794,6 +796,7 @@ def resolve(
                 "multiple_compatible_configurations": "Select a provisional candidate with limitations instead of demanding a unique confirmed configuration.",
                 "conflicting_services": "You may price one explicitly identified service as a provisional partial-scope scenario. Retain the conflicting service as excluded/unresolved scope; never combine incompatible chemicals or claim a complete package.",
                 "unknown_function": "Leave unresolved. A neighboring equipment name or tag prefix is not proof of operation.",
+                "below_minimum_size": "Return a compatible proposed model and unchanged physical recipe. Python applies and discloses the minimum-price floor; never replace physical inputs with the lower bound.",
                 "missing_cost_model": "Leave unsupported. Do not invent prices or substitute an unrelated model.",
                 "conflicting_physical_measurements": "Preserve and disclose the conflict; do not silently rewrite measured pressure, temperature or flow.",
             },
@@ -813,20 +816,26 @@ def resolve(
             "notice": "Only supplied canonical models/equations; assumptions are provisional, arithmetic belongs to Python.",
         }
         request_schema = decision_schema(transport)
+        requests.append((start, group, transport, context, request_schema))
+
+    def fetch(request):
+        _, _, _, context, request_schema = request
+        def call():
+            response = provider.generate(
+                instructions=(REVIEW_PROMPT if repair_feedback is not None else "") + PROMPT,
+                context=context, schema=request_schema,
+            )
+            response = normalize_response(response)
+            validate(response, SCHEMA)
+            return response
+        return store.cached(context, call)
+
+    from backend.orchestration.parallel_ai import ordered_prefetch
+    for request, future in ordered_prefetch(requests, fetch):
+        start, group, transport, context, request_schema = request
+        step("Proposing sizing inputs (AI)", start, len(pending))
         try:
-
-            def call():
-                response = provider.generate(
-                    instructions=(REVIEW_PROMPT if repair_feedback is not None else "")
-                    + PROMPT,
-                    context=context,
-                    schema=request_schema,
-                )
-                response = normalize_response(response)
-                validate(response, SCHEMA)
-                return response
-
-            response, cached = store.cached(context, call)
+            response, cached = future.result()
             response = normalize_response(response)
             validate(response, SCHEMA)
         except Exception as exc:
@@ -875,6 +884,7 @@ def resolve(
             key = item["equipment_key"]
             decisions = [d for d in response["decisions"] if d["equipment_key"] == key]
             d = None
+            terminal_unresolved = False
             try:
                 if len(decisions) != 1:
                     raise ValueError(
@@ -885,6 +895,28 @@ def resolve(
                     d["thermal_basis"].setdefault("source_choices", [])
                 validate(d, request_schema["properties"]["decisions"]["items"])
                 if d["status"] != "proposed":
+                    terminal_unresolved = True
+                    # One policy clarification, not an unbounded retry of missing
+                    # evidence. This never chooses a model or supplies sizing.
+                    floor_refusal = re.search(
+                        r"below.{0,80}(?:bound|minimum|range)|(?:minimum|lower bound).{0,80}(?:flow|power|size|domain)",
+                        d["rationale"], re.I | re.S,
+                    )
+                    floor_candidate = any(
+                        c.get("model", {}).get("capacity_limits")
+                        for c in item["candidate_inputs"]
+                    )
+                    if floor_refusal and floor_candidate and repair_depth < 2 and not any(
+                        f.get("floor_policy_clarification") for f in (repair_feedback or [])
+                    ):
+                        terminal_unresolved = False
+                        raise ValueError(
+                            "MINIMUM_PRICE_FLOOR_POLICY: below-minimum size alone is not a pricing failure. "
+                            "Return a proposed compatible supplied model, real supplied measurement ID and physical recipe; "
+                            "Python keeps the real size and applies a disclosed minimum-price floor. "
+                            "Do not invent function, pressure rise or power. If another blocker remains, state it. "
+                            "Original explanation: " + d["rationale"]
+                        )
                     raise ValueError(d["rationale"])
                 allowed = {c["model_id"]: c for c in item["candidate_inputs"]}
                 if d["model_id"] not in allowed:
@@ -1160,6 +1192,8 @@ def resolve(
                         "status": "input_resolution_unresolved",
                         "reason": str(exc),
                         "failed_proposal": copy.deepcopy(d),
+                        "retryable": not terminal_unresolved,
+                        "floor_policy_clarification": str(exc).startswith("MINIMUM_PRICE_FLOOR_POLICY:"),
                         "attempt": repair_depth + 1,
                     }
                 )
@@ -1167,7 +1201,7 @@ def resolve(
         failed = {
             a["equipment_key"]
             for a in audits
-            if a["status"] == "input_resolution_unresolved"
+            if a["status"] == "input_resolution_unresolved" and a.get("retryable", True)
         }
         if failed:
             repair_report = {
@@ -1218,15 +1252,19 @@ def repair_pricing(
     exhausted = []
     discoveries = []
     signatures = {}
+    floor_reviews = {}
+    original_lines = {(r.parsed_source or {}).get("equipment_key"): r for r in total.equipment}
+    from backend.equipment_costing.domain_review import below_floor, candidates as domain_candidates
+
     for line in total.equipment:
         key = (line.parsed_source or {}).get("equipment_key")
         row = rows.get(key, {})
         spec = row.get("unit_conversion") or {}
         from backend.equipment_matching.library_preference import user_selected_model
 
+        floor_review = below_floor(line)
         if (
-            line.equipment_cost is not None
-            or (getattr(line, "amount", None) is not None)
+            ((line.equipment_cost is not None or getattr(line, "amount", None) is not None) and not floor_review)
             or row.get("manual_price")
             or row.get("external_quote")
             or row.get("scope_decision") in {"alias", "exclude"}
@@ -1250,6 +1288,11 @@ def repair_pricing(
             for p in spec.get("input_provenance", {}).values()
         ):
             continue
+        if floor_review:
+            floor_candidates = domain_candidates(report, key, row)
+            if not floor_candidates:
+                continue  # No confirmed domain improvement: keep the existing floor.
+            floor_reviews[key] = floor_candidates
         range_failure = any("MODEL_OUT_OF_RANGE" in issue for issue in line.issues)
         option_failure = any(
             "Unsupported OpenPyTEA correction/options" in issue for issue in line.issues
@@ -1257,13 +1300,14 @@ def repair_pricing(
         missing_configuration = not row.get("curve_id") or not spec.get("enabled")
         if not (
             range_failure
+            or floor_review
             or option_failure
             or missing_configuration
             or any("Unsupported extrapolation" in issue for issue in line.issues)
         ):
             continue
         record = history.setdefault(key, {"excluded": [], "unresolved": None})
-        remaining = None
+        remaining = floor_reviews.get(key)
         if range_failure:
             if row.get("curve_id") and row["curve_id"] not in record["excluded"]:
                 record["excluded"].append(row["curve_id"])
@@ -1333,7 +1377,9 @@ def repair_pricing(
                 "status": "pricing_requires_scaling_basis",
                 "reason": "; ".join(line.issues),
                 "previous_conversion": spec,
-                "preserve_physical_basis": range_failure,
+                "preserve_physical_basis": range_failure or floor_review,
+                "domain_review": floor_review,
+                "domain_candidate_model_ids": floor_reviews.get(key, []),
                 "recovered_candidate_model_ids": recovered if range_failure else [],
                 "instruction": "Preserve valid physical sizing, source bindings and assumptions. Recovered candidates are same-family search results, NOT previously approved equipment configurations. Review service, material, pressure and included/excluded scope before selecting one; reject unsuitable options. For strict-domain failures select a conceptually compatible alternative from supplied candidates; never alter the size to fit a curve. Non-Garrett libraries do not support Garrett extrapolation options. A known operation may use a disclosed preliminary configuration, not an unrelated operation. Supply a defensible Garrett scaling exponent only where supported, or retain its printed exponent. Explicitly specify any newly needed gallon/ton convention. Otherwise retain the genuine exception.",
             }
@@ -1367,6 +1413,34 @@ def repair_pricing(
         for r in repaired["equipment"]
         if r.get("unit_conversion", {}).get("enabled")
     }
+    if floor_reviews:
+        from backend.blocks.equipment.calculation import calculate_equipment
+        for key, allowed in floor_reviews.items():
+            replacement = candidates.get(key)
+            accepted = False
+            if replacement and replacement.get('curve_id') in allowed:
+                old_spec = rows[key]['unit_conversion']
+                new_spec = replacement.get('unit_conversion') or {}
+                # Preserve every physical binding, assumption and context, not only the final size.
+                unchanged = replacement.get('quantity') == rows[key].get('quantity') and all(old_spec.get(k) == new_spec.get(k) for k in
+                    ('method', 'measurement_id', 'outlet_measurement_id', 'inputs', 'derivations',
+                     'unit_context', 'operating_mode', 'thermal_basis', 'secondary_input'))
+                if unchanged:
+                    check, _ = calculate_equipment(report, {**plan, 'equipment': [replacement]}, plan.get('cost_translation'))
+                    tested = next((r for r in check.equipment if (r.parsed_source or {}).get('equipment_key') == key), None)
+                    accepted = bool(tested and tested.amount is not None and tested.cost_scope == original_lines[key].cost_scope)
+            if not accepted:
+                candidates.pop(key, None)
+            else:
+                replacement['domain_selection'] = {
+                    'policy': 'compatible-domain-review-1', 'previous_model_id': rows[key]['curve_id'],
+                    'selected_model_id': replacement['curve_id'], 'candidate_model_ids': allowed,
+                    'reason': 'Domain-compatible alternative selected by the specialist; physical basis preserved and canonical price checked. Any remaining minimum-size floor is disclosed.',
+                }
+            audit.append({'equipment_key': key, 'status': ('closer_minimum_floor_selected' if below_floor(tested) else 'in_domain_alternative_selected') if accepted else 'minimum_price_floor_retained',
+                          'previous_model_id': rows[key]['curve_id'],
+                          'selected_model_id': replacement['curve_id'] if accepted else rows[key]['curve_id'],
+                          'notice': 'Configuration remains provisional; numerical range compatibility is not design approval.'})
     for key in keys - set(candidates):
         history[key]["unresolved"] = signatures[key]
     plan = copy.deepcopy(plan)

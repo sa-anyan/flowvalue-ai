@@ -39,6 +39,8 @@ class Parameter(Contract):
         return value
 
     id: str = Field(min_length=1, max_length=180)
+    baseline: float | str | None = None
+    choice_labels: dict[str, str] = Field(default_factory=dict, max_length=40)
     enabled: bool = False
     label: str = Field(max_length=240)
     targets: list[list[str | int]] = Field(min_length=1, max_length=100)
@@ -90,7 +92,7 @@ class Settings(Contract):
     correlations: list[Correlation] = Field(default_factory=list, max_length=1000)
     distinct: list[Distinct] = Field(default_factory=list, max_length=100)
     aliases: list[Alias] = Field(default_factory=list, max_length=100)
-    iterations: Literal[1000, 5000, 10000] = 1000
+    iterations: Literal[200] = 200
     seed: int = Field(default=42, ge=0, le=4294967295)
     operating_years: int = Field(default=20, ge=1, le=50)
     target_irr: float = Field(default=0.1, ge=-0.99, le=10)

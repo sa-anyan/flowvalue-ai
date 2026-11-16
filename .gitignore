@@ -36,3 +36,6 @@ backend/.venv-biosteam/
 
 # Internal roadmap documents stay local (public repository)
 /docs/reference/*.docx
+
+# Production demo build (separate from Next development cache)
+frontend/.next-demo*/

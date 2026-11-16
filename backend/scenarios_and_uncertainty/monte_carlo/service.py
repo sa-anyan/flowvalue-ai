@@ -39,6 +39,8 @@ def source_fingerprint():
             "sampling.py",
             "scenarios.py",
             "engine.py",
+            "inspection.py",
+            "calculation_trace.py",
         )
     ]
     paths += list(Path("backend/equipment_costing/indexes/garrett/data").glob("*.json"))

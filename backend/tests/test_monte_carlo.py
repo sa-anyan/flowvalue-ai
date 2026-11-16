@@ -215,8 +215,8 @@ def test_canonical_financials_and_reproducible_simulation():
     a = simulate(state, settings)
     b = simulate(state, settings)
     assert a == b
-    assert len(a["runs"]) == 1000
-    assert a["summary"]["complete_runs"] == 1000
+    assert len(a["runs"]) == 200
+    assert a["summary"]["complete_runs"] == 200
     plan = prepare(state, settings)
     canonical = run(
         state["parsed"]["report"], state["description"], plan, calculate_ranges=False
@@ -488,7 +488,7 @@ def test_user_locked_parameters_do_not_auto_enable():
 
 def test_marginal_moments_are_consistent_with_definitions():
     p = parameter("uniform")
-    settings = Settings(parameters=[p], iterations=10000)
+    settings = Settings(parameters=[p], iterations=200)
     _, draw = sample(settings, settings)
     assert abs(float(np.mean(draw.astype(float))) - 1.25) < 0.03
     settings.parameters[0].distribution = "triangular"

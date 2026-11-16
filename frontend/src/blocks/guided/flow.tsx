@@ -245,7 +245,7 @@ export function GuidedFlow() {
         <nav className="gf-rail" aria-label="Assessment stages">
           <ol>
             {guidedStages.map((s, i) => {
-              const status = s.id === 'entry' ? null : stageStatus(receipts[s.id], stages[s.id]);
+              const status = s.id === 'entry' ? null : hook.loading && !state ? {tone: 'running', label: 'Loading saved stage'} : stageStatus(receipts[s.id], stages[s.id]);
               return (
                 <li key={s.id}>
                   <button
@@ -314,12 +314,16 @@ export function GuidedFlow() {
         <div ref={title} id="gf-stage-title" tabIndex={-1} className="gf-sr-only">
           {current.title}
         </div>
+        {!state && hook.loading ? <section role="status"><h1>Opening your saved project…</h1><p>Loading its inputs and results.</p></section>
+          : !state && hook.error ? <section role="alert"><h1>Project could not be opened</h1><p>{hook.error}</p><button type="button" onClick={() => { hook.setError(''); hook.reload(); }}>Retry loading project</button></section>
+          : <>
         {stage === 'entry' && <EntryStart {...props} />}
         {stage === 'equipment' && <EquipmentPlayground {...props} />}
         {stage === 'capex' && <CapexPlayground {...props} />}
         {stage === 'opex' && <OpexPlayground {...props} />}
         {stage === 'revenue' && <RevenuePlayground {...props} />}
         {stage === 'financial' && <FinancialPlayground {...props} />}
+          </>}
       </main>
     </div>
   );

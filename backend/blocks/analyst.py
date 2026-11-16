@@ -254,6 +254,9 @@ def save(store, key, stage, record, stage_lock=None):
             state = store.get(key)
             if fingerprint(state, stage) != record["fingerprint"]:
                 return None  # inputs changed meanwhile; the newer run will save
+            existing = ((state.get("analyst") or {}).get("stages") or {}).get(stage) or {}
+            if record.get("finished_at") and existing.get("fingerprint") == record.get("fingerprint") and existing.get("finished_at") == record.get("finished_at"):
+                return state  # already applied at a safe stage boundary
             previous = (((state.get("analyst") or {}).get("stages") or {}).get(stage) or {}).get("applied_values") or {}
             applied = dict(previous)
             if stage == "capex" and record.get("status") == "ready" and "capex" not in (state.get("locked") or []):
@@ -287,6 +290,10 @@ def _run_stage(store, key, stage, provider, stage_lock):
             record["process_type"] = stage_inputs(state, "capex")["process_type"]
     except Exception as exc:
         record.update(status="failed", error=str(exc)[:300], finished_at=_now())
+    with _guard:
+        live = _live.get((key, stage)) or {}
+        if live.get("fingerprint") == stamp:
+            _live[(key, stage)] = {**live, "status": "awaiting_application", "record": copy.deepcopy(record)}
     try:
         save(store, key, stage, record, stage_lock)
     finally:
@@ -320,7 +327,7 @@ def kick(store, key, *, provider=None, stages=STAGES, executor=None):
                 continue
             with _guard:
                 live = _live.get((key, stage)) or {}
-                if live.get("status") == "running":
+                if live.get("status") in {"running", "awaiting_application"}:
                     if live.get("fingerprint") != stamp:
                         live["rerun"] = True  # finish, then run once more with the new inputs
                     continue
@@ -346,6 +353,10 @@ def status(key, state):
         with _guard:
             live = dict(_live.get((key, stage)) or {})
         fresh = record and record.get("fingerprint") == fingerprint(state, stage)
+        pending = live.get("record") or {}
+        if live.get("status") == "awaiting_application" and pending.get("fingerprint") == fingerprint(state, stage):
+            out[stage] = {**pending, "pending_application": True, "application_status": "after_current_stage"}
+            continue
         if live.get("status") == "running" or (live.get("status") == "saved" and not fresh and _recent(live.get("finished_at"))):
             out[stage] = {**(record or {}), "status": "running", "started_at": live.get("started_at"),
                           "previous": bool(record)}
@@ -359,3 +370,22 @@ def _recent(stamp, seconds=20):
         return (datetime.now(timezone.utc) - datetime.fromisoformat(stamp)).total_seconds() < seconds
     except (TypeError, ValueError):
         return False
+
+
+def flush_pending(store, key):
+    """Caller holds the stage lock; apply completed research between calculations."""
+    if store.get(key).get('running'):
+        return  # never merge proposals into a calculation's active snapshot
+    from contextlib import nullcontext
+    with _guard:
+        pending = [(stage, copy.deepcopy(live.get('record'))) for (owner, stage), live in _live.items()
+                   if owner == key and live.get('status') == 'awaiting_application' and live.get('record')]
+    for stage, record in pending:
+        saved = save(store, key, stage, record, stage_lock=nullcontext())
+        with _guard:
+            live = _live.get((key, stage)) or {}
+            if live.get('fingerprint') != record['fingerprint']:
+                continue
+            _live[(key, stage)] = {**live, 'status': 'saved' if saved else 'superseded', 'finished_at': _now()}
+        if saved is None:
+            kick(store, key, stages=(stage,))

@@ -32,9 +32,9 @@ export function canSample(parameter: Parameter) {
   if (!source.trim() || !rationale.trim()) return false;
   if (distribution === 'discrete') {
     return choices.length > 0 && choices.length === probabilities.length &&
-      new Set(choices).size === choices.length && probabilities.every(p => p >= 0) &&
+      new Set(choices).size === choices.length && probabilities.every(p => Number.isFinite(p) && p >= 0) &&
       Math.abs(probabilities.reduce((sum, p) => sum + p, 0) - 1) <= 1e-9 &&
-      (parameter.kind === 'configuration' || choices.every(value => typeof value === 'number' &&
+      (parameter.kind === 'configuration' || choices.every(value => typeof value === 'number' && Number.isFinite(value) &&
         (hard_min === null || (parameter.strictly_positive ? value > hard_min : value >= hard_min)) &&
         (hard_max === null || value <= hard_max)));
   }

@@ -35,6 +35,8 @@ def rows(result):
 
 
 def export(result, kind):
+    if kind == "json":
+        return json.dumps(result, ensure_ascii=False, allow_nan=False).encode(), "application/json"
     if kind == "csv":
         output = io.StringIO()
         columns = [
@@ -71,6 +73,15 @@ def export(result, kind):
             ws.append([safe(row.get(k)) for k in columns])
 
     sheet("Results", rows(result))
+    from .inspection import inspect_run
+
+    sheet("Configurations", (
+        {"run": run['index'], "chunk": offset // 30000, "json": payload[offset:offset + 30000]}
+        for run in result['runs']
+        if run.get('status') != 'failed'
+        for payload in [json.dumps(inspect_run(result, run['index'])['configuration'], ensure_ascii=False)]
+        for offset in range(0, len(payload), 30000)
+    ) if 'effective_fixed_plan' in result else [])
     sheet("Parameters", result["settings"]["parameters"])
     sheet("Correlations", result["settings"]["correlations"])
     sheet("Aliases", result["settings"]["aliases"])

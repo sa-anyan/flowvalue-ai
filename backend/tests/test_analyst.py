@@ -183,3 +183,29 @@ def test_capex_settings_written_by_the_analyst_are_valid_capex_inputs(tmp_path, 
     accepted = {f.name for f in fields(CapexInputs)} | {"model_id", "delivery_basis"}  # popped by the runner
     assert set(capex) <= accepted, set(capex) - accepted
     assert saved["capex"]["applied_values"] and set(saved["capex"]["applied"]) == set(saved["capex"]["applied_values"])
+
+
+def test_ready_research_is_visible_and_applied_at_locked_stage_boundary(tmp_path,monkeypatch):
+    from contextlib import nullcontext
+    store,key=_extracted(tmp_path)
+    gate=threading.Lock();gate.acquire()
+    fake=Fake()
+    monkeypatch.setattr(analyst,'STAGE_LOCK',gate)
+    analyst.kick(store,key,provider=fake,stages=('capex',))
+    end=time.time()+5
+    while time.time()<end:
+        status=analyst.status(key,store.get(key)).get('capex',{})
+        if status.get('pending_application'):break
+        time.sleep(.01)
+    try:
+        assert status['status']=='ready' and status['pending_application']
+        assert 'capex' not in (store.get(key).get('analyst') or {}).get('stages',{})
+        analyst.flush_pending(store,key)  # this test owns the stage lock
+        saved=store.get(key)
+        assert saved['analyst']['stages']['capex']['status']=='ready'
+        revision=saved['revision']
+        record=saved['analyst']['stages']['capex']
+        analyst.save(store,key,'capex',record,stage_lock=nullcontext())
+        assert store.get(key)['revision']==revision
+    finally:
+        gate.release()

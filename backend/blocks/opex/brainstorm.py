@@ -82,6 +82,10 @@ def status(key, state):
     """Saved brainstorm record, overlaid with a live 'running' status."""
     live = _live.get(key)
     saved = dict(state.get("opex_brainstorm") or {})
+    if live and live.get("status") == "awaiting_application":
+        pending = live.get("record") or {}
+        if pending.get("fingerprint") == fingerprint(state):
+            return {**pending, "pending_application": True, "application_status": "after_current_stage"}
     if live and live.get("status") == "running":
         return {**saved, **live}
     if live and live.get("fingerprint") != saved.get("fingerprint"):
@@ -244,6 +248,9 @@ def save(store, key, record, stage_lock=None):
             state = store.get(key)
             if record.get("fingerprint") != fingerprint(state):
                 return state  # the approved data changed meanwhile; a new run follows
+            existing = state.get("opex_brainstorm") or {}
+            if record.get("finished_at") and existing.get("fingerprint") == record.get("fingerprint") and existing.get("finished_at") == record.get("finished_at"):
+                return state
             added = []
             if record.get("status") == "ready" and (record.get("explicit_retry") or "operating_economics" not in (state.get("locked") or [])):
                 plan = state.setdefault("plan", {})
@@ -269,6 +276,10 @@ def run(store, key, stage_lock=None, provider=None, *, force=False):
         record.update(status="failed", error=str(exc)[:300], finished_at=_now())
     # The live entry is never simply dropped: a reader that loaded the study just
     # before the save must still see "running" (and poll again), not nothing.
+    with _guard:
+        live = _live.get(key) or {}
+        if live.get("fingerprint") == record["fingerprint"]:
+            _live[key] = {**live, "status": "awaiting_application", "record": copy.deepcopy(record)}
     outcome = {"status": "saved"}
     try:
         state = save(store, key, record, stage_lock)
@@ -296,7 +307,7 @@ def kick(store, key, stage_lock=None, provider=None, *, executor=None, require_a
         return False
     stamp = fingerprint(state)
     with _guard:
-        if (_live.get(key) or {}).get("status") == "running":
+        if (_live.get(key) or {}).get("status") in {"running", "awaiting_application"}:
             return False  # one brainstorm per study at a time
         _live[key] = {"status": "running", "fingerprint": stamp, "started_at": _now(), "version": VERSION}
     context = copy_context()
@@ -312,3 +323,23 @@ def kick(store, key, stage_lock=None, provider=None, *, executor=None, require_a
     else:
         threading.Thread(target=context.run, args=(work,), name=f"opex-brainstorm-{key[:8]}", daemon=True).start()
     return True
+
+
+def flush_pending(store, key):
+    """Apply completed inputs under the launch owner's existing stage lock."""
+    if store.get(key).get('running'):
+        return  # never merge proposals into a calculation's active snapshot
+    from contextlib import nullcontext
+    with _guard:
+        live = _live.get(key) or {}
+        record = copy.deepcopy(live.get('record')) if live.get('status') == 'awaiting_application' else None
+    if not record:
+        return
+    saved = save(store, key, record, stage_lock=nullcontext())
+    fresh = (saved.get('opex_brainstorm') or {}).get('fingerprint') == record['fingerprint']
+    with _guard:
+        live = _live.get(key) or {}
+        if live.get('fingerprint') == record['fingerprint']:
+            _live[key] = {**live, 'status': 'saved' if fresh else 'superseded', 'finished_at': _now()}
+    if not fresh:
+        kick(store, key, require_approval=False)

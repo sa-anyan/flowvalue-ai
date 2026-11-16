@@ -6,7 +6,9 @@
     "dev": "next dev --webpack --hostname 127.0.0.1",
     "build": "next build --webpack",
     "start": "next start --hostname 127.0.0.1",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "demo:build": "FLOWVALUE_DEMO=1 next build --webpack",
+    "demo:start": "FLOWVALUE_DEMO=1 next start --hostname 127.0.0.1"
   },
   "dependencies": {
     "next": "16.4.3",

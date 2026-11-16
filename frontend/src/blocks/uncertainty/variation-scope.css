@@ -13,3 +13,18 @@
 @media (max-width: 750px) {
   .mc-scope-drawer .mc-parameter-list { max-height: 38vh; }
 }
+.mc-matrix-scroll { overflow-x:auto; }
+.mc-matrix { width:100%; border-collapse:collapse; font-size:.9rem; }
+.mc-matrix th,.mc-matrix td { text-align:left; vertical-align:top; padding:10px; border-bottom:1px solid var(--line); }
+.mc-matrix th small { display:block; color:var(--muted); font-weight:400; margin-top:4px; }
+.mc-matrix td:first-child input { width:auto; }
+.mc-matrix-range { display:flex; gap:8px; flex-wrap:wrap; }
+.mc-matrix-range label { flex:1; min-width:85px; max-width:150px; }
+.mc-matrix td:nth-child(4) { min-width:320px; }
+.mc-config-choice { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin:8px 0; }
+.mc-config-choice label:first-child { flex:1; min-width:180px; }
+.mc-config-choice input[type=checkbox] { width:auto; margin-right:8px; }
+.mc-config-choice input[type=number] { width:85px; }
+.mc-run-table button,.mc-driver-inspect { cursor:pointer; }
+.mc-config-groups { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+.mc-config-values { overflow-wrap:anywhere; white-space:pre-wrap; }

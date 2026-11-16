@@ -185,6 +185,7 @@ def calculate_equipment(report, plan, translation_policy=None):
                 "quantity_unit": proposal.get("quantity_unit", "item"),
                 "costing_options": options,
                 "parsed_source": {
+                    **({"domain_selection": copy.deepcopy(proposal["domain_selection"])} if proposal.get("domain_selection") else {}),
                     "equipment_key": key,
                     "confirmed_distinct": (
                         (proposal.get("alias_confirmation") or proposal.get("scope_confirmation") or {}).get("status")

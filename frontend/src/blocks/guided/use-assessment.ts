@@ -23,7 +23,7 @@ export type Assessment = Row & {
 };
 
 export async function api<T = Row>(path: string, options?: RequestInit): Promise<T> {
-  const response = await fetch('/api/' + path, { ...options, cache: 'no-store' });
+  const response = await fetch('/api/' + path, { ...options, cache: 'no-store', signal: options?.signal ?? AbortSignal.timeout(20000) });
   const value = await response.json().catch(() => ({ detail: response.ok ? undefined : `The server returned an error (HTTP ${response.status}). Nothing was changed.` }));
   if (response.status === 401 && typeof window !== 'undefined') window.location.assign('/login');
   if (!response.ok) {
@@ -46,6 +46,7 @@ export function useAssessment() {
   const [id, setId] = useState(''),
     [state, setState] = useState<Assessment | null>(null),
     [error, setError] = useState(''),
+    [loading, setLoading] = useState(true),
     [busy, setBusy] = useState(false),
     [catalogue, setCatalogue] = useState<Row[]>([]),
     [aiStatus, setAiStatus] = useState<'checking' | 'enabled' | 'disabled' | 'unavailable'>('checking'),
@@ -57,6 +58,7 @@ export function useAssessment() {
     const selected = assessmentFromUrl(window.location.href, localStorage.getItem('flowvalue-assessment'));
     if (selected) localStorage.setItem('flowvalue-assessment', selected);
     setId(selected);
+    setLoading(Boolean(selected));
     void api<Row>('catalogue')
       .then((c) => setCatalogue(Array.isArray(c.equipment) ? (c.equipment as Row[]) : []))
       .catch(() => {});
@@ -101,6 +103,7 @@ export function useAssessment() {
     let disposed = false,
       timer: ReturnType<typeof setTimeout>;
     async function refresh() {
+      setLoading(true);
       try {
         const next = await api<Assessment>('assessments/' + id);
         if (disposed) return;
@@ -112,10 +115,12 @@ export function useAssessment() {
         // Save & go: follow the background run quietly until it finishes.
         else if (launch?.status === 'queued' || launch?.status === 'running' || (next as Row).launch_running) timer = setTimeout(refresh, 2000);
         // Background AI research: check back slowly until its proposals are saved.
-        else if (brainstorm?.status === 'running' || Object.values(((next as Row).analyst as Row) || {}).some((r) => (r as Row)?.status === 'running'))
+        else if (brainstorm?.status === 'running' || brainstorm?.pending_application === true || Object.values(((next as Row).analyst as Row) || {}).some((r) => (r as Row)?.status === 'running' || (r as Row)?.pending_application === true))
           timer = setTimeout(refresh, 4000);
       } catch (e) {
-        if (!disposed) setError((e as Error).message);
+        if (!disposed) setError((e as Error).name === 'TimeoutError' ? 'Loading the saved project timed out. Please retry.' : (e as Error).message);
+      } finally {
+        if (!disposed) setLoading(false);
       }
     }
     void refresh();
@@ -179,6 +184,6 @@ export function useAssessment() {
     },
     [id, aiEnabled],
   );
-  return { id, state, setState, error, setError, busy, catalogue, aiEnabled, aiStatus, select, clear, reload, action, saveSection, runStage };
+  return { id, state, setState, loading, error, setError, busy, catalogue, aiEnabled, aiStatus, select, clear, reload, action, saveSection, runStage };
 }
 export type AssessmentHook = ReturnType<typeof useAssessment>;

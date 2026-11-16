@@ -203,7 +203,7 @@ def test_monte_carlo_and_deterministic_horizons_and_npv_reconcile():
     expected_npv = sum(
         D(row["fcff"]) / D("1.1") ** row["period"]["year"] for row in ledger
     )
-    assert result["summary"]["complete_runs"] == 1000
+    assert result["summary"]["complete_runs"] == 200
     assert (
         result["audit"]["operating_years"] == result["settings"]["operating_years"] == 3
     )

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { stageStatus, strings, capexLines, compact, list, money, num, obj, percent, text, words, type CapexLine, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
 import { Issues, OriginChip, Panel, RunBar, StageHeading, type StageProps } from './flow';
+import { EquipmentCostBreakdown } from './equipment-cost-breakdown';
 import { AnalystCard } from './analyst-card';
 
 const basisFields = [
@@ -51,7 +52,7 @@ export function CapexPlayground(props: StageProps) {
       alive = false;
     };
   }, [model, process]);
-  const lines = useMemo(() => capexLines(result, config, factors, list(state?.assumption_register)), [result, config, factors, state?.assumption_register]);
+  const lines = useMemo(() => capexLines(result, config, factors, list(state?.assumption_register)).filter((line) => !/^(unit_capital|installed_equipment):/.test(line.id)), [result, config, factors, state?.assumption_register]);
   const present = new Set(lines.map((l) => l.id));
   const addable = factors.filter((f) => f.additive !== false && (!present.has(text(f.id)) || text(f.id) in obj(config.exclusions)));
   const currency = text(result.currency),
@@ -82,6 +83,8 @@ export function CapexPlayground(props: StageProps) {
       await hook.runStage('capex');
     });
   }
+  const equipmentSummary = obj(result.equipment_summary);
+  const equipmentAmounts = list(equipmentSummary.amounts);
   const missing = basisFields.filter((f) => !config[f.key]);
   const groups = [
     ['Direct costs', lines.filter((l) => obj(factors.find((f) => f.id === l.id)).stage === 'direct')],
@@ -123,8 +126,12 @@ export function CapexPlayground(props: StageProps) {
             {before && before.total !== compact(result.total_capex, 'Incomplete') ? ` · was ${before.total}` : ''}
           </span>
         </div>
+        <div>
+          <small>Equipment cost</small>
+          <strong>{equipmentAmounts.length ? equipmentAmounts.map((amount) => `${equipmentAmounts.length > 1 ? `${text(amount.currency)} ${text(amount.period)} ` : ''}${compact(amount.amount)}`).join(' · ') : 'Pending'}</strong>
+          <span>{currency} · all priced equipment included</span>
+        </div>
         {[
-          ['Purchased equipment', result.purchased_equipment],
           ['Fixed capital', result.fixed_capital],
           ['Start-up', result.startup_expenses],
           ['Working capital', result.working_capital],
@@ -136,6 +143,7 @@ export function CapexPlayground(props: StageProps) {
           </div>
         ))}
       </div>
+      <EquipmentCostBreakdown summary={equipmentSummary} installation={list(result.lines).find((line) => line.id === "equipment_installation")} />
       {!stage.result && <p className="gf-note">CAPEX has not been calculated yet. Choose the basis above, then “Save & recalculate”.</p>}
       <Issues items={[...strings(stage.issues), ...strings(result.issues), ...missing.map((f) => `${f.label} is required before CAPEX can be calculated.`)]} />
 

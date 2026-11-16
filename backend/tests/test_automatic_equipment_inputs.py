@@ -1269,3 +1269,70 @@ def test_unresolved_pricing_repair_is_not_repeated_with_identical_inputs(tmp_pat
     exhausted = [a for a in audit if a["status"] == "pricing_repair_exhausted"]
     assert [a["equipment_key"] for a in exhausted] == ["n"]
     assert exhausted[0]["excluded_model_ids"] == ["G258-004", "G258-008"]
+
+
+def test_explicit_unresolved_answer_is_not_asked_again_without_new_evidence(tmp_path):
+    class Declines:
+        model='offline-explicit-unresolved'
+        calls=0
+        def generate(self, **kw):
+            self.calls+=1
+            d=decision();d.update(status='unresolved',rationale='No suitable cost scope is established by the supplied evidence.')
+            return {'decisions':[d]}
+    provider=Declines()
+    _,audit=resolve(REPORT,{'equipment':[selected()]},'',Store(tmp_path/'declined.db'),provider,True)
+    assert provider.calls==1
+    unresolved=[a for a in audit if a['status']=='input_resolution_unresolved']
+    assert len(unresolved)==1 and unresolved[0]['retryable'] is False
+
+
+@pytest.mark.parametrize('model_id,method,assumptions', [
+    ('openpytea:single_stage_centrifugal_pump_towler_2010', 'liquid_flow', [('density_kg_m3',1030,'kg/m3')]),
+    ('openpytea:cone_roof_tank_towler_2010', 'vessel_volume', [('density_kg_m3',1000,'kg/m3'),('residence_time_h',.01,'h'),('working_fraction',.8,'fraction')]),
+])
+def test_floor_refusal_gets_one_policy_review_then_canonical_price(tmp_path,model_id,method,assumptions):
+    from backend.blocks.equipment.calculation import calculate_equipment
+    report=copy.deepcopy(REPORT)
+    for e in report['entities']:
+        for v in e.get('values',[]):
+            if v.get('id')=='m':v['normalized_value']=105.47533966937462
+    class FloorReview:
+        model='offline-floor-review'
+        calls=0
+        def generate(self,**kw):
+            self.calls+=1
+            d=decision();d.update(model_id=model_id,method=method)
+            d['unit_context']['target_gallon_basis']=None
+            d['assumptions']=[{'name':n,'value':v,'unit':u,'rationale':'Explicit preliminary test assumption','limitations':'Review required'} for n,v,u in assumptions]
+            if self.calls==1:
+                d.update(status='unresolved',rationale='Physical size is below the published lower bound.')
+            else:
+                assert kw['context']['repair_feedback'][0]['floor_policy_clarification']
+            return {'decisions':[d]}
+    provider=FloorReview()
+    plan,audit=resolve(report,{'equipment':[{'equipment_key':'e','curve_id':model_id}]},'',Store(tmp_path/'floor.db'),provider,True)
+    assert provider.calls==2
+    total,_=calculate_equipment(report,plan)
+    line=total.equipment[0]
+    assert line.amount is not None
+    assert any('BELOW-RANGE FLOOR' in note for note in line.calculation.estimate.notes)
+    floor=line.calculation.evidence['below_range_floor']
+    assert floor['requested_size'] < floor['priced_at_size']
+    assert line.calculation.estimate.size == pytest.approx(floor['requested_size'])
+    assert any(a.get('floor_policy_clarification') for a in audit)
+
+
+def test_repeated_floor_refusal_is_bounded(tmp_path):
+    class Refuses:
+        model='offline-repeated-floor-refusal'
+        calls=0
+        def generate(self,**kw):
+            self.calls+=1
+            d=decision();d.update(model_id='openpytea:cone_roof_tank_towler_2010',status='unresolved',rationale='Below the minimum size bound; function is unknown.')
+            return {'decisions':[d]}
+    provider=Refuses()
+    row=selected();row['curve_id']='openpytea:cone_roof_tank_towler_2010'
+    plan,audit=resolve(REPORT,{'equipment':[row]},'',Store(tmp_path/'bounded.db'),provider,True)
+    assert provider.calls==2
+    assert not plan['equipment'][0].get('unit_conversion')
+    assert audit[-1]['retryable'] is False

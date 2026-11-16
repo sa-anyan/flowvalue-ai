@@ -14,10 +14,12 @@ from scipy import stats
 
 from backend.orchestration.pipeline import run
 
+from .calculation_trace import project as project_calculation_trace
 from .discovery import discover
 from .equipment_projection import equipment_records
 from .exact_values import project_exact_values
 from .models import Settings
+from .inspection import configuration_hash
 from .sampling import sample
 from .scenarios import apply, prepare, resolve_horizon, resolved_settings
 
@@ -155,6 +157,7 @@ def evaluate(report, description, plan, confirmed_aliases):
         "exact_values": project_exact_values(
             metric_values, exact_equipment, equipment_result, capex, opex, revenue, financial
         ),
+        "calculation_trace": project_calculation_trace(equipment_result, capex, opex, revenue, records),
         "equipment_records": records,
         "capex_components": {
             r["id"]: number(r.get("amount")) for r in capex.get("lines", [])
@@ -294,6 +297,7 @@ def summarize(rows, parameters, settings):
                                 {
                                     "configuration": k,
                                     "count": len(v),
+                                    "runs": [r["index"] for r in source if str(r["samples"][p.id]) == k and r.get("metrics", {}).get(target) is not None],
                                     "median": medians[k],
                                 }
                                 for k, v in grouped.items()
@@ -322,6 +326,8 @@ def summarize(rows, parameters, settings):
                     "label": p.label,
                     "metric": target,
                     "spearman": rho,
+                    "low_runs": [r["index"] for r in source if number(r.get("samples", {}).get(p.id)) is not None and number(r["samples"][p.id]) <= lo and r.get("metrics", {}).get(target) is not None],
+                    "high_runs": [r["index"] for r in source if number(r.get("samples", {}).get(p.id)) is not None and number(r["samples"][p.id]) >= hi and r.get("metrics", {}).get(target) is not None],
                     "low_group_median": low,
                     "high_group_median": high,
                     "span": abs(high - low),
@@ -419,6 +425,7 @@ def simulate(state, settings, progress=lambda *args: None):
             outcome = copy.deepcopy(cached(payload))
             outcome.update(
                 index=index,
+                configuration_hash=configuration_hash(plan),
                 samples={
                     p.id: (v.item() if hasattr(v, "item") else v)
                     for p, v in zip(parameters, draws[index])
@@ -473,7 +480,7 @@ def simulate(state, settings, progress=lambda *args: None):
             )
             if k in m
         }
-        for m in list_equipment_models()
+        for m in list_equipment_models(source="all")
         if m["id"] in selected
     ]
     return {
@@ -494,6 +501,8 @@ def simulate(state, settings, progress=lambda *args: None):
         "baseline_revision": state["revision"],
         "baseline_id": state["id"],
         "baseline_plan": copy.deepcopy(state["plan"]),
+        "source_report": copy.deepcopy(report),
+        "process_description": state["description"],
         "effective_fixed_plan": prepare(state, settings),
         "audit": {
             "sampling": "NumPy PCG64 + SciPy inverse CDF Gaussian copula",

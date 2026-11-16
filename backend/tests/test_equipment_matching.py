@@ -267,3 +267,50 @@ def test_catalogue_exposes_unusable_coordinates_without_source_prices():
     assert rows['N501-PUMP-STAINLESS_316']['size_inputs']==[{'quantity':'power','unit':'kW'}]
     assert 'PD slurry service' in rows['N501-PUMP-STAINLESS_316']['limitation']
     assert all('points'not in row and 'amount'not in row for row in rows.values())
+
+
+def test_hybrid_uses_stable_proposals_as_context_without_treating_them_as_approval(tmp_path):
+    from unittest.mock import patch
+    proposal={'version':'offline-quick','matches':[{'equipment_key':'e1','status':'auto',
+        'family':'pump','family_basis':'name','reason':'Explicit pump wording',
+        'options':[{'model_id':'test:pump'},{'model_id':'not-in-catalogue'}]}]}
+    fake=Provider();fake.calls=[]
+    with patch('backend.equipment_matching.deterministic.match_register',return_value=proposal) as quick:
+        result=run(tmp_path,fake)
+    quick.assert_called_once_with(REPORT)
+    context=fake.calls[0]['deterministic_proposals']['e1']
+    assert context['ordered_candidate_model_ids']==['test:pump']
+    assert context['status']=='auto'
+    assert 'not a price' in context['notice']
+    assert result['deterministic_first_pass']['version']=='offline-quick'
+    assert result['matches'][0]['selected_model_id']=='test:pump'  # independently validated AI response
+
+
+def test_redundant_identity_namespace_is_repaired_only_for_same_item(tmp_path):
+    report = copy.deepcopy(REPORT)
+    report['entities'][0]['key'] = 'equipment:abc'
+    report['entities'][0]['id_evidence']['id'] = 'equipment-evidence:abc'
+    class Redundant(Provider):
+        def generate(self, **kw):
+            result = super().generate(**kw)
+            row = result['matches'][0]
+            row.update(equipment_key='equipment:abc', context_evidence_ids=['equipment-evidence:equipment:abc', 'd1'])
+            return result
+    with patch('backend.equipment_matching.service.catalogue', return_value=[MODEL]):
+        result = match_report(report, '', Store(tmp_path/'namespace.db'), Redundant())
+    row = result['matches'][0]
+    assert row['selected_model_id'] == 'test:pump'
+    assert row['context_evidence_ids'] == ['equipment-evidence:abc', 'd1']
+    assert row['evidence_reference_corrections'] == [{'returned_id':'equipment-evidence:equipment:abc', 'canonical_id':'equipment-evidence:abc'}]
+
+
+def test_foreign_source_is_rejected_with_original_reason_preserved(tmp_path):
+    class Foreign(Provider):
+        def generate(self, **kw):
+            result = super().generate(**kw)
+            result['matches'][0]['context_evidence_ids'] = ['equipment-evidence:equipment:other']
+            return result
+    row = run(tmp_path, Foreign())['matches'][0]
+    assert row['selected_model_id'] is None
+    assert 'Equivalent liquid-transfer function.' in row['reason']
+    assert row['evidence_validation']['invalid_ids'] == ['equipment-evidence:equipment:other']

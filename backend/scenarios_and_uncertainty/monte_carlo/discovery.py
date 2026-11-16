@@ -33,6 +33,9 @@ def set_value(plan, path, value):
 
 
 def discover(state):
+    from backend.equipment_costing.registry import list_equipment_models
+
+    catalogue = {model["id"]: model for model in list_equipment_models(source="all")}
     plan = state["plan"]
     report = (
         state.get("scoped_report")
@@ -103,6 +106,7 @@ def discover(state):
             label=label,
             targets=[path],
             unit=unit,
+            baseline=mode,
             mode=mode,
             minimum=low,
             maximum=high,
@@ -225,9 +229,10 @@ def discover(state):
                 strictly_positive=True,
             )
         candidates = list(
-            dict.fromkeys([row.get("curve_id"), *row.get("candidate_curve_ids", [])])
+            dict.fromkeys([row.get("curve_id"), *row.get("candidate_curve_ids", []),
+                           *(row.get("matching") or {}).get("candidate_model_ids", [])])
         )
-        candidates = [c for c in candidates if c and not c.startswith("external:")]
+        candidates = [c for c in candidates if c in catalogue]
         if candidates:
             params.append(
                 Parameter(
@@ -236,6 +241,8 @@ def discover(state):
                     targets=[[*prefix, "curve_id"]],
                     unit="model_id",
                     distribution="discrete",
+                    baseline=row.get("curve_id"),
+                    choice_labels={c: " · ".join(str(v) for v in (catalogue[c].get("equipment"), catalogue[c].get("configuration") or catalogue[c].get("variant")) if v) for c in candidates},
                     choices=candidates,
                     probabilities=[1 / len(candidates)] * len(candidates),
                     kind="configuration",

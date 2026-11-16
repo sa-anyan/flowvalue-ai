@@ -119,6 +119,17 @@ def drain(store, key):
             state = store.get(key)
             state.setdefault("inbox_errors", []).append({"kind": kind, "error": str(exc)[:300], "at": _now()})
             store.put(state, state["revision"])
+    # The launch owns the lock for its chain. Completed AI workers must not
+    # wait behind that same owner until the entire chain ends.
+    from . import analyst
+    from .opex import brainstorm
+    for flush in (analyst.flush_pending, brainstorm.flush_pending):
+        try:
+            flush(store, key)
+        except (ValueError, TypeError, KeyError):
+            # A rejected optional proposal must never abort the stage chain.
+            # Its background worker retains responsibility for save/error status.
+            continue
     return applied
 
 
@@ -142,6 +153,11 @@ def run(store, key, *, use_ai=False, provider=None):
         if not fresh(state, "engineering_data"):
             return _mark(store, key, status="needs_input", step="reading", finished_at=_now(),
                          message="The workbook could not be read; check it on the Entry page.")
+        # Publish the extracted register and instant proposals before long AI
+        # review. They remain provisional; no price or approval is manufactured.
+        state = store.get(key)
+        _pick_models(state)
+        store.put(state, state["revision"])
         if use_ai:
             _mark(store, key, step="ai_review")
             state = run_stage(store, key, "engineering_data", use_ai=True, provider=provider)

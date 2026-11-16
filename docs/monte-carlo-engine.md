@@ -30,6 +30,10 @@ A separate explicitly synthetic complete 20-year study produced 1,000 complete d
 
 Unsupported models remain unsupported. AI proposals were tested with mocks, not paid live calls; their physical plausibility needs engineering review. Saved ranges, graph digitisation and model bias are not statistically calibrated. Completeness refers to registered equipment, not a certified exhaustive plant design.
 
-Sampling is vectorised, but canonical engineering calculations run per distinct draw. Charlie's 1,000 draws took about four minutes locally. The selectable 5,000/10,000 counts have not been full-load benchmarked. Jobs use the existing local worker and persisted snapshots; distributed execution and automatic restart/resume are not implemented. Cancellation is checked in batches. Source changes during a study invalidate complete financial-risk reporting.
+Sampling is vectorised, but canonical engineering calculations run per distinct draw. Charlie's 1,000 draws took about four minutes locally. New studies are now fixed at 200 variations. The historical 1,000-draw checks above describe earlier verification; saved historical outputs remain unchanged. Jobs use the existing local worker and persisted snapshots; distributed execution and automatic restart/resume are not implemented. Cancellation is checked in batches. Source changes during a study invalidate complete financial-risk reporting.
 
 No stochastic annual commodity time-series model, automatic mechanical redesign, external pricing research or new currency-selector integration is included. Existing cost-translation disclosures remain applicable. This module has not been deployed by this task.
+
+## Interactive analyst controls
+
+See [Analyst Monte Carlo explorer](monte-carlo-analyst-explorer.md) for the 200-variation contract, condensed selection matrix, configuration inspection, sensitivity group membership and reproducible exports.
