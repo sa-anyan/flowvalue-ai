@@ -21,6 +21,12 @@ export const words = (v: unknown): string =>
     .replaceAll('_', ' ')
     .replace(/^\w/, (c) => c.toUpperCase());
 
+/** Decimal strings from Python remain editable; IDs and evidence stay text. */
+export function opexInputValue(value: unknown, preferred: boolean): boolean {
+  return (typeof value === 'number' && Number.isFinite(value)) ||
+    (preferred && (value === null || (typeof value === 'string' && value.trim() !== '' && Number.isFinite(Number(value)))));
+}
+
 /** Formats a backend amount for display. Missing values are shown as missing, never as 0. */
 export function money(v: unknown, missing = 'Not calculated'): string {
   const n = num(v);
@@ -111,6 +117,16 @@ export function equipmentMapping(rows: unknown, key: string): Row {
     if (child) return { ...child, equipment_key: key };
   }
   return {};
+}
+
+/** Explain a saved Python minimum-size price; never calculate a replacement cost. */
+export function equipmentPriceFloor(state: Row | null, key: string): string | null {
+  const result = obj(obj(obj(obj(state?.results).stages).equipment).result);
+  const line = list(result.equipment).find((item) => obj(item.parsed_source).equipment_key === key);
+  const floor = obj(obj(obj(line?.calculation).evidence).below_range_floor);
+  if (floor.policy !== 'minimum_size_floor') return null;
+  const format = (value: unknown) => num(value)?.toLocaleString('en-GB', { maximumSignificantDigits: 7 }) ?? 'unknown';
+  return `Calculated size: ${format(floor.requested_size)} ${text(floor.size_unit)}. This model prices at a minimum of ${format(floor.priced_at_size)} ${text(floor.size_unit)}. Reducing the calculated size further below that minimum does not lower this model’s price. This is a preliminary allowance, not a supplier quote.`;
 }
 
 /** Returns a new plan with `changes` merged into the row for `key` (never mutates the input). */
@@ -356,6 +372,33 @@ export function availablePercentiles(metric: unknown): string[] {
 
 /* ------------------------------------------------------------------ OPEX review */
 
+/** Recalculate once for each saved upstream result, rather than each poll. */
+export function opexDependencyStamp(state: Row): string {
+  const runs = obj(state.stage_runs);
+  return JSON.stringify([state.id, obj(runs.capex).output_hash, obj(runs.revenue).output_hash,
+    obj(state.opex_brainstorm).finished_at, obj(obj(state.analyst).capex).finished_at]);
+}
+
+/** Show missing root inputs once; retain engine diagnostics separately. */
+export function opexQuestions(issues: string[]): string[] {
+  const out = new Set<string>();
+  const missingRevenue = issues.some((i) => /annual_revenue/.test(i));
+  const missingStaff = issues.some((i) => /operating_labor/.test(i));
+  for (const issue of issues) {
+    if (/annual_revenue/.test(issue)) out.add('The remaining revenue-based allowances will be resolved once Revenue is reconciled and OPEX is recalculated. The priced subtotal excludes these allowances.');
+    else if (/operating_labor/.test(issue)) out.add('The operating staffing estimate needs to be completed or reviewed.');
+    else if (/Missing assumption or explicit exclusion: raw_materials/.test(issue)) out.add('Raw-material quantities or prices are still pending.');
+    else if (/Missing assumption or explicit exclusion: utilities/.test(issue)) out.add('Utility demand or tariffs are still pending.');
+    else if (/Missing assumption or explicit exclusion:/.test(issue)) {
+      const category = issue.split(':').at(-1)?.trim() || '';
+      if (missingRevenue && ['administration', 'distribution_sales', 'packaging_storage', 'research_development', 'royalties'].includes(category)) continue;
+      if (missingStaff && ['supervision', 'payroll_overhead', 'laboratory'].includes(category)) continue;
+      out.add(`Review the ${words(category).toLowerCase()} allowance.`);
+    } else out.add(issue);
+  }
+  return [...out];
+}
+
 /** Categories with a calculated line out of the required categories (never "0 of nothing"). */
 export function opexProgress(lines: unknown, factors: unknown): { priced: number; total: number } {
   const required = list(factors)
@@ -441,7 +484,8 @@ export function opexProposals(config: Row, quantities: Quantities = {}): OpexPro
   }
   for (const root of ['energy', 'materials', 'labour', 'additional_expenses'] as const) {
     for (const item of list(config[root])) {
-      const by = proposedBy(item.origin);
+      const priceProposal = obj(item.ai_price_proposal);
+      const by = proposedBy(priceProposal.origin) || proposedBy(item.origin);
       if (!by) continue;
       let value: string, editKey: string, editLabel: string;
       if (root === 'labour') {
@@ -449,7 +493,7 @@ export function opexProposals(config: Row, quantities: Quantities = {}): OpexPro
         editLabel = 'Headcount (FTE)';
         value = `${text(item.headcount_fte) || '?'} FTE${num(item.annual_base_salary) === null ? '' : ` × ${money(item.annual_base_salary)}/yr`}`;
       } else if (root === 'additional_expenses') {
-        editKey = item.annual_amount !== undefined ? 'annual_amount' : item.amount !== undefined ? 'amount' : 'unit_price';
+        editKey = item.annual_allowance !== undefined ? 'annual_allowance' : item.annual_amount !== undefined ? 'annual_amount' : item.amount !== undefined ? 'amount' : 'unit_price';
         editLabel = editKey === 'unit_price' ? 'Price per unit' : 'Annual amount';
         value = num(item[editKey]) === null ? 'amount needed' : money(item[editKey]);
       } else {
@@ -464,7 +508,7 @@ export function opexProposals(config: Row, quantities: Quantities = {}): OpexPro
         label: text(item.name || item.role || item.id),
         value,
         source: by === 'reference' ? 'Study data' : 'AI proposal',
-        detail: text(item.rationale),
+        detail: text(priceProposal.rationale || item.rationale),
         by,
         editKey,
         editLabel,

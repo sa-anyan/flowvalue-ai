@@ -267,7 +267,7 @@ def propose(
             from .capital_advisor import generate
 
             return generate(provider, PROMPT, context)
-        if requested_sections in {("revenue", "opex"), ("revenue",)}:
+        if requested_sections in {("revenue", "opex"), ("revenue",), ("opex",)}:
             from .operating_advisor import generate
 
             return generate(
@@ -275,6 +275,7 @@ def propose(
                 PROMPT,
                 context,
                 revenue_only=requested_sections == ("revenue",),
+                opex_only=requested_sections == ("opex",),
             )
         if requested_sections == ("equipment", "capex"):
             from .equipment_advisor import generate
@@ -429,7 +430,7 @@ def propose(
         if s["section"] in requested_sections
         or (
             s["section"] == "operating_economics"
-            and requested_sections in {("revenue", "opex"), ("revenue",)}
+            and requested_sections in {("revenue", "opex"), ("revenue",), ("opex",)}
         )
     ]
     seen = set()

@@ -120,6 +120,7 @@ export function FinancialPlayground(props: StageProps) {
         Investment performance from the Python financial ledger. Try changes on the scenario tab; your baseline stays intact until you save.
       </StageHeading>
       <AnalystCard stage="financial" hook={props.hook} />
+      <FinancialPlanningNote config={obj(obj(state?.plan).operating_economics)} />
       <div className="gf-fin-layout">
         {pins.length > 0 && (
           <div className="gf-pins" role="complementary" aria-label="Pinned charts">
@@ -271,7 +272,11 @@ function ScenarioTab({ props, onBeforeRun }: { props: StageProps; onBeforeRun: (
         .then((all) => setBaselineId(text((Array.isArray(all) ? all : []).find((v) => v.id === state.parent_version)?.assessment_id)))
         .catch(() => {});
   }, [state.id, state.revision, state.parent_version]);
-  const setLever = (key: string, value: number) => operating.set({ ...operating.value, financial: { ...policy, [key]: value, rationale: 'User scenario adjustment in the Financial playground' } });
+  const setLever = (key: string, value: number) => operating.set({ ...operating.value,
+    financial: { ...policy, [key]: value, rationale: 'User scenario adjustment in the Financial playground' },
+    financial_input_provenance: { ...obj(operating.value.financial_input_provenance),
+      [key]: { ...obj(obj(operating.value.financial_input_provenance)[key]), origin: 'user', status: 'user_input', value,
+        rationale: 'User changed this financial planning assumption' } } });
   const report = obj(state.scoped_report || state.effective_report || obj(state.parsed).report);
   const equipment = list(report.entities).filter((e) => e.kind === 'equipment');
   async function register(edit: Row) {
@@ -307,6 +312,12 @@ function ScenarioTab({ props, onBeforeRun }: { props: StageProps; onBeforeRun: (
             );
           })}
         </div>
+        <label className="gf-field">
+          <span>Closure allowance ({text(obj(operating.value.price_basis).currency) || 'project currency'})</span>
+          <input type="number" min="0" step="any" value={num(policy.closure_allowance) ?? ''}
+            onChange={(event) => event.target.value !== '' && setLever('closure_allowance', Number(event.target.value))} />
+          <small>One-time end-of-project allowance. A zero is a planning assumption, not a confirmed free closure.</small>
+        </label>
         <div className="gf-line-actions">
           <button type="button" className="gf-secondary" disabled={!operating.dirty || hook.busy} onClick={() => operating.reset()}>
             Reset
@@ -430,6 +441,24 @@ function ScenarioTab({ props, onBeforeRun }: { props: StageProps; onBeforeRun: (
       )}
     </div>
   );
+}
+
+function FinancialPlanningNote({ config }: { config: Row }) {
+  const provenance = obj(config.financial_input_provenance);
+  const policy = obj(config.financial);
+  const entries = Object.entries(provenance);
+  if (!entries.length) return null;
+  return <details className="gf-notes">
+    <summary>Financial planning assumptions · review</summary>
+    <p>These are editable planning assumptions, not verified tax rules or forecasts. Change them under Scenario &amp; sensitivity.</p>
+    <ul>{entries.map(([key, raw]) => {
+      const item = obj(raw), lever = financialLevers.find((row) => row.key === key);
+      const changed = item.origin === 'user' || num(item.value) !== num(policy[key]);
+      const value = lever?.percent ? percent(policy[key]) : text(policy[key]);
+      return <li key={key}><strong>{lever?.label || 'Closure allowance'}: {value}{key === 'closure_allowance' ? ` ${text(obj(config.price_basis).currency)}` : ''}</strong>
+        {' · '}{changed ? 'User changed' : 'AI proposed'} — {text(item.rationale)}</li>;
+    })}</ul>
+  </details>;
 }
 
 function TemplateList({ items, empty, busy, onOpen }: { items: Row[]; empty: string; busy: boolean; onOpen: (t: Row) => void }) {

@@ -24,6 +24,27 @@ export const full = (v: unknown) =>
     : new Intl.NumberFormat("en-GB", { maximumFractionDigits: 3 }).format(
         Number(v),
       );
+
+export type RevenueRateSource = { id: string; streamKey: string; name: string; rate: number; unit: string; priceUnit: string };
+
+/** Actual, unambiguous M&E rates only; never infer volume from mass. */
+export function revenueRateSources(report: Row): RevenueRateSource[] {
+  const sources: RevenueRateSource[] = [];
+  for (const stream of array(report.entities).filter((s) => s.kind === 'material')) {
+    const values = array(stream.values);
+    const name = String(values.find((v) => ['name', 'description'].includes(String(v.property)))?.original_value || stream.name || stream.identifier || stream.key);
+    for (const property of ['volume_flow', 'mass_flow']) {
+      const rates = values.filter((v) => v.property === property && !v.component && v.status !== 'unresolved' && number(v.normalized_value) !== null && Number(v.normalized_value) >= 0 && typeof v.normalized_unit === 'string');
+      const distinct = new Set(rates.map((v) => `${number(v.normalized_value)}:${v.normalized_unit}`));
+      if (distinct.size !== 1) continue;
+      const v = rates[0], unit = String(v.normalized_unit);
+      const priceUnit = unit.split('/')[0];
+      if (!['kg', 'tonne', 'lb', 'm3', 'L'].includes(priceUnit) || !/\/(h|day|min|s)$/.test(unit)) continue;
+      sources.push({ id: `${stream.key}:${property}`, streamKey: String(stream.key), name: `${stream.identifier || ''} · ${name}`, rate: Number(v.normalized_value), unit, priceUnit });
+    }
+  }
+  return sources;
+}
 export const meceMethods: Record<string, string> = {
   product_sales: "Sell a product",
   processing_services: "Get paid to process material",

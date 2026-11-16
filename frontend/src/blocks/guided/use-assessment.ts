@@ -48,9 +48,10 @@ export function useAssessment() {
     [error, setError] = useState(''),
     [busy, setBusy] = useState(false),
     [catalogue, setCatalogue] = useState<Row[]>([]),
-    [aiEnabled, setAiEnabled] = useState(false),
+    [aiStatus, setAiStatus] = useState<'checking' | 'enabled' | 'disabled' | 'unavailable'>('checking'),
     [tick, setTick] = useState(0);
   const alive = useRef(true);
+  const aiEnabled = aiStatus === 'enabled';
   useEffect(() => {
     alive.current = true;
     const selected = assessmentFromUrl(window.location.href, localStorage.getItem('flowvalue-assessment'));
@@ -59,12 +60,38 @@ export function useAssessment() {
     void api<Row>('catalogue')
       .then((c) => setCatalogue(Array.isArray(c.equipment) ? (c.equipment as Row[]) : []))
       .catch(() => {});
-    void api<Row>('health')
-      .then((h) => setAiEnabled(h.ai_enabled === true))
-      .catch(() => {});
     return () => {
       alive.current = false;
     };
+  }, []);
+  useEffect(() => {
+    let disposed = false;
+    let timer: ReturnType<typeof setTimeout>;
+    let checking = false;
+    async function checkAI() {
+      if (checking || disposed) return;
+      checking = true;
+      clearTimeout(timer);
+      let delay = 30000;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+      try {
+        const health = await api<Row>('health', { signal: controller.signal });
+        if (typeof health.ai_enabled !== 'boolean') throw new Error('AI availability was not returned');
+        if (!disposed) setAiStatus(health.ai_enabled ? 'enabled' : 'disabled');
+      } catch {
+        if (!disposed) setAiStatus('unavailable');
+        delay = 3000;
+      } finally {
+        clearTimeout(timeout);
+        checking = false;
+        if (!disposed) timer = setTimeout(checkAI, delay);
+      }
+    }
+    void checkAI();
+    const onFocus = () => void checkAI();
+    window.addEventListener('focus', onFocus);
+    return () => { disposed = true; clearTimeout(timer); window.removeEventListener('focus', onFocus); };
   }, []);
   useEffect(() => {
     if (!id) {
@@ -112,7 +139,10 @@ export function useAssessment() {
   }, []);
   /** Re-reads the assessment (and restarts polling if a stage was queued). */
   const reload = useCallback(() => setTick((t) => t + 1), []);
+  const actionPending = useRef(false);
   const action = useCallback(async (work: () => Promise<unknown>) => {
+    if (actionPending.current) return false;
+    actionPending.current = true;
     setError('');
     setBusy(true);
     try {
@@ -122,6 +152,7 @@ export function useAssessment() {
       if (alive.current) setError((e as Error).message);
       return false;
     } finally {
+      actionPending.current = false;
       if (alive.current) setBusy(false);
       setTick((t) => t + 1);
     }
@@ -139,10 +170,12 @@ export function useAssessment() {
   const runStage = useCallback(
     async (stage: string) => {
       if (!id) throw new Error('Open an assessment first.');
-      await api(`assessments/${id}/stages/${stage}/run`, post({ use_ai: false }));
+      // Financial may fill absent planning assumptions; complete saved policies
+      // recalculate deterministically without another AI request.
+      await api(`assessments/${id}/stages/${stage}/run`, post({ use_ai: stage === 'financial' && aiEnabled }));
     },
-    [id],
+    [id, aiEnabled],
   );
-  return { id, state, setState, error, setError, busy, catalogue, aiEnabled, select, clear, reload, action, saveSection, runStage };
+  return { id, state, setState, error, setError, busy, catalogue, aiEnabled, aiStatus, select, clear, reload, action, saveSection, runStage };
 }
 export type AssessmentHook = ReturnType<typeof useAssessment>;

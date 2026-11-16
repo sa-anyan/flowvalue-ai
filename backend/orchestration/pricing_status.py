@@ -269,5 +269,8 @@ def annotate(result, report, plan):
         tiers["meets_coverage_target_without_assumptions"] = False
         tiers["register_completeness"] = "unconfirmed: " + ", ".join(
             f["label"] for f in completeness["possibly_missing"])
+    if completeness.get("scope_review"):
+        coverage["complete"] = False
+        tiers["meets_coverage_target_without_assumptions"] = False
     coverage["tiers"] = tiers
     coverage["unpriced_significance"] = unpriced_significance(canonical)

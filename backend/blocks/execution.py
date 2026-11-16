@@ -1,5 +1,7 @@
 """Manual block lifecycle. Prerequisites are checked, never executed implicitly."""
 
+from backend.revenue.authority import commercial_text
+
 import copy
 import hashlib
 import json
@@ -101,7 +103,7 @@ def _inputs(state, block):
         )
         if config.get("cashflow_schedule"):
             shared["cashflow_schedule"] = config["cashflow_schedule"]
-        shared["box"] = state.get("revenue_description", "")
+        shared["box"] = commercial_text(state)
         shared["approval"] = (state.get("revenue_approval") or {}).get("fingerprint")
         # Contract terms map operating years to calendar years (M4.3). Only
         # tracked when a term exists, so studies without terms keep their hash.
@@ -499,7 +501,7 @@ def _run_stage(
     )
     state["revenue_questions"] = questions(
         state.get("plan", {}).get("operating_economics", {}),
-        state.get("revenue_description", ""),
+        commercial_text(state),
         report,
         approval=state.get("revenue_approval"),
     )
@@ -515,7 +517,7 @@ def _run_stage(
     return saved
 
 
-def queue_stage(store, key, block):
+def queue_stage(store, key, block, *, use_ai=False):
     if block not in BLOCKS:
         raise ValueError("Unknown stage: " + block)
     state = store.get(key)
@@ -529,6 +531,7 @@ def queue_stage(store, key, block):
     state.update(
         running=True,
         queued_stage=block,
+        requested_run={"stage": block, "use_ai": use_ai},
         progress=[{"stage": block, "status": "queued"}],
     )
     return store.put(state, state["revision"])

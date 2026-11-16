@@ -100,6 +100,11 @@ def translate_operating_prices(config, *, target_basis, policy, indices=None):
                 if item.get("price_basis"):
                     row["price_basis"] = item["price_basis"]
                 translate(row, keys, f"{group}.{i}.years.{j}")
+            if item.get("years") and item.get("price_basis"):
+                # The annual amounts were rebased above; their parent must use
+                # the same calculation basis. Original dates remain in the saved
+                # inputs and per-year translation audit.
+                item["price_basis"] = dict(target_basis)
     if "financial" in config:
         translate(config["financial"], ("closure_allowance",), "financial")
     config["price_basis"] = dict(target_basis)

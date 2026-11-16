@@ -4,6 +4,8 @@ The agent selects payments, research and pricing policies. It cannot execute for
 edit an approved baseline, change physical data, or manufacture a verified contract.
 """
 
+from backend.revenue.authority import commercial_text
+
 import copy
 import json
 import re
@@ -490,7 +492,7 @@ def execute_strategy(store, key, baseline, *, research_consent=False, provider=N
     try:
         plan, results, agent, drafts = analyse(
             baseline,
-            state.get("revenue_description", ""),
+            commercial_text(state),
             provider or EngineeringProvider(),
             research_consent=research_consent,
             progress=progress,
@@ -530,7 +532,7 @@ def execute_strategy(store, key, baseline, *, research_consent=False, provider=N
 
     state["revenue_questions"] = questions(
         state["plan"].get("operating_economics", {}),
-        state.get("revenue_description", ""),
+        commercial_text(state),
         state.get("scoped_report") or state.get("effective_report") or state.get("parsed", {}).get("report", {}),
         approval=state.get("revenue_approval"),
     )

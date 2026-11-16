@@ -167,6 +167,10 @@ def stage_inputs(state, stage):
                          for s in ((plan.get("operating_economics") or {}).get("revenue_setup") or {}).get("sales", [])]
     elif stage == "financial":
         base["schedule"] = state.get("analysis_schedule") or {}
+        from backend.blocks.financial.proposal import VERSION as POLICY_VERSION
+
+        base["financial_policy_version"] = POLICY_VERSION
+        base["price_basis"] = (plan.get("operating_economics") or {}).get("price_basis") or {}
     elif stage == "equipment":
         base["project"] = {}  # equipment reasoning depends on the flowsheet only
     return base
@@ -186,6 +190,10 @@ def _validate(response, context):
         point["evidence"] = [e for e in point.get("evidence", []) if str(e) in known]
     if context["stage"] != "capex":
         response["factors"] = []
+        if context["stage"] == "financial":
+            from backend.blocks.financial.proposal import validate_policy
+
+            validate_policy(response.get("financial_policy"))
     else:
         ranges = {r["id"]: r for r in context["published_factor_ranges"]}
         response["factors"] = [f for f in response.get("factors", [])
@@ -200,7 +208,13 @@ def analyse(state, stage, store, provider):
     context = stage_inputs(state, stage)
 
     def generate():
-        return _validate(provider.generate(instructions=PROMPT, context=context, schema=SCHEMA), context)
+        schema, prompt = SCHEMA, PROMPT
+        if stage == "financial":
+            from backend.blocks.financial.proposal import SCHEMA as POLICY_SCHEMA, PROMPT as POLICY_PROMPT
+
+            schema = _obj({**SCHEMA["properties"], "financial_policy": POLICY_SCHEMA})
+            prompt += "\n" + POLICY_PROMPT
+        return _validate(provider.generate(instructions=prompt, context=context, schema=schema), context)
 
     response, cached = store.cached(context, generate)
     return {**_validate(copy.deepcopy(response), context), "cached": cached}
@@ -246,6 +260,11 @@ def save(store, key, stage, record, stage_lock=None):
                 plan = state.setdefault("plan", {})
                 kind = record.get("process_type")
                 plan["capex"], applied = apply_capex_factors(plan.get("capex"), record.get("factors") or [], _report(state), kind, previous)
+            if stage == "financial" and record.get("status") == "ready" and "financial" not in (state.get("locked") or []):
+                from backend.blocks.financial.proposal import merge
+
+                plan = state.setdefault("plan", {})
+                plan["operating_economics"], applied = merge(plan.get("operating_economics") or {}, record["financial_policy"], record.get("model", "background analyst"))
             state.setdefault("analyst", {"version": VERSION, "stages": {}})
             state["analyst"].setdefault("stages", {})[stage] = {**record, "applied": sorted(applied), "applied_values": applied}
             try:
@@ -263,7 +282,7 @@ def _run_stage(store, key, stage, provider, stage_lock):
         from backend.orchestration.provider import EngineeringProvider
 
         result = analyse(state, stage, store, provider or EngineeringProvider())
-        record.update(status="ready", finished_at=_now(), **result)
+        record.update(status="ready", finished_at=_now(), model=getattr(provider, "model", "configured AI"), **result)
         if stage == "capex":
             record["process_type"] = stage_inputs(state, "capex")["process_type"]
     except Exception as exc:

@@ -67,21 +67,23 @@ def ai_available():
         return False
 
 
-def wanted(state, require_approval=True):
+def wanted(state, require_approval=True, force=False):
     """True when the (approved) data has no brainstorm for its current fingerprint."""
     from backend.blocks.stage_workflow import approved
 
-    if (require_approval and not approved(state)) or "operating_economics" in (state.get("locked") or []):
+    if (require_approval and not approved(state)) or (not force and "operating_economics" in (state.get("locked") or [])):
         return False
     if not _report(state).get("entities"):
         return False
-    return (state.get("opex_brainstorm") or {}).get("fingerprint") != fingerprint(state)
+    return force or (state.get("opex_brainstorm") or {}).get("fingerprint") != fingerprint(state)
 
 
 def status(key, state):
     """Saved brainstorm record, overlaid with a live 'running' status."""
     live = _live.get(key)
     saved = dict(state.get("opex_brainstorm") or {})
+    if live and live.get("status") == "running":
+        return {**saved, **live}
     if live and live.get("fingerprint") != saved.get("fingerprint"):
         if live.get("status") == "saved":
             # Saved just after this state was read: report "running" briefly so
@@ -140,7 +142,7 @@ def _refresh_questions(config):
     record["questions"] = kept
 
 
-def merge(config, proposed):
+def merge(config, proposed, *, fill_missing=False):
     """Fill gaps and refine reference defaults with the AI proposal. Returns (config, added)."""
     config = copy.deepcopy(config or {})
     owners = config.setdefault("value_owners", {})
@@ -165,6 +167,26 @@ def merge(config, proposed):
         elif isinstance(value, list):
             items = current if isinstance(current, list) else []
             if items and not all(isinstance(i, dict) and i.get("origin") == "reference_default" for i in items):
+                if fill_missing and field == "materials":
+                    for item in items:
+                        if item.get("unit_price") is not None:
+                            continue
+                        matches = [p for p in value if isinstance(p, dict) and all(
+                            item.get(k) == p.get(k) for k in ("stream_key", "property", "component", "quantity_unit")
+                        )]
+                        if len(matches) == 1 and matches[0].get("unit_price") is not None:
+                            source = matches[0]
+                            basis = proposed.get("price_basis")
+                            if item.get("price_basis") and item["price_basis"] != basis:
+                                continue
+                            item["unit_price"] = source["unit_price"]
+                            item["ai_price_proposal"] = _ai(source)
+                            if basis:
+                                item["price_basis"] = copy.deepcopy(basis)
+                            if source.get("fx_conversion"):
+                                item["fx_conversion"] = copy.deepcopy(source["fx_conversion"])
+                            owners[f"materials.{item.get('id')}.unit_price"] = "ai"
+                            added.append(f"materials.{item.get('id')}.unit_price")
                 continue  # the user or an earlier AI proposal owns this list
             if items and field == "materials":
                 # The AI reviewed what is actually bought: a reference feed it
@@ -207,9 +229,12 @@ def _propose(state, store, provider):
 
     engineering = (state.get("stage_outputs") or {}).get("engineering_data") or {}
     ctx = Context(copy.deepcopy(state), _report(state), {"engineering_data": engineering}, store, None, provider, True)
-    sections = ("revenue", "opex")
+    sections = ("opex",)
     values, meta = proposal(ctx, sections, basis_only=True, allow_missing_opex=True)
-    return values.get("operating_economics") or {}, meta
+    result = values.get("operating_economics")
+    if not result:
+        raise ValueError("No OPEX assumptions returned; the proposal must be retried")
+    return result, meta
 
 
 def save(store, key, record, stage_lock=None):
@@ -220,9 +245,9 @@ def save(store, key, record, stage_lock=None):
             if record.get("fingerprint") != fingerprint(state):
                 return state  # the approved data changed meanwhile; a new run follows
             added = []
-            if record.get("status") == "ready" and "operating_economics" not in (state.get("locked") or []):
+            if record.get("status") == "ready" and (record.get("explicit_retry") or "operating_economics" not in (state.get("locked") or [])):
                 plan = state.setdefault("plan", {})
-                plan["operating_economics"], added = merge(plan.get("operating_economics"), record.get("proposal") or {})
+                plan["operating_economics"], added = merge(plan.get("operating_economics"), record.get("proposal") or {}, fill_missing=bool(record.get("explicit_retry")))
             state["opex_brainstorm"] = {**record, "added": added}
             try:
                 return store.put(state, state["revision"])
@@ -231,9 +256,9 @@ def save(store, key, record, stage_lock=None):
                     raise  # an edit outside the stage lock won the race three times
 
 
-def run(store, key, stage_lock=None, provider=None):
+def run(store, key, stage_lock=None, provider=None, *, force=False):
     state = store.get(key)
-    record = {"version": VERSION, "fingerprint": fingerprint(state), "started_at": _now()}
+    record = {"version": VERSION, "fingerprint": fingerprint(state), "started_at": _now(), "explicit_retry": force}
     try:
         from backend.orchestration.provider import EngineeringProvider
 
@@ -259,7 +284,7 @@ def run(store, key, stage_lock=None, provider=None):
                 _live[key] = {**_live[key], **outcome, "finished_at": _now()}
 
 
-def kick(store, key, stage_lock=None, provider=None, *, executor=None, require_approval=True):
+def kick(store, key, stage_lock=None, provider=None, *, executor=None, require_approval=True, force=False):
     """Start a brainstorm if the approved data has none; never blocks the caller."""
     try:
         state = store.get(key)
@@ -267,7 +292,7 @@ def kick(store, key, stage_lock=None, provider=None, *, executor=None, require_a
         return False
     if provider is None and not ai_available():
         return False
-    if not wanted(state, require_approval):
+    if not wanted(state, require_approval, force=force):
         return False
     stamp = fingerprint(state)
     with _guard:
@@ -278,7 +303,7 @@ def kick(store, key, stage_lock=None, provider=None, *, executor=None, require_a
 
     def work():
         try:
-            run(store, key, stage_lock, provider)
+            run(store, key, stage_lock, provider, force=force)
         except Exception:
             pass  # recorded in the live status for the page
 

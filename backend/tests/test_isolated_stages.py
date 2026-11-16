@@ -304,7 +304,8 @@ def test_revenue_ai_ignores_large_equipment_outputs(study, with_capital):
         def generate(self, *, instructions, context, schema):
             assert "equipment" not in context["calculated_stage_summary"]
             assert any(row["kind"] == "material" for row in context["report"]["entities"])
-            assert ("materials" in schema["properties"]) == with_capital
+            # Revenue readiness must never trigger an OPEX proposal or validation.
+            assert "materials" not in schema["properties"]
             raise ReachedProvider
 
     source = state["stage_outputs"]["engineering_data"]

@@ -1,5 +1,7 @@
 """Assessment lifecycle: bounded proposal generation, locked edits, reproducible reruns."""
 
+from backend.revenue.authority import commercial_text
+
 import copy
 import json
 
@@ -182,7 +184,7 @@ def _execute_connected_reference(
                 progress("engineering_review", "unavailable")
             reviewed = dict(
                 state["parsed"],
-                revenue_box=state.get("revenue_description", ""),
+                revenue_box=commercial_text(state),
                 effective_report=state.get(
                     "effective_report", state["parsed"]["report"]
                 ),
@@ -461,7 +463,7 @@ def _execute_connected_reference(
 
     state["revenue_questions"] = questions(
         state["plan"].get("operating_economics", {}),
-        state.get("revenue_description", ""),
+        commercial_text(state),
         state.get("scoped_report")
         or state.get("effective_report")
         or state.get("parsed", {}).get("report", {}),
@@ -548,7 +550,7 @@ def edit(store, key, revision, section, value, rationale, *, manual_revenue=Fals
             value = bind_manual_lines(state, value)
         elif methods(value) != methods(state["plan"].get(section, {})):
             value = capture_manual_methods(
-                value, rationale, revenue_box=state.get("revenue_description", "")
+                value, rationale, revenue_box=commercial_text(state)
             )
     if state.get("results") is not None:
         state["edit_baseline"] = {

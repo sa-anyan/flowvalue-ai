@@ -1,5 +1,7 @@
 """User-triggered sourced research drafts. Never mutate the engineering/economic plan."""
 
+from backend.revenue.authority import commercial_text
+
 from datetime import UTC, datetime
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
@@ -106,7 +108,7 @@ def research_draft(state, kind, target_id, provider, *, focus=""):
             "commercial_lines", []
         )
         pending = state["plan"].get("operating_economics", {}).get("pending_inputs", [])
-        revenue_text = state.get("revenue_description", "")
+        revenue_text = commercial_text(state)
         # Pending terms may be researched only for an explicitly stated payment.
         sales += [
             p

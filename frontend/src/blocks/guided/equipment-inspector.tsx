@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { UnitConversionAssumptions } from '@/blocks/equipment/unit-conversion';
 import {
   equipmentMapping,
+  equipmentPriceFloor,
   list,
   obj,
   originLabel,
@@ -57,6 +58,7 @@ export function EquipmentInspector({
     await hook.action(() => equipment.save(`User reviewed ${card.tag} parameters on the guided ${where}`));
   }
   const conversion = obj(mapping.unit_conversion);
+  const priceFloor = equipmentPriceFloor(state, card.key);
   const modelUnit = text(models.find((m) => m.id === text(mapping.curve_id))?.size_unit);
   /** Typing the size coordinate sets the design size directly, with the model's unit. */
   const editSize = (value: number | null, unit: string) =>
@@ -143,23 +145,25 @@ export function EquipmentInspector({
         {card.sizing && (
           <>
             <h3>Sizing method · {words(card.sizing.method)}</h3>
-            <InputTable rows={card.sizing.inputs.map((r) => ({ ...r, label: words(r.name), hint: '' }))} onEdit={(row, value) => editSizingParameter(row.name, value)} />
+            <InputTable rows={card.sizing.inputs.map((r) => ({ ...r, label: sizingLabel(r.name), hint: '' }))} onEdit={(row, value) => editSizingParameter(row.name, value)} />
           </>
         )}
         {card.assumptions.length > 0 && (
           <>
             <h3>Sizing assumptions · Python derives the size from these</h3>
             <InputTable
-              rows={card.assumptions.map((r) => ({ ...r, label: words(r.name), hint: r.rationale }))}
+              rows={card.assumptions.map((r) => ({ ...r, label: sizingLabel(r.name), hint: r.rationale }))}
               onEdit={(row, value) => editAssumption(row.name, value)}
             />
           </>
         )}
-        <p className="gf-muted">Type over any value to replace it; it becomes “Your input” and AI reruns never change it. Then choose Save &amp; recalculate.</p>
+        <p className="gf-muted">Type over any value to replace it; it becomes “User changed” and AI reruns never change it. Then choose Save &amp; recalculate.</p>
+        {equipment.dirty && <p className="gf-muted" role="status">Size and cost below show the last calculation. Save &amp; recalculate to apply your edits.</p>}
       </section>
 
       <section className="gf-block" aria-labelledby="gf-assume-h">
         <h3 id="gf-assume-h">Assumptions</h3>
+        {priceFloor && <p className="gf-muted">{priceFloor}</p>}
         <dl className="gf-dl">
           <div>
             <dt>Quantity</dt>
@@ -363,6 +367,11 @@ export function EquipmentInspector({
 
 type InputRow = { name: string; label: string; hint: string; unit: string; value: unknown; origin: keyof typeof originLabel };
 
+function sizingLabel(name: string): string {
+  return name === 'residence_time_h' ? 'Holding / residence time' : name === 'hydraulic_loading_m_h'
+    ? 'Hydraulic loading (flow per surface area)' : words(name);
+}
+
 function InputTable({ rows, onEdit }: { rows: InputRow[]; onEdit?: (row: InputRow, value: number | null, index: number) => void }) {
   return (
     <table className="gf-table">
@@ -403,7 +412,7 @@ function InputTable({ rows, onEdit }: { rows: InputRow[]; onEdit?: (row: InputRo
               </td>
               <td>{r.unit || '—'}</td>
               <td>
-                <OriginChip origin={originLabel[r.origin]} />
+                <OriginChip origin={r.origin === 'user' ? 'User changed' : originLabel[r.origin]} />
               </td>
             </tr>
           );

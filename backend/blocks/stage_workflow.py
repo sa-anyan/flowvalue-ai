@@ -66,7 +66,7 @@ def _brainstorm(store, key):
         pass  # the reference defaults still cover OPEX without the AI
 
 
-def queue(store, key, *, economic_only=False):
+def queue(store, key, *, economic_only=False, use_ai=False, start_analyst=True):
     state = store.get(key)
     if state.get("running"):
         raise ValueError("Another stage is running")
@@ -74,7 +74,8 @@ def queue(store, key, *, economic_only=False):
         raise ValueError(
             "Review and approve Engineering Data before running downstream stages"
         )
-    _brainstorm(store, key)
+    if start_analyst:
+        _brainstorm(store, key)
     order = ECONOMIC_ORDER if economic_only and fresh(state, "equipment") else ORDER
     store.version(
         key,
@@ -85,6 +86,8 @@ def queue(store, key, *, economic_only=False):
         "stage": order[0],
         "order": list(order),
         "completed": [],
+        "economic_only": economic_only,
+        "use_ai": use_ai,
     }
     state.update(running=True, queued_stage=order[0])
     return store.put(state, state["revision"])

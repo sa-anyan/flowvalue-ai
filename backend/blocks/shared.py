@@ -1,5 +1,7 @@
 """Shared serialization, source context and proposal adapters; no stage execution."""
 
+from backend.revenue.authority import commercial_text
+
 import copy
 import json
 import re
@@ -51,7 +53,7 @@ def proposal(ctx, sections, *, basis_only=False, allow_missing_opex=False):
         "source_cells_truncated": ctx.upstream.get("engineering_data", {}).get(
             "source_cells_truncated", False
         ),
-        "revenue_box": ctx.state.get("revenue_description", ""),
+        "revenue_box": commercial_text(ctx.state),
     }
     from backend.orchestration.provider import EngineeringProvider
 
@@ -116,10 +118,7 @@ def operating_proposal(ctx, owner):
     fill_locked_opex = owner == "opex" and locked and any(field not in config for field in opex_fields)
     if not ctx.use_ai or (locked and not fill_locked_opex):
         return config, {}
-    capital = ctx.state.get("results", {}).get("stages", {}).get("capex", {}).get("result") or {}
-    sections = ("revenue", "opex")
-    if owner == "revenue" and not (capital.get("currency") and capital.get("period")):
-        sections = ("revenue",)
+    sections = ("opex",) if owner == "opex" else ("revenue",)
     proposed, meta = proposal(ctx, sections, basis_only=True, allow_missing_opex=fill_locked_opex)
     value = proposed.get("operating_economics", {})
     owned = {
@@ -269,7 +268,7 @@ def translate_inputs(ctx, config, owner):
         # chose it. Operating years, units and billing periods are not price dates.
         selected = re.search(
             r"(?:^|[.!?]\s+|\n)\s*use\s+(?:the\s+)?(?:project(?:['’]s)?\s+)?saved\s+(?:project\s+)?(?:([A-Z]{3})\s+)?price\s+basis\b",
-            ctx.state.get("revenue_description", ""),
+            commercial_text(ctx.state),
             re.IGNORECASE,
         )
         if (

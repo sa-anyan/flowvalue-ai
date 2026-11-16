@@ -1,20 +1,21 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { brainstormNotice, opexQuantities, stageStatus, strings, compact, list, money, num, obj, opexHeadline, opexProgress, opexProposals, percent, text, words, type OpexProposal, type Row } from '@/lib/guided-flow';
+import { brainstormNotice, opexDependencyStamp, opexInputValue, opexQuestions, opexQuantities, stageStatus, strings, compact, list, money, num, obj, opexHeadline, opexProgress, opexProposals, percent, text, words, type OpexProposal, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
 import { Issues, OriginChip, Panel, RunBar, StageHeading, type StageProps } from './flow';
 import { AnalystCard } from './analyst-card';
 
 const groups = [
   ['materials', 'Raw materials', ['unit_price', 'annual_quantity_assumption']],
-  ['energy', 'Energy & utilities', ['power_kw', 'load_fraction', 'efficiency', 'tariff_per_kwh']],
+  ['energy', 'Energy & utilities', ['power_kw', 'load_fraction', 'efficiency', 'tariff_per_kwh', 'power_density_w_m3', 'volume_m3', 'pressure_difference_bar', 'specific_kwh_per_kg']],
   ['labour', 'Labour', ['headcount_fte', 'annual_base_salary', 'allocation_fraction']],
-  ['additional_expenses', 'Additional expenses', ['amount', 'annual_amount', 'unit_price', 'quantity']],
+  ['additional_expenses', 'Additional expenses', ['annual_allowance', 'amount', 'annual_amount', 'unit_price', 'quantity']],
 ] as const;
 const hidden = new Set(['id', 'stream_key', 'equipment_key', 'source_key', 'component', 'property', 'price_basis']);
 
 /** Value origin for an OPEX input, read from its own recorded source/status fields. */
 export function opexOrigin(item: Row): string {
+  if (obj(item.ai_price_proposal).origin === 'ai') return 'AI price · provisional';
   const s = `${text(item.status)} ${text(item.source)} ${text(item.origin)} ${text(item.uncertainty)}`.toLowerCase();
   if (/accepted by user|user/.test(`${s} ${text(item.rationale).toLowerCase()}`)) return 'Your input';
   if (/llm|ai |ai-|estimate|propos/.test(s)) return 'AI · provisional';
@@ -78,7 +79,7 @@ export function OpexPlayground(props: StageProps) {
       [p.root]: items.map((i) =>
         text(i.id) !== p.id
           ? i
-          : { ...i, ...(action === 'edit' ? { [p.editKey]: value } : {}), origin: 'user', status: action === 'edit' ? 'edited by user' : 'accepted by user' },
+          : { ...i, ...(action === 'edit' ? { [p.editKey]: value } : {}), ...(i.ai_price_proposal ? { ai_price_proposal: { ...obj(i.ai_price_proposal), origin: 'user', status: 'accepted by user' } } : {}), origin: 'user', status: action === 'edit' ? 'edited by user' : 'accepted by user' },
       ),
     });
   };
@@ -92,12 +93,14 @@ export function OpexPlayground(props: StageProps) {
   const autoRan = useRef('');
   useEffect(() => {
     // Once on arrival and once per new background result: a blocked run never loops.
-    const stamp = `${text(state?.id)}:${text(obj(obj(state).opex_brainstorm).finished_at)}:${text(obj(obj(obj(state).analyst).capex).finished_at)}`;
-    if (!state || state.running || hook.busy || operating.dirty || !capexReady || !['stale', 'idle'].includes(opexTone) || autoRan.current === stamp) return;
+    const stamp = opexDependencyStamp(obj(state));
+    if (!state || state.running || hook.busy || operating.dirty || !capexReady || !['stale', 'idle', 'blocked'].includes(opexTone) || autoRan.current === stamp) return;
     autoRan.current = stamp;
     void hook.action(() => hook.runStage('opex'));
   }, [state, hook, operating.dirty, capexReady, opexTone]);
   const questions = pending.filter((q) => !/categories priced/.test(q));
+  const reviewIssues = opexQuestions([...strings(stage.issues), ...strings(obj(obj(result.years)[firstYear]).issues), ...questions]);
+  const onlyRevenuePending = reviewIssues.length === 1 && strings(obj(obj(result.years)[firstYear]).issues).some((i) => /annual_revenue/.test(i));
   const shift = (id: string, amount: unknown) => (before && before[id] !== undefined && before[id] !== money(amount, '—') ? ` · was ${before[id]}` : '');
   return (
     <div className="gf-play">
@@ -148,6 +151,8 @@ export function OpexPlayground(props: StageProps) {
           <span>{text(result.currency)}</span>
         </div>
       </div>
+      <Issues title={onlyRevenuePending ? 'Awaiting Revenue reconciliation' : 'Inputs to review'} items={reviewIssues} />
+      {strings(obj(obj(result.years)[firstYear]).issues).length > 0 && <details><summary>Calculation details</summary><Issues title="Calculation details" items={strings(obj(obj(result.years)[firstYear]).issues)} /></details>}
       {!stage.result && <p className="gf-note">OPEX has not been calculated yet.</p>}
       {notice && (
         <p className={`gf-note gf-brainstorm gf-brainstorm-${notice.tone}`} role="status">
@@ -218,8 +223,6 @@ export function OpexPlayground(props: StageProps) {
           . They enter the plant but are not bought (air, or water/waste the plant treats). Add one under Raw materials if it does cost money.
         </p>
       )}
-      <Issues title="Questions" items={[...strings(stage.issues), ...strings(obj(obj(result.years)[firstYear]).issues), ...questions]} />
-
       {groups.map(([root, title, preferred]) => {
         const items = list(config[root]);
         return (
@@ -241,7 +244,7 @@ export function OpexPlayground(props: StageProps) {
               {items.map((item, index) => {
                 const line = lineFor(text(item.id));
                 const origin = opexOrigin(item);
-                const fields = Object.entries(item).filter(([k, v]) => !hidden.has(k) && (typeof v === 'number' || (v === null && (preferred as readonly string[]).includes(k))));
+                const fields = Object.entries(item).filter(([k, v]) => !hidden.has(k) && opexInputValue(v, (preferred as readonly string[]).includes(k)));
                 return (
                   <li key={text(item.id) || index} className="gf-line">
                     <div className="gf-line-main">
@@ -361,7 +364,7 @@ export function OpexPlayground(props: StageProps) {
         busy={hook.busy}
         disabled={Boolean(state?.running)}
         back={{ label: 'CAPEX', onClick: () => props.go('capex') }}
-        status={<strong>{operating.dirty ? 'Your OPEX edits will be saved first' : 'Operating costs ready'}</strong>}
+        status={<strong>{operating.dirty ? 'Your OPEX edits will be saved first' : result.complete === true ? 'Operating costs ready' : onlyRevenuePending ? 'Remaining allowances await Revenue reconciliation' : 'OPEX estimate has pending inputs'}</strong>}
         note="Runs CAPEX, Revenue and OPEX together with Python, then opens Revenue."
         onRun={() => void props.advance(() => operating.save('User reviewed operating costs in the OPEX playground'))}
       />

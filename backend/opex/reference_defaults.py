@@ -83,20 +83,21 @@ def factor_defaults(config):
 
 
 def _tariff(workbook_params):
-    """An electricity tariff the workbook states, as (value per kWh, cell) or None."""
+    """Accept explicit ISO currency per energy unit; ambiguous minor units stay pending."""
     for hit in workbook_params or []:
         label = str(hit.get("label") or "")
         unit = str(hit.get("unit") or "").lower().replace(" ", "")
         if re.search(r"electric|power", label, re.I) and re.search(r"price|tariff|cost", label, re.I) \
-                and isinstance(hit.get("value"), (int, float)) and hit["value"] > 0:
-            if "/mwh" in unit:
-                return hit["value"] / 1000, hit["id"]
-            if "/kwh" in unit:
-                return hit["value"], hit["id"]
+                and not isinstance(hit.get("value"), bool) \
+                and isinstance(hit.get("value"), (int, float)) and hit["value"] >= 0:
+            match = re.fullmatch(r"([a-z]{3})/(kwh|mwh)", unit)
+            if match and Decimal(str(hit["value"])).is_finite():
+                return {"amount": str(Decimal(str(hit["value"])) / (1000 if match[2] == "mwh" else 1)),
+                        "currency": match[1].upper(), "source": dict(hit)}
     return None
 
 
-def utility_defaults(report, design_basis_rows, workbook_params):
+def utility_defaults(report, design_basis_rows, workbook_params, *, price_basis=None):
     """Electricity items from equipment power readings or workbook specific energy."""
     items, questions = [], []
     tariff = _tariff(workbook_params)
@@ -104,13 +105,26 @@ def utility_defaults(report, design_basis_rows, workbook_params):
     ends = _ends(report)
 
     def item(ident, equipment_key, name, method, extra, basis):
-        price = tariff[0] if tariff else None
+        price, fx = None, None
+        target_currency = (price_basis or {}).get("currency")
+        if tariff and target_currency:
+            from backend.currency_conversion import convert_currency
+
+            try:
+                fx = convert_currency(tariff["amount"], tariff["currency"], target_currency)
+                price = fx["amount"]
+            except ValueError:
+                pass  # Unsupported currency remains a price question, never relabelled.
         row = {"id": ident, "equipment_key": equipment_key, "name": name, "utility": "electricity",
                "method": method, "behavior": "variable", "load_fraction": 1, "efficiency": 1,
                "tariff_per_kwh": price, "power_kw": None, "power_density_w_m3": None, "pressure_difference_bar": None,
-               "volume_m3": None, "rationale": basis + (f"; tariff from {tariff[1]}" if tariff else "; electricity tariff needed"),
+               "volume_m3": None, "rationale": basis + (f"; tariff from {tariff['source']['id']}" if price is not None else "; electricity tariff needed"),
                "uncertainty": "Reference default from study data; tariff and load to be confirmed.",
                "origin": OWNER, "status": STATUS, **extra}
+        if price is not None:
+            row["price_basis"] = dict(price_basis)
+            row["tariff_source"] = copy.deepcopy(tariff["source"])
+            row["fx_conversion"] = fx
         items.append(row)
         if price is None:
             questions.append({"id": ident, "question": f"Electricity tariff ({name}): enter a price per kWh."})
@@ -173,13 +187,27 @@ def material_defaults(report):
     return items, questions, not_costed
 
 
+def resolve_price_basis(config, capex_result=None, cost_translation=None):
+    """Fill missing basis fields; retain explicit source currency and date."""
+    saved = dict((config or {}).get("price_basis") or {})
+    capital = capex_result or {}
+    policy = cost_translation or {}
+    fallback = {
+        "currency": capital.get("currency") or ("USD" if policy.get("target_period") else None),
+        "price_period": capital.get("period") or policy.get("target_period"),
+    }
+    return {**saved, **{key: saved.get(key) or value for key, value in fallback.items()}}
+
+
 def propose(config, report, *, design_basis_rows=(), workbook_params=(), price_basis=None):
     """Return (config with missing OPEX inputs proposed, summary). Never overwrites."""
     config = copy.deepcopy(config or {})
     owners = dict(config.get("value_owners") or {})
     summary = {"factors": [], "utilities": [], "materials": [], "questions": [], "labour": None, "not_costed": []}
-    if not config.get("price_basis") and price_basis:
-        config["price_basis"] = dict(price_basis)
+    if price_basis and any(not (config.get("price_basis") or {}).get(k) and price_basis.get(k)
+                           for k in ("currency", "price_period")):
+        saved = config.get("price_basis") or {}
+        config["price_basis"] = {**saved, **{k: saved.get(k) or v for k, v in price_basis.items()}}
         owners["price_basis"] = OWNER
     config.setdefault("assumption_date", date.today().isoformat())
     config.setdefault("methodology", "garrett")
@@ -188,7 +216,7 @@ def propose(config, report, *, design_basis_rows=(), workbook_params=(), price_b
     summary["factors"] = proposals
     owners.update({f"garrett_factors.{p['id']}": OWNER for p in proposals})
     if not config.get("energy"):
-        items, questions = utility_defaults(report, design_basis_rows, workbook_params)
+        items, questions = utility_defaults(report, design_basis_rows, workbook_params, price_basis=config.get("price_basis"))
         if items:
             config["energy"] = items
             owners.update({f"energy.{i['id']}": OWNER for i in items})
@@ -219,11 +247,6 @@ def for_study(config, report, source_cells, capex_result=None, cost_translation=
     from backend.equipment_costing.unit_conversion.bridges.workbook_parameters import scan
     from backend.ingestion.design_basis import extract
 
-    capex_result = capex_result or {}
-    price_basis = None
-    if capex_result.get("currency") and capex_result.get("period"):
-        price_basis = {"currency": capex_result["currency"], "price_period": capex_result["period"]}
-    elif (cost_translation or {}).get("target_period"):
-        price_basis = {"currency": "USD", "price_period": cost_translation["target_period"]}
+    price_basis = resolve_price_basis(config, capex_result, cost_translation)
     return propose(config, report, design_basis_rows=extract(source_cells or []),
                    workbook_params=scan(source_cells or []), price_basis=price_basis)
