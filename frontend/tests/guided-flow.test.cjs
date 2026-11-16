@@ -411,9 +411,10 @@ test('parsed streams show revenue setup while equipment work continues',()=>{
  const {EntryStart}=require('../src/blocks/guided/entry-start.tsx');
  const state={id:'test',revision:2,launch:{status:'running',step:'equipment'},stage_outputs:{engineering_data:{report:{entities:[{kind:'material',key:'water',identifier:'S-1',values:[{property:'mass_flow',normalized_value:100,normalized_unit:'kg/h'}]}]}}}};
  const html=renderToStaticMarkup(React.createElement(EntryStart,{hook:{state,aiEnabled:true},go:()=>{}}));
- assert.match(html,/COMMERCIAL SETUP/);assert.match(html,/Product <em>Sales<\/em>/);assert.match(html,/How the project makes money/);
- assert.match(html,/Select product stream/);assert.match(html,/aria-pressed/);assert.match(html,/Revenue snapshot/);
- assert.match(html,/Operating basis/);assert.match(html,/Continue to Equipment/);
+ assert.match(html,/What will this project sell\?/);assert.match(html,/Material stream/);assert.match(html,/Save revenue/);
+ assert.match(html,/Two optional questions to improve estimates/);assert.match(html,/Operating basis/);
+ assert.match(html,/Continue to Equipment/);assert.match(html,/aria-expanded="true"/);
+ assert.doesNotMatch(html,/Revenue snapshot|fv-sales-hero|fv-sales-orbit/);
  assert.doesNotMatch(html,/Reading your workbook|Another assessment is running/);
 });
 
