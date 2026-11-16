@@ -1,0 +1,42 @@
+/* FlowValue Genesis v0.1 — sea-blue, motion-first visual foundation.
+   Presentation only: no engineering status, calculations or workflow changes. */
+:root {
+  --genesis-sea:#087e9b;
+  --genesis-sea-hover:#066a83;
+  --genesis-sea-soft:#e3f4f8;
+  --genesis-sea-deep:#06495d;
+  --genesis-motion-fast:150ms;
+  --genesis-motion-medium:260ms;
+  --genesis-motion-slow:380ms;
+  --primary:var(--genesis-sea);
+  --accent:var(--genesis-sea-soft);
+  --green:#123847;
+  --paper:#f8fbfc;
+  --soft:#eff7f9;
+  --line:#dce9ee;
+  --ink:#1b3440;
+  --shadow:0 8px 28px #1238470b;
+}
+body { background:var(--paper); }
+.shell:not(.dark) { --primary:var(--genesis-sea); --accent:var(--genesis-sea-soft); --paper:#f8fbfc; --soft:#eff7f9; --line:#dce9ee; --ink:#1b3440; }
+.shell aside { background:#123847; border-right-color:#245565; }
+.shell .brand { color:#f3fcff; }
+.shell nav a { transition:background-color var(--genesis-motion-fast) ease,color var(--genesis-motion-fast) ease,transform var(--genesis-motion-fast) ease; }
+.shell nav a:hover { transform:translateX(3px); background:#ffffff12; }
+.shell nav a[aria-current] { background:#d8f1f6; color:#06495d; }
+.shell:not(.dark) header { background:#fff; border-bottom-color:var(--line); }
+.shell:not(.dark) .content>section,
+.shell:not(.dark) .content>details { border-color:var(--line); box-shadow:var(--shadow); }
+.shell button, .shell .report-link { transition:transform var(--genesis-motion-fast) ease,box-shadow var(--genesis-motion-medium) ease,background-color var(--genesis-motion-fast) ease; }
+.shell button:not(:disabled):active { transform:scale(.98); }
+.shell button:not(:disabled):hover { box-shadow:0 5px 16px #087e9b1a; }
+.shell input:focus-visible,.shell select:focus-visible,.shell textarea:focus-visible { outline:2px solid var(--genesis-sea); outline-offset:2px; }
+.shell .content { animation:genesis-enter var(--genesis-motion-slow) cubic-bezier(.2,.7,.2,1) both; }
+@keyframes genesis-enter { from {opacity:0;transform:translateY(7px)} to {opacity:1;transform:translateY(0)} }
+.shell.dark { --primary:#70cddd; --accent:#184452; --soft:#1a333c; --line:#36515c; --ink:#e5f4f7; }
+.shell.dark nav a[aria-current] { background:#184e5c; color:#d9f7ff; }
+@media(prefers-reduced-motion:reduce) {
+  .shell .content { animation:none!important; }
+  .shell nav a,.shell button,.shell .report-link { transition:none!important; }
+  .shell nav a:hover,.shell button:not(:disabled):active { transform:none!important; }
+}
