@@ -55,7 +55,9 @@ export function RevenueSetup({ props }: { props: StageProps }) {
   const studyDate = text(obj(obj(state?.plan).cost_translation).target_period);
   const saved = list(config.sales);
   const [savedSignature, setSavedSignature] = useState<string | null>(null);
-  const [sales, setSales] = useState<Sale[]>([]),
+  const [sales, setSales] = useState<Sale[]>(() => saved.length
+    ? saved.map(s => ({name:text(s.name),stream_key:text(s.stream_key),component:text(s.component),unit_price:text(s.unit_price),quantity_unit:text(s.quantity_unit)||'kg'}))
+    : [{name:'',stream_key:'',component:'',unit_price:'',quantity_unit:'kg'}]),
     [currency, setCurrency] = useState('USD'),
     [days, setDays] = useState('330'),
     [hours, setHours] = useState('24'),
