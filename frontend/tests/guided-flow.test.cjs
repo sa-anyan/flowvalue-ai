@@ -244,3 +244,13 @@ test('held AI estimates are listed with both sizes, and the user decides',()=>{
  assert.deepEqual([used[0].ai_estimate_guard.anchor.size,used[0].ai_estimate_guard.anchor.basis,used[0].ai_estimate_guard.anchor.by],[156.25,'b','user_accepted_ai']);
  assert.equal(used[1],rows[1]);
 });
+
+test('Save & go status line follows the background run and the queued revenue',()=>{
+ assert.deepEqual(lib.launchStatus({launch:{status:'running',step:'equipment'}}),{tone:'working',text:'Picking and pricing equipment…'});
+ assert.match(lib.launchStatus({launch:{status:'running',step:'capex'},inbox:['revenue_setup']}).text,/your revenue is saved and applies after this step/);
+ assert.match(lib.launchStatus({launch:{status:'queued',step:'waiting'}}).text,/^Queued/);
+ assert.equal(lib.launchStatus({launch:{status:'finished'}}).tone,'done');
+ assert.match(lib.launchStatus({launch:{status:'finished'},plan:{operating_economics:{sales:[{id:'x'}]}}}).text,/Continue to Equipment\.$/);
+ assert.match(lib.launchStatus({launch:{status:'failed',error:'boom'}}).text,/stopped: boom/);
+ assert.equal(lib.launchStatus({}).tone,'idle');
+});
