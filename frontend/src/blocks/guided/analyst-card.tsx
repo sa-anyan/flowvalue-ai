@@ -31,7 +31,7 @@ export function AnalystCard({ stage, hook, headline }: { stage: string; hook: As
       <div className="gf-analyst-head">
         <span className="gf-analyst-mark" aria-hidden="true">✦</span>
         <div className="gf-analyst-heading"><strong>Analysis insights</strong>
-          <small>{view === 'researching' ? 'Reviewing your data…' : view === 'updating' ? 'Updating insights…' : view === 'failed' ? 'Analysis unavailable' : record.pending_application === true ? 'New findings pending calculation' : points.length + ' findings · open any to explore'}</small>
+          <small>{view === 'researching' ? 'Reviewing your data…' : view === 'updating' ? 'Updating insights…' : view === 'failed' ? 'Analysis unavailable' : record.pending_application === true ? 'AI research finished · applies after the current calculation' : points.length + ' findings · open any to explore'}</small>
         </div>
         <details className="gf-analyst-full"><summary>Full analysis ↗</summary>
           <div className="gf-analyst-full-body">
