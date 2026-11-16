@@ -1,4 +1,5 @@
 "use client";
+import {GenesisThemeToggle} from '@/components/genesis-theme-toggle';
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { WorkspaceNavigation } from "@/components/workspace-navigation";
@@ -26,7 +27,6 @@ export function ScenarioWorkspace() {
   const [id, setId] = useState(""),
     [name, setName] = useState("Current assessment"),
     [selected, setSelected] = useState(0),
-    [dark, setDark] = useState(false),
     [error, setError] = useState("");
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   useEffect(() => {
@@ -36,7 +36,7 @@ export function ScenarioWorkspace() {
         localStorage.getItem("flowvalue-assessment"),
       ),
     );
-    setDark(localStorage.getItem("flowvalue-theme") === "dark");
+
   }, []);
   useEffect(() => {
     if (!id) return;
@@ -56,7 +56,7 @@ export function ScenarioWorkspace() {
     return () => controller.abort();
   }, [id]);
   return (
-    <div className={`shell ${dark ? "dark" : ""}`} data-page="scenario">
+    <div className="shell" data-page="scenario">
       <a className="skip-link" href="#scenario-content">
         Skip to analysis
       </a>
@@ -76,16 +76,7 @@ export function ScenarioWorkspace() {
           <span className="breadcrumb">
             Workspace › <strong>Scenario & Sensitivity Analysis</strong>
           </span>
-          <button
-            className="theme-toggle"
-            aria-label="Toggle dark mode"
-            onClick={() => {
-              setDark(!dark);
-              localStorage.setItem("flowvalue-theme", !dark ? "dark" : "light");
-            }}
-          >
-            {dark ? "☀" : "☾"}
-          </button>
+          <GenesisThemeToggle inline />
         </header>
         <div className="content scenario-workspace" id="scenario-content">
           <h1>Scenario & Sensitivity Analysis</h1>

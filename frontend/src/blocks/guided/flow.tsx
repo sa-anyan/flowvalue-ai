@@ -1,4 +1,5 @@
 'use client';
+import {GenesisThemeToggle} from '@/components/genesis-theme-toggle';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { assessmentHref } from '@/lib/assessment-navigation';
@@ -103,7 +104,6 @@ export function GuidedFlow() {
   const [resetError, setResetError] = useState('');
   const [stage, setStage] = useState<StageId>('entry'),
     [dir, setDir] = useState<'forward' | 'back'>('forward'),
-    [dark, setDark] = useState(false),
     [moved, setMoved] = useState(false);
   const title = useRef<HTMLDivElement>(null);
   const stageRef = useRef<StageId>('entry');
@@ -137,7 +137,7 @@ export function GuidedFlow() {
     lastUrl.current = window.location.href;
     const requested = new URL(window.location.href).searchParams.get('stage');
     if (isStage(requested)) setStage(requested);
-    setDark(localStorage.getItem('flowvalue-theme') === 'dark');
+
     const back = () => {
       if (!confirmRevenueLeave()) {
         // popstate arrives after the URL changes; restore the current page
@@ -234,7 +234,7 @@ export function GuidedFlow() {
   const props: StageProps = { hook, equipment, capex, operating, advance, go, aiSizing, setAiSizing, setRevenueDirty, confirmRevenueLeave };
   const current = guidedStages[stageIndex(stage)];
   return (
-    <div className={`gf ${dark ? 'dark' : ''}`} data-stage={stage}>
+    <div className="gf" data-stage={stage}>
       <a className="skip-link" href="#gf-stage">
         Skip to {current.label}
       </a>
@@ -268,17 +268,7 @@ export function GuidedFlow() {
           <Link className="gf-ghost" href={assessmentHref('/data/equipment', hook.id)}>
             Advanced workspace ↗
           </Link>
-          <button
-            type="button"
-            className="gf-icon"
-            aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
-            onClick={() => {
-              setDark(!dark);
-              localStorage.setItem('flowvalue-theme', !dark ? 'dark' : 'light');
-            }}
-          >
-            {dark ? '☀' : '☾'}
-          </button>
+          <GenesisThemeToggle inline />
           <button type="button" className="gf-ghost" aria-label="Reset FlowValue" title="Clear local history and start again"
             onClick={() => { setResetError(''); setResetOpen(true); }}>
             <span aria-hidden="true">↻</span> Reset

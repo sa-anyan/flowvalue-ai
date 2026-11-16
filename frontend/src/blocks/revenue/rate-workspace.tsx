@@ -1,4 +1,5 @@
 "use client";
+import {GenesisThemeToggle} from '@/components/genesis-theme-toggle';
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { WorkspaceNavigation } from "@/components/workspace-navigation";
@@ -75,8 +76,7 @@ export default function RateRevenueWorkspace() {
     [panel, setPanel] = useState<"assistant" | "calendar" | string | null>(
       null,
     ),
-    [text, setText] = useState(""),
-    [dark, setDark] = useState(false);
+    [text, setText] = useState("");
   const aiEdits = useRef<{
       rows: IncomeLine[];
       fields: Record<string, string[]>;
@@ -97,7 +97,7 @@ export default function RateRevenueWorkspace() {
         localStorage.getItem("flowvalue-assessment"),
       ),
     );
-    setDark(localStorage.getItem("flowvalue-theme") === "dark");
+
   }, []);
   function hydrate(next: Row) {
     const config = object(object(next.plan).operating_economics),
@@ -1050,7 +1050,7 @@ export default function RateRevenueWorkspace() {
     </>
   );
   return (
-    <div className={`shell ${dark ? "dark" : ""}`} data-page="revenue">
+    <div className="shell" data-page="revenue">
       <a className="skip-link" href="#revenue-workspace">
         Skip to revenue
       </a>
@@ -1075,19 +1075,7 @@ export default function RateRevenueWorkspace() {
               <i />
               {active ? "Updating revenue" : "Analyst workspace"}
             </span>
-            <button
-              className="theme-toggle"
-              aria-label="Toggle dark mode"
-              onClick={() => {
-                setDark(!dark);
-                localStorage.setItem(
-                  "flowvalue-theme",
-                  !dark ? "dark" : "light",
-                );
-              }}
-            >
-              {dark ? "☀" : "☾"}
-            </button>
+            <GenesisThemeToggle inline />
           </div>
         </header>
         <div className="content revenue-rate-workspace" id="revenue-workspace">

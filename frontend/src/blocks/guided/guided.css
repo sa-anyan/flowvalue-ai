@@ -29,7 +29,7 @@
   font: 15px/1.5 system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
   padding-bottom: 96px;
 }
-.gf.dark {
+html[data-genesis-theme="dark"] .gf {
   --gf-bg: #111a16;
   --gf-surface: #18231e;
   --gf-raised: #1d2a24;

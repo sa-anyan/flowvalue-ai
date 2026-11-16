@@ -1,22 +1,42 @@
 'use client';
-import {useEffect,useState} from 'react';
 
-type Theme='light'|'dark';
-const KEY='flowvalue-genesis-theme';
-export function GenesisThemeToggle(){
- const [theme,setTheme]=useState<Theme>('light');
- useEffect(()=>{
-  let stored: string|null=null;
-  try{stored=window.localStorage.getItem(KEY);}catch{}
-  const next:Theme=stored==='dark'?'dark':'light';
-  document.documentElement.dataset.genesisTheme=next;
-  setTheme(next);
- },[]);
- function toggle(){
-  const next:Theme=theme==='light'?'dark':'light';
-  document.documentElement.dataset.genesisTheme=next;
-  try{window.localStorage.setItem(KEY,next);}catch{}
-  setTheme(next);
- }
- return <button type="button" className="genesis-theme-toggle" onClick={toggle} aria-label={`Switch to ${theme==='light'?'dark':'light'} theme`} title={`Switch to ${theme==='light'?'dark':'light'} theme`} aria-pressed={theme==='dark'}><span aria-hidden="true">{theme==='light'?'☾':'☀'}</span><span>{theme==='light'?'Dark mode':'Light mode'}</span></button>;
+import {useSyncExternalStore} from 'react';
+
+const key = 'flowvalue-genesis-theme';
+const event = 'flowvalue-theme-changed';
+
+function readTheme() {
+  try {
+    return (localStorage.getItem(key) ?? localStorage.getItem('flowvalue-theme')) === 'dark';
+  } catch {
+    return document.documentElement.dataset.genesisTheme === 'dark';
+  }
+}
+
+function subscribe(update: () => void) {
+  function sync() {
+    document.documentElement.dataset.genesisTheme = readTheme() ? 'dark' : 'light';
+    update();
+  }
+  sync();
+  window.addEventListener(event, sync);
+  window.addEventListener('storage', sync);
+  return () => {
+    window.removeEventListener(event, sync);
+    window.removeEventListener('storage', sync);
+  };
+}
+
+export function GenesisThemeToggle({inline = false}: {inline?: boolean}) {
+  const dark = useSyncExternalStore(subscribe, readTheme, () => false);
+  function toggle() {
+    const next = dark ? 'light' : 'dark';
+    document.documentElement.dataset.genesisTheme = next;
+    try { localStorage.setItem(key, next); } catch {}
+    window.dispatchEvent(new Event(event));
+  }
+  return <button type="button" className={`genesis-theme-toggle${inline ? ' genesis-theme-inline' : ''}`} onClick={toggle} aria-label="Dark theme" aria-pressed={dark}>
+    <span aria-hidden="true">{dark ? '☀' : '☾'}</span>
+    <span>{dark ? 'Light mode' : 'Dark mode'}</span>
+  </button>;
 }
