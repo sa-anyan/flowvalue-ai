@@ -279,7 +279,7 @@ export function GuidedFlow() {
           >
             {dark ? '☀' : '☾'}
           </button>
-          <button type="button" className="gf-ghost" aria-label="Reset FlowValue" title="Clear local history and start again"
+          <button type="button" className="gf-ghost" aria-label="Reset FlowValue" title="Reset your workspace and start again"
             onClick={() => { setResetError(''); setResetOpen(true); }}>
             <span aria-hidden="true">↻</span> Reset
           </button>
@@ -288,10 +288,10 @@ export function GuidedFlow() {
       {resetOpen && <Panel title="Reset FlowValue?" kicker="START AGAIN" onClose={() => { if (!resetting) setResetOpen(false); }}
         footer={<>
           <button type="button" className="gf-secondary" disabled={resetting} onClick={() => setResetOpen(false)}>Cancel</button>
-          <button type="button" disabled={resetting} onClick={() => void resetHistory()}>{resetting ? 'Clearing…' : 'Clear history & restart'}</button>
+          <button type="button" disabled={resetting} onClick={() => void resetHistory()}>{resetting ? 'Clearing…' : 'Reset workspace'}</button>
         </>}>
-        <p>This clears all local projects, saved versions, AI response cache and browser drafts, then opens a fresh Entry page.</p>
-        <p>This cannot be undone.</p>
+        <p>This permanently deletes your saved projects, versions and AI response cache from this workspace, then opens a fresh Entry page. On the hosted app, only your signed-in account is affected.</p>
+        <p>This cannot be undone. Your sign-in and theme settings are retained.</p>
         {resetError && <p className="gf-error" role="alert">{resetError}</p>}
       </Panel>}
       {(state?.running || ['queued', 'running'].includes(String(obj(state?.autopilot).status))) && (

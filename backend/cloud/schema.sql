@@ -36,3 +36,48 @@ revoke all on public.flowvalue_rebuild_assessments,public.flowvalue_rebuild_vers
 grant select,insert,update on public.flowvalue_rebuild_assessments,public.flowvalue_rebuild_cache to authenticated;
 grant select,insert on public.flowvalue_rebuild_versions to authenticated;
 create index rebuild_versions_owner_created on public.flowvalue_rebuild_versions(owner_id,created_at desc);
+
+
+-- Hosted reset capability (for first-time schema installation).
+-- Existing deployments: apply backend/cloud/hosted-reset.sql instead.
+create or replace function public.flowvalue_rebuild_reset_history()
+returns jsonb
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  this_owner uuid := (select auth.uid());
+  deleted_versions integer := 0;
+  deleted_assessments integer := 0;
+  deleted_cache integer := 0;
+begin
+  if this_owner is null then
+    raise exception 'Sign in required';
+  end if;
+  perform 1 from public.flowvalue_rebuild_assessments
+    where owner_id = this_owner for update;
+  if exists (
+    select 1 from public.flowvalue_rebuild_assessments
+    where owner_id = this_owner and state->>'running' = 'true'
+  ) then
+    raise exception 'A calculation is still running. Let it finish, then reset.';
+  end if;
+  delete from public.flowvalue_rebuild_versions where owner_id = this_owner;
+  get diagnostics deleted_versions = row_count;
+  delete from public.flowvalue_rebuild_assessments where owner_id = this_owner;
+  get diagnostics deleted_assessments = row_count;
+  delete from public.flowvalue_rebuild_cache where owner_id = this_owner;
+  get diagnostics deleted_cache = row_count;
+  return jsonb_build_object(
+    'assessments', deleted_assessments,
+    'versions', deleted_versions,
+    'ai_cache', deleted_cache
+  );
+end;
+$$;
+revoke all on function public.flowvalue_rebuild_reset_history() from public, anon;
+grant execute on function public.flowvalue_rebuild_reset_history() to authenticated;
+grant delete on public.flowvalue_rebuild_assessments,
+                public.flowvalue_rebuild_versions,
+                public.flowvalue_rebuild_cache to authenticated;
