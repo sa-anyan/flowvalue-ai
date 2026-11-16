@@ -4,6 +4,7 @@ import { revenueDraftSignature } from '@/lib/unsaved-revenue';
 import { compact, list, obj, studyReport, text, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
 import type { StageProps } from './flow';
+import './revenue-studio.css';
 
 /**
  * "How does this project earn money?" — chosen, not typed. The user picks the
