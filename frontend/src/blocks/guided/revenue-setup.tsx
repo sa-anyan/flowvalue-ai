@@ -134,82 +134,55 @@ export function RevenueSetup({ props }: { props: StageProps }) {
     });
   }
 
-  const configured = sales.filter(s => s.stream_key).length;
-  const priced = sales.filter(s => s.stream_key && s.unit_price !== '' && Number.isFinite(Number(s.unit_price))).length;
   return (
-    <section className="fv-entry-sales" aria-labelledby="fv-entry-sales-title">
-      <div className="fv-sales-hero">
-        <div className="fv-sales-hero-copy">
-          <span className="fv-sales-eyebrow"><span aria-hidden="true" className="fv-sales-pulse" /> COMMERCIAL SETUP <span className="fv-sales-separator">/</span> ENTRY</span>
-          <h2 id="fv-entry-sales-title">Product <em>Sales</em><span className="fv-sales-hero-mark" aria-hidden="true">↗</span></h2>
-          <p>How the project makes money</p>
-          <div className="fv-sales-hero-actions">
-            <a className="fv-sales-hero-jump" href="#fv-sales-configure">Configure streams <span aria-hidden="true">↘</span></a>
-            <button type="button" className="fv-sales-hero-secondary" onClick={() => props.go('revenue')}>Other revenue methods <span aria-hidden="true">↗</span></button>
-          </div>
+    <section className="gf-revenue-setup fv-revenue-simple" aria-labelledby="gf-rev-h">
+      <header className="fv-revenue-head">
+        <div><span className="fv-revenue-eyebrow">REVENUE SETUP</span><h2 id="gf-rev-h">Product Sales</h2><p>How the project makes money</p></div>
+        <div className="fv-revenue-head-actions">
+          <details className="fv-revenue-help"><summary aria-label="About product revenue">?</summary><p>Select a material stream from your workbook and enter its selling price. The backend calculates the official revenue after saving.</p></details>
+          <button type="button" className="fv-revenue-secondary" onClick={() => props.go('revenue')}>Other revenue methods ↗</button>
         </div>
-        <div className="fv-sales-hero-art" aria-hidden="true"><span className="fv-sales-orbit fv-sales-orbit-one"/><span className="fv-sales-orbit fv-sales-orbit-two"/><span className="fv-sales-orbit fv-sales-orbit-three"/><span className="fv-sales-art-core">FV<span>↗</span></span></div>
-      </div>
-      <div className="fv-sales-layout" id="fv-sales-configure">
-        <div className="fv-sales-editor">
-          <div className="fv-sales-section-heading">
-            <div><span className="fv-sales-step">01 / REVENUE INPUTS</span><h3>Choose what you sell</h3></div>
-            <details className="fv-sales-help"><summary aria-label="About product streams">?</summary><p>Choose a material stream extracted from your mass and energy balance. For a product within that stream, select its component. Only workbook streams with reported positive flows appear.</p></details>
-          </div>
-          <div className="fv-sales-items">
-            {sales.map((s,i)=>{
-              const stream = streams.find(x=>x.key===s.stream_key);
-              const chosenFlow=s.component?(stream?.components.find(x=>x.name===s.component)?.flow??null):(stream?.total??null);
-              const preview=revenuePreview(chosenFlow,s.unit_price,s.quantity_unit,days,hours);
-              return <article className="fv-sales-product" key={i} aria-label={`Product ${i+1}`}>
-                <div className="fv-sales-product-top">
-                  <div className="fv-sales-product-ident"><span className="fv-sales-product-number">{String(i+1).padStart(2,'0')}</span><div><h4>{s.name.trim()||s.component||stream?.label||stream?.tag||'New product'}</h4><span>{stream?'Stream '+stream.tag:'Select a workbook stream'}</span></div></div>
-                  {sales.length>1&&<button className="fv-sales-remove" type="button" aria-label={`Remove product ${i+1}`} onClick={()=>setSales(sales.filter((_,j)=>i!==j))}>×</button>}
-                </div>
-                <div className="fv-sales-label-row"><span>Select product stream</span><small>{streams.length} available</small></div>
-                <div className="fv-sales-stream-grid" role="group" aria-label={`Select stream for product ${i+1}`}>
-                  {streams.map(x=><button type="button" key={x.key} className="fv-sales-stream" aria-pressed={s.stream_key===x.key} onClick={()=>change(i,{stream_key:x.key,component:''})} title={x.label||x.tag}>
-                    <span className="fv-sales-stream-icon" aria-hidden="true">⌁</span>
-                    <span className="fv-sales-stream-content"><strong>{x.tag}</strong><small>{x.label||'Material stream'}</small></span>
-                    <span className="fv-sales-stream-right"><small>{x.total!==null?`${compact(x.total)} kg/h`:x.components.length+' components'}</small><span aria-hidden="true" className="fv-sales-stream-check">{s.stream_key===x.key?'✓':'+'}</span></span>
-                  </button>)}
-                </div>
-                {stream&&<div className="fv-sales-components"><div className="fv-sales-label-row"><span>What is sold?</span><details className="fv-sales-help fv-sales-help-small"><summary aria-label="About components">?</summary><p>Sell the whole stream when its total flow is available, or choose a reported component. No quantity is invented.</p></details></div><div className="fv-sales-choice-row">
-                  {stream.total!==null&&<button type="button" aria-pressed={!s.component} onClick={()=>change(i,{component:''})}>Whole stream</button>}
-                  {stream.components.map(x=><button key={x.name} type="button" aria-pressed={s.component===x.name} onClick={()=>change(i,{component:x.name})}>{x.name} <small>{compact(x.flow)} kg/h</small></button>)}
-                </div></div>}
-                <div className="fv-sales-price-row">
-                  <label className="fv-sales-field fv-sales-name"><span>Product name <small>Optional</small></span><input value={s.name} placeholder={s.component||stream?.label||'Name your product'} onChange={e=>change(i,{name:e.target.value})}/></label>
-                  <label className="fv-sales-field fv-sales-price"><span>Price <small>/ unit</small></span><div className="fv-sales-price-input"><span>{currency}</span><input type="number" min="0" step="any" inputMode="decimal" value={s.unit_price} placeholder="0.00" onChange={e=>change(i,{unit_price:e.target.value})}/></div></label>
-                  <label className="fv-sales-field fv-sales-unit"><span>Unit</span><select value={s.quantity_unit} onChange={e=>change(i,{quantity_unit:e.target.value})}>{UNITS.map(u=><option key={u}>{u}</option>)}</select></label>
-                </div>
-                <div className="fv-sales-product-foot"><span className="fv-sales-preview-label">ESTIMATED ANNUAL SALES <details className="fv-sales-help fv-sales-help-small"><summary aria-label="About sales preview">?</summary><p>Illustrative quantity × price × operating time only. Python calculates the authoritative result after you save. A preview is unavailable for volume-based units without a supported conversion.</p></details></span><strong>{preview===null?'Awaiting supported inputs':`≈ ${compact(preview)} ${currency}/yr`}</strong></div>
-              </article>;
-            })}
-          </div>
-          <div className="fv-sales-add-row">
-            <button type="button" className="fv-sales-add-product" onClick={()=>setSales([...sales,{name:'',stream_key:'',component:'',unit_price:'',quantity_unit:'kg'}])}><span className="fv-sales-add-icon" aria-hidden="true">+</span><span><strong>Add another product</strong><small>From an available M&amp;E stream</small></span><span aria-hidden="true">↗</span></button>
-            <button type="button" className="fv-sales-more-methods" onClick={()=>props.go('revenue')}>Explore other revenue methods ↗</button>
-          </div>
+      </header>
+      <div className="fv-revenue-content">
+        <div className="fv-revenue-list">
+          {sales.map((s,i)=>{
+            const stream=streams.find(x=>x.key===s.stream_key);
+            const flow=s.component?(stream?.components.find(x=>x.name===s.component)?.flow??null):(stream?.total??null);
+            const preview=revenuePreview(flow,s.unit_price,s.quantity_unit,days,hours);
+            return <div className="fv-revenue-product" key={i}>
+              <div className="fv-revenue-product-head"><strong>Product {i+1}</strong>{sales.length>1&&<button type="button" className="fv-revenue-remove" onClick={()=>setSales(sales.filter((_,j)=>j!==i))} aria-label={`Remove product ${i+1}`}>Remove</button>}</div>
+              <div className="fv-revenue-fields">
+                <label className="fv-revenue-field fv-revenue-field-stream"><span>Select product stream <span className="fv-revenue-required">*</span></span><select value={s.stream_key} required onChange={e=>change(i,{stream_key:e.target.value,component:''})}>
+                  <option value="">Choose a stream…</option>
+                  {streams.map(x=><option value={x.key} key={x.key}>{x.tag}{x.label?` · ${x.label.slice(0,50)}`:''}{x.total!==null?` · ${compact(x.total)} kg/h`:''}</option>)}
+                </select></label>
+                <label className="fv-revenue-field fv-revenue-field-component"><span>What is sold?</span><select value={s.component} disabled={!stream} onChange={e=>change(i,{component:e.target.value})}>
+                  {(!stream||stream.total!==null)&&<option value="">Whole stream</option>}
+                  {(stream?.components||[]).map(x=><option value={x.name} key={x.name}>{x.name} · {compact(x.flow)} kg/h</option>)}
+                </select></label>
+                <label className="fv-revenue-field fv-revenue-field-name"><span>Product name <small>Optional</small></span><input value={s.name} placeholder={s.component||stream?.label||'Product name'} onChange={e=>change(i,{name:e.target.value})}/></label>
+                <label className="fv-revenue-field fv-revenue-field-price"><span>Price per unit ({currency})</span><input type="number" min="0" step="any" inputMode="decimal" value={s.unit_price} placeholder="Enter price" onChange={e=>change(i,{unit_price:e.target.value})}/></label>
+                <label className="fv-revenue-field fv-revenue-field-unit"><span>Unit</span><select value={s.quantity_unit} onChange={e=>change(i,{quantity_unit:e.target.value})}>{UNITS.map(u=><option key={u}>{u}</option>)}</select></label>
+              </div>
+              {preview!==null&&<p className="fv-revenue-preview">Estimated annual sales <strong>≈ {compact(preview)} {currency}/year</strong><span>Illustrative only</span></p>}
+            </div>;
+          })}
+          <div className="fv-revenue-add"><button className="fv-revenue-add-button" type="button" onClick={()=>setSales([...sales,{name:'',stream_key:'',component:'',unit_price:'',quantity_unit:'kg'}])}>+ Add another product</button><span>{streams.length} eligible workbook streams</span></div>
         </div>
-        <aside className="fv-sales-side" aria-label="Revenue setup summary">
-          <div className="fv-sales-side-top"><span>YOUR SETUP</span><span className="fv-sales-side-dot" aria-hidden="true"/></div>
-          <h3>Revenue snapshot<span aria-hidden="true">↗</span></h3>
-          <p className="fv-sales-side-sub">Your commercial model at a glance.</p>
-          <div className="fv-sales-stat-grid"><div><strong>{configured}<span> / {sales.length}</span></strong><small>Streams selected</small></div><div><strong>{priced}</strong><small>Prices entered</small></div></div>
-          <div className="fv-sales-progress" role="progressbar" aria-label="Products with selected streams" aria-valuemin={0} aria-valuemax={sales.length} aria-valuenow={configured}><span style={{width:`${sales.length?configured/sales.length*100:0}%`}}/></div>
-          <div className="fv-sales-side-list"><span className="fv-sales-side-label">IN THIS MODEL</span>{sales.map((s,i)=>{const stream=streams.find(x=>x.key===s.stream_key);return <div className="fv-sales-side-item" key={i}><span className="fv-sales-side-index">{i+1}</span><span>{s.name||s.component||stream?.label||stream?.tag||'Unassigned product'}</span><span className={s.stream_key?'fv-sales-state-ready':'fv-sales-state-pending'}>{s.stream_key?'✓':'—'}</span></div>})}</div>
-          <details className="fv-sales-settings"><summary><span>⚙ Operating basis</span><span className="fv-sales-settings-meta">{currency} · {days} d/yr <span aria-hidden="true">⌄</span></span></summary><div className="fv-sales-settings-fields">
-            <label className="fv-sales-field"><span>Currency</span><input maxLength={3} value={currency} onChange={e=>setCurrency(e.target.value.toUpperCase())}/></label>
-            <label className="fv-sales-field"><span>Days / year</span><input type="number" min="1" max="366" value={days} onChange={e=>setDays(e.target.value)}/></label>
-            <label className="fv-sales-field"><span>Hours / day</span><input type="number" min="1" max="24" value={hours} onChange={e=>setHours(e.target.value)}/></label>
-          </div></details>
-          <div className="fv-sales-save-area"><span role="status" className={dirty?'fv-sales-save-status fv-sales-unsaved':approved?'fv-sales-save-status fv-sales-approved':'fv-sales-save-status'}>{dirty?'● Unsaved edits':approved?'✓ Revenue approved':saved.length?'Saved · not approved':'Ready to configure'}</span>
-            <button type="button" className="fv-sales-save" disabled={!ready||hook.busy} aria-busy={hook.busy} onClick={()=>void save()}>{hook.busy?<><span className="fv-sales-spinner" aria-hidden="true"/> Saving…</>:'Save revenue'}<span aria-hidden="true">↗</span></button>
+        <details className="fv-revenue-operating">
+          <summary><span>Operating assumptions</span><span>{currency} · {days} days/year · {hours} hours/day <span aria-hidden="true">⌄</span></span></summary>
+          <div className="fv-revenue-operating-fields">
+            <label className="fv-revenue-field"><span>Currency</span><input maxLength={3} value={currency} onChange={e=>setCurrency(e.target.value.toUpperCase())}/></label>
+            <label className="fv-revenue-field"><span>Operating days/year</span><input type="number" min="1" max="366" value={days} onChange={e=>setDays(e.target.value)}/></label>
+            <label className="fv-revenue-field"><span>Hours/day</span><input type="number" min="1" max="24" value={hours} onChange={e=>setHours(e.target.value)}/></label>
           </div>
-          {result&&text(result.message)&&<p className="fv-sales-result" role="status">{text(result.message)}</p>}
-          {result&&list(result.questions).length>0&&<details className="fv-sales-review"><summary>{list(result.questions).length} items need review</summary><ul>{list(result.questions).map((q,i)=><li key={i}>{String(q)}</li>)}</ul></details>}
-        </aside>
+        </details>
+        <div className="fv-revenue-footer">
+          <span className={dirty?'fv-revenue-warning':approved?'fv-revenue-ready':'fv-revenue-muted'} role="status">{dirty?'Unsaved changes':approved?'✓ Revenue approved':saved.length?'Saved · awaiting approval':'Choose a stream to get started'}</span>
+          <button type="button" className="fv-revenue-save" disabled={!ready||hook.busy} aria-busy={hook.busy} onClick={()=>void save()}>{hook.busy?'Saving…':'Save revenue'}</button>
+        </div>
+        {result&&text(result.message)&&<p role="status" className="fv-revenue-message">{text(result.message)}</p>}
+        {result&&list(result.questions).length>0&&<details className="fv-revenue-questions"><summary>{list(result.questions).length} items to review</summary><ul>{list(result.questions).map((q,i)=><li key={i}>{String(q)}</li>)}</ul></details>}
       </div>
     </section>
   );
