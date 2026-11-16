@@ -303,6 +303,8 @@ def kick(store, key, *, provider=None, stages=STAGES, executor=None):
     """Start every stage whose inputs changed; never blocks, never raises."""
     try:
         state = store.get(key)
+        if state.get("ai_background_enabled") is False:
+            return []
         if not _report(state).get("entities"):
             return []
         if provider is None:

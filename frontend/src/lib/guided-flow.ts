@@ -585,3 +585,37 @@ export function decideHeld(rows: Row[], key: string, decision: 'use' | 'keep'): 
     };
   });
 }
+
+/* ----------------------------------------------------------- Save & go */
+
+const LAUNCH_STEPS: Record<string, string> = {
+  waiting: 'Queued — starting as soon as the previous study finishes',
+  reading: 'Reading your workbook',
+  ai_review: 'AI reviewing the workbook',
+  equipment: 'Picking and pricing equipment',
+  capex: 'Calculating CAPEX',
+  revenue: 'Calculating revenue',
+  opex: 'Calculating OPEX',
+  financial: 'Building the financial model',
+};
+
+/** One calm line for what the background run is doing; never blocks the page. */
+export function launchStatus(state: unknown): { tone: 'working' | 'done' | 'failed' | 'idle'; text: string } {
+  const s = obj(state),
+    l = obj(s.launch);
+  const queued = strings(s.inbox).includes('revenue_setup') ? ' · your revenue is saved and applies after this step' : '';
+  if (l.status === 'queued' || l.status === 'running')
+    return { tone: 'working', text: `${LAUNCH_STEPS[text(l.step)] || 'Working in the background'}…${queued}` };
+  if (l.status === 'failed') return { tone: 'failed', text: `The background run stopped: ${text(l.error) || 'unknown error'}. Your inputs are saved.` };
+  if (l.status === 'needs_input') return { tone: 'failed', text: text(l.message) || 'The workbook needs attention.' };
+  const revenueSet = list(obj(obj(s.plan).operating_economics).sales).length > 0;
+  if (l.status === 'finished')
+    return { tone: 'done', text: revenueSet ? 'Background preparation finished. Continue to Equipment.' : 'Background preparation finished. Define revenue, then continue to Equipment.' };
+  return { tone: 'idle', text: revenueSet ? 'Continue to Equipment.' : 'Define revenue, then continue to Equipment.' };
+}
+
+/** The study's extracted M&E report, including while a background run is in progress. */
+export function studyReport(state: unknown): Row {
+  const s = obj(state);
+  return obj(s.scoped_report || s.effective_report || obj(obj(s.stage_outputs).engineering_data).report || obj(s.parsed).report);
+}

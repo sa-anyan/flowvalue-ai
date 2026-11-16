@@ -328,3 +328,28 @@ test('Financial exposes proposed values and identifies changed values without re
  assert.match(html,/Closure scope not quantified/);
  assert.equal(JSON.stringify(state),before);
 });
+
+test('Save & go status line follows the background run and the queued revenue',()=>{
+ assert.deepEqual(lib.launchStatus({launch:{status:'running',step:'equipment'}}),{tone:'working',text:'Picking and pricing equipment…'});
+ assert.match(lib.launchStatus({launch:{status:'running',step:'capex'},inbox:['revenue_setup']}).text,/your revenue is saved and applies after this step/);
+ assert.match(lib.launchStatus({launch:{status:'queued',step:'waiting'}}).text,/^Queued/);
+ assert.equal(lib.launchStatus({launch:{status:'finished'}}).tone,'done');
+ assert.match(lib.launchStatus({launch:{status:'finished'},plan:{operating_economics:{sales:[{id:'x'}]}}}).text,/Continue to Equipment\.$/);
+ assert.match(lib.launchStatus({launch:{status:'failed',error:'boom'}}).text,/stopped: boom/);
+ assert.equal(lib.launchStatus({}).tone,'idle');
+});
+
+test('Save and go starts with only upload, AI choice and Save',()=>{
+ const {EntryStart}=require('../src/blocks/guided/entry-start.tsx');
+ const html=renderToStaticMarkup(React.createElement(EntryStart,{hook:{state:null,aiEnabled:true,aiStatus:'enabled'}}));
+ assert.match(html,/Upload your mass/);assert.match(html,/type="file"/);assert.match(html,/type="checkbox"/);assert.match(html,/>Save<\/button>/);
+ assert.doesNotMatch(html,/Describe your process|Analysis years|Construction years|Extract equipment|Run Autopilot/);
+});
+
+test('parsed streams show revenue setup while equipment work continues',()=>{
+ const {EntryStart}=require('../src/blocks/guided/entry-start.tsx');
+ const state={id:'test',revision:2,launch:{status:'running',step:'equipment'},stage_outputs:{engineering_data:{report:{entities:[{kind:'material',key:'water',identifier:'S-1',values:[{property:'mass_flow',normalized_value:100,normalized_unit:'kg/h'}]}]}}}};
+ const html=renderToStaticMarkup(React.createElement(EntryStart,{hook:{state,aiEnabled:true},go:()=>{}}));
+ assert.match(html,/HOW DOES THIS PROJECT EARN MONEY/);assert.match(html,/Product sales/);assert.match(html,/Continue to Equipment/);
+ assert.doesNotMatch(html,/Reading your workbook|Another assessment is running/);
+});

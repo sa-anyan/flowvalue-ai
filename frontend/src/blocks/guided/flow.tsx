@@ -17,7 +17,7 @@ import {
   type StageId,
 } from '@/lib/guided-flow';
 import { api, post, useAssessment, type AssessmentHook } from './use-assessment';
-import { EntryBoard } from './entry-board';
+import { EntryStart } from './entry-start';
 import { EquipmentPlayground } from './equipment-playground';
 import { CapexPlayground } from './capex-playground';
 import { OpexPlayground } from './opex-playground';
@@ -221,7 +221,7 @@ export function GuidedFlow() {
         <div ref={title} id="gf-stage-title" tabIndex={-1} className="gf-sr-only">
           {current.title}
         </div>
-        {stage === 'entry' && <EntryBoard {...props} />}
+        {stage === 'entry' && <EntryStart {...props} />}
         {stage === 'equipment' && <EquipmentPlayground {...props} />}
         {stage === 'capex' && <CapexPlayground {...props} />}
         {stage === 'opex' && <OpexPlayground {...props} />}

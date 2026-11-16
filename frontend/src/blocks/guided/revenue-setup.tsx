@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { compact, list, obj, text, type Row } from '@/lib/guided-flow';
+import { compact, list, obj, studyReport, text, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
 import type { StageProps } from './flow';
 
@@ -47,7 +47,7 @@ export function revenuePreview(flowKgPerHour: number | null, price: string, unit
 export function RevenueSetup({ props }: { props: StageProps }) {
   const { hook } = props;
   const state = hook.state;
-  const report = obj(state?.scoped_report || state?.effective_report || obj(state?.parsed).report);
+  const report = studyReport(state);
   const streams = useMemo(() => streamsOf(report), [report]);
   const config = obj(obj(state?.plan).operating_economics);
   const studyDate = text(obj(obj(state?.plan).cost_translation).target_period);
@@ -74,9 +74,10 @@ export function RevenueSetup({ props }: { props: StageProps }) {
     setDays(text(obj(config.operating).days_per_year) || '330');
     setHours(text(obj(config.operating).hours_per_day) || '24');
     setResult(null);
-    // Reset only when another study or a new saved revision arrives.
+    // Background work changes revision frequently. Never erase a revenue draft
+    // while the user is typing; reset only when opening another study.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state?.id, state?.revision]);
+  }, [state?.id]);
 
   if (!state || !streams.length) return null;
   const approved = Boolean(state.revenue_approval);
@@ -204,10 +205,12 @@ export function RevenueSetup({ props }: { props: StageProps }) {
         <span className={approved ? 'gf-ok' : 'gf-muted'}>
           {approved ? '✓ Revenue set and approved' : saved.length ? 'Not approved yet' : 'Prices dated at the study cost date'}
         </span>
-        <button type="button" className="gf-primary" disabled={!ready || hook.busy || Boolean(state.running)} onClick={() => void save()}>
+        {/* Never blocked by background work: a save while busy is applied between steps. */}
+        <button type="button" className="gf-primary" disabled={!ready || hook.busy} onClick={() => void save()}>
           Save revenue
         </button>
       </div>
+      {result && text(result.message) && <p className="gf-muted">{text(result.message)}</p>}
       {result && list(result.questions).length > 0 && (
         <ul className="gf-issue-list">
           {(result.questions as unknown[]).map((q, i) => (
