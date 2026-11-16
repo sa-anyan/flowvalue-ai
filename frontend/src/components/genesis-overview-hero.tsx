@@ -66,6 +66,5 @@ export function GenesisOverviewHero({stages,id}:{stages:Stages;id:string}){
     <text x="64" y="252" className="genesis-hero-axis">Year {chartPoints[0].year}</text><text x="620" y="252" className="genesis-hero-axis">Year {chartPoints.at(-1)?.year}</text>
    </svg><p className="genesis-hero-readout" aria-live="polite">{selected!==null&&chartPoints[selected]?`Year ${chartPoints[selected].year} · ${chartPoints[selected].value.toLocaleString('en-GB')} ${currency}`:'Hover or focus a point to inspect its calculated value.'}</p></>:<div className="genesis-hero-chart-empty">Not enough saved annual cash flow observations to draw a financial trajectory.</div>}
   </section>
-  <details className="genesis-hero-details"><summary>Explore all six financial indicators and detailed cost charts</summary></details>
  </div>;
 }
