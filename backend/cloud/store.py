@@ -184,3 +184,45 @@ class CloudStore:
             },
         )
         return [r["state"] for r in rows]
+
+    def clear_history(self):
+        """Atomically remove this signed-in owner's studies, versions and AI cache.
+
+        The database RPC runs as the caller with RLS. Its owner check and
+        running-study guard execute in one transaction; other users are untouched.
+        No service-role credentials are used.
+        """
+        request = Request(
+            self.url + "rpc/flowvalue_rebuild_reset_history",
+            data=b"{}",
+            method="POST",
+            headers={
+                "apikey": self.key,
+                "Authorization": "Bearer " + self.token,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+        )
+        try:
+            with build_opener(NoRedirects()).open(request, timeout=30) as response:
+                raw = response.read(4096 + 1)
+            if len(raw) > 4096:
+                raise ValueError("Hosted reset response exceeded size limit")
+            counts = json.loads(raw)
+            if not isinstance(counts, dict) or any(
+                not isinstance(counts.get(name), int)
+                or isinstance(counts.get(name), bool)
+                or counts[name] < 0
+                for name in ("assessments", "versions", "ai_cache")
+            ):
+                raise ValueError("Hosted reset returned an invalid response")
+            return {name: counts[name] for name in ("assessments", "versions", "ai_cache")}
+        except HTTPError as exc:
+            if exc.code in {400, 409}:
+                raise ValueError(
+                    "A calculation may still be running, or hosted reset is not configured. "
+                    "Check your project and try again."
+                ) from exc
+            raise ValueError("Hosted reset failed; sign in again or retry.") from exc
+        except (URLError, json.JSONDecodeError) as exc:
+            raise ValueError("Hosted reset failed; no changes were confirmed.") from exc
