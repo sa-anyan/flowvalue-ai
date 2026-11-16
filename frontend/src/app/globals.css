@@ -532,3 +532,13 @@ html[data-genesis-theme="dark"] th{color:var(--genesis-text);border-color:var(--
 @media(prefers-reduced-motion:reduce){
  body,header,section,details,.study-sections>div,.metrics>div,.cash-curve,button,.genesis-theme-toggle{transition:none!important;animation:none!important}
 }
+
+/* Genesis workspace navigation */
+.genesis-navigation{min-width:0}
+.genesis-navigation-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:20px;color:var(--genesis-muted);font-size:10px;font-weight:750;letter-spacing:.13em}
+.genesis-nav-collapse{display:inline-grid;place-items:center;min-width:30px;min-height:30px;padding:3px 8px;border:1px solid var(--genesis-border);background:var(--genesis-surface);color:var(--genesis-sea);border-radius:9px}
+.genesis-navigation nav{margin-top:10px}
+.genesis-navigation nav a{transition:background-color .18s ease,color .18s ease,transform .18s ease}
+.genesis-navigation nav a:hover{background:var(--genesis-sea-soft);color:var(--genesis-sea)}
+.genesis-navigation nav a[aria-current="page"]{background:var(--genesis-sea-soft);color:var(--genesis-sea);font-weight:700}
+@media(prefers-reduced-motion:reduce){.genesis-navigation nav a{transition:none}}
