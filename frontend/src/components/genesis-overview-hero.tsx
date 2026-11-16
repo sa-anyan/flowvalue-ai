@@ -13,7 +13,7 @@ export function GenesisOverviewHero({stages,id}:{stages:Stages;id:string}){
  const [mode,setMode]=useState<'annual'|'cumulative'>('annual');
  const [selected,setSelected]=useState<number|null>(null);
  const capex=obj(stages.capex?.result),opex=obj(stages.opex?.result),revenue=obj(stages.revenue?.result),financial=obj(stages.financial?.result);
- const metrics=list(financial.metrics).length?list(financial.metrics):Array.isArray(financial.metrics)?(financial.metrics as unknown[]).filter(Array.isArray).map(v=>({name:(v as unknown[])[0],...obj((v as unknown[])[1])})):[];
+ const metrics=Array.isArray(financial.metrics)?(financial.metrics as unknown[]).filter(Array.isArray).map(v=>({name:(v as unknown[])[0],...obj((v as unknown[])[1])})):[];
  const npv=metrics.find(m=>m.name==='project_npv');
  const led=list(financial.ledger);
  const points:Point[]=led.map((r,i)=>({year:String(r.year??i+1),annual:number(r.fcff??r.project_cash_flow),cumulative:number(r.cumulative_project_cash)}));
@@ -34,22 +34,21 @@ export function GenesisOverviewHero({stages,id}:{stages:Stages;id:string}){
  const scale=comparable?Math.max(cashRevenue!,cashOpex!,1):1;
  const capexValue=number(capex.total_capex);
  const npvValue=number(npv?.value);
- const [active,setActive]=useState<'all'|'capex'|'financial'>('all');
  return <div className="genesis-overview-hero">
-  <div className="genesis-hero-toolbar" aria-label="Dashboard display options"><span className="genesis-hero-toolbar-label">View</span>{([['all','Overview'],['capex','Capital'],['financial','Financial']] as const).map(([key,label])=><button key={key} type="button" aria-pressed={active===key} onClick={()=>setActive(key)}>{label}</button>)}</div>
+  <nav className="genesis-hero-toolbar" aria-label="Analytics destinations"><span className="genesis-hero-toolbar-label">Explore</span><span className="genesis-hero-active" aria-current="page">Overview</span><Link href={assessmentHref('/capex',id)}>Capital</Link><Link href={assessmentHref('/financial-modelling',id)}>Financial</Link></nav>
   <div className="genesis-hero-heading"><div><p className="genesis-hero-kicker">PROJECT ANALYTICS</p><h2>TEA overview</h2><p>Investment, operating performance and modelled project cash flow</p></div><span className="genesis-hero-basis">{currency} · Saved assessment</span></div>
   <div className="genesis-hero-trio">
-   <Link className="genesis-hero-card genesis-hero-metric" href={assessmentHref('/capex',id)} data-active={active==='capex'}>
+   <Link className="genesis-hero-card genesis-hero-metric" href={assessmentHref('/capex',id)}>
     <div className="genesis-hero-card-head"><span className="genesis-hero-symbol" aria-hidden="true">◈</span><div><h3>Capital investment</h3><p>{capex.complete===false?'Known subtotal · incomplete scope':'Saved calculation'}</p></div></div>
     <strong title={capexValue===null?undefined:capexValue.toLocaleString('en-GB')}>{format(capexValue)}</strong><span className="genesis-hero-unit">{currency} · {capexValue===null?'Not calculated':'Total CAPEX'}</span>
     <span className="genesis-hero-card-foot">Inspect capital basis <span aria-hidden="true">↗</span></span>
    </Link>
-   <div className="genesis-hero-card genesis-hero-comparison" data-active={active==='all'}>
+   <div className="genesis-hero-card genesis-hero-comparison">
     <div className="genesis-hero-card-head"><span className="genesis-hero-symbol" aria-hidden="true">▥</span><div><h3>Operating comparison</h3><p>{latestYear?'Modelled operating year '+latestYear:'Model year unavailable'}</p></div></div>
     {comparable?<div className="genesis-hero-comparison-bars"><div><span>Revenue <b>{format(cashRevenue)}</b></span><div className="genesis-hero-track"><i style={{width:(cashRevenue!/scale*100)+'%'}}/></div></div><div><span>Cash OPEX <b>{format(cashOpex)}</b></span><div className="genesis-hero-track"><i style={{width:(cashOpex!/scale*100)+'%'}}/></div></div></div>:<p className="genesis-hero-empty">Comparable annual revenue and operating costs are not available on the same currency and year basis.</p>}
     <span className="genesis-hero-card-foot">{comparable?currency+' / year':'Requires comparable saved results'}</span>
    </div>
-   <Link className="genesis-hero-card genesis-hero-metric genesis-hero-npv" href={assessmentHref('/financial-modelling',id)} data-active={active==='financial'}>
+   <Link className="genesis-hero-card genesis-hero-metric genesis-hero-npv" href={assessmentHref('/financial-modelling',id)}>
     <div className="genesis-hero-card-head"><span className="genesis-hero-symbol" aria-hidden="true">⌁</span><div><h3>Net present value</h3><p>Discounted project lifetime</p></div></div>
     <strong title={npvValue===null?undefined:npvValue.toLocaleString('en-GB')} data-negative={npvValue!==null&&npvValue<0}>{format(npvValue)}</strong><span className="genesis-hero-unit">{currency} · {npvValue===null?'Not calculated':'Project NPV'}</span>
     <span className="genesis-hero-card-foot">Inspect financial model <span aria-hidden="true">↗</span></span>
