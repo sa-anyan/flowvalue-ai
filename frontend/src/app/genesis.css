@@ -438,3 +438,20 @@ body:has(.gf) { background: var(--genesis-outer); }
 .gf .gf-enter-forward,.gf .gf-enter-back{animation-duration:270ms;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
 @media(max-width:600px){.gf .gf-stage{padding-top:16px}.gf .gf-kpis>div{padding:12px}.gf .gf-card-block{padding:14px!important}}
 @media(prefers-reduced-motion:reduce){.gf .gf-rail button{transition:none}.gf .gf-enter-forward,.gf .gf-enter-back{animation:none}}
+
+/* Reference-faithful compact contextual topbar across Advanced workspaces. */
+.shell .genesis-topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:68px;border-bottom:1px solid var(--genesis-border)!important;background:var(--genesis-surface)}
+.genesis-topbar-context{display:flex;align-items:center;gap:18px;min-width:0}
+.genesis-topbar-path{font-size:12px;color:var(--genesis-muted);white-space:nowrap}
+.genesis-topbar-path>span{margin:0 7px;color:var(--genesis-border)}
+.genesis-topbar-path strong{color:var(--genesis-text);font-weight:650}
+.genesis-topbar-project{display:block;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--genesis-muted);border-left:1px solid var(--genesis-border);padding-left:18px}
+.shell .genesis-topbar-actions{display:flex;align-items:center;gap:12px;margin-left:auto}
+.shell .genesis-topbar-actions .avatar{flex:0 0 auto;border:1px solid var(--genesis-border);border-radius:50%;width:35px;height:35px;display:grid;place-items:center;background:var(--genesis-sea-soft);color:var(--genesis-sea);font-weight:700;font-size:11px}
+@media(max-width:700px){
+ .shell .genesis-topbar{flex-wrap:wrap;min-height:59px;padding:12px 16px}
+ .genesis-topbar-context{gap:9px}
+ .genesis-topbar-project{max-width:120px;padding-left:10px}
+ .shell .genesis-topbar-actions .connection-state{display:none}
+}
+@media(max-width:420px){.genesis-topbar-project{display:none}}
