@@ -557,3 +557,21 @@ test('Monte Carlo: inputs without a range can be varied by a labelled default pe
  assert.ok(neg.minimum<neg.maximum&&neg.minimum===-55);
  assert.equal(mc.hasRange(p({minimum:1,maximum:2})),true);
 });
+
+test('Monte Carlo ±%: choose which inputs, keep and restore a replaced range',()=>{
+ const mc=require('../src/lib/monte-carlo.ts');
+ const p=(o)=>({id:o.id,label:o.id,enabled:false,targets:[],unit:'',distribution:'triangular',minimum:null,mode:10,maximum:null,stddev:null,choices:[],probabilities:[],source:'Saved value',rationale:'',uncertainty:'',confidence:'',kind:'economic',hard_min:null,hard_max:null,strictly_positive:false,...o});
+ const ps=[p({id:'a',enabled:true}),p({id:'b'}),p({id:'c',enabled:true,minimum:5,maximum:20,source:'Garrett'}),p({id:'d',kind:'configuration'})];
+ const ids=(sc)=>mc.percentTargets(ps,sc).map(x=>x.id);
+ assert.deepEqual(ids('selected-unranged'),['a']);
+ assert.deepEqual(ids('all-unranged'),['a','b']);
+ assert.deepEqual(ids('selected-all'),['a','c']);
+ const r=mc.percentRange(ps[2],10);
+ assert.deepEqual([r.minimum,r.maximum],[9,11]); assert.deepEqual([r.prior_range.minimum,r.prior_range.maximum,r.prior_range.source],[5,20,'Garrett']);
+ const changed={...ps[2],...r};
+ assert.equal(mc.noSourceRange(changed),false); // still counts as ranged
+ const again=mc.percentRange(changed,20); assert.equal(again.prior_range.minimum,5); // original kept, not the ±10%
+ const back=mc.removePercent({...changed,...again}); assert.deepEqual([back.minimum,back.maximum,back.source,back.prior_range],[5,20,'Garrett',null]);
+ const plain={...ps[0],...mc.percentRange(ps[0],10)};
+ assert.equal(mc.noSourceRange(plain),true); assert.deepEqual([mc.removePercent(plain).minimum,mc.removePercent(plain).enabled],[null,false]);
+});
