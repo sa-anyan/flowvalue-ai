@@ -633,3 +633,8 @@ polyline.gf-tone-c { stroke: var(--gf-tone-c); }
   .gf-analyst-holder[open] > .gf-analyst-holder-body { animation: none; }
   .gf-analyst-chevron { transition: none; }
 }
+
+/* Equipment inspector: validated edits and size-range note */
+.gf-cell-error { border-color: #c2412d !important; }
+.gf-cell-error-text { display: block; color: #a8331e; font-size: 12px; margin-top: 4px; }
+.gf-range-note { border-left: 3px solid #e8a400; border-radius: 0; }

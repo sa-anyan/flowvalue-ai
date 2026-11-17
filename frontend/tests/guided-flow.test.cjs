@@ -517,3 +517,28 @@ test('completed analyst research waiting for a safe boundary is labelled clearly
  assert.match(html,/Saved research result/);assert.doesNotMatch(html,/gf-analyst-skeleton/);
  assert.equal(analystRunning(state),true);
 });
+
+test('equipment sizing edits: impossible values refused, M&E link kept and restorable, model change keeps sizing',()=>{
+ assert.match(lib.sizingInputError('working_fraction',3.8),/between 0 and 1/);
+ assert.match(lib.sizingInputError('residence_time_h',0),/greater than 0/);
+ assert.equal(lib.sizingInputError('residence_time_h',48),null);
+ assert.equal(lib.sizingInputError('heat_capacity_ratio',1.4),null);
+ const conv={method:'vessel_volume',enabled:true,model_id:'A',inputs:{density_kg_m3:1229.9,residence_time_h:24},
+  derivations:[{name:'density_kg_m3',method:'density_from_flows'}],input_provenance:{density_kg_m3:{status:'derived_from_meb',value:1229.9},residence_time_h:{status:'llm_estimate',value:24}}};
+ const res=lib.editSizingInput(conv,'residence_time_h',48,'Equipment page');
+ assert.deepEqual(res.derivations.map(d=>d.name),['density_kg_m3']); // M&E density untouched
+ assert.equal(res.inputs.residence_time_h,48); assert.equal(res.input_provenance.residence_time_h.status,'user_input');
+ const dens=lib.editSizingInput(conv,'density_kg_m3',1300,'Equipment page');
+ assert.equal(dens.derivations.length,0); assert.equal(dens.input_provenance.density_kg_m3.superseded_derivation.method,'density_from_flows');
+ const twice=lib.editSizingInput(dens,'density_kg_m3',1310,'Equipment page'); // a second edit keeps the link to restore
+ const back=lib.restoreMeasuredInput(twice,'density_kg_m3');
+ assert.deepEqual(back.derivations.map(d=>d.name),['density_kg_m3']);
+ assert.equal(back.inputs.density_kg_m3,1229.9); assert.equal(back.input_provenance.density_kg_m3.status,'derived_from_meb');
+ assert.equal(lib.restoreMeasuredInput(conv,'residence_time_h'),null);
+ const patch=lib.modelChangePatch({curve_id:'A',unit_conversion:conv},'B');
+ assert.equal(patch.curve_id,'B'); assert.equal(patch.unit_conversion.model_id,'B'); assert.deepEqual(patch.unit_conversion.inputs,conv.inputs);
+ assert.equal(lib.modelChangePatch({curve_id:'A'},'B').unit_conversion,undefined);
+ const note=lib.sizeRangeNote({calculation:{evidence:{below_range_floor:{priced_at_size:0.4,requested_size:0.0897,size_unit:'m3'}}}});
+ assert.match(note,/minimum size, 0\.4 m3 \(yours: 0\.09 m3\)/);
+ assert.equal(lib.sizeRangeNote({calculation:{evidence:{}}}),null);
+});

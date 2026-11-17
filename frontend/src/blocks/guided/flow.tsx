@@ -466,7 +466,8 @@ export function Panel({
     document.body.style.overflow = 'hidden';
     close.current?.focus();
     const key = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeHandler.current();
+      // A field that handled Escape itself (e.g. cancelling a cell edit) keeps the panel open.
+      if (e.key === 'Escape' && !e.defaultPrevented) closeHandler.current();
       if (e.key !== 'Tab') return;
       const nodes = Array.from(
         dialog.current?.querySelectorAll<HTMLElement>('button,a[href],input,select,textarea,summary,[tabindex="0"]') || [],
