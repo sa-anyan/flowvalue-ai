@@ -43,6 +43,8 @@ class Parameter(Contract):
     choice_labels: dict[str, str] = Field(default_factory=dict, max_length=40)
     enabled: bool = False
     label: str = Field(max_length=240)
+    # A published/AI range the user replaced with a ±% range; restored on Remove.
+    prior_range: dict[str, float | str | None] | None = None
     targets: list[list[str | int]] = Field(min_length=1, max_length=100)
     unit: str = Field(max_length=80)
     distribution: Literal[
