@@ -4,6 +4,7 @@ import { revenueDraftSignature } from '@/lib/unsaved-revenue';
 import { compact, list, obj, studyReport, text, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
 import type { StageProps } from './flow';
+import './revenue-studio.css';
 
 /**
  * "How does this project earn money?" — chosen, not typed. The user picks the
@@ -54,7 +55,9 @@ export function RevenueSetup({ props }: { props: StageProps }) {
   const studyDate = text(obj(obj(state?.plan).cost_translation).target_period);
   const saved = list(config.sales);
   const [savedSignature, setSavedSignature] = useState<string | null>(null);
-  const [sales, setSales] = useState<Sale[]>([]),
+  const [sales, setSales] = useState<Sale[]>(() => saved.length
+    ? saved.map(s => ({name:text(s.name),stream_key:text(s.stream_key),component:text(s.component),unit_price:text(s.unit_price),quantity_unit:text(s.quantity_unit)||'kg'}))
+    : [{name:'',stream_key:'',component:'',unit_price:'',quantity_unit:'kg'}]),
     [currency, setCurrency] = useState('USD'),
     [days, setDays] = useState('330'),
     [hours, setHours] = useState('24'),
@@ -132,111 +135,55 @@ export function RevenueSetup({ props }: { props: StageProps }) {
   }
 
   return (
-    <section className="gf-revenue-setup" aria-labelledby="gf-rev-h">
-      <span className="gf-kicker">HOW DOES THIS PROJECT EARN MONEY?</span>
-      <h3 id="gf-rev-h">Product sales</h3>
-      <p className="gf-muted">
-        Choose what is sold from your M&amp;E streams. Python calculates quantity × price × operating hours; revenue then runs in the background with CAPEX and OPEX.
-      </p>
-      {sales.map((s, i) => {
-        const stream = streams.find((x) => x.key === s.stream_key);
-        return (
-          <div key={i} className="gf-rev-row">
-            <label className="gf-field">
-              <span>Sold stream</span>
-              <select value={s.stream_key} onChange={(e) => change(i, { stream_key: e.target.value, component: '' })}>
-                <option value="">Choose a stream…</option>
-                {streams.map((x) => (
-                  <option key={x.key} value={x.key}>
-                    {x.tag}
-                    {x.label ? ` · ${x.label.slice(0, 50)}` : ''}
-                    {x.total !== null ? ` · ${compact(x.total)} kg/h` : ''}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="gf-field">
-              <span>What is sold</span>
-              <select value={s.component} onChange={(e) => change(i, { component: e.target.value })} disabled={!stream}>
-                {(!stream || stream.total !== null) && <option value="">Whole stream</option>}
-                {(stream?.components || []).map((c) => (
-                  <option key={c.name} value={c.name}>
-                    {c.name} · {compact(c.flow)} kg/h
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="gf-field">
-              <span>Product name</span>
-              <input value={s.name} placeholder={s.component || 'e.g. Protein'} onChange={(e) => change(i, { name: e.target.value })} />
-            </label>
-            <label className="gf-field">
-              <span>Price per unit ({currency})</span>
-              <input type="number" min="0" step="any" inputMode="decimal" value={s.unit_price} placeholder="e.g. 17" onChange={(e) => change(i, { unit_price: e.target.value })} />
-            </label>
-            <label className="gf-field">
-              <span>Unit</span>
-              <select value={s.quantity_unit} onChange={(e) => change(i, { quantity_unit: e.target.value })}>
-                {UNITS.map((u) => (
-                  <option key={u}>{u}</option>
-                ))}
-              </select>
-            </label>
-            {(() => {
-              const flow = s.component ? (stream?.components.find((c) => c.name === s.component)?.flow ?? null) : (stream?.total ?? null);
-              const year = revenuePreview(flow, s.unit_price, s.quantity_unit, days, hours);
-              return year === null ? null : (
-                <small className="gf-muted gf-rev-preview">
-                  ≈ {compact(year)} {currency}/year ({compact(flow)} kg/h × {Number(days) * Number(hours)} h × {s.unit_price} per {s.quantity_unit})
-                </small>
-              );
-            })()}
-            {sales.length > 1 && (
-              <button type="button" className="gf-link" onClick={() => setSales(sales.filter((_, j) => j !== i))}>
-                Remove
-              </button>
-            )}
+    <section className="gf-revenue-setup fv-revenue-simple" aria-labelledby="gf-rev-h">
+      <header className="fv-revenue-head">
+        <div><span className="fv-revenue-eyebrow">REVENUE SETUP</span><h2 id="gf-rev-h">Product Sales</h2><p>How the project makes money</p></div>
+        <div className="fv-revenue-head-actions">
+          <details className="fv-revenue-help"><summary aria-label="About product revenue">?</summary><p>Select a material stream from your workbook and enter its selling price. The backend calculates the official revenue after saving.</p></details>
+          <button type="button" className="fv-revenue-secondary" onClick={() => props.go('revenue')}>Other revenue methods ↗</button>
+        </div>
+      </header>
+      <div className="fv-revenue-content">
+        <div className="fv-revenue-list">
+          {sales.map((s,i)=>{
+            const stream=streams.find(x=>x.key===s.stream_key);
+            const flow=s.component?(stream?.components.find(x=>x.name===s.component)?.flow??null):(stream?.total??null);
+            const preview=revenuePreview(flow,s.unit_price,s.quantity_unit,days,hours);
+            return <div className="fv-revenue-product" key={i}>
+              <div className="fv-revenue-product-head"><strong>Product {i+1}</strong>{sales.length>1&&<button type="button" className="fv-revenue-remove" onClick={()=>setSales(sales.filter((_,j)=>j!==i))} aria-label={`Remove product ${i+1}`}>Remove</button>}</div>
+              <div className="fv-revenue-fields">
+                <label className="fv-revenue-field fv-revenue-field-stream"><span>Select product stream <span className="fv-revenue-required">*</span></span><select value={s.stream_key} required onChange={e=>change(i,{stream_key:e.target.value,component:''})}>
+                  <option value="">Choose a stream…</option>
+                  {streams.map(x=><option value={x.key} key={x.key}>{x.tag}{x.label?` · ${x.label.slice(0,50)}`:''}{x.total!==null?` · ${compact(x.total)} kg/h`:''}</option>)}
+                </select></label>
+                <label className="fv-revenue-field fv-revenue-field-component"><span>What is sold?</span><select value={s.component} disabled={!stream} onChange={e=>change(i,{component:e.target.value})}>
+                  {(!stream||stream.total!==null)&&<option value="">Whole stream</option>}
+                  {(stream?.components||[]).map(x=><option value={x.name} key={x.name}>{x.name} · {compact(x.flow)} kg/h</option>)}
+                </select></label>
+                <label className="fv-revenue-field fv-revenue-field-name"><span>Product name <small>Optional</small></span><input value={s.name} placeholder={s.component||stream?.label||'Product name'} onChange={e=>change(i,{name:e.target.value})}/></label>
+                <label className="fv-revenue-field fv-revenue-field-price"><span>Price per unit ({currency})</span><input type="number" min="0" step="any" inputMode="decimal" value={s.unit_price} placeholder="Enter price" onChange={e=>change(i,{unit_price:e.target.value})}/></label>
+                <label className="fv-revenue-field fv-revenue-field-unit"><span>Unit</span><select value={s.quantity_unit} onChange={e=>change(i,{quantity_unit:e.target.value})}>{UNITS.map(u=><option key={u}>{u}</option>)}</select></label>
+              </div>
+              {preview!==null&&<p className="fv-revenue-preview">Estimated annual sales <strong>≈ {compact(preview)} {currency}/year</strong><span>Illustrative only</span></p>}
+            </div>;
+          })}
+          <div className="fv-revenue-add"><button className="fv-revenue-add-button" type="button" onClick={()=>setSales([...sales,{name:'',stream_key:'',component:'',unit_price:'',quantity_unit:'kg'}])}>+ Add another product</button><span>{streams.length} eligible workbook streams</span></div>
+        </div>
+        <details className="fv-revenue-operating">
+          <summary><span>Operating assumptions</span><span>{currency} · {days} days/year · {hours} hours/day <span aria-hidden="true">⌄</span></span></summary>
+          <div className="fv-revenue-operating-fields">
+            <label className="fv-revenue-field"><span>Currency</span><input maxLength={3} value={currency} onChange={e=>setCurrency(e.target.value.toUpperCase())}/></label>
+            <label className="fv-revenue-field"><span>Operating days/year</span><input type="number" min="1" max="366" value={days} onChange={e=>setDays(e.target.value)}/></label>
+            <label className="fv-revenue-field"><span>Hours/day</span><input type="number" min="1" max="24" value={hours} onChange={e=>setHours(e.target.value)}/></label>
           </div>
-        );
-      })}
-      <button
-        type="button"
-        className="gf-link"
-        onClick={() => setSales([...sales, { name: '', stream_key: '', component: '', unit_price: '', quantity_unit: 'kg' }])}
-      >
-        + Add another product
-      </button>
-      <div className="gf-grid-3">
-        <label className="gf-field">
-          <span>Currency</span>
-          <input maxLength={3} value={currency} onChange={(e) => setCurrency(e.target.value.toUpperCase())} />
-        </label>
-        <label className="gf-field">
-          <span>Operating days / year</span>
-          <input type="number" min="1" max="366" value={days} onChange={(e) => setDays(e.target.value)} />
-        </label>
-        <label className="gf-field">
-          <span>Hours / day</span>
-          <input type="number" min="1" max="24" value={hours} onChange={(e) => setHours(e.target.value)} />
-        </label>
+        </details>
+        <div className="fv-revenue-footer">
+          <span className={dirty?'fv-revenue-warning':approved?'fv-revenue-ready':'fv-revenue-muted'} role="status">{dirty?'Unsaved changes':approved?'✓ Revenue approved':saved.length?'Saved · awaiting approval':'Choose a stream to get started'}</span>
+          <button type="button" className="fv-revenue-save" disabled={!ready||hook.busy} aria-busy={hook.busy} onClick={()=>void save()}>{hook.busy?'Saving…':'Save revenue'}</button>
+        </div>
+        {result&&text(result.message)&&<p role="status" className="fv-revenue-message">{text(result.message)}</p>}
+        {result&&list(result.questions).length>0&&<details className="fv-revenue-questions"><summary>{list(result.questions).length} items to review</summary><ul>{list(result.questions).map((q,i)=><li key={i}>{String(q)}</li>)}</ul></details>}
       </div>
-      <div className="gf-inline-actions">
-        <span className={dirty ? 'gf-warn' : approved ? 'gf-ok' : 'gf-muted'}>
-          {dirty ? 'Unsaved changes — click Save revenue' : approved ? '✓ Revenue set and approved' : saved.length ? 'Not approved yet' : 'Prices dated at the study cost date'}
-        </span>
-        {/* Never blocked by background work: a save while busy is applied between steps. */}
-        <button type="button" className="gf-primary" disabled={!ready || hook.busy} onClick={() => void save()}>
-          Save revenue
-        </button>
-      </div>
-      {result && text(result.message) && <p className="gf-muted">{text(result.message)}</p>}
-      {result && list(result.questions).length > 0 && (
-        <ul className="gf-issue-list">
-          {(result.questions as unknown[]).map((q, i) => (
-            <li key={i}>{String(q)}</li>
-          ))}
-        </ul>
-      )}
     </section>
   );
 }
