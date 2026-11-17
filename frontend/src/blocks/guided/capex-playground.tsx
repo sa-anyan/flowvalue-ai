@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { stageStatus, strings, capexLines, compact, list, money, num, obj, percent, text, words, type CapexLine, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
+import { EconomicsComposition, useLiveEconomics } from './economics-dashboard';
 import { Issues, OriginChip, Panel, RunBar, StageHeading, type StageProps } from './flow';
 import { EquipmentCostBreakdown } from './equipment-cost-breakdown';
 import { AnalystCard } from './analyst-card';
@@ -91,32 +92,15 @@ export function CapexPlayground(props: StageProps) {
     ['Indirect costs', lines.filter((l) => obj(factors.find((f) => f.id === l.id)).stage === 'indirect')],
     ['Plant-level & working capital', lines.filter((l) => !['direct', 'indirect'].includes(text(obj(factors.find((f) => f.id === l.id)).stage)))],
   ] as const;
+  useLiveEconomics(JSON.stringify(config), Boolean(state && !state.running && !hook.busy && capex.dirty && equipmentReady && !missing.length), recalculate);
   return (
     <div className="gf-play">
       <StageHeading kicker="STAGE 03 · CAPEX" title="CAPEX playground">
         Every capital line, where its value came from, and what you can change. Python recalculates the totals; nothing here is computed in your browser.
       </StageHeading>
+      <div className="gf-economics-split">
+      <div className="gf-economics-results" role="region" aria-label="Economics results" tabIndex={0}>
       <AnalystCard stage="capex" hook={props.hook} headline={num(result.total_capex) === null ? undefined : `CAPEX estimate ${compact(result.total_capex)} ${text(result.currency)} (Python).`} />
-      <section className="gf-card-block" aria-labelledby="gf-capex-basis">
-        <h2 id="gf-capex-basis">Estimate basis</h2>
-        <div className="gf-grid-4">
-          {basisFields.map((f) => (
-            <label key={f.key} className="gf-field">
-              <span>
-                {f.label} {!config[f.key] && <em className="gf-required">Required</em>}
-              </span>
-              <select value={text(config[f.key])} onChange={(e) => set({ [f.key]: e.target.value || undefined })}>
-                <option value="">Not chosen</option>
-                {f.options.map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ))}
-        </div>
-      </section>
       <div className="gf-kpis">
         <div className="gf-kpi-hero">
           <small>Total capital investment</small>
@@ -144,9 +128,32 @@ export function CapexPlayground(props: StageProps) {
         ))}
       </div>
       <EquipmentCostBreakdown summary={equipmentSummary} installation={list(result.lines).find((line) => line.id === "equipment_installation")} />
-      {!stage.result && <p className="gf-note">CAPEX has not been calculated yet. Choose the basis above, then “Save & recalculate”.</p>}
+      {!stage.result && <p className="gf-note">CAPEX has not been calculated yet. Choose the required basis to calculate.</p>}
       <Issues items={[...strings(stage.issues), ...strings(result.issues), ...missing.map((f) => `${f.label} is required before CAPEX can be calculated.`)]} />
 
+        <EconomicsComposition title="Capital investment composition" currency={currency} values={[['Fixed capital', result.fixed_capital], ['Start-up', result.startup_expenses], ['Working capital', result.working_capital]]} />
+      </div>
+      <div className="gf-economics-inputs" role="region" aria-label="Calculation inputs" tabIndex={0}>
+      <section className="gf-card-block" aria-labelledby="gf-capex-basis">
+        <h2 id="gf-capex-basis">Estimate basis</h2>
+        <div className="gf-grid-4">
+          {basisFields.map((f) => (
+            <label key={f.key} className="gf-field">
+              <span>
+                {f.label} {!config[f.key] && <em className="gf-required">Required</em>}
+              </span>
+              <select value={text(config[f.key])} onChange={(e) => set({ [f.key]: e.target.value || undefined })}>
+                <option value="">Not chosen</option>
+                {f.options.map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ))}
+        </div>
+      </section>
       {groups.map(([title, group]) =>
         group.length ? (
           <section key={title} className="gf-card-block" aria-label={title}>
@@ -230,6 +237,8 @@ export function CapexPlayground(props: StageProps) {
         <button type="button" className="gf-primary" disabled={hook.busy || Boolean(state?.running)} onClick={() => void recalculate()}>
           Save & recalculate
         </button>
+      </div>
+      </div>
       </div>
       <RunBar
         label="Run OPEX"

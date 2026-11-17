@@ -71,7 +71,7 @@ class RateStudyRequest(BaseModel):
     approve: bool = False
 
 
-def save_rates(store, key, request):
+def save_rates(store, key, request, *, preview=False):
     from backend.blocks.execution import refresh, view
     from backend.blocks.cashflow.schedule import apply_policy
     from backend.orchestration.register import register
@@ -350,6 +350,31 @@ def save_rates(store, key, request):
     config["commercial_intent"] = intent
     config["intent_source"] = "user_override"
     config["intent_override_reason"] = "Explicit structured revenue worksheet edit"
+    if preview:
+        from decimal import Decimal
+
+        from backend.blocks.revenue.input_builder import _revenue_project
+        from backend.blocks.shared import operating_schedule, plain
+        from backend.opex.models import Basis
+        from . import calculate_revenue
+
+        hours, ramp = operating_schedule(config)
+        # Match the full-operation display basis without committing changes.
+        if config.get("cashflow_schedule"):
+            config["cashflow_schedule"]["revenue_factors"] = {}
+        result = calculate_revenue(
+            _revenue_project(
+                report, text, config, Basis(**config["price_basis"]), hours,
+                {year: Decimal(1) for year in ramp}, {},
+            ),
+            engineering_scenario=True,
+        )
+        display = plain(result)
+        first = next(iter(ramp))
+        for field in ("annual", "products", "commercial"):
+            display[field] = [row for row in display[field] if row["year"] == first]
+        return display
+
     if request.approve:
         from .authority import questions
         from backend.blocks.shared import operating_schedule

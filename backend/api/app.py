@@ -553,6 +553,13 @@ def patch(key: str, change: Edit):
 from backend.revenue.rate_workspace import RateStudyRequest
 
 
+@app.post("/api/assessments/{key}/revenue-rates/preview")
+def preview_revenue_rates(key: str, request: RateStudyRequest):
+    from backend.revenue.rate_workspace import save_rates
+
+    return save_rates(store, key, request, preview=True)
+
+
 @app.post("/api/assessments/{key}/revenue-rates")
 def revenue_rates(key: str, request: RateStudyRequest):
     from backend.revenue.rate_workspace import save_rates

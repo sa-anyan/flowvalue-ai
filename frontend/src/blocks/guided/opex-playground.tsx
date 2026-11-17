@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { brainstormNotice, opexDependencyStamp, opexInputValue, opexQuestions, opexQuantities, stageStatus, strings, compact, list, money, num, obj, opexHeadline, opexProgress, opexProposals, percent, text, words, type OpexProposal, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
+import { EconomicsComposition, EconomicsTrend, useLiveEconomics } from './economics-dashboard';
 import { Issues, OriginChip, Panel, RunBar, StageHeading, type StageProps } from './flow';
 import { AnalystCard } from './analyst-card';
 
@@ -102,34 +103,15 @@ export function OpexPlayground(props: StageProps) {
   const reviewIssues = opexQuestions([...strings(stage.issues), ...strings(obj(obj(result.years)[firstYear]).issues), ...questions]);
   const onlyRevenuePending = reviewIssues.length === 1 && strings(obj(obj(result.years)[firstYear]).issues).some((i) => /annual_revenue/.test(i));
   const shift = (id: string, amount: unknown) => (before && before[id] !== undefined && before[id] !== money(amount, '—') ? ` · was ${before[id]}` : '');
+  useLiveEconomics(JSON.stringify(config), Boolean(state && !state.running && !hook.busy && operating.dirty && capexReady), recalculate);
   return (
     <div className="gf-play">
       <StageHeading kicker="STAGE 04 · OPEX" title="OPEX playground">
         Operating costs with the inputs behind each one. Your edits are saved with a rationale and Python recalculates. Missing inputs stay missing, never zero.
       </StageHeading>
+      <div className="gf-economics-split">
+      <div className="gf-economics-results" role="region" aria-label="Economics results" tabIndex={0}>
       <AnalystCard stage="opex" hook={props.hook} headline={stage.result ? `${headline.label}: ${headline.value} (Python).` : undefined} />
-      <section className="gf-card-block" aria-labelledby="gf-opex-basis">
-        <h2 id="gf-opex-basis">Shared operating basis</h2>
-        <div className="gf-grid-4">
-          <label className="gf-field">
-            <span>Price currency {!basis.currency && <em className="gf-required">Required</em>}</span>
-            <input value={text(basis.currency)} maxLength={3} onChange={(e) => set({ price_basis: { ...basis, currency: e.target.value.toUpperCase() } })} />
-          </label>
-          <label className="gf-field">
-            <span>Price period {!basis.price_period && <em className="gf-required">Required</em>}</span>
-            <input value={text(basis.price_period)} placeholder="e.g. 2026" onChange={(e) => set({ price_basis: { ...basis, price_period: e.target.value } })} />
-          </label>
-          <label className="gf-field">
-            <span>Operating days / year {!schedule.days_per_year && <em className="gf-required">Required</em>}</span>
-            <input type="number" min="1" max="366" value={text(schedule.days_per_year)} onChange={(e) => set({ operating: { ...schedule, days_per_year: e.target.value === '' ? null : Number(e.target.value) } })} />
-          </label>
-          <label className="gf-field">
-            <span>Hours / day {!schedule.hours_per_day && <em className="gf-required">Required</em>}</span>
-            <input type="number" min="0.1" max="24" step="any" value={text(schedule.hours_per_day)} onChange={(e) => set({ operating: { ...schedule, hours_per_day: e.target.value === '' ? null : Number(e.target.value) } })} />
-          </label>
-        </div>
-        <small className="gf-muted">Revenue uses the same calendar, so one change applies to both.</small>
-      </section>
       <div className="gf-kpis">
         <div className="gf-kpi-hero">
           <small>{stage.result ? headline.label : 'Annual cash OPEX · year 1'}</small>
@@ -154,6 +136,32 @@ export function OpexPlayground(props: StageProps) {
       <Issues title={onlyRevenuePending ? 'Awaiting Revenue reconciliation' : 'Inputs to review'} items={reviewIssues} />
       {strings(obj(obj(result.years)[firstYear]).issues).length > 0 && <details><summary>Calculation details</summary><Issues title="Calculation details" items={strings(obj(obj(result.years)[firstYear]).issues)} /></details>}
       {!stage.result && <p className="gf-note">OPEX has not been calculated yet.</p>}
+        <EconomicsComposition title="Cash operating cost composition" currency={text(result.currency)} values={[['Fixed cash costs', result.first_year_fixed_opex], ['Variable cash costs', result.first_year_variable_opex]]} />
+        <EconomicsTrend title="Annual cash operating costs" currency={text(result.currency)} values={Object.entries(obj(result.years)).map(([year,row]) => [year,obj(row).annual_cash_opex])} />
+      </div>
+      <div className="gf-economics-inputs" role="region" aria-label="Calculation inputs" tabIndex={0}>
+      <section className="gf-card-block" aria-labelledby="gf-opex-basis">
+        <h2 id="gf-opex-basis">Shared operating basis</h2>
+        <div className="gf-grid-4">
+          <label className="gf-field">
+            <span>Price currency {!basis.currency && <em className="gf-required">Required</em>}</span>
+            <input value={text(basis.currency)} maxLength={3} onChange={(e) => set({ price_basis: { ...basis, currency: e.target.value.toUpperCase() } })} />
+          </label>
+          <label className="gf-field">
+            <span>Price period {!basis.price_period && <em className="gf-required">Required</em>}</span>
+            <input value={text(basis.price_period)} placeholder="e.g. 2026" onChange={(e) => set({ price_basis: { ...basis, price_period: e.target.value } })} />
+          </label>
+          <label className="gf-field">
+            <span>Operating days / year {!schedule.days_per_year && <em className="gf-required">Required</em>}</span>
+            <input type="number" min="1" max="366" value={text(schedule.days_per_year)} onChange={(e) => set({ operating: { ...schedule, days_per_year: e.target.value === '' ? null : Number(e.target.value) } })} />
+          </label>
+          <label className="gf-field">
+            <span>Hours / day {!schedule.hours_per_day && <em className="gf-required">Required</em>}</span>
+            <input type="number" min="0.1" max="24" step="any" value={text(schedule.hours_per_day)} onChange={(e) => set({ operating: { ...schedule, hours_per_day: e.target.value === '' ? null : Number(e.target.value) } })} />
+          </label>
+        </div>
+        <small className="gf-muted">Revenue uses the same calendar, so one change applies to both.</small>
+      </section>
       {notice && (
         <p className={`gf-note gf-brainstorm gf-brainstorm-${notice.tone}`} role="status">
           {notice.tone === 'running' && <span className="gf-spinner" aria-hidden="true" />}
@@ -358,6 +366,8 @@ export function OpexPlayground(props: StageProps) {
         <button type="button" className="gf-primary" disabled={hook.busy || Boolean(state?.running)} onClick={() => void recalculate()}>
           Save & recalculate
         </button>
+      </div>
+      </div>
       </div>
       <RunBar
         label="Run Revenue"

@@ -453,3 +453,136 @@ polyline.gf-tone-c { stroke: var(--gf-tone-c); }
 .gf-launch-file { margin-left: auto; opacity: 0.65; font-size: 12px; }
 .gf-launch-failed { border-color: var(--gf-warn, #b45309); }
 .gf-start-links { margin: 0; }
+
+/* Guided economics uses the Advanced workspaces' hero, KPI and ledger surfaces. */
+.gf:is([data-stage="capex"], [data-stage="opex"], [data-stage="revenue"]) {
+  --economics-accent: #176c58;
+  --economics-tint: color-mix(in srgb, var(--economics-accent) 10%, var(--gf-surface));
+  --economics-radius: 16px;
+  --economics-padding: clamp(16px, 2.4vw, 28px);
+}
+.gf[data-stage="opex"] { --economics-accent: #885b22; }
+.gf[data-stage="revenue"] { --economics-accent: #087e9c; }
+.gf.dark[data-stage="capex"] { --economics-accent: #8ac5b2; }
+.gf.dark[data-stage="opex"] { --economics-accent: #dbb374; }
+.gf.dark[data-stage="revenue"] { --economics-accent: #79cce0; }
+
+.gf:is([data-stage="capex"], [data-stage="opex"], [data-stage="revenue"]) .gf-play {
+  gap: clamp(14px, 1.8vw, 22px);
+  min-width: 0;
+}
+.gf:is([data-stage="capex"], [data-stage="opex"], [data-stage="revenue"]) .gf-heading {
+  align-items: center;
+  background: linear-gradient(120deg, var(--economics-tint), var(--gf-surface) 78%);
+  border: 1px solid var(--gf-line);
+  border-radius: var(--economics-radius);
+  padding: var(--economics-padding);
+}
+.gf:is([data-stage="capex"], [data-stage="opex"], [data-stage="revenue"]) :is(.gf-heading .gf-kicker, .gf-panel-head .gf-kicker) {
+  color: var(--economics-accent);
+}
+.gf:is([data-stage="capex"], [data-stage="opex"], [data-stage="revenue"]) .gf-kpis {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  gap: 10px;
+}
+.gf:is([data-stage="capex"], [data-stage="opex"], [data-stage="revenue"]) .gf-kpis > div {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  padding: clamp(12px, 1.6vw, 20px);
+  border-radius: 12px;
+  box-shadow: none;
+  overflow-wrap: anywhere;
+}
+.gf:is([data-stage="capex"], [data-stage="opex"], [data-stage="revenue"]) .gf-kpis > .gf-kpi-hero {
+  background: var(--economics-tint);
+  border-color: color-mix(in srgb, var(--economics-accent) 32%, var(--gf-line));
+}
+.gf:is([data-stage="capex"], [data-stage="opex"], [data-stage="revenue"]) .gf-kpis strong {
+  font-size: clamp(21px, 2.7vw, 34px);
+  line-height: 1.15;
+  letter-spacing: -.035em;
+}
+.gf:is([data-stage="capex"], [data-stage="opex"], [data-stage="revenue"]) .gf-card-block {
+  min-width: 0;
+  border-radius: var(--economics-radius) !important;
+  padding: var(--economics-padding) !important;
+  box-shadow: none;
+}
+.gf:is([data-stage="capex"], [data-stage="opex"], [data-stage="revenue"]) .gf-lines > .gf-line {
+  min-width: 0;
+  padding-block: 10px;
+  border-color: var(--gf-line);
+}
+.gf:is([data-stage="capex"], [data-stage="opex"], [data-stage="revenue"]) .gf-line-value {
+  font-variant-numeric: tabular-nums;
+}
+.gf:is([data-stage="capex"], [data-stage="opex"], [data-stage="revenue"]) .gf-panel-head {
+  background: var(--economics-tint);
+}
+.gf:is([data-stage="capex"], [data-stage="opex"], [data-stage="revenue"]) :is(button, a, summary):focus-visible {
+  outline: 2px solid var(--economics-accent);
+  outline-offset: 2px;
+}
+@media (max-width: 620px) {
+  .gf:is([data-stage="capex"], [data-stage="opex"], [data-stage="revenue"]) .gf-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .gf:is([data-stage="capex"], [data-stage="opex"], [data-stage="revenue"]) .gf-kpis > .gf-kpi-hero { grid-column: 1 / -1; }
+  .gf:is([data-stage="capex"], [data-stage="opex"], [data-stage="revenue"]) .gf-line-actions { flex-wrap: wrap; }
+}
+
+.gf-economics-split {
+  display: grid;
+  grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
+  gap: clamp(14px, 2vw, 24px);
+  align-items: start;
+}
+.gf-economics-results, .gf-economics-inputs { display: grid; gap: 14px; min-width: 0; }
+.gf-economics-split .gf-kpi-hero { grid-column: 1 / -1; }
+.gf-economics-split .gf-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.gf-economics-chart ul { list-style: none; padding: 0; margin: 0; display: grid; gap: .75rem; }
+.gf-economics-chart li > div:first-child { display: flex; justify-content: space-between; gap: 1rem; }
+.gf-economics-track { height: .45rem; background: var(--gf-line); border-radius: 1rem; margin-top: .25rem; overflow: hidden; }
+.gf-economics-track i { display: block; height: 100%; border-radius: inherit; transition: width .22s ease; }
+.gf-economics-pie { width: min(9rem, 60%); aspect-ratio: 1; border-radius: 50%; margin: .5rem auto; }
+@media (max-width: 900px) { .gf-economics-split { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .gf-economics-track i { transition: none; } }
+
+.gf-economics-trend { display: block; width: 100%; color: var(--economics-accent, var(--gf-accent)); }
+.gf-economics-trend text { fill: var(--gf-muted); font-size: 10px; }
+
+/* Separate desktop scroll areas keep the two sides independently usable. */
+@media (min-width: 901px) and (min-height: 640px) {
+  .gf-economics-results, .gf-economics-inputs {
+    max-height: min(66dvh, calc(100dvh - 220px));
+    overflow-y: auto;
+    align-content: start;
+    scrollbar-gutter: stable;
+    overscroll-behavior-y: contain;
+    padding: 3px 10px 8px 3px;
+  }
+}
+.gf-economics-split > [role="region"]:focus-visible {
+  outline: 2px solid var(--economics-accent, var(--gf-accent));
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+.gf .gf-analyst { padding: 0; }
+.gf .gf-analyst-holder { margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none; }
+.gf .gf-analyst-holder > summary {
+  display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
+  margin: 0; padding: .7rem .85rem; list-style: none; cursor: pointer;
+}
+.gf-analyst-holder > summary::-webkit-details-marker { display: none; }
+.gf-analyst-mark { color: var(--gf-ai); background: var(--gf-ai-soft); border-radius: .55rem; padding: .2rem .45rem; }
+.gf-analyst-chevron { margin-inline-start: auto; transition: transform .2s ease; }
+.gf-analyst-holder[open] .gf-analyst-chevron { transform: rotate(180deg); }
+.gf-analyst-holder-body { border-top: 1px solid var(--gf-line); padding: .85rem; overflow-wrap: anywhere; }
+.gf-analyst-holder[open] > .gf-analyst-holder-body { animation: gf-briefing-in .23s ease-out both; }
+@keyframes gf-briefing-in { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .gf-analyst-holder[open] > .gf-analyst-holder-body { animation: none; }
+  .gf-analyst-chevron { transition: none; }
+}

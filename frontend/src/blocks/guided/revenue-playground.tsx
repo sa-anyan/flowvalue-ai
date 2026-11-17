@@ -5,6 +5,7 @@ import { stableJson } from '@/lib/stable-json';
 import { assessmentHref } from '@/lib/assessment-navigation';
 import { strings, compact, list, money, num, obj, text, words, type Row } from '@/lib/guided-flow';
 import { api, post, type Assessment } from './use-assessment';
+import { EconomicsComposition, EconomicsTrend } from './economics-dashboard';
 import { Issues, OriginChip, Panel, RunBar, StageHeading, type StageProps } from './flow';
 import { AnalystCard } from './analyst-card';
 import { revenueLines, revenueRateSources, requiresTerms } from '@/blocks/revenue/rate-lines';
@@ -32,11 +33,12 @@ export function RevenuePlayground(props: StageProps) {
     [adding, setAdding] = useState(false),
     [editing, setEditing] = useState<Row | null>(null),
     [research, setResearch] = useState<Row | null>(null);
+  const [preview, setPreview] = useState<Row | null>(null);
   // An approval prompt is not a clarification: only real questions block approval.
   const questions = (state?.revenue_questions || []).map(String).filter((q) => !/^\s*(data required:\s*)?review and approve/i.test(q));
   const lines: Row[] = [...list(config.sales), ...list(config.commercial_lines)];
   const drafts = revenueLines(config);
-  const fullOperation = obj(result.full_operation);
+  const fullOperation = preview ?? obj(result.full_operation);
   const products = list(fullOperation.products);
   const commercial = list(fullOperation.commercial);
   const fullAnnual = list(fullOperation.annual)[0];
@@ -54,6 +56,8 @@ export function RevenuePlayground(props: StageProps) {
       <StageHeading kicker="STAGE 05 · REVENUE" title="Revenue playground">
         Income comes only from what you set on the Entry board and the explicit revenue worksheet. Prices you give are your assumptions; unpriced income stays unpriced.
       </StageHeading>
+      <div className="gf-economics-split">
+      <div className="gf-economics-results" role="region" aria-label="Economics results" tabIndex={0}>
       <AnalystCard stage="revenue" hook={props.hook} />
       <p className="gf-note gf-rev-effects" role="note">
         Revenue is shown at 100% scheduled operation using your saved rates and prices. Year-by-year realization is a separate financial scenario you control.
@@ -61,10 +65,10 @@ export function RevenuePlayground(props: StageProps) {
       </p>
       <div className="gf-kpis">
         <div className="gf-kpi-hero">
-          <small>100% annual revenue</small>
+          <small>{preview ? 'Draft annual revenue · unapproved' : '100% annual revenue'}</small>
           <strong>{num(obj(fullAnnual).sales_revenue) === null ? 'Not calculated' : compact(obj(fullAnnual).sales_revenue)}</strong>
           <span>
-            {text(obj(result.basis).currency)} {text(obj(result.basis).price_period)}
+            {text(obj(preview?.basis ?? result.basis).currency)} {text(obj(preview?.basis ?? result.basis).price_period)}
             {' · At 100% scheduled operation, not a year-one forecast'}
           </span>
         </div>
@@ -81,6 +85,12 @@ export function RevenuePlayground(props: StageProps) {
       </div>
       <Issues items={[...strings(stage.issues), ...strings(result.issues)]} />
 
+        <EconomicsComposition title="Income by stream · full operation" currency={text(obj(preview?.basis ?? result.basis).currency)} values={preview
+          ? [...products, ...commercial].map(row => [text(row.name || row.product_id || row.line_id), row.net_sales_revenue ?? row.revenue])
+          : lines.map(line => { const row = productFor(text(line.id)); return [text(line.name || line.id), row?.net_sales_revenue ?? row?.revenue]; })} />
+        {!preview && <EconomicsTrend title="Saved annual revenue" currency={text(obj(result.basis).currency)} values={list(result.annual).map(row => [row.year,row.sales_revenue])} />}
+      </div>
+      <div className="gf-economics-inputs" role="region" aria-label="Calculation inputs" tabIndex={0}>
       <section className="gf-card-block" aria-labelledby="gf-box">
         <h2 id="gf-box">Revenue assumptions</h2>
         <p className="gf-muted">Income sources come from your process description. <Link href={assessmentHref('/flow?stage=entry', hook.id)}>Edit the project brief</Link>.</p>
@@ -180,6 +190,8 @@ export function RevenuePlayground(props: StageProps) {
         </Link>
       </section>
 
+      </div>
+      </div>
       <RunBar
         label="Run Financial"
         busy={hook.busy}
@@ -192,7 +204,7 @@ export function RevenuePlayground(props: StageProps) {
           void props.advance(undefined, fresh ? [] : ['revenue']);
         }}
       />
-      {(adding || editing) && state && <RevenueLineEditor key={editing ? text(editing.id) : 'new'} state={state} existing={editing || undefined} onClose={() => { setAdding(false); setEditing(null); }} props={props} />}
+      {(adding || editing) && state && <RevenueLineEditor key={editing ? text(editing.id) : 'new'} state={state} existing={editing || undefined} onClose={() => { setPreview(null); setAdding(false); setEditing(null); }} onPreview={setPreview} props={props} />}
       {research && state && (
         <Panel title={`Research a price for ${text(research.name)}`} kicker="AI · PROVISIONAL" onClose={() => setResearch(null)}>
           <p>
@@ -218,7 +230,7 @@ export function RevenuePlayground(props: StageProps) {
   );
 }
 
-export function RevenueLineEditor({ state, existing, onClose, props }: { state: Assessment; existing?: Row; onClose: () => void; props: StageProps }) {
+export function RevenueLineEditor({ state, existing, onClose, onPreview, props }: { state: Assessment; existing?: Row; onClose: () => void; onPreview?: (value: Row | null) => void; props: StageProps }) {
   const { hook } = props;
   const [openingRevision, setOpeningRevision] = useState(state.revision);
   const [editorId] = useState(() => existing ? text(existing.id) : 'user-' + crypto.randomUUID());
@@ -256,29 +268,7 @@ export function RevenueLineEditor({ state, existing, onClose, props }: { state: 
   useEffect(() => () => notifyDirty?.(false), [notifyDirty]);
   const discard = () => { if (props.confirmRevenueLeave?.() !== false) onClose(); };
   const valid = line.name.trim() && Number.isFinite(Number(line.price)) && Number(line.price) >= 0 && line.price !== '' && (selectedSource || (manualRate && Number.isFinite(Number(line.rate)) && Number(line.rate) >= 0 && line.rate !== '')) && Number(days) > 0 && Number(hours) > 0;
-  const set = (patch: Partial<typeof line>) => setLine({ ...line, ...patch });
-  return (
-    <Panel
-      title={existing ? `Edit ${text(existing.name) || 'revenue line'}` : 'Add a priced revenue line'}
-      kicker="REVENUE WORKSHEET"
-      onClose={discard}
-      footer={
-        <>
-          <button type="button" className="gf-secondary" onClick={discard}>
-            Cancel
-          </button>
-          <button
-            type="button"
-            className="gf-primary"
-            disabled={!valid || hook.busy || Boolean(state.running)}
-            onClick={() =>
-              void hook
-                .action(async () => {
-                  setSaveError('');
-                  try {
-                  const updated = await api<Assessment>(
-                      `assessments/${hook.id}/revenue-rates`,
-                      post({
+  const request = ({
                         revision: openingRevision,
                         days_per_year: Number(days),
                         hours_per_day: Number(hours),
@@ -303,7 +293,51 @@ export function RevenueLineEditor({ state, existing, onClose, props }: { state: 
                             rationale: line.rationale.trim() || 'User assumption entered in the Revenue playground',
                           },
                         ],
-                      }),
+});
+  const previewRequest = JSON.stringify({...request, approve: false});
+  const [draftPreview, setDraftPreview] = useState<Row | null>(null);
+  const [previewError, setPreviewError] = useState('');
+  useEffect(() => {
+    if (!onPreview) return;
+    onPreview(null);
+    setDraftPreview(null);
+    setPreviewError('');
+    if (!valid || editorSignature === savedEditorSignature || hook.busy || state.running) return;
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      void api<Row>(`assessments/${hook.id}/revenue-rates/preview`, {...post(JSON.parse(previewRequest)), signal:controller.signal})
+        .then(result => {
+          if (!controller.signal.aborted) { setDraftPreview(result); onPreview(result); }
+        })
+        .catch(error => {
+          if (!controller.signal.aborted) setPreviewError(error.message);
+        });
+    }, 750);
+    return () => { window.clearTimeout(timer); controller.abort(); };
+  }, [onPreview, valid, editorSignature, savedEditorSignature, previewRequest, hook.id, hook.busy, state.running]);
+  const set = (patch: Partial<typeof line>) => setLine({ ...line, ...patch });
+  return (
+    <Panel
+      title={existing ? `Edit ${text(existing.name) || 'revenue line'}` : 'Add a priced revenue line'}
+      kicker="REVENUE WORKSHEET"
+      onClose={discard}
+      footer={
+        <>
+          <button type="button" className="gf-secondary" onClick={discard}>
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="gf-primary"
+            disabled={!valid || hook.busy || Boolean(state.running)}
+            onClick={() =>
+              void hook
+                .action(async () => {
+                  setSaveError('');
+                  try {
+                  const updated = await api<Assessment>(
+                      `assessments/${hook.id}/revenue-rates`,
+                      post(request),
                     );
                   hook.setState(updated);
                   setOpeningRevision(updated.revision);
@@ -328,6 +362,9 @@ export function RevenueLineEditor({ state, existing, onClose, props }: { state: 
     >
       <p className="gf-muted">{existing ? 'Update this existing line. Saving approved changes recalculates revenue and linked operating costs; the previous version is retained.' : 'Your price is recorded as a user assumption. Python annualises rate × price × operating time.'}</p>
       {saveError && <p className="gf-note" role="alert">{saveError} Your draft is still open.</p>}
+      {draftPreview && <p className="gf-note" role="status">Draft annual revenue · unapproved: {compact(obj(list(draftPreview.annual)[0]).sales_revenue, 'Pending')} {text(obj(draftPreview.basis).currency)}</p>}
+      {draftPreview && <Issues items={strings(draftPreview.issues)} />}
+      {previewError && <p className="gf-note" role="status">Preview unavailable: {previewError}</p>}
       <div className="gf-grid-2">
         <label className="gf-field">
           <span>Name</span>

@@ -26,12 +26,15 @@ export function AnalystCard({ stage, hook, headline }: { stage: string; hook: As
   const factors = list(record.factors);
   return (
     <section className={`gf-analyst gf-analyst-${view}`} aria-live="polite" aria-busy={view === 'researching'} aria-label="Analyst summary">
-      <div className="gf-analyst-head">
-        <span className="gf-kicker">ANALYST</span>
-        {record.pending_application === true && <small className="gf-muted">AI research finished · applies after the current calculation</small>}
-        {view === 'updating' && <small className="gf-muted">Updating for your latest inputs…</small>}
-        {view === 'ready' && record.pending_application !== true && record.cached !== true && text(record.finished_at) && <small className="gf-muted">Researched in the background</small>}
-      </div>
+      <details className="gf-analyst-holder">
+        <summary className="gf-analyst-head">
+          <span className="gf-analyst-mark" aria-hidden="true">✦</span>
+          <strong>Analyst briefing</strong>
+          <small className="gf-muted">{view === 'researching' ? 'Researching' : view === 'updating' ? 'Updating' : view === 'failed' ? 'Review unavailable' : record.pending_application === true ? 'Awaiting application' : [points.length ? `${points.length} findings` : '', factors.length ? `${factors.length} factors` : ''].filter(Boolean).join(' · ') || 'Ready'}</small>
+          <span className="gf-analyst-chevron" aria-hidden="true">⌄</span>
+        </summary>
+        <div className="gf-analyst-holder-body">
+          {record.pending_application === true && <p className="gf-muted">Research will apply after the current calculation.</p>}
       {view === 'researching' && (
         <div className="gf-analyst-skeleton" aria-hidden="true">
           <span />
@@ -117,6 +120,8 @@ export function AnalystCard({ stage, hook, headline }: { stage: string; hook: As
           )}
         </>
       )}
+        </div>
+      </details>
     </section>
   );
 }
