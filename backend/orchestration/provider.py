@@ -27,7 +27,13 @@ class EngineeringProvider:
         return audited("call", self.model, instructions, context,
                        lambda: self._generate(instructions=instructions, context=context, schema=schema))
 
-    def _generate(self, *, instructions, context, schema):
+    def generate_cited(self, *, instructions, context, schema):
+        """One bounded background analyst response with provider-grounded citations."""
+        from .ai_audit import audited
+        return audited("cited_analysis", self.model, instructions, context,
+                       lambda: self._generate(instructions=instructions, context=context, schema=schema, cited=True))
+
+    def _generate(self, *, instructions, context, schema, cited=False):
         payload = {
             "model": self.model,
             "instructions": instructions,
@@ -46,6 +52,11 @@ class EngineeringProvider:
                 }
             },
         }
+        if cited:
+            payload.update(tools=[{"type": "web_search", "search_context_size": "low"}],
+                           tool_choice="auto", max_tool_calls=2,
+                           include=["web_search_call.action.sources"])
+            payload["max_output_tokens"] = 6500
         request = Request(
             "https://api.openai.com/v1/responses",
             data=json.dumps(payload).encode(),
@@ -68,7 +79,7 @@ class EngineeringProvider:
                 )
             texts = []
             for message in result.get("output", []):
-                if message.get("type") == "reasoning":
+                if message.get("type") == "reasoning" or (cited and message.get("type") == "web_search_call"):
                     continue
                 if message.get("type") != "message":
                     raise ValueError("Unexpected action")
@@ -76,7 +87,11 @@ class EngineeringProvider:
                     if item.get("type") != "output_text":
                         raise ValueError("Refused or unsupported response")
                     texts.append(item["text"])
-            return json.loads("".join(texts), object_pairs_hook=strict_object)
+            parsed = json.loads("".join(texts), object_pairs_hook=strict_object)
+            if cited:
+                from backend.blocks.analyst_citations import retrieved_sources
+                parsed['_retrieved_sources'] = retrieved_sources(result)
+            return parsed
         except RevenueAIError:
             raise
         except HTTPError as exc:

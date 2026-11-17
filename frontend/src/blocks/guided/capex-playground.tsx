@@ -1,10 +1,14 @@
 'use client';
+import {withCurrency} from '@/lib/display-currency';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { stageStatus, strings, capexLines, compact, list, money, num, obj, percent, text, words, type CapexLine, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
+import { EconomicsComposition, useLiveEconomics } from './economics-dashboard';
 import { Issues, OriginChip, Panel, RunBar, StageHeading, type StageProps } from './flow';
 import { EquipmentCostBreakdown } from './equipment-cost-breakdown';
 import { AnalystCard } from './analyst-card';
+import { CapexEvidenceNote } from './evidence-note';
+import {CapexDriverAnalysis} from './analyst-cost-explorer';
 
 const basisFields = [
   { key: 'model_id', label: 'Method', options: [['garrett', 'Garrett factorial'], ['nottingham', 'Nottingham detailed']] },
@@ -91,12 +95,53 @@ export function CapexPlayground(props: StageProps) {
     ['Indirect costs', lines.filter((l) => obj(factors.find((f) => f.id === l.id)).stage === 'indirect')],
     ['Plant-level & working capital', lines.filter((l) => !['direct', 'indirect'].includes(text(obj(factors.find((f) => f.id === l.id)).stage)))],
   ] as const;
+  useLiveEconomics(JSON.stringify(config), Boolean(state && !state.running && !hook.busy && capex.dirty && equipmentReady && !missing.length), recalculate);
   return (
     <div className="gf-play">
+      <div className="gf-economics-split">
+      <div className="gf-economics-results" role="region" aria-label="Economics results" tabIndex={0}>
       <StageHeading kicker="STAGE 03 · CAPEX" title="CAPEX playground">
         Every capital line, where its value came from, and what you can change. Python recalculates the totals; nothing here is computed in your browser.
       </StageHeading>
+      <div className="gf-kpis">
+        <div className="gf-kpi-hero">
+          <small>Total capital investment</small>
+          <strong>{num(result.total_capex) === null ? 'Incomplete' : withCurrency(compact(result.total_capex), currency)}</strong>
+          <span>
+            {currency} {period}
+            {before && before.total !== compact(result.total_capex, 'Incomplete') ? ` · was ${before.total}` : ''}
+          </span>
+        </div>
+        <div>
+          <small>Equipment cost</small>
+          <strong>{equipmentAmounts.length ? equipmentAmounts.map((amount) => `${equipmentAmounts.length > 1 ? `${text(amount.currency)} ${text(amount.period)} ` : ''}${withCurrency(compact(amount.amount), amount.currency)}`).join(' · ') : 'Pending'}</strong>
+          <span>{currency} · all priced equipment included</span>
+        </div>
+        {[
+          ['Fixed capital', result.fixed_capital],
+          ['Start-up', result.startup_expenses],
+          ['Working capital', result.working_capital],
+        ].map(([label, v]) => (
+          <div key={String(label)}>
+            <small>{String(label)}</small>
+            <strong>{num(v) === null ? 'Pending' : withCurrency(compact(v), currency)}</strong>
+            <span>{currency}</span>
+          </div>
+        ))}
+      </div>
+      <h2 className="gf-pane-heading">Visual analysis</h2>
+        <EconomicsComposition title="Capital investment composition" currency={currency} values={[['Fixed capital', result.fixed_capital], ['Start-up', result.startup_expenses], ['Working capital', result.working_capital]]} />
       <AnalystCard stage="capex" hook={props.hook} headline={num(result.total_capex) === null ? undefined : `CAPEX estimate ${compact(result.total_capex)} ${text(result.currency)} (Python).`} />
+
+      <EquipmentCostBreakdown summary={equipmentSummary} installation={list(result.lines).find((line) => line.id === "equipment_installation")} />
+      {!stage.result && <p className="gf-note">CAPEX has not been calculated yet. Choose the required basis to calculate.</p>}
+      <Issues items={[...strings(stage.issues), ...strings(result.issues), ...missing.map((f) => `${f.label} is required before CAPEX can be calculated.`)]} />
+
+
+      <CapexDriverAnalysis assessmentId={text(state?.id)} result={result} equipment={list(obj(obj(obj(obj(state?.results).stages).equipment).result).equipment)} revision={text(state?.revision)} stale={capex.dirty || Boolean(stage.result_is_stale)}/>
+      </div>
+      <div className="gf-economics-inputs" role="region" aria-label="Calculation inputs" tabIndex={0}>
+      <h2 className="gf-pane-heading">Figures &amp; assumptions</h2>
       <section className="gf-card-block" aria-labelledby="gf-capex-basis">
         <h2 id="gf-capex-basis">Estimate basis</h2>
         <div className="gf-grid-4">
@@ -117,36 +162,6 @@ export function CapexPlayground(props: StageProps) {
           ))}
         </div>
       </section>
-      <div className="gf-kpis">
-        <div className="gf-kpi-hero">
-          <small>Total capital investment</small>
-          <strong>{num(result.total_capex) === null ? 'Incomplete' : compact(result.total_capex)}</strong>
-          <span>
-            {currency} {period}
-            {before && before.total !== compact(result.total_capex, 'Incomplete') ? ` · was ${before.total}` : ''}
-          </span>
-        </div>
-        <div>
-          <small>Equipment cost</small>
-          <strong>{equipmentAmounts.length ? equipmentAmounts.map((amount) => `${equipmentAmounts.length > 1 ? `${text(amount.currency)} ${text(amount.period)} ` : ''}${compact(amount.amount)}`).join(' · ') : 'Pending'}</strong>
-          <span>{currency} · all priced equipment included</span>
-        </div>
-        {[
-          ['Fixed capital', result.fixed_capital],
-          ['Start-up', result.startup_expenses],
-          ['Working capital', result.working_capital],
-        ].map(([label, v]) => (
-          <div key={String(label)}>
-            <small>{String(label)}</small>
-            <strong>{num(v) === null ? 'Pending' : compact(v)}</strong>
-            <span>{currency}</span>
-          </div>
-        ))}
-      </div>
-      <EquipmentCostBreakdown summary={equipmentSummary} installation={list(result.lines).find((line) => line.id === "equipment_installation")} />
-      {!stage.result && <p className="gf-note">CAPEX has not been calculated yet. Choose the basis above, then “Save & recalculate”.</p>}
-      <Issues items={[...strings(stage.issues), ...strings(result.issues), ...missing.map((f) => `${f.label} is required before CAPEX can be calculated.`)]} />
-
       {groups.map(([title, group]) =>
         group.length ? (
           <section key={title} className="gf-card-block" aria-label={title}>
@@ -158,16 +173,16 @@ export function CapexPlayground(props: StageProps) {
                     <div>
                       <strong>{line.label}</strong>
                       <OriginChip origin={line.origin} />
-                      <small>{line.rationale}</small>
                     </div>
                     <div className="gf-line-value">
-                      <strong>{line.excluded ? 'Removed' : line.amount === null ? (line.editable ? 'Pending' : 'Included elsewhere') : money(line.amount)}</strong>
+                      <strong>{line.excluded ? 'Removed' : line.amount === null ? (line.editable ? 'Pending' : 'Included elsewhere') : withCurrency(money(line.amount), currency)}</strong>
                       <small>
                         {line.fraction !== null ? `${percent(line.fraction)} of ${line.base}` : line.base}
                         {before && before[line.id] !== undefined && before[line.id] !== money(line.amount, '—') ? ` · was ${before[line.id]}` : ''}
                       </small>
                     </div>
                   </div>
+                  <CapexEvidenceNote line={list(result.lines).find((item) => item.id === line.id) || {}} config={config} analyst={obj(obj(state?.analyst).capex)} factor={factors.find((item) => item.id === line.id) || {}} origin={line.origin} />
                   {line.editable && !line.excluded && (
                     <div className="gf-line-actions">
                       <button type="button" className="gf-secondary" disabled={line.fraction === null || line.inUse} onClick={() => useLine(line)}>
@@ -230,6 +245,8 @@ export function CapexPlayground(props: StageProps) {
         <button type="button" className="gf-primary" disabled={hook.busy || Boolean(state?.running)} onClick={() => void recalculate()}>
           Save & recalculate
         </button>
+      </div>
+      </div>
       </div>
       <RunBar
         label="Run OPEX"

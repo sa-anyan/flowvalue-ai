@@ -72,7 +72,7 @@ function UploadStart({ props, onCancel }: { props: StageProps; onCancel?: () => 
   return (
     <section className="gf-start" aria-labelledby="gf-start-h">
       <span className="gf-kicker">01 · YOUR PROCESS</span>
-      <h2 id="gf-start-h">Upload your mass &amp; energy balance</h2>
+      <h1 id="gf-start-h">Upload your mass &amp; energy balance</h1>
       <label
         className={`gf-drop ${dragging ? 'gf-drop-active' : ''} ${file ? 'gf-drop-ready' : ''}`}
         onDragOver={(e) => {
@@ -121,13 +121,23 @@ function RevenueStep({ props, onReview, onNew }: { props: StageProps; onReview: 
   const status = launchStatus(state);
   const streams = list(studyReport(state).entities).filter((e) => e.kind === 'material');
   const revenueSet = list(obj(obj(state?.plan).operating_economics).sales).length > 0 || strings(state?.inbox).includes('revenue_setup');
-  return (
-    <div className="gf-start">
-      <p className={`gf-launch gf-launch-${status.tone}`} role="status" aria-live="polite">
+  const links = (<p className="gf-muted gf-start-links">
+        <button type="button" className="gf-link" onClick={onReview} disabled={streams.length === 0}>
+          Review extracted data
+        </button>
+        {' · '}
+        <button type="button" className="gf-link" onClick={onNew}>
+          Upload a different workbook
+        </button>
+      </p>);
+  const launchNote = (<p className={`gf-launch gf-launch-${status.tone}`} role="status" aria-live="polite">
         {status.tone === 'working' && <span className="gf-spinner" aria-hidden="true" />}
         <span>{status.text}</span>
         <span className="gf-launch-file">{text(state?.filename)}</span>
-      </p>
+      </p>);
+  return (
+    <div className="gf-start">
+      {streams.length === 0 && launchNote}
       {streams.length === 0 ? (
         <section className="gf-revenue-setup" aria-busy="true">
           <span className="gf-kicker">HOW DOES THIS PROJECT EARN MONEY?</span>
@@ -139,19 +149,11 @@ function RevenueStep({ props, onReview, onNew }: { props: StageProps; onReview: 
         </section>
       ) : (
         <>
-          <RevenueSetup props={props} />
-          <QuickQuestions props={props} />
+          <RevenueSetup props={props} introContent={launchNote} supportingContent={<><QuickQuestions props={props} />{links}</>} />
         </>
       )}
-      <p className="gf-muted gf-start-links">
-        <button type="button" className="gf-link" onClick={onReview} disabled={streams.length === 0}>
-          Review extracted data
-        </button>
-        {' · '}
-        <button type="button" className="gf-link" onClick={onNew}>
-          Upload a different workbook
-        </button>
-      </p>
+      {streams.length === 0 && links}
+
       <RunBar
         status={<strong>{revenueSet ? 'Revenue saved' : 'Define revenue, or continue and add it later'}</strong>}
         label="Continue to Equipment"

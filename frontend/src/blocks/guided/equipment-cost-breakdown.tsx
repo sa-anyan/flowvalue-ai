@@ -1,3 +1,4 @@
+import {withCurrency} from '@/lib/display-currency';
 import { list, num, obj, strings, text, words, type Row } from '@/lib/guided-flow';
 
 const labels: Record<string, string> = {
@@ -32,11 +33,11 @@ export function EquipmentCostBreakdown({ summary, installation }: { summary: unk
                     <strong>{labels[text(part.cost_scope)] || words(part.cost_scope)}</strong>
                     {strings(part.equipment_tags).length > 0 && <small>{strings(part.equipment_tags).join(', ')}</small>}
                   </div>
-                  <div className="gf-line-value"><strong>{format(part.amount)}</strong><small>{text(basis.currency)}</small></div>
+                  <div className="gf-line-value"><strong>{withCurrency(format(part.amount),basis.currency)}</strong><small>{text(basis.currency)}</small></div>
                 </div>
               </li>
             ))}
-            <li className="gf-line"><div className="gf-line-main"><strong>Equipment cost</strong><div className="gf-line-value"><strong>{format(basis.amount)}</strong><small>{text(basis.currency)}</small></div></div></li>
+            <li className="gf-line"><div className="gf-line-main"><strong>Equipment cost</strong><div className="gf-line-value"><strong>{withCurrency(format(basis.amount),basis.currency)}</strong><small>{text(basis.currency)}</small></div></div></li>
           </ul>
         </div>
       ))}

@@ -1,4 +1,5 @@
 'use client';
+import {withCurrency} from '@/lib/display-currency';
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ParameterMatrix } from '@/blocks/uncertainty/parameter-matrix';
@@ -13,6 +14,7 @@ import { strings,
   financialLevers,
   financialMetricKeys,
   list,
+  money,
   metricMap,
   metricText,
   num,
@@ -23,7 +25,7 @@ import { strings,
 } from '@/lib/guided-flow';
 import { api, post, type Assessment } from './use-assessment';
 import { BarChart, FanChart, LineChart } from './charts';
-import { Issues, Panel, StageHeading, type StageProps } from './flow';
+import { Issues, Panel, RunBar, StageHeading, type StageProps } from './flow';
 import { AnalystCard } from './analyst-card';
 
 type ChartId = 'cumulative' | 'fcff' | 'income' | 'mc-fan' | 'mc-npv';
@@ -120,6 +122,9 @@ export function FinancialPlayground(props: StageProps) {
   };
   return (
     <div className={`gf-play gf-fin ${side && pins.length ? 'gf-fin-side' : ''}`}>
+      <div className="gf-fin-layout">
+        <div className="gf-fin-main gf-economics-split">
+          <div className="gf-economics-results" role="region" aria-label="Financial visual analysis" tabIndex={0}>
       <StageHeading
         kicker="STAGE 06 · FINANCIAL"
         title="Financial playground"
@@ -136,9 +141,23 @@ export function FinancialPlayground(props: StageProps) {
       >
         Investment performance from the Python financial ledger. Scenario calculations are saved separately and never replace your original project results.
       </StageHeading>
-      <AnalystCard stage="financial" hook={props.hook} />
-      {tab !== 'scenario' && <FinancialPlanningNote config={obj(obj(state?.plan).operating_economics)} />}
-      <div className="gf-fin-layout">
+      <div className="gf-kpis gf-kpis-5">
+            {financialMetricKeys.map(([label, key, kind]) => {
+              const value = metricText(metrics.get(key), kind);
+              return (
+                <div key={key} className={key === 'project_npv' ? 'gf-kpi-hero' : undefined} data-negative={num(metrics.get(key)?.value)! < 0}>
+                  <small>{label}</small>
+                  <strong>{kind === 'money' ? withCurrency(value,currency) : value}</strong>
+                  <span>
+                    {kind === 'money' ? currency : text(metrics.get(key)?.unit)}
+                    {tab === 'scenario' && Object.keys(overrides).length > 0 ? ` · original ${metricText(originalMetrics.get(key), kind)}` : ''}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+            <h2 className="gf-pane-heading">Visual analysis</h2>
+            <div className="gf-fin-visuals">
         {pins.length > 0 && (
           <div className="gf-pins" role="complementary" aria-label="Pinned charts">
             {pins.map((id) => (
@@ -154,22 +173,14 @@ export function FinancialPlayground(props: StageProps) {
             ))}
           </div>
         )}
-        <div className="gf-fin-main">
-          <div className="gf-kpis gf-kpis-5">
-            {financialMetricKeys.map(([label, key, kind]) => {
-              const value = metricText(metrics.get(key), kind);
-              return (
-                <div key={key} className={key === 'project_npv' ? 'gf-kpi-hero' : undefined}>
-                  <small>{label}</small>
-                  <strong>{value}</strong>
-                  <span>
-                    {kind === 'money' ? currency : text(metrics.get(key)?.unit)}
-                    {tab === 'scenario' && Object.keys(overrides).length > 0 ? ` · original ${metricText(originalMetrics.get(key), kind)}` : ''}
-                  </span>
-                </div>
-              );
-            })}
+            <div className="gf-chart-grid">{(tab==='monte'?(['mc-fan','mc-npv'] as ChartId[]):(['cumulative','fcff','income'] as ChartId[])).map(id=><ChartCard key={id} title={chartTitles[id]} pinned={pins.includes(id)} onPin={()=>togglePin(id)}>{chart(id)}</ChartCard>)}</div>
+            </div>
           </div>
+          <div className="gf-economics-inputs" role="region" aria-label="Financial figures and scenarios" tabIndex={0}>
+            <h2 className="gf-pane-heading">Figures &amp; scenarios</h2>
+      <AnalystCard stage="financial" hook={props.hook} />
+      {tab !== 'scenario' && <FinancialPlanningNote config={obj(obj(state?.plan).operating_economics)} />}
+
           {!stage.result && <p className="gf-note">The financial model has not been calculated yet. Complete CAPEX, OPEX and Revenue, then run Financial.</p>}
           {tab === 'scenario' && <p className="gf-note" role="status">{scenarioUpdating ? 'Updating scenario — displayed values are from the last completed calculation.' : scenario ? 'Independent scenario results · original CAPEX, OPEX and Revenue unchanged.' : 'Original calculated financial results.'}</p>}
           <Issues items={tab === 'scenario' ? strings(result.issues) : [...strings(stage.issues), ...strings(result.issues)]} />
@@ -200,21 +211,11 @@ export function FinancialPlayground(props: StageProps) {
             ))}
           </div>
           <div role="tabpanel" id={`gf-tabpanel-${tab}`} aria-labelledby={`gf-tab-${tab}`} className="gf-tabpanel">
-            {tab === 'results' && (
-              <div className="gf-chart-grid">
-                {(['cumulative', 'fcff', 'income'] as ChartId[]).map((id) => (
-                  <ChartCard key={id} title={chartTitles[id]} pinned={pins.includes(id)} onPin={() => togglePin(id)}>
-                    {chart(id)}
-                  </ChartCard>
-                ))}
-              </div>
-            )}
+            {tab === 'results' && <div className="gf-table-wrap"><table className="gf-table"><caption>Saved financial ledger · {currency}</caption><thead><tr><th>Year</th><th>Project cash flow</th><th>Cumulative cash</th></tr></thead><tbody>{ledger.map((row,i)=><tr key={i}><th>{text(obj(row.period).year)}</th><td>{withCurrency(money(row.fcff),currency)}</td><td>{withCurrency(money(row.cumulative_project_cash),currency)}</td></tr>)}</tbody></table></div>}
             {tab === 'scenario' && <>
               <ScenarioTab props={props} base={scenarioBase} baseError={scenarioBaseError} overrides={overrides}
                 setOverrides={setOverrides} onResult={setScenario} onUpdating={setScenarioUpdating} completedKey={scenario ? stableJson(scenario.overrides) : ""} />
-              <div className="gf-chart-grid">{(['cumulative', 'fcff', 'income'] as ChartId[]).map((id) => (
-                <ChartCard key={id} title={chartTitles[id]} pinned={pins.includes(id)} onPin={() => togglePin(id)}>{chart(id)}</ChartCard>
-              ))}</div>
+
             </>}
             {tab === 'monte' && (
               <MonteCarloTab props={props} job={job} setJob={setJob} pins={pins} onPin={togglePin} chart={chart} />
@@ -222,23 +223,14 @@ export function FinancialPlayground(props: StageProps) {
           </div>
         </div>
       </div>
-      <div className="gf-runbar" role="region" aria-label="Stage actions">
-        <button type="button" className="gf-ghost" onClick={() => props.go('revenue')}>
-          ← Revenue
-        </button>
-        <div className="gf-runbar-status">
-          <strong>{stage.result ? 'Financial model calculated by Python' : 'Financial model pending'}</strong>
-          <small>{tab === 'scenario' ? 'Scenario calculations are stored separately. Reset restores the original calculation.' : 'Reports and exports use the same saved assessment.'}</small>
-        </div>
-        {stage.result && tab !== 'scenario' ? (
-          <a className="gf-secondary gf-button-link" href={`/api/assessments/${hook.id}/report`} target="_blank" rel="noreferrer">
-            Open TEA report ↗
-          </a>
-        ) : null}
-        {tab !== 'scenario' && <button type="button" className="gf-primary gf-run" disabled={hook.busy || Boolean(state?.running)} onClick={() => void hook.action(() => hook.runStage('financial'))}>
-          Recalculate financials
-        </button>}
       </div>
+      <RunBar label="Recalculate financials" hideRun={tab === 'scenario'} busy={hook.busy} disabled={Boolean(state?.running)}
+        back={{label:'Revenue',onClick:()=>props.go('revenue')}}
+        status={<strong>{stage.result ? 'Financial model calculated by Python' : 'Financial model pending'}</strong>}
+        note={tab === 'scenario' ? 'Scenario calculations are stored separately. Reset restores the original calculation.' : 'Reports and exports use the same saved assessment.'}
+        onRun={()=>void hook.action(()=>hook.runStage('financial'))}>
+        {Boolean(stage.result) && tab !== 'scenario' && <a className="gf-secondary gf-button-link" href={`/api/assessments/${hook.id}/report`} target="_blank" rel="noreferrer">Open TEA report ↗</a>}
+      </RunBar>
     </div>
   );
 }
@@ -266,7 +258,7 @@ function PercentileStrip({ metric, currency }: { metric: Row; currency: string }
         <div key={k}>
           <dt>{k.toUpperCase()}</dt>
           <dd>
-            {compact(metric[k])} <small>{currency}</small>
+            {withCurrency(compact(metric[k]),currency)} <small>{currency}</small>
           </dd>
         </div>
       ))}
@@ -532,8 +524,8 @@ function Comparison({ value }: { value: Row }) {
           {financialMetricKeys.map(([label, key, kind]) => (
             <tr key={key}>
               <th scope="row">{label}</th>
-              <td>{metricText(left.get(key), kind)}</td>
-              <td>{metricText(right.get(key), kind)}</td>
+              <td>{kind === 'money' ? withCurrency(metricText(left.get(key), kind),obj(obj(value.left).financial).currency) : metricText(left.get(key), kind)}</td>
+              <td>{kind === 'money' ? withCurrency(metricText(right.get(key), kind),obj(obj(value.right).financial).currency) : metricText(right.get(key), kind)}</td>
             </tr>
           ))}
         </tbody>
@@ -693,10 +685,10 @@ function MonteCarloTab({
               <div key={String(label)}>
                 <small>{String(label)} · P10 / P50 / P90</small>
                 <strong>
-                  {pct ? percent(obj(m).p50) : compact(obj(m).p50)}
+                  {pct ? percent(obj(m).p50) : withCurrency(compact(obj(m).p50),summary.currency)}
                 </strong>
                 <span>
-                  {pct ? `${percent(obj(m).p10)} – ${percent(obj(m).p90)}` : `${compact(obj(m).p10)} – ${compact(obj(m).p90)}`} {pct ? '' : text(summary.currency)}
+                  {pct ? `${percent(obj(m).p10)} – ${percent(obj(m).p90)}` : `${withCurrency(compact(obj(m).p10),summary.currency)} – ${withCurrency(compact(obj(m).p90),summary.currency)}`} {pct ? '' : text(summary.currency)}
                 </span>
               </div>
             ))}
@@ -706,13 +698,7 @@ function MonteCarloTab({
               <span>Complete-scope runs only</span>
             </div>
           </div>
-          <div className="gf-chart-grid">
-            {(['mc-fan', 'mc-npv'] as ChartId[]).map((cid) => (
-              <ChartCard key={cid} title={chartTitles[cid]} pinned={pins.includes(cid)} onPin={() => onPin(cid)}>
-                {chart(cid)}
-              </ChartCard>
-            ))}
-          </div>
+
           <Link className="gf-link" href={assessmentHref('/monte-carlo/overview', id) + `&job=${job.id}`}>Explore all variations, sensitivities and full configurations ↗</Link>
           <p className="gf-muted">
             {text(summary.percentile_convention)} The backend currently reports P10/P50/P90, so the 80% band is shown. 50% (P25–P75) and 90% (P5–P95) bands appear automatically once

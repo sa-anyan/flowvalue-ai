@@ -183,6 +183,22 @@ def submit(key, **kwargs):
 
 
 @app.get("/health")
+@app.get("/api/catalogue/reference-documents/{document_id}/pages/{page_number}")
+def reference_document_page(document_id: str, page_number: int):
+    """Local read-only evidence view. No arbitrary file path or cloud document access."""
+    from fastapi.responses import Response
+    if CLOUD:
+        raise HTTPException(403, "The local reference library is not available in cloud mode")
+    if len(document_id)!=64 or any(c not in '0123456789abcdef' for c in document_id):
+        raise HTTPException(404, "Reference page not found")
+    from backend.blocks.reference_library import read_reference_page
+    try:
+        data=read_reference_page(document_id,page_number)
+    except (OSError,ValueError,KeyError):
+        raise HTTPException(404, "Reference unavailable or changed; re-index the source")
+    return Response(data,media_type="application/pdf",headers={"Content-Disposition":f'inline; filename="reference-pdf-page-{page_number}.pdf"',"Cache-Control":"private, no-store","X-Content-Type-Options":"nosniff"})
+
+
 @app.get("/api/health")
 def health():
     return {
@@ -551,6 +567,13 @@ def patch(key: str, change: Edit):
 
 
 from backend.revenue.rate_workspace import RateStudyRequest
+
+
+@app.post("/api/assessments/{key}/revenue-rates/preview")
+def preview_revenue_rates(key: str, request: RateStudyRequest):
+    from backend.revenue.rate_workspace import save_rates
+
+    return save_rates(store, key, request, preview=True)
 
 
 @app.post("/api/assessments/{key}/revenue-rates")

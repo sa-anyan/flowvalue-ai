@@ -78,7 +78,7 @@ test('editing a revenue line opens its saved price, stream, units and approval',
  const state={id:'test',revision:42,revenue_approval:{fingerprint:'approved'},plan:{operating_economics:{commercial_lines:[existing],operating:{days_per_year:314,hours_per_day:24}}},effective_report:{entities:[{key:'waste',identifier:'S-1',kind:'material',values:[{property:'volume_flow',normalized_value:125,normalized_unit:'m3/h'}]}]}};
  const html=renderToStaticMarkup(React.createElement(RevenueLineEditor,{state,existing,onClose:()=>{},props:{hook:{state,id:'test'}}}));
  assert.match(html,/Edit Treatment fee/);assert.match(html,/value="0.02"/);assert.match(html,/value="m3"/);
- assert.match(html,/selected="" value="waste:volume_flow"|value="waste:volume_flow" selected=""/);
+ assert.match(html,/selected="" value="waste"|value="waste" selected=""/);
  assert.match(html,/Save &amp; recalculate/);assert.match(html,/checked=""/);
 });
 test('OPEX recalculation watches Revenue outputs but does not repeat for polling revisions',()=>{
@@ -411,16 +411,18 @@ test('parsed streams show revenue setup while equipment work continues',()=>{
  const {EntryStart}=require('../src/blocks/guided/entry-start.tsx');
  const state={id:'test',revision:2,launch:{status:'running',step:'equipment'},stage_outputs:{engineering_data:{report:{entities:[{kind:'material',key:'water',identifier:'S-1',values:[{property:'mass_flow',normalized_value:100,normalized_unit:'kg/h'}]}]}}}};
  const html=renderToStaticMarkup(React.createElement(EntryStart,{hook:{state,aiEnabled:true},go:()=>{}}));
- assert.match(html,/HOW DOES THIS PROJECT EARN MONEY/);assert.match(html,/Product sales/);assert.match(html,/Continue to Equipment/);
+ assert.match(html,/REVENUE SETUP/);assert.match(html,/Product Sales/);assert.match(html,/How the project makes money/);
+ assert.match(html,/Select product stream/);assert.match(html,/<select[^>]*>/);assert.match(html,/Choose a stream/);
+ assert.match(html,/Operating assumptions/);assert.match(html,/Save revenue/);assert.match(html,/Continue to Equipment/);
  assert.doesNotMatch(html,/Reading your workbook|Another assessment is running/);
 });
 
-test('Equipment shows the priced-item subtotal and unpriced count rather than hiding the amount',()=>{
+test('Guided Equipment reuses the advanced directory and keeps partial costs visible',()=>{
  const {EquipmentPlayground}=require('../src/blocks/guided/equipment-playground.tsx');
- const state={id:'test',effective_report:{entities:[{key:'tank',kind:'equipment',identifier:'T-1',values:[]},{key:'reactor',kind:'equipment',identifier:'R-1',values:[]}]},results:{stages:{equipment:{result:{equipment_cost_total:null,equipment_total_with_packages:null,equipment:[{parsed_source:{equipment_key:'tank'},equipment_tag:'T-1',equipment_cost:100,amount:100},{parsed_source:{equipment_key:'reactor'},equipment_tag:'R-1',equipment_cost:null,amount:null}],priced_summary:{amounts:[{amount:'100',currency:'USD',period:'2026'}],unpriced_count:1,priced_count:1},issues:['Unresolved equipment: subtotals are partial; complete total unavailable']}}}}};
+ const state={id:'test',effective_report:{entities:[{key:'tank',kind:'equipment',identifier:'T-1',values:[{property:'name',normalized_value:'Tank'}]},{key:'reactor',kind:'equipment',identifier:'R-1',values:[{property:'name',normalized_value:'Reactor'}]}]},results:{stages:{equipment:{result:{equipment_cost_total:null,equipment_total_with_packages:null,equipment:[{parsed_source:{equipment_key:'tank'},equipment_tag:'T-1',equipment_cost:100,amount:100},{parsed_source:{equipment_key:'reactor'},equipment_tag:'R-1',equipment_cost:null,amount:null}],priced_summary:{amounts:[{amount:'100',currency:'USD',period:'2026'}],unpriced_count:1,priced_count:1},issues:['Unresolved equipment: subtotals are partial; complete total unavailable']}}}}};
  const html=renderToStaticMarkup(React.createElement(EquipmentPlayground,{hook:{state,catalogue:[]},equipment:{value:[],dirty:false}}));
- assert.match(html,/Equipment cost · priced items/);assert.match(html,/>100<\/strong>/);assert.match(html,/Items not priced/);
- assert.match(html,/excludes 1 item not priced/);assert.doesNotMatch(html,/Incomplete|complete total unavailable/);
+ assert.match(html,/Equipment register/);assert.match(html,/100/);assert.match(html,/peq-price-note[^>]*>\+ installation pending/);assert.match(html,/Needs attention/);
+ assert.match(html,/Unpriced/);assert.match(html,/What drives every part of the total/);
 });
 test('Financial sensitivity renders original calculation values and isolated reset controls',()=>{
  const {ScenarioTab}=require('../src/blocks/guided/financial-playground.tsx');
@@ -452,7 +454,7 @@ test('CAPEX uses one equipment headline from its own saved result',()=>{
  const {CapexPlayground}=require('../src/blocks/guided/capex-playground.tsx');
  const state={id:'test',plan:{},results:{stages:{equipment:{result:{priced_summary:{amounts:[{amount:'9999999'}]}}},capex:{result:{purchased_equipment:'1329281.51',lines:[{id:'unit_capital:P-001',amount:'295054.04',base:'pre_costed_unit_capital'}],equipment_summary:{amounts:[{amount:'1624335.55',currency:'USD',period:'2026-09'}]},total_capex:'7090118.21',currency:'USD',period:'2026-09'}}}}};
  const html=renderToStaticMarkup(React.createElement(CapexPlayground,{hook:{state},capex:{value:{},dirty:false}}));
- assert.match(html,/<small>Equipment cost<\/small><strong>1.62m/);
+ assert.match(html,/<small>Equipment cost<\/small><strong>\$1.62m/);
  assert.doesNotMatch(html,/<small>Purchased equipment<\/small>|9.99m|Unit capital:P-001/);
 });
 test('Monte Carlo condensed selector shows every stage, baseline and named configuration choices',()=>{
@@ -514,4 +516,98 @@ test('completed analyst research waiting for a safe boundary is labelled clearly
  assert.match(html,/AI research finished/);assert.match(html,/applies after the current calculation/);
  assert.match(html,/Saved research result/);assert.doesNotMatch(html,/gf-analyst-skeleton/);
  assert.equal(analystRunning(state),true);
+});
+
+
+test('shared equipment directory preserves package scope, zero costs, missing installation and source identity',()=>{
+ const {equipmentWorkspaceCards}=require('../src/lib/equipment-workspace-cards.ts');
+ const entities=['tank','package','zero','missing'].map(key=>({key,identifier:key,kind:'equipment',values:[{property:'name',normalized_value:key}]}));
+ const line=(key,fields)=>({equipment_tag:key,parsed_source:{equipment_key:key},calculation:{estimate:{currency:'USD',period:'2026'}},...fields});
+ const state={effective_report:{entities},results:{stages:{equipment:{result:{equipment:[
+  line('tank',{equipment_cost:'100',installation_cost:null,equipment_and_installation_cost:null}),
+  line('package',{cost_scope:'unit_capital',amount:'250',equipment_cost:null}),
+  line('zero',{equipment_cost:'0',installation_cost:'0',equipment_and_installation_cost:'0'}),
+  line('missing',{equipment_cost:null,amount:null}),
+ ]}}}}};
+ const before=JSON.stringify(state),cards=equipmentWorkspaceCards(state,[]);
+ assert.equal(cards[0].knownCost,100);assert.equal(cards[0].installationPending,true);
+ assert.equal(cards[1].knownCost,250);assert.equal(cards[1].capitalBasis,true);assert.equal(cards[1].costBasis,'unit_capital');
+ assert.equal(cards[2].knownCost,0);assert.equal(cards[2].cost,'0');
+ assert.equal(cards[3].knownCost,undefined);assert.equal(cards[3].cost,'Unpriced');
+ assert.deepEqual(cards.map(c=>c.key),['tank','package','zero','missing']);assert.equal(JSON.stringify(state),before);
+});
+
+test('shared equipment directory retains user-confirmed physical sub-asset keys',()=>{
+ const {equipmentWorkspaceCards}=require('../src/lib/equipment-workspace-cards.ts');
+ const plan=[{equipment_key:'parent',scope_confirmation:{status:'user_confirmed'},physical_assets:[{asset_id:'a',equipment_tag:'P-1',size:5,size_unit:'kW',source_value_ids:['name']}]}];
+ const state={effective_report:{entities:[{key:'parent',identifier:'Package',kind:'equipment',values:[{id:'name',property:'name',normalized_value:'Pump'}]}]}};
+ const cards=equipmentWorkspaceCards(state,plan);
+ assert.equal(cards[0].key,'parent::a');assert.equal(cards[0].tag,'P-1');assert.equal(cards[0].name,'Pump');assert.equal(cards[0].size,'5 kW');
+});
+
+test('evidence disclosures retain actual page references and defer raw records until opened',()=>{
+ const {EvidenceNote,evidencePreview,CapexEvidenceNote}=require('../src/blocks/guided/evidence-note.tsx');
+ assert.equal(evidencePreview({reference:'Garrett Table 3-4',printed_page:29,pdf_page:41}),'Garrett Table 3-4 · printed p. 29 · PDF p. 41');
+ assert.equal(evidencePreview({note:'Uncited assumption'}),'');
+ const html=renderToStaticMarkup(React.createElement(EvidenceNote,{note:'Saved hypothesis',evidence:['S-001'],record:{secretLazyMarker:'not rendered until opened'}}));
+ assert.match(html,/identifiers alone are not external citations/);
+ assert.doesNotMatch(html,/secretLazyMarker/);
+ assert.match(html,/Saved hypothesis/);
+ const factor=renderToStaticMarkup(React.createElement(CapexEvidenceNote,{line:{id:'piping',rationale:'Published scope note',source:{reference:'Garrett'}},config:{},factor:{},origin:'review',analyst:{pending_application:true,factors:[{id:'electrical',reasoning:['Wrong factor']},{id:'piping',reasoning:['Saved piping rationale']}]}}));
+ assert.match(factor,/Saved piping rationale/);assert.doesNotMatch(factor,/Wrong factor/);
+ assert.match(factor,/awaiting application/);assert.match(factor,/not independent source verification/);
+});
+
+test('currency prefixes preserve signed money, precision, missing labels and currency identity',()=>{
+ const {withCurrency}=require('../src/lib/display-currency.ts');
+ assert.equal(withCurrency('1,234.50','USD'),'$1,234.50');
+ assert.equal(withCurrency('-12.73m','USD'),'-$12.73m');
+ assert.equal(withCurrency('0.00','GBP'),'£0.00');
+ assert.equal(withCurrency('1.20m','EUR'),'€1.20m');
+ assert.equal(withCurrency('12','CAD'),'C$12');
+ assert.equal(withCurrency('12','AED'),'AED 12');
+ assert.equal(withCurrency('12',''),'12');
+ for(const label of ['Pending','Not reached','Not calculated','—','$12.00'])assert.equal(withCurrency(label,'USD'),label);
+});
+
+test('evidence links require explicit web URLs and use actual PDF page numbers',()=>{
+ const {evidenceLink}=require('../src/blocks/guided/evidence-note.tsx');
+ assert.equal(evidenceLink({filename:'Garrett.pdf',printed_page:29,pdf_page:41}),null);
+ assert.equal(evidenceLink({url:'javascript:alert(1)'}),null);
+ assert.equal(evidenceLink({url:'file:///private/reference.pdf'}),null);
+ assert.equal(evidenceLink({url:'https://example.org/reference.pdf',printed_page:29,pdf_page:41}),'https://example.org/reference.pdf#page=41');
+ assert.equal(evidenceLink({url:'https://example.org/article',pdf_page:41}),'https://example.org/article');
+});
+
+test('reference display never manufactures publisher links from a source hash',()=>{
+ const {evidenceTarget}=require('../src/lib/evidence-source-links.ts');
+ assert.equal(evidenceTarget({sha256:'fe1084a476baece3a8afd4711311780b314b08ca085dbcb766f193903bfe3eff',printed_page:29,pdf_page:41}),null);
+});
+
+test('AI claim citations render only retrieval-grounded links and preserve hypothesis labels',()=>{
+ const {AICitations}=require('../src/blocks/guided/ai-citations.tsx');
+ const html=renderToStaticMarkup(React.createElement(AICitations,{basis:'engineering_hypothesis',citations:[{id:'S1',url:'https://example.org/source',title:'Retrieved reference',status:'retrieved',locator:'Section 2'},{id:'S2',url:'https://invented.example/',title:'Invented',status:'unverified_url_rejected'}]}));
+ assert.match(html,/href="https:\/\/example.org\/source"/);assert.match(html,/Engineering hypothesis/);assert.doesNotMatch(html,/href="https:\/\/invented/);
+});
+
+test('Revenue flow sources distinguish whole stream and components without guessing volume',()=>{
+ const {revenueRateSources}=require('../src/blocks/revenue/rate-lines.ts');
+ const sources=revenueRateSources({entities:[{kind:'material',key:'s',identifier:'S-1',values:[
+  {property:'mass_flow',normalized_value:1000,normalized_unit:'kg/h'},
+  {property:'component_mass_flow',component:'Lignin',normalized_value:25,normalized_unit:'kg/h'},
+  {property:'component_mass_flow',component:'Water',normalized_value:975,normalized_unit:'kg/h'},
+  {property:'component_mass_flow',component:'Conflicted',normalized_value:1,normalized_unit:'kg/h'},
+  {property:'component_mass_flow',component:'Conflicted',normalized_value:2,normalized_unit:'kg/h'},
+  {property:'component_mass_flow',component:'Missing',normalized_value:null,normalized_unit:'kg/h'},
+ ]}]});
+ assert.deepEqual(sources.map(s=>[s.component,s.rate,s.unit]),[[null,1000,'kg/h'],['Lignin',25,'kg/h'],['Water',975,'kg/h']]);
+ assert.equal(new Set(sources.map(s=>s.id)).size,3);
+});
+test('Revenue editor restores the saved component and displays its flow, not the stream total',()=>{
+ const {RevenueLineEditor}=require('../src/blocks/guided/revenue-playground.tsx');
+ const existing={id:'lignin',name:'Lignin sale',stream_key:'s',component:'Lignin',quantity_unit:'kg',unit_price:2,price_mode:'assumed_price'};
+ const state={id:'test',revision:1,plan:{operating_economics:{sales:[existing],operating:{days_per_year:300,hours_per_day:24}}},effective_report:{entities:[{kind:'material',key:'s',identifier:'S-1',values:[{property:'mass_flow',normalized_value:1000,normalized_unit:'kg/h'},{property:'component_mass_flow',component:'Lignin',normalized_value:25,normalized_unit:'kg/h'}]}]}};
+ const html=renderToStaticMarkup(React.createElement(RevenueLineEditor,{state,existing,onClose:()=>{},props:{hook:{state,id:'test'}}}));
+ assert.match(html,/What is sold/);assert.match(html,/<option value="Lignin" selected=""/);
+ assert.match(html,/<output>25 kg\/h<\/output>/);assert.doesNotMatch(html,/<output>1000 kg\/h/);
 });

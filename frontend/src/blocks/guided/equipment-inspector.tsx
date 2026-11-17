@@ -31,6 +31,7 @@ export function EquipmentInspector({
   initialMode = 'inspect',
   onRun,
   where = 'Entry board',
+  embedded = false,
 }: {
   card: EquipmentCardModel;
   props: StageProps;
@@ -39,6 +40,7 @@ export function EquipmentInspector({
   /** Saves and recalculates equipment with Python. */
   onRun: () => void;
   where?: string;
+  embedded?: boolean;
 }) {
   const { hook, equipment } = props;
   const [mode, setMode] = useState(initialMode),
@@ -87,14 +89,8 @@ export function EquipmentInspector({
       parameters = obj(sizing.parameters);
     change({ sizing: { ...sizing, parameters: { ...parameters, [name]: { ...obj(parameters[name]), value, status: 'user_input', source: 'user' } } } });
   };
-  return (
-    <Panel
-      title={`${card.tag} · ${card.name}`}
-      kicker={`EQUIPMENT · ${card.type.toUpperCase()}`}
-      onClose={onClose}
-      wide={mode === 'manual'}
-      footer={
-        <>
+  const footer = (
+    <>
           <span className="gf-muted">{equipment.dirty ? 'Unsaved edits on this board' : 'All edits saved'}</span>
           <button type="button" className="gf-secondary" disabled={!equipment.dirty || hook.busy} onClick={() => equipment.reset()}>
             Discard
@@ -106,8 +102,9 @@ export function EquipmentInspector({
             Save & recalculate
           </button>
         </>
-      }
-    >
+  );
+  const content = (
+    <>
       <div className="gf-inspector-actions" role="group" aria-label="How to fill this equipment's parameters">
         <button type="button" aria-pressed={mode === 'research'} onClick={() => setMode('research')}>
           <strong>✦ Research parameters with AI</strong>
@@ -361,6 +358,11 @@ export function EquipmentInspector({
           </details>
         </section>
       )}
+    </>
+  );
+  return embedded ? <div className="gf-equipment-editor">{content}<div className="gf-inline-actions">{footer}</div></div> : (
+    <Panel title={`${card.tag} · ${card.name}`} kicker={`EQUIPMENT · ${card.type.toUpperCase()}`} onClose={onClose} wide={mode === 'manual'} footer={footer}>
+      {content}
     </Panel>
   );
 }

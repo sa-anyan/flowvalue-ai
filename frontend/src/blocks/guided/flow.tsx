@@ -400,7 +400,7 @@ async function waitUntilIdle(id: string, timeoutMs = 180000) {
   }
 }
 
-/** Sticky bottom bar with the forward run button every stage shares. */
+/** Compact corner action dock. Status and secondary actions are disclosed above it. */
 export function RunBar({
   status,
   label,
@@ -410,7 +410,9 @@ export function RunBar({
   onRun,
   back,
   children,
+  hideRun = false,
 }: {
+  hideRun?: boolean;
   status?: React.ReactNode;
   label: string;
   note?: string;
@@ -421,20 +423,18 @@ export function RunBar({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="gf-runbar" role="region" aria-label="Stage actions">
-      {back && (
-        <button type="button" className="gf-ghost" onClick={back.onClick}>
-          ← {back.label}
-        </button>
-      )}
-      <div className="gf-runbar-status">
-        {status}
-        {note && <small>{note}</small>}
-      </div>
-      {children}
-      <button type="button" className="gf-primary gf-run" disabled={disabled || busy} onClick={onRun}>
+    <div className="gf-runbar gf-run-dock" role="region" aria-label="Stage actions">
+      <details className="gf-run-options" onKeyDown={e=>{if(e.key==='Escape'){e.currentTarget.open=false;e.currentTarget.querySelector('summary')?.focus();}}}>
+        <summary aria-label="Stage status and more actions" title="Stage status and more actions">ⓘ</summary>
+        <div className="gf-run-options-body">
+          <div className="gf-runbar-status">{status}{note && <small>{note}</small>}</div>
+          {back && <button type="button" className="gf-ghost" onClick={back.onClick}>← {back.label}</button>}
+          {children}
+        </div>
+      </details>
+      {!hideRun && <button type="button" className="gf-primary gf-run" disabled={disabled || busy} onClick={onRun}>
         {busy ? 'Working…' : label} <span aria-hidden="true">→</span>
-      </button>
+      </button>}
     </div>
   );
 }

@@ -1,0 +1,2 @@
+# Optional, read-only PDF reference retrieval. Source licence: BSD-3-Clause.
+pypdf==6.21.2

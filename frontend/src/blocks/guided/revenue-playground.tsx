@@ -1,12 +1,15 @@
 'use client';
+import {withCurrency} from '@/lib/display-currency';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { stableJson } from '@/lib/stable-json';
 import { assessmentHref } from '@/lib/assessment-navigation';
 import { strings, compact, list, money, num, obj, text, words, type Row } from '@/lib/guided-flow';
 import { api, post, type Assessment } from './use-assessment';
+import { EconomicsComposition, EconomicsTrend } from './economics-dashboard';
 import { Issues, OriginChip, Panel, RunBar, StageHeading, type StageProps } from './flow';
 import { AnalystCard } from './analyst-card';
+import {RevenueDriverAnalysis} from './analyst-cost-explorer';
 import { revenueLines, revenueRateSources, requiresTerms } from '@/blocks/revenue/rate-lines';
 
 const categories = [
@@ -32,11 +35,12 @@ export function RevenuePlayground(props: StageProps) {
     [adding, setAdding] = useState(false),
     [editing, setEditing] = useState<Row | null>(null),
     [research, setResearch] = useState<Row | null>(null);
+  const [preview, setPreview] = useState<Row | null>(null);
   // An approval prompt is not a clarification: only real questions block approval.
   const questions = (state?.revenue_questions || []).map(String).filter((q) => !/^\s*(data required:\s*)?review and approve/i.test(q));
   const lines: Row[] = [...list(config.sales), ...list(config.commercial_lines)];
   const drafts = revenueLines(config);
-  const fullOperation = obj(result.full_operation);
+  const fullOperation = preview ?? obj(result.full_operation);
   const products = list(fullOperation.products);
   const commercial = list(fullOperation.commercial);
   const fullAnnual = list(fullOperation.annual)[0];
@@ -51,20 +55,17 @@ export function RevenuePlayground(props: StageProps) {
   const linePrice = (line: Row) => num(line.unit_price ?? line.price ?? line.rate ?? list(line.years)[0]?.rate);
   return (
     <div className="gf-play">
+      <div className="gf-economics-split">
+      <div className="gf-economics-results" role="region" aria-label="Economics results" tabIndex={0}>
       <StageHeading kicker="STAGE 05 · REVENUE" title="Revenue playground">
         Income comes only from what you set on the Entry board and the explicit revenue worksheet. Prices you give are your assumptions; unpriced income stays unpriced.
       </StageHeading>
-      <AnalystCard stage="revenue" hook={props.hook} />
-      <p className="gf-note gf-rev-effects" role="note">
-        Revenue is shown at 100% scheduled operation using your saved rates and prices. Year-by-year realization is a separate financial scenario you control.
-        Approved revenue edits automatically recalculate dependent operating costs.
-      </p>
       <div className="gf-kpis">
         <div className="gf-kpi-hero">
-          <small>100% annual revenue</small>
-          <strong>{num(obj(fullAnnual).sales_revenue) === null ? 'Not calculated' : compact(obj(fullAnnual).sales_revenue)}</strong>
+          <small>{preview ? 'Draft annual revenue · unapproved' : '100% annual revenue'}</small>
+          <strong>{num(obj(fullAnnual).sales_revenue) === null ? 'Not calculated' : withCurrency(compact(obj(fullAnnual).sales_revenue),obj(preview?.basis ?? result.basis).currency)}</strong>
           <span>
-            {text(obj(result.basis).currency)} {text(obj(result.basis).price_period)}
+            {text(obj(preview?.basis ?? result.basis).currency)} {text(obj(preview?.basis ?? result.basis).price_period)}
             {' · At 100% scheduled operation, not a year-one forecast'}
           </span>
         </div>
@@ -79,8 +80,24 @@ export function RevenuePlayground(props: StageProps) {
           <span>{questions.length ? `${questions.length} open questions` : 'Required before financial results'}</span>
         </div>
       </div>
+      <h2 className="gf-pane-heading">Visual analysis</h2>
+        <EconomicsComposition title="Income by stream · full operation" currency={text(obj(preview?.basis ?? result.basis).currency)} values={preview
+          ? [...products, ...commercial].map(row => [text(row.name || row.product_id || row.line_id), row.net_sales_revenue ?? row.revenue])
+          : lines.map(line => { const row = productFor(text(line.id)); return [text(line.name || line.id), row?.net_sales_revenue ?? row?.revenue]; })} />
+        {!preview && <EconomicsTrend title="Saved annual revenue" currency={text(obj(result.basis).currency)} values={list(result.annual).map(row => [row.year,row.sales_revenue])} />}
+      <AnalystCard stage="revenue" hook={props.hook} />
+      <p className="gf-note gf-rev-effects" role="note">
+        Revenue is shown at 100% scheduled operation using your saved rates and prices. Year-by-year realization is a separate financial scenario you control.
+        Approved revenue edits automatically recalculate dependent operating costs.
+      </p>
+
       <Issues items={[...strings(stage.issues), ...strings(result.issues)]} />
 
+
+      <RevenueDriverAnalysis assessmentId={text(state?.id)} result={fullOperation} config={config} revision={text(state?.revision)} draft={Boolean(preview)}/>
+      </div>
+      <div className="gf-economics-inputs" role="region" aria-label="Calculation inputs" tabIndex={0}>
+      <h2 className="gf-pane-heading">Figures &amp; assumptions</h2>
       <section className="gf-card-block" aria-labelledby="gf-box">
         <h2 id="gf-box">Revenue assumptions</h2>
         <p className="gf-muted">Income sources come from your process description. <Link href={assessmentHref('/flow?stage=entry', hook.id)}>Edit the project brief</Link>.</p>
@@ -148,7 +165,7 @@ export function RevenuePlayground(props: StageProps) {
               product = productFor(id),
               price = linePrice(line),
               draft = drafts.find((d) => d.id === id),
-              simple = draft && !draft.advanced && !draft.component && !requiresTerms(draft);
+              simple = draft && !draft.advanced && !requiresTerms(draft);
             return (
               <li key={id} className="gf-line">
                 <div className="gf-line-main">
@@ -160,7 +177,7 @@ export function RevenuePlayground(props: StageProps) {
                     </small>
                   </div>
                   <div className="gf-line-value">
-                    <strong>{product ? money(product.net_sales_revenue ?? product.revenue) : 'Not calculated'}</strong>
+                    <strong>{product ? withCurrency(money(product.net_sales_revenue ?? product.revenue),obj(preview?.basis ?? result.basis).currency) : 'Not calculated'}</strong>
                     <small>{product ? `${text(product.quantity_sold ?? product.quantity)} ${text(product.quantity_unit)} per year at 100% scheduled operation` : 'Recalculate to see income at 100% operation'}</small>
                   </div>
                 </div>
@@ -180,6 +197,8 @@ export function RevenuePlayground(props: StageProps) {
         </Link>
       </section>
 
+      </div>
+      </div>
       <RunBar
         label="Run Financial"
         busy={hook.busy}
@@ -192,7 +211,7 @@ export function RevenuePlayground(props: StageProps) {
           void props.advance(undefined, fresh ? [] : ['revenue']);
         }}
       />
-      {(adding || editing) && state && <RevenueLineEditor key={editing ? text(editing.id) : 'new'} state={state} existing={editing || undefined} onClose={() => { setAdding(false); setEditing(null); }} props={props} />}
+      {(adding || editing) && state && <RevenueLineEditor key={editing ? text(editing.id) : 'new'} state={state} existing={editing || undefined} onClose={() => { setPreview(null); setAdding(false); setEditing(null); }} onPreview={setPreview} props={props} />}
       {research && state && (
         <Panel title={`Research a price for ${text(research.name)}`} kicker="AI · PROVISIONAL" onClose={() => setResearch(null)}>
           <p>
@@ -218,7 +237,7 @@ export function RevenuePlayground(props: StageProps) {
   );
 }
 
-export function RevenueLineEditor({ state, existing, onClose, props }: { state: Assessment; existing?: Row; onClose: () => void; props: StageProps }) {
+export function RevenueLineEditor({ state, existing, onClose, onPreview, props }: { state: Assessment; existing?: Row; onClose: () => void; onPreview?: (value: Row | null) => void; props: StageProps }) {
   const { hook } = props;
   const [openingRevision, setOpeningRevision] = useState(state.revision);
   const [editorId] = useState(() => existing ? text(existing.id) : 'user-' + crypto.randomUUID());
@@ -227,10 +246,15 @@ export function RevenueLineEditor({ state, existing, onClose, props }: { state: 
   const report = obj(state.scoped_report || state.effective_report || obj(state.parsed).report || obj(obj(state.stage_outputs).engineering_data).report);
   const sources = revenueRateSources(report);
   const initial = existing ? revenueLines(obj(state.plan?.operating_economics)).find((r) => r.id === text(existing.id)) : undefined;
-  const initialSource = initial?.stream_key ? sources.find((s) => s.streamKey === initial.stream_key &&
+  const initialSource = initial?.stream_key ? sources.find((s) => s.streamKey === initial.stream_key && s.component === (initial.component || null) &&
     (['m3', 'L'].includes(initial.price_unit) === ['m3', 'L'].includes(s.priceUnit))) : undefined;
   const [rateSource, setRateSource] = useState(initialSource?.id || (initial && !initial.stream_key ? '__manual__' : ''));
-  const selectedSource = sources.find((s) => s.id === rateSource);
+  const [streamKey, setStreamKey] = useState(initial?.stream_key || (initial && !initial.stream_key ? '__manual__' : ''));
+  const [component, setComponent] = useState(initial?.component || '');
+  const selectedSource = sources.find((s) => s.id === rateSource && s.streamKey === streamKey && s.component === (component || null));
+  const streamSources = sources.filter(s => s.streamKey === streamKey);
+  const componentNames = [...new Set(streamSources.flatMap(s => s.component ? [s.component] : []))];
+  const basisSources = streamSources.filter(s => s.component === (component || null));
   const manualRate = rateSource === '__manual__';
   const [line, setLine] = useState({
     name: initial?.name || '',
@@ -247,7 +271,7 @@ export function RevenueLineEditor({ state, existing, onClose, props }: { state: 
   const [days, setDays] = useState(text(operating.days_per_year || '')),
     [hours, setHours] = useState(text(operating.hours_per_day || '')),
     [approve, setApprove] = useState(Boolean(existing && state.revenue_approval));
-  const editorSignature = stableJson({ line, rateSource, days, hours, approve });
+  const editorSignature = stableJson({ line, streamKey, component, rateSource, days, hours, approve });
   const [savedEditorSignature, setSavedEditorSignature] = useState(editorSignature);
   const latestEditorSignature = useRef(editorSignature);
   latestEditorSignature.current = editorSignature;
@@ -256,6 +280,53 @@ export function RevenueLineEditor({ state, existing, onClose, props }: { state: 
   useEffect(() => () => notifyDirty?.(false), [notifyDirty]);
   const discard = () => { if (props.confirmRevenueLeave?.() !== false) onClose(); };
   const valid = line.name.trim() && Number.isFinite(Number(line.price)) && Number(line.price) >= 0 && line.price !== '' && (selectedSource || (manualRate && Number.isFinite(Number(line.rate)) && Number(line.rate) >= 0 && line.rate !== '')) && Number(days) > 0 && Number(hours) > 0;
+  const request = ({
+                        revision: openingRevision,
+                        days_per_year: Number(days),
+                        hours_per_day: Number(hours),
+                        approve,
+                        lines: [
+                          {
+                            id: editorId,
+                            name: line.name.trim(),
+                            kind: line.kind,
+                            category: line.category,
+                            role: initial?.role || 'main_product',
+                            component: selectedSource?.component || null,
+                            stream_key: selectedSource?.streamKey || null,
+                            rate: selectedSource ? null : Number(line.rate),
+                            rate_unit: line.rate_unit,
+                            price: Number(line.price),
+                            price_unit: line.price_unit,
+                            price_period: line.price_period,
+                            sold_fraction: Number(line.sold_fraction),
+                            saleable_fraction: initial?.saleable_fraction ?? 1,
+                            allocation_fraction: initial?.allocation_fraction ?? 1,
+                            rationale: line.rationale.trim() || 'User assumption entered in the Revenue playground',
+                          },
+                        ],
+});
+  const previewRequest = JSON.stringify({...request, approve: false});
+  const [draftPreview, setDraftPreview] = useState<Row | null>(null);
+  const [previewError, setPreviewError] = useState('');
+  useEffect(() => {
+    if (!onPreview) return;
+    onPreview(null);
+    setDraftPreview(null);
+    setPreviewError('');
+    if (!valid || editorSignature === savedEditorSignature || hook.busy || state.running) return;
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      void api<Row>(`assessments/${hook.id}/revenue-rates/preview`, {...post(JSON.parse(previewRequest)), signal:controller.signal})
+        .then(result => {
+          if (!controller.signal.aborted) { setDraftPreview(result); onPreview(result); }
+        })
+        .catch(error => {
+          if (!controller.signal.aborted) setPreviewError(error.message);
+        });
+    }, 750);
+    return () => { window.clearTimeout(timer); controller.abort(); };
+  }, [onPreview, valid, editorSignature, savedEditorSignature, previewRequest, hook.id, hook.busy, state.running]);
   const set = (patch: Partial<typeof line>) => setLine({ ...line, ...patch });
   return (
     <Panel
@@ -278,32 +349,7 @@ export function RevenueLineEditor({ state, existing, onClose, props }: { state: 
                   try {
                   const updated = await api<Assessment>(
                       `assessments/${hook.id}/revenue-rates`,
-                      post({
-                        revision: openingRevision,
-                        days_per_year: Number(days),
-                        hours_per_day: Number(hours),
-                        approve,
-                        lines: [
-                          {
-                            id: editorId,
-                            name: line.name.trim(),
-                            kind: line.kind,
-                            category: line.category,
-                            role: initial?.role || 'main_product',
-                            component: initial?.component || null,
-                            stream_key: selectedSource?.streamKey || null,
-                            rate: selectedSource ? null : Number(line.rate),
-                            rate_unit: line.rate_unit,
-                            price: Number(line.price),
-                            price_unit: line.price_unit,
-                            price_period: line.price_period,
-                            sold_fraction: Number(line.sold_fraction),
-                            saleable_fraction: initial?.saleable_fraction ?? 1,
-                            allocation_fraction: initial?.allocation_fraction ?? 1,
-                            rationale: line.rationale.trim() || 'User assumption entered in the Revenue playground',
-                          },
-                        ],
-                      }),
+                      post(request),
                     );
                   hook.setState(updated);
                   setOpeningRevision(updated.revision);
@@ -328,6 +374,9 @@ export function RevenueLineEditor({ state, existing, onClose, props }: { state: 
     >
       <p className="gf-muted">{existing ? 'Update this existing line. Saving approved changes recalculates revenue and linked operating costs; the previous version is retained.' : 'Your price is recorded as a user assumption. Python annualises rate × price × operating time.'}</p>
       {saveError && <p className="gf-note" role="alert">{saveError} Your draft is still open.</p>}
+      {draftPreview && <p className="gf-note" role="status">Draft annual revenue · unapproved: {compact(obj(list(draftPreview.annual)[0]).sales_revenue, 'Pending')} {text(obj(draftPreview.basis).currency)}</p>}
+      {draftPreview && <Issues items={strings(draftPreview.issues)} />}
+      {previewError && <p className="gf-note" role="status">Preview unavailable: {previewError}</p>}
       <div className="gf-grid-2">
         <label className="gf-field">
           <span>Name</span>
@@ -345,17 +394,37 @@ export function RevenueLineEditor({ state, existing, onClose, props }: { state: 
         </label>
         <label className="gf-field">
           <span>Rate source</span>
-          <select value={rateSource} onChange={(e) => {
-            const source = sources.find((s) => s.id === e.target.value);
-            setRateSource(e.target.value);
-            if (source) set({ rate_unit: source.unit, price_unit: source.priceUnit, ...(line.price_unit !== source.priceUnit ? { price: '' } : {}) });
+          <select value={streamKey} onChange={e => {
+            const key=e.target.value;
+            setStreamKey(key); setComponent('');
+            const source=sources.find(s => s.streamKey===key && !s.component && s.priceUnit===line.price_unit) || sources.find(s => s.streamKey===key && !s.component);
+            setRateSource(key==='__manual__' ? '__manual__' : source?.id || '');
+            if(source) set({rate_unit:source.unit,price_unit:source.priceUnit,...(line.price_unit!==source.priceUnit?{price:''}:{})});
           }}>
             <option value="" disabled>Select a stream…</option>
-            {sources.map((source) => <option key={source.id} value={source.id}>{source.name} — {source.rate} {source.unit}</option>)}
+            {[...new Map(sources.map(source=>[source.streamKey,source])).values()].map(source=><option key={source.streamKey} value={source.streamKey}>{source.name}</option>)}
             <option value="__manual__">Enter manually…</option>
           </select>
         </label>
-        {selectedSource && <div className="gf-field"><span>M&amp;E rate</span><output>{selectedSource.rate} {selectedSource.unit}</output><small>Linked to the selected stream. Python uses its saved rate when calculating revenue.</small></div>}
+        {!manualRate && <label className="gf-field">
+          <span>What is sold?</span>
+          <select value={component} disabled={!streamKey} onChange={e=>{
+            const value=e.target.value; setComponent(value);
+            const options=streamSources.filter(s=>s.component===(value||null));
+            const source=options.find(s=>s.priceUnit===line.price_unit)||options[0];
+            setRateSource(source?.id||'');
+            if(source) set({rate_unit:source.unit,price_unit:source.priceUnit,...(line.price_unit!==source.priceUnit?{price:''}:{})});
+          }}>
+            <option value="" disabled={Boolean(streamKey&&!streamSources.some(s=>!s.component))}>{streamKey&&!streamSources.some(s=>!s.component)?'Select a component…':'Whole stream'}</option>
+            {component && !componentNames.includes(component) && <option value={component}>{component} · flow unavailable</option>}
+            {componentNames.map(name=>{const source=streamSources.find(s=>s.component===name);return <option key={name} value={name}>{name} · {source?.rate} {source?.unit}</option>;})}
+          </select>
+        </label>}
+        {basisSources.length>1 && <label className="gf-field"><span>Flow basis</span><select value={rateSource} onChange={e=>{
+          const source=sources.find(s=>s.id===e.target.value);setRateSource(e.target.value);
+          if(source)set({rate_unit:source.unit,price_unit:source.priceUnit,...(line.price_unit!==source.priceUnit?{price:''}:{})});
+        }}>{basisSources.map(source=><option key={source.id} value={source.id}>{source.rate} {source.unit}</option>)}</select></label>}
+        {selectedSource && <div className="gf-field"><span>M&amp;E rate</span><output>{selectedSource.rate} {selectedSource.unit}</output><small>{selectedSource.component ? `${selectedSource.component} only, from the selected stream.` : 'Whole stream.'} Python uses this saved flow when calculating revenue.</small></div>}
         {manualRate && <label className="gf-field">
           <span>Rate</span>
           <input type="number" min="0" step="any" value={line.rate} onChange={(e) => set({ rate: e.target.value })} />

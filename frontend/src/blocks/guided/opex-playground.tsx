@@ -1,9 +1,13 @@
 'use client';
+import {withCurrency} from '@/lib/display-currency';
 import { useEffect, useRef, useState } from 'react';
 import { brainstormNotice, opexDependencyStamp, opexInputValue, opexQuestions, opexQuantities, stageStatus, strings, compact, list, money, num, obj, opexHeadline, opexProgress, opexProposals, percent, text, words, type OpexProposal, type Row } from '@/lib/guided-flow';
 import { api, post } from './use-assessment';
+import { EconomicsComposition, EconomicsTrend, useLiveEconomics } from './economics-dashboard';
 import { Issues, OriginChip, Panel, RunBar, StageHeading, type StageProps } from './flow';
 import { AnalystCard } from './analyst-card';
+import { EvidenceNote } from './evidence-note';
+import {OpexDriverAnalysis} from './analyst-cost-explorer';
 
 const groups = [
   ['materials', 'Raw materials', ['unit_price', 'annual_quantity_assumption']],
@@ -102,12 +106,48 @@ export function OpexPlayground(props: StageProps) {
   const reviewIssues = opexQuestions([...strings(stage.issues), ...strings(obj(obj(result.years)[firstYear]).issues), ...questions]);
   const onlyRevenuePending = reviewIssues.length === 1 && strings(obj(obj(result.years)[firstYear]).issues).some((i) => /annual_revenue/.test(i));
   const shift = (id: string, amount: unknown) => (before && before[id] !== undefined && before[id] !== money(amount, '—') ? ` · was ${before[id]}` : '');
+  useLiveEconomics(JSON.stringify(config), Boolean(state && !state.running && !hook.busy && operating.dirty && capexReady), recalculate);
   return (
     <div className="gf-play">
+      <div className="gf-economics-split">
+      <div className="gf-economics-results" role="region" aria-label="Economics results" tabIndex={0}>
       <StageHeading kicker="STAGE 04 · OPEX" title="OPEX playground">
         Operating costs with the inputs behind each one. Your edits are saved with a rationale and Python recalculates. Missing inputs stay missing, never zero.
       </StageHeading>
+      <div className="gf-kpis">
+        <div className="gf-kpi-hero">
+          <small>{stage.result ? headline.label : 'Annual cash OPEX · year 1'}</small>
+          <strong>{stage.result ? withCurrency(headline.value, result.currency) : 'Pending'}</strong>
+          <span>
+            {headline.note ? `${headline.note} · ` : ''}
+            {text(result.currency)} {text(result.price_period)}
+            {before && before.total !== compact(result.first_year_cash_opex ?? result.known_cash_opex_subtotal) ? ` · was ${before.total}` : ''}
+          </span>
+        </div>
+        <div>
+          <small>Fixed cash costs</small>
+          <strong>{withCurrency(compact(result.first_year_fixed_opex, 'Pending'),result.currency)}</strong>
+          <span>{text(result.currency)}</span>
+        </div>
+        <div>
+          <small>Variable cash costs</small>
+          <strong>{withCurrency(compact(result.first_year_variable_opex, 'Pending'),result.currency)}</strong>
+          <span>{text(result.currency)}</span>
+        </div>
+      </div>
+      <h2 className="gf-pane-heading">Visual analysis</h2>
+        <EconomicsComposition title="Cash operating cost composition" currency={text(result.currency)} values={[['Fixed cash costs', result.first_year_fixed_opex], ['Variable cash costs', result.first_year_variable_opex]]} />
+        <EconomicsTrend title="Annual cash operating costs" currency={text(result.currency)} values={Object.entries(obj(result.years)).map(([year,row]) => [year,obj(row).annual_cash_opex])} />
       <AnalystCard stage="opex" hook={props.hook} headline={stage.result ? `${headline.label}: ${headline.value} (Python).` : undefined} />
+
+      <Issues title={onlyRevenuePending ? 'Awaiting Revenue reconciliation' : 'Inputs to review'} items={reviewIssues} />
+      {strings(obj(obj(result.years)[firstYear]).issues).length > 0 && <details><summary>Calculation details</summary><Issues title="Calculation details" items={strings(obj(obj(result.years)[firstYear]).issues)} /></details>}
+      {!stage.result && <p className="gf-note">OPEX has not been calculated yet.</p>}
+
+      <OpexDriverAnalysis assessmentId={text(state?.id)} result={result} revision={text(state?.revision)} stale={operating.dirty || Boolean(stage.result_is_stale)}/>
+      </div>
+      <div className="gf-economics-inputs" role="region" aria-label="Calculation inputs" tabIndex={0}>
+      <h2 className="gf-pane-heading">Figures &amp; assumptions</h2>
       <section className="gf-card-block" aria-labelledby="gf-opex-basis">
         <h2 id="gf-opex-basis">Shared operating basis</h2>
         <div className="gf-grid-4">
@@ -130,30 +170,6 @@ export function OpexPlayground(props: StageProps) {
         </div>
         <small className="gf-muted">Revenue uses the same calendar, so one change applies to both.</small>
       </section>
-      <div className="gf-kpis">
-        <div className="gf-kpi-hero">
-          <small>{stage.result ? headline.label : 'Annual cash OPEX · year 1'}</small>
-          <strong>{stage.result ? headline.value : 'Pending'}</strong>
-          <span>
-            {headline.note ? `${headline.note} · ` : ''}
-            {text(result.currency)} {text(result.price_period)}
-            {before && before.total !== compact(result.first_year_cash_opex ?? result.known_cash_opex_subtotal) ? ` · was ${before.total}` : ''}
-          </span>
-        </div>
-        <div>
-          <small>Fixed cash costs</small>
-          <strong>{compact(result.first_year_fixed_opex, 'Pending')}</strong>
-          <span>{text(result.currency)}</span>
-        </div>
-        <div>
-          <small>Variable cash costs</small>
-          <strong>{compact(result.first_year_variable_opex, 'Pending')}</strong>
-          <span>{text(result.currency)}</span>
-        </div>
-      </div>
-      <Issues title={onlyRevenuePending ? 'Awaiting Revenue reconciliation' : 'Inputs to review'} items={reviewIssues} />
-      {strings(obj(obj(result.years)[firstYear]).issues).length > 0 && <details><summary>Calculation details</summary><Issues title="Calculation details" items={strings(obj(obj(result.years)[firstYear]).issues)} /></details>}
-      {!stage.result && <p className="gf-note">OPEX has not been calculated yet.</p>}
       {notice && (
         <p className={`gf-note gf-brainstorm gf-brainstorm-${notice.tone}`} role="status">
           {notice.tone === 'running' && <span className="gf-spinner" aria-hidden="true" />}
@@ -251,16 +267,16 @@ export function OpexPlayground(props: StageProps) {
                       <div>
                         <input className="gf-inline-name" aria-label={`${title} item name`} value={text(item.name || item.role || item.id)} onChange={(e) => setItem(root, index, { [item.role !== undefined ? 'role' : 'name']: e.target.value })} />
                         <OriginChip origin={origin} />
-                        <small>{text(item.rationale)}</small>
                       </div>
                       <div className="gf-line-value">
-                        <strong>{line ? money(line.amount) : 'Not calculated'}</strong>
+                        <strong>{line ? withCurrency(money(line.amount), result.currency) : 'Not calculated'}</strong>
                         <small>
                           {line ? `${text(line.quantity) ? `${text(line.quantity)} ${text(line.quantity_unit)} × ${text(line.rate)}/${text(line.rate_unit)}` : words(line.method)}` : 'Recalculate to see its amount'}
                           {line ? shift(text(line.id), line.amount) : ''}
                         </small>
                       </div>
                     </div>
+                    <EvidenceNote note={text(item.rationale)} source={[item.source, line?.source]} record={{ saved_input: item, calculated_line: line }} />
                     <div className="gf-fields">
                       {fields.map(([k, v]) => (
                         <label key={k} className="gf-field gf-field-sm">
@@ -309,16 +325,16 @@ export function OpexPlayground(props: StageProps) {
                   <div>
                     <strong>{words(id)}</strong>
                     <OriginChip origin={opexOrigin(entry)} />
-                    <small>{text(entry.rationale || factor.applicability)}</small>
                   </div>
                   <div className="gf-line-value">
-                    <strong>{line ? money(line.amount) : 'Not calculated'}</strong>
+                    <strong>{line ? withCurrency(money(line.amount), result.currency) : 'Not calculated'}</strong>
                     <small>
                       {value === null ? 'No factor' : `${percent(value)} of ${words(line?.calculation_base || factor.base || 'base')}`}
                       {line ? shift(text(line.id), line.amount) : ''}
                     </small>
                   </div>
                 </div>
+                <EvidenceNote note={text(entry.rationale || factor.applicability)} source={[entry.source, factor.source, line?.source]} record={{ saved_selection: entry, published_factor: factor, calculated_line: line }} />
                 {value !== null && min !== null && max !== null && (value < min || value > max) && (
                   <p className="gf-warn">
                     Saved factor {percent(value)} is outside the published range ({percent(min)} – {percent(max)}). Moving the slider replaces it with an in-range value.
@@ -358,6 +374,8 @@ export function OpexPlayground(props: StageProps) {
         <button type="button" className="gf-primary" disabled={hook.busy || Boolean(state?.running)} onClick={() => void recalculate()}>
           Save & recalculate
         </button>
+      </div>
+      </div>
       </div>
       <RunBar
         label="Run Revenue"
