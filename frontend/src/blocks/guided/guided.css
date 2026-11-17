@@ -638,3 +638,51 @@ polyline.gf-tone-c { stroke: var(--gf-tone-c); }
 .gf-cell-error { border-color: #c2412d !important; }
 .gf-cell-error-text { display: block; color: #a8331e; font-size: 12px; margin-top: 4px; }
 .gf-range-note { border-left: 3px solid #e8a400; border-radius: 0; }
+
+/* ---- Analyst chart polish: values where the eye lands, gentle motion ---- */
+.gf-chart svg { font-variant-numeric: tabular-nums; }
+.gf-grid line { stroke: var(--gf-line); stroke-dasharray: 2 4; opacity: 0.8; }
+.gf-zero { stroke: var(--gf-ink, currentColor); opacity: 0.45; stroke-width: 1.25; }
+.gf-series { stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.gf-point { stroke: var(--gf-surface, #fff); stroke-width: 2; }
+circle.gf-tone-a { fill: var(--gf-tone-a); } circle.gf-tone-b { fill: var(--gf-tone-b); } circle.gf-tone-c { fill: var(--gf-tone-c); }
+.gf-chart .gf-end-label, .gf-chart .gf-bar-label { font-size: 11px; font-weight: 700; }
+.gf-chart .gf-tone-text-a { fill: var(--gf-tone-a); } .gf-chart .gf-tone-text-b { fill: var(--gf-tone-b); } .gf-chart .gf-tone-text-c { fill: var(--gf-tone-c); }
+.gf-chart .gf-end-label-muted { fill: var(--gf-muted); font-weight: 600; }
+.gf-chart .gf-bar-label { fill: var(--gf-muted); font-weight: 600; }
+.gf-chart .gf-bar-label-peak { fill: var(--gf-ink, currentColor); font-weight: 700; }
+.gf-bar { opacity: 0.78; } .gf-bar-peak { opacity: 1; }
+.gf-bar:hover, .gf-bar-neg:hover { opacity: 1; filter: brightness(1.05); }
+/* Draw-in, grow-in and fade-in, once on load */
+.gf-draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: gf-draw 900ms cubic-bezier(.3,.7,.2,1) forwards; }
+@keyframes gf-draw { to { stroke-dashoffset: 0; } }
+.gf-grow { transform-box: fill-box; transform-origin: 50% 100%; animation: gf-grow 520ms cubic-bezier(.3,.7,.2,1) both; }
+.gf-grow[data-neg="true"] { transform-origin: 50% 0%; }
+@keyframes gf-grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.gf-fade { animation: gf-fade 700ms ease-out both; }
+@keyframes gf-fade { from { opacity: 0; } to { opacity: 1; } }
+
+/* Donut with total in the centre and a value-and-share legend */
+.gf-donut { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: center; margin: 8px 0 0; }
+.gf-donut svg { overflow: visible; font-variant-numeric: tabular-nums; }
+.gf-donut-track { fill: none; stroke: var(--gf-line); stroke-width: 22; opacity: 0.5; }
+.gf-donut-slice { fill: none; stroke-width: 22; cursor: pointer; transition: opacity 160ms, stroke-width 160ms;
+  animation: gf-sweep 800ms cubic-bezier(.3,.7,.2,1) both; }
+@keyframes gf-sweep { from { stroke-dasharray: 0 999; opacity: 0.2; } }
+.gf-donut-slice[data-dim="true"] { opacity: 0.25; }
+.gf-donut-slice:hover { stroke-width: 26; }
+.gf-donut-pct { fill: #fff; font-size: 10px; font-weight: 700; pointer-events: none; paint-order: stroke; stroke: rgba(0,0,0,.25); stroke-width: 2px; }
+.gf-donut-total { fill: var(--gf-ink, currentColor); font-size: 20px; font-weight: 700; }
+.gf-donut-caption { fill: var(--gf-muted); font-size: 10px; font-weight: 600; }
+.gf-donut-legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.gf-donut-legend li { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto 48px; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 7px; font-size: 12px; cursor: default; transition: opacity 160ms, background 160ms; }
+.gf-donut-legend li:hover, .gf-donut-legend li:focus { background: var(--gf-raised); outline: none; }
+.gf-donut-legend li[data-dim="true"] { opacity: 0.45; }
+.gf-donut-legend i { width: 10px; height: 10px; border-radius: 3px; }
+.gf-donut-legend span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gf-donut-legend strong { font-variant-numeric: tabular-nums; }
+.gf-donut-legend em { font-style: normal; font-weight: 700; text-align: right; color: var(--gf-muted); font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) { .gf-donut { grid-template-columns: 1fr; justify-items: center; } .gf-donut figcaption { width: 100%; } }
+@media (prefers-reduced-motion: reduce) {
+  .gf-draw, .gf-grow, .gf-fade, .gf-donut-slice { animation: none; stroke-dashoffset: 0; }
+}
