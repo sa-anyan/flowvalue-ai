@@ -2,6 +2,7 @@
 
 import {useEffect, useRef} from 'react';
 import {compact, num} from '@/lib/guided-flow';
+import {Donut, DONUT_COLORS} from './donut';
 
 export function useLiveEconomics(signature: string, enabled: boolean, run: () => Promise<unknown>) {
   const latest = useRef(run);
@@ -17,7 +18,7 @@ export function useLiveEconomics(signature: string, enabled: boolean, run: () =>
   }, [signature, enabled]);
 }
 
-const colors = ['#087e9c', '#25856c', '#99702e', '#7855a6', '#49718f', '#a75351'];
+const colors = DONUT_COLORS;
 
 export function EconomicsComposition({title, values, currency}: {
   title: string; values: Array<[string, unknown]>; currency?: string;
@@ -26,18 +27,12 @@ export function EconomicsComposition({title, values, currency}: {
   const positive = rows.map((row,index) => ({...row,index})).filter(row => row.value !== null && row.value > 0);
   const total = positive.reduce((sum,row) => sum + (row.value ?? 0), 0);
   const peak = Math.max(0, ...rows.map(row => Math.abs(row.value ?? 0)));
-  let end = 0;
-  const slices = positive.map(row => {
-    const start = end;
-    end += (row.value ?? 0) / total * 100;
-    return `${colors[row.index % colors.length]} ${start}% ${end}%`;
-  });
-  const showPie = slices.length > 0 && rows.every(row => row.value !== null && row.value >= 0);
+  const showPie = positive.length > 0 && total > 0 && rows.every(row => row.value !== null && row.value >= 0);
   return <section className="gf-card-block gf-economics-chart" aria-label={title}>
     <h2>{title}</h2>
     {currency && <small>{currency}</small>}
-    {showPie && <div aria-hidden="true" className="gf-economics-pie" style={{backgroundImage:`conic-gradient(${slices.join(', ')})`}} />}
-    {rows.length ? <ul>
+    {showPie ? <Donut title={title} currency={currency} items={rows.map((row,index) => ({label:row.label, value:row.value ?? 0, color:colors[index % colors.length]}))} />
+    : rows.length ? <ul>
       {rows.map(({label,value},index) => <li key={index}>
         <div><span>{label}</span><strong>{value === null ? 'Pending' : compact(value)}</strong></div>
         {value !== null && <div className="gf-economics-track" aria-hidden="true"><i style={{width:`${peak ? Math.abs(value) / peak * 100 : 0}%`, background:value < 0 ? 'var(--gf-neg)' : colors[index % colors.length]}} /></div>}

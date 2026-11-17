@@ -557,3 +557,13 @@ test('Monte Carlo: inputs without a range can be varied by a labelled default pe
  assert.ok(neg.minimum<neg.maximum&&neg.minimum===-55);
  assert.equal(mc.hasRange(p({minimum:1,maximum:2})),true);
 });
+
+test('charts: donut shares and order, readable percentages, rounded axis ticks',()=>{
+ const d=require('../src/blocks/guided/donut.tsx');const {niceTicks}=require('../src/blocks/guided/charts.tsx');
+ const {total,slices}=d.donutSlices([{label:'Labour',value:330},{label:'Utilities',value:340},{label:'Zero',value:0},{label:'Lab',value:40}]);
+ assert.equal(total,710); assert.deepEqual(slices.map(s=>s.label),['Utilities','Labour','Lab']); // largest first, zero dropped
+ assert.deepEqual(slices.map(s=>s.share),['48%','46%','5.6%']);
+ assert.equal(d.sharePercent(0.05,100),'<0.1%'); assert.equal(d.sharePercent(5,0),'—');
+ assert.deepEqual(niceTicks([-1.1e6,1.07e6]),[-2000000,-1000000,0,1000000,2000000]);
+ assert.deepEqual(niceTicks([0,412000]),[0,200000,400000,600000]);
+});
