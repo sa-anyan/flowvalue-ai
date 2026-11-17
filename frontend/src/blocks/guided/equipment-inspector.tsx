@@ -1,7 +1,12 @@
 'use client';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { UnitConversionAssumptions } from '@/blocks/equipment/unit-conversion';
 import {
+  editSizingInput,
+  modelChangePatch,
+  restoreMeasuredInput,
+  sizeRangeNote,
+  sizingInputError,
   equipmentMapping,
   equipmentPriceFloor,
   list,
@@ -68,20 +73,26 @@ export function EquipmentInspector({
       sizing: undefined,
       unit_conversion: Object.keys(conversion).length ? { ...conversion, enabled: false } : undefined,
     });
-  /** Typing a sizing assumption keeps Python's derivation and marks the value as yours. */
+  /** A finished sizing edit (on Enter or leaving the box) becomes your value; other inputs and M&E links stay. */
   const editAssumption = (name: string, value: number | null) => {
-    const provenance = obj(conversion.input_provenance);
-    change({
-      size: conversion.method ? null : mapping.size,
-      unit_conversion: {
-        ...conversion,
-        enabled: Boolean(conversion.method) || conversion.enabled === true,
-        inputs: { ...obj(conversion.inputs), [name]: value },
-        derivations: list(conversion.derivations).filter((d) => text(d.name) !== name),
-        input_provenance: { ...provenance, [name]: { ...obj(provenance[name]), value, status: 'user_input', rationale: `User entered on the ${where}` } },
-      },
-    });
+    if (value === null) return;
+    change({ size: conversion.method ? null : mapping.size, unit_conversion: editSizingInput(conversion, name, value, where) });
   };
+  const restoreAssumption = (name: string) => {
+    const restored = restoreMeasuredInput(conversion, name);
+    if (restored) change({ unit_conversion: restored });
+  };
+  /** Size follows the sizing assumptions unless the user typed a size directly. */
+  const calculatedSize = Boolean(conversion.method) && conversion.enabled !== false;
+  const [directSize, setDirectSize] = useState(false);
+  const useCalculatedSize = () => {
+    setDirectSize(false);
+    change({ size: null, unit_conversion: { ...conversion, enabled: true } });
+  };
+  const resultLine = list(obj(obj(obj(obj(state?.results).stages).equipment).result).equipment).find(
+    (l) => text(obj(l.parsed_source).equipment_key) === card.key,
+  );
+  const rangeNote = sizeRangeNote(resultLine);
   const editSizingParameter = (name: string, value: number | null) => {
     const sizing = obj(mapping.sizing),
       parameters = obj(sizing.parameters);
@@ -136,8 +147,27 @@ export function EquipmentInspector({
         <h3 id="gf-req-h">Required inputs & units</h3>
         {card.requiredInputs.length ? (
           <InputTable
-            rows={card.requiredInputs.map((r, i) => ({ ...r, label: `${words(r.name)}${r.required ? '' : ' (optional)'}`, hint: i === 0 ? 'Design size: type it to set it directly' : r.role }))}
-            onEdit={(row, value, i) => (i === 0 || row.name === 'size' ? editSize(value, row.unit) : editAssumption(row.name, value))}
+            rows={card.requiredInputs.map((r, i) => {
+              const sizeRow = i === 0 || r.name === 'size';
+              const locked = sizeRow && calculatedSize && !directSize;
+              return {
+                ...r,
+                label: `${words(r.name)}${r.required ? '' : ' (optional)'}`,
+                hint: !sizeRow ? r.role : locked ? 'Calculated from the sizing assumptions below' : 'Design size: type it to set it directly',
+                locked,
+                chip: locked ? 'Calculated' : undefined,
+                action: !sizeRow ? undefined : locked ? (
+                  <button type="button" className="gf-link" onClick={() => setDirectSize(true)}>
+                    Set size directly
+                  </button>
+                ) : conversion.method && !calculatedSize ? (
+                  <button type="button" className="gf-link" onClick={useCalculatedSize}>
+                    Use calculated size
+                  </button>
+                ) : undefined,
+              };
+            })}
+            onEdit={(row, value, i) => (i === 0 || row.name === 'size' ? (value === null ? undefined : editSize(value, row.unit)) : editAssumption(row.name, value))}
           />
         ) : (
           <p className="gf-muted">{card.status === 'unmatched' ? 'Choose a cost model to see the inputs it needs.' : 'This model has no separately listed design inputs, or they are not prepared yet.'}</p>
@@ -148,16 +178,30 @@ export function EquipmentInspector({
             <InputTable rows={card.sizing.inputs.map((r) => ({ ...r, label: sizingLabel(r.name), hint: '' }))} onEdit={(row, value) => editSizingParameter(row.name, value)} />
           </>
         )}
+        {rangeNote && (
+          <p className="gf-note gf-range-note" role="status">
+            {rangeNote}
+          </p>
+        )}
         {card.assumptions.length > 0 && (
           <>
             <h3>Sizing assumptions · Python derives the size from these</h3>
             <InputTable
-              rows={card.assumptions.map((r) => ({ ...r, label: sizingLabel(r.name), hint: r.rationale }))}
+              rows={card.assumptions.map((r) => ({
+                ...r,
+                label: sizingLabel(r.name),
+                hint: r.rationale,
+                action: obj(obj(conversion.input_provenance)[r.name]).superseded_derivation ? (
+                  <button type="button" className="gf-link" onClick={() => restoreAssumption(r.name)}>
+                    Restore M&amp;E value
+                  </button>
+                ) : undefined,
+              }))}
               onEdit={(row, value) => editAssumption(row.name, value)}
             />
           </>
         )}
-        <p className="gf-muted">Type over any value to replace it; it becomes “User changed” and AI reruns never change it. Then choose Save &amp; recalculate.</p>
+        <p className="gf-muted">Type over any value and press Enter (or leave the box); it becomes “User changed” and AI reruns never change it. Then choose Save &amp; recalculate.</p>
         {equipment.dirty && <p className="gf-muted" role="status">Size and cost below show the last calculation. Save &amp; recalculate to apply your edits.</p>}
       </section>
 
@@ -298,7 +342,8 @@ export function EquipmentInspector({
                 disabled={Boolean(obj(mapping.manual_price).amount)}
                 onChange={(e) => {
                   const model = models.find((m) => m.id === e.target.value);
-                  change({ ...userModelSelection(model?.id || null), source: model?.source || 'garrett', size_unit: model?.size_unit || text(mapping.size_unit), rationale: `User selected costing model on the ${where}` });
+                  // Keep the M&E-based sizing: Python checks it fits the new model.
+                  change({ ...modelChangePatch(mapping, model?.id || null), source: model?.source || 'garrett', size_unit: model?.size_unit || text(mapping.size_unit), rationale: `User selected costing model on the ${where}` });
                 }}
               >
                 <option value="">Unpriced / no model selected</option>
@@ -365,7 +410,7 @@ export function EquipmentInspector({
   );
 }
 
-type InputRow = { name: string; label: string; hint: string; unit: string; value: unknown; origin: keyof typeof originLabel };
+type InputRow = { name: string; label: string; hint: string; unit: string; value: unknown; origin: keyof typeof originLabel; locked?: boolean; action?: ReactNode; chip?: string };
 
 function sizingLabel(name: string): string {
   return name === 'residence_time_h' ? 'Holding / residence time' : name === 'hydraulic_loading_m_h'
@@ -373,6 +418,29 @@ function sizingLabel(name: string): string {
 }
 
 function InputTable({ rows, onEdit }: { rows: InputRow[]; onEdit?: (row: InputRow, value: number | null, index: number) => void }) {
+  // Edits are held per cell and applied when the user finishes (Enter or leaving
+  // the box), never per keystroke: clearing a box to retype it no longer wipes
+  // the value, and impossible values are explained instead of saved.
+  const [drafts, setDrafts] = useState<Record<string, string>>({}),
+    [errors, setErrors] = useState<Record<string, string>>({});
+  const commit = (r: InputRow, i: number) => {
+    const key = r.name + i,
+      raw = drafts[key];
+    if (raw === undefined) return;
+    const clear = () => setDrafts(({ [key]: _gone, ...rest }) => rest);
+    if (raw.trim() === '') {
+      clear(); // an emptied box goes back to its value
+      setErrors(({ [key]: _e, ...rest }) => rest);
+      return;
+    }
+    const value = Number(raw),
+      problem = sizingInputError(r.name, value);
+    if (problem) return setErrors((e) => ({ ...e, [key]: problem }));
+    setErrors(({ [key]: _e, ...rest }) => rest);
+    clear();
+    const current = typeof r.value === 'number' ? Number(r.value.toPrecision(6)) : Number(r.value);
+    if (value !== current) onEdit?.(r, value, i); // retyping the same value changes nothing
+  };
   return (
     <table className="gf-table">
       <thead>
@@ -385,34 +453,50 @@ function InputTable({ rows, onEdit }: { rows: InputRow[]; onEdit?: (row: InputRo
       </thead>
       <tbody>
         {rows.map((r, i) => {
+          const key = r.name + i;
           const empty = r.value === null || r.value === undefined || r.value === '';
+          // Show floating-point noise (1.6259999999999997) as 1.626; the saved value is unchanged.
+          const display = typeof r.value === 'number' && Number.isFinite(r.value) ? String(Number(r.value.toPrecision(6))) : text(r.value);
+          const shown = drafts[key] ?? (empty ? '' : display);
           return (
-            <tr key={r.name + i}>
+            <tr key={key}>
               <td>
                 {r.label}
                 {r.hint && <small>{r.hint}</small>}
               </td>
               <td>
-                {onEdit ? (
+                {onEdit && !r.locked ? (
                   <input
-                    className={`gf-cell-input ${empty ? 'gf-cell-missing' : ''}`}
+                    className={`gf-cell-input ${empty && drafts[key] === undefined ? 'gf-cell-missing' : ''} ${errors[key] ? 'gf-cell-error' : ''}`}
                     type="number"
                     step="any"
                     inputMode="decimal"
                     aria-label={`${r.label}${r.unit ? ` (${r.unit})` : ''}`}
+                    aria-invalid={Boolean(errors[key])}
                     placeholder="Missing: enter"
-                    value={empty ? '' : text(r.value)}
-                    onChange={(e) => onEdit(r, e.target.value === '' ? null : Number(e.target.value), i)}
+                    value={shown}
+                    onChange={(e) => setDrafts((d) => ({ ...d, [key]: e.target.value }))}
+                    onBlur={() => commit(r, i)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') commit(r, i);
+                      if (e.key === 'Escape' && (drafts[key] !== undefined || errors[key])) {
+                        e.preventDefault(); // cancel this edit only; the panel stays open
+                        setDrafts(({ [key]: _gone, ...rest }) => rest);
+                        setErrors(({ [key]: _e, ...rest }) => rest);
+                      }
+                    }}
                   />
                 ) : empty ? (
                   <em className="gf-missing">Missing</em>
                 ) : (
-                  text(r.value)
+                  display
                 )}
+                {errors[key] && <small className="gf-cell-error-text" role="alert">{errors[key]}</small>}
+                {r.action && <div>{r.action}</div>}
               </td>
               <td>{r.unit || '—'}</td>
               <td>
-                <OriginChip origin={r.origin === 'user' ? 'User changed' : originLabel[r.origin]} />
+                <OriginChip origin={r.chip || (r.origin === 'user' ? 'User changed' : originLabel[r.origin])} />
               </td>
             </tr>
           );

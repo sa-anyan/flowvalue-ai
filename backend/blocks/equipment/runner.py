@@ -42,9 +42,35 @@ def without_empty_records(rows):
     return [{k: v for k, v in row.items() if not (k in RECORD_FIELDS and v is None)} for row in rows]
 
 
+def follow_model_change(rows):
+    """Keep an item's physical sizing when only its cost model changed.
+
+    Choosing another model updates ``curve_id``; the saved sizing still names
+    the previous model. When both models are sized by the same quantity (for
+    example volume in m3) the same M&E-based sizing applies, so it follows the
+    new model instead of leaving the item unpriced. Different quantities keep
+    the old sizing untouched (it is then re-resolved or reported).
+    """
+    from backend.equipment_costing.unit_conversion.bridges.service import model_contract
+
+    out = []
+    for row in rows:
+        conversion = row.get("unit_conversion") or {}
+        new, old = row.get("curve_id"), conversion.get("model_id")
+        if new and old and new != old and conversion.get("enabled") and not row.get("manual_price"):
+            try:
+                same = model_contract(old)[1]["quantity"] == model_contract(new)[1]["quantity"]
+            except (KeyError, ValueError, TypeError, IndexError):
+                same = False
+            if same:
+                row = {**row, "unit_conversion": {**conversion, "model_id": new}}
+        out.append(row)
+    return out
+
+
 def prepare(ctx):
     plan = copy.deepcopy(ctx.plan)
-    plan["equipment"] = without_empty_records(plan.get("equipment", []))
+    plan["equipment"] = follow_model_change(without_empty_records(plan.get("equipment", [])))
     from .quantity import equipment_quantity
 
     tags = {

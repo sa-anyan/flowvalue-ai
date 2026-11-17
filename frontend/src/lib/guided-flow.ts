@@ -623,3 +623,74 @@ export function studyReport(state: unknown): Row {
   const s = obj(state);
   return obj(s.scoped_report || s.effective_report || obj(obj(s.stage_outputs).engineering_data).report || obj(s.parsed).report);
 }
+
+/* ------------------------------------------- equipment sizing edits (safe) */
+
+const BOUNDED_FRACTIONS = new Set(['working_fraction', 'efficiency', 'motor_efficiency', 'lmtd_correction', 'phase_change_fraction', 'production_allocation_fraction', 'utility_allocation_fraction', 'duty_balance_tolerance_fraction']);
+const POSITIVE_INPUTS = new Set(['residence_time_h', 'density_kg_m3', 'hydraulic_loading_m_h', 'volumetric_productivity_kg_m3_h', 'product_rate_kg_h', 'gas_residence_time_s', 'heat_capacity_ratio', 'compressibility_z', 'size']);
+
+/** Why a typed sizing value can't be used, or null. Mirrors the backend's physical-bounds check. */
+export function sizingInputError(name: string, value: number | null): string | null {
+  if (value === null || !Number.isFinite(value)) return 'Enter a number.';
+  if (BOUNDED_FRACTIONS.has(name) && !(value > 0 && value <= 1)) return 'Enter a fraction between 0 and 1 (for example 0.8).';
+  if (POSITIVE_INPUTS.has(name) && value <= 0) return 'Enter a value greater than 0.';
+  return null;
+}
+
+/**
+ * Set one sizing input as the user's value. An M&E-derived input keeps its
+ * link to the balance in its provenance, so "Restore M&E value" can put it
+ * back; the other inputs and their M&E links are untouched.
+ */
+export function editSizingInput(conversion: Row, name: string, value: number, where: string): Row {
+  const provenance = obj(conversion.input_provenance),
+    previous = obj(provenance[name]),
+    derivations = list(conversion.derivations);
+  const measured = derivations.find((d) => text(d.name) === name);
+  const stash = measured
+    ? { superseded_derivation: measured, superseded_provenance: previous }
+    : previous.superseded_derivation
+      ? { superseded_derivation: previous.superseded_derivation, superseded_provenance: previous.superseded_provenance }
+      : {};
+  return {
+    ...conversion,
+    enabled: Boolean(conversion.method) || conversion.enabled === true,
+    inputs: { ...obj(conversion.inputs), [name]: value },
+    derivations: derivations.filter((d) => text(d.name) !== name),
+    input_provenance: { ...provenance, [name]: { ...previous, ...stash, value, status: 'user_input', rationale: `User entered on the ${where}` } },
+  };
+}
+
+/** Put an M&E-derived input back after the user overrode it. Null when there is nothing to restore. */
+export function restoreMeasuredInput(conversion: Row, name: string): Row | null {
+  const provenance = obj(conversion.input_provenance),
+    entry = obj(provenance[name]);
+  if (!entry.superseded_derivation) return null;
+  const original = obj(entry.superseded_provenance);
+  return {
+    ...conversion,
+    inputs: { ...obj(conversion.inputs), [name]: original.value ?? obj(conversion.inputs)[name] },
+    derivations: [...list(conversion.derivations), entry.superseded_derivation as Row],
+    input_provenance: { ...provenance, [name]: original },
+  };
+}
+
+/** Choosing another cost model keeps the item's M&E-based sizing (Python checks it fits the new model). */
+export function modelChangePatch(mapping: Row, modelId: string | null): Row {
+  const conversion = obj(mapping.unit_conversion);
+  return {
+    curve_id: modelId,
+    model_selection: modelId ? { origin: 'user', curve_id: modelId } : null,
+    ...(modelId && Object.keys(conversion).length && conversion.method ? { unit_conversion: { ...conversion, model_id: modelId } } : {}),
+  };
+}
+
+/** Plain-language note when the cost model priced a size other than the one asked for. */
+export function sizeRangeNote(line: unknown): string | null {
+  const evidence = obj(obj(obj(line).calculation).evidence),
+    floor = obj(evidence.below_range_floor);
+  const unit = text(floor.size_unit);
+  if (num(floor.priced_at_size) !== null)
+    return `Priced at this model's minimum size, ${text(floor.priced_at_size)} ${unit} (yours: ${compact(floor.requested_size)} ${unit}). Size changes below ${text(floor.priced_at_size)} ${unit} don't change the price; choose a smaller model or enter your own price.`;
+  return null;
+}

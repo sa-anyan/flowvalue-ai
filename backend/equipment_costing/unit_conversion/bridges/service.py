@@ -212,6 +212,28 @@ RECIPES = {
 }
 
 
+# Fractions of a whole: a working fraction of 3.8 or an efficiency of 0 is a
+# typing slip, not an assumption. (heat_capacity_ratio and compressibility
+# factors share the "fraction" unit but may exceed 1, so they are not here.)
+BOUNDED_FRACTIONS = {"working_fraction", "efficiency", "motor_efficiency", "lmtd_correction",
+                     "phase_change_fraction", "production_allocation_fraction",
+                     "utility_allocation_fraction", "duty_balance_tolerance_fraction"}
+POSITIVE = {"residence_time_h", "density_kg_m3", "hydraulic_loading_m_h", "volumetric_productivity_kg_m3_h",
+            "product_rate_kg_h", "gas_residence_time_s", "heat_capacity_ratio", "compressibility_z"}
+
+
+def check_physical_bounds(inputs):
+    """Refuse values that cannot be physical, naming the input and the allowed range."""
+    for name, value in (inputs or {}).items():
+        if not isinstance(value, (int, float)) or isinstance(value, bool):
+            continue
+        label = name.replace("_", " ")
+        if name in BOUNDED_FRACTIONS and not 0 < value <= 1:
+            raise ValueError(f"{label[0].upper() + label[1:]} must be between 0 and 1 (you entered {value:g})")
+        if name in POSITIVE and value <= 0:
+            raise ValueError(f"{label[0].upper() + label[1:]} must be greater than 0 (you entered {value:g})")
+
+
 def model_contract(model_id):
     model = next((m for m in list_equipment_models("all") if m["id"] == model_id), None)
     if model is None:
@@ -516,6 +538,7 @@ def evaluate(report, equipment_key, spec):
             or not math.isfinite(v)
         ):
             raise ValueError("User inputs must be finite numbers")
+    check_physical_bounds(inputs)
     if method == "standard_gas_flow":
         required = [
             "reference_temperature_k",
