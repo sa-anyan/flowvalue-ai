@@ -160,11 +160,15 @@ class Store:
             raise KeyError("Assessment not found")
         return row[0]
 
-    def clear_history(self):
-        """Atomically clear this local workspace, retaining its empty schema."""
+    def clear_history(self, force=False):
+        """Atomically clear this local workspace, retaining its empty schema.
+
+        ``force`` clears even while a calculation is running: its later saves
+        then find no study and are dropped.
+        """
         with self.db() as db:
             db.execute("BEGIN IMMEDIATE")
-            if db.execute("SELECT 1 FROM assessments WHERE json_extract(state, '$.running')=1 LIMIT 1").fetchone():
+            if not force and db.execute("SELECT 1 FROM assessments WHERE json_extract(state, '$.running')=1 LIMIT 1").fetchone():
                 raise ValueError("A calculation is still running. Let it finish, then reset.")
             counts = {table: db.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
                       for table in ("assessments", "versions", "ai_cache")}

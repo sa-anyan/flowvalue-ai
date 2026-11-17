@@ -124,7 +124,7 @@ export function GuidedFlow() {
     setResetting(true);
     setResetError('');
     try {
-      await api('assessments/reset', post({ confirm: true }));
+      await api('assessments/reset', post({ confirm: true, force: true })); // works even mid-calculation
       clearFlowValueHistory(localStorage, sessionStorage);
       setRevenueDirty(false);
       window.location.replace(freshEntryUrl);
@@ -279,7 +279,7 @@ export function GuidedFlow() {
           >
             {dark ? '☀' : '☾'}
           </button>
-          <button type="button" className="gf-ghost" aria-label="Reset FlowValue" title="Clear local history and start again"
+          <button type="button" className="gf-danger" aria-label="Reset FlowValue" title="Clear the whole workspace and caches, even if something is running"
             onClick={() => { setResetError(''); setResetOpen(true); }}>
             <span aria-hidden="true">↻</span> Reset
           </button>
@@ -288,9 +288,10 @@ export function GuidedFlow() {
       {resetOpen && <Panel title="Reset FlowValue?" kicker="START AGAIN" onClose={() => { if (!resetting) setResetOpen(false); }}
         footer={<>
           <button type="button" className="gf-secondary" disabled={resetting} onClick={() => setResetOpen(false)}>Cancel</button>
-          <button type="button" disabled={resetting} onClick={() => void resetHistory()}>{resetting ? 'Clearing…' : 'Clear history & restart'}</button>
+          <button type="button" className="gf-danger gf-danger-solid" disabled={resetting} onClick={() => void resetHistory()}>{resetting ? 'Clearing…' : 'Reset everything'}</button>
         </>}>
-        <p>This clears all local projects, saved versions, AI response cache and browser drafts, then opens a fresh Entry page.</p>
+        <p>This clears the whole workspace: all local projects, saved versions, AI response cache and browser drafts, then opens a fresh Entry page.</p>
+        <p>Anything still calculating is stopped from saving; its results are discarded.</p>
         <p>This cannot be undone.</p>
         {resetError && <p className="gf-error" role="alert">{resetError}</p>}
       </Panel>}

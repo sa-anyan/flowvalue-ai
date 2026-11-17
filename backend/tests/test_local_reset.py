@@ -67,3 +67,30 @@ def test_reset_refusals_never_partially_delete(client, monkeypatch, reason):
     assert store.get(state['id'])['filename'] == 'plant.xlsx'
     assert len(store.all_versions()) == 1
     with store.db() as db: assert db.execute('SELECT count(*) FROM ai_cache').fetchone()[0] == 1
+
+
+def test_forced_reset_clears_everything_while_a_calculation_is_running(client):
+    """The red Reset works mid-run; the running worker keeps its lock and its later save is dropped."""
+    http, store = client
+    state = seed(store)
+    running = store.get(state['id'])
+    running['running'] = True
+    store.put(running, running['revision'])
+    from backend.blocks import analyst
+    analyst._live[('k', 'capex')] = {'status': 'running'}
+    assert api.lock.acquire(blocking=False)  # a stage is running
+    try:
+        assert http.post('/api/assessments/reset', json={'confirm': True}).status_code == 409  # not forced
+        response = http.post('/api/assessments/reset', json={'confirm': True, 'force': True})
+        assert response.status_code == 200
+        assert response.json()['cleared']['assessments'] == 1 and response.json()['cleared']['stopped_running_work']
+        with pytest.raises(KeyError): store.get(state['id'])
+        assert analyst._live == {}
+        assert api.lock.locked()  # still owned by the running stage, not released by reset
+        with pytest.raises((KeyError, ValueError)):
+            store.put(running, running['revision'])  # the old run's save is dropped, nothing reappears
+        assert store.all_versions() == []
+    finally:
+        api.lock.release()
+    fresh = http.post('/api/assessments', files={'file': ('new.xlsx', _workbook())})
+    assert fresh.status_code == 202

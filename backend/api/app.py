@@ -458,6 +458,7 @@ def sensitivity_preview(key: str, request: FinancialSensitivity):
 class ResetHistory(BaseModel):
     model_config = ConfigDict(extra="forbid")
     confirm: bool = False
+    force: bool = False  # reset even while a calculation is running
 
 
 @app.post("/api/assessments/reset")
@@ -466,16 +467,20 @@ def reset_history(options: ResetHistory):
         raise HTTPException(403, "Workspace reset is available on localhost only.")
     if options.confirm is not True:
         raise HTTPException(422, "Confirm clearing all local projects and history.")
-    if not lock.acquire(blocking=False):
+    held = lock.acquire(blocking=False)
+    if not held and not options.force:
         raise HTTPException(409, "A calculation is still running. Let it finish, then reset.")
     try:
         from backend.blocks.reset import clear_history
 
-        return {"reset": True, "cleared": clear_history(store)}
+        # Forced: the running stage keeps the lock and releases it when it ends;
+        # its save then finds no study and is dropped.
+        return {"reset": True, "cleared": clear_history(store, force=options.force)}
     except ValueError as exc:
         raise HTTPException(409, str(exc)) from exc
     finally:
-        lock.release()
+        if held:
+            lock.release()
 
 
 @app.post("/api/assessments/{key}/launch", status_code=202)

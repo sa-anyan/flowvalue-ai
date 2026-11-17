@@ -638,3 +638,11 @@ polyline.gf-tone-c { stroke: var(--gf-tone-c); }
 .gf-cell-error { border-color: #c2412d !important; }
 .gf-cell-error-text { display: block; color: #a8331e; font-size: 12px; margin-top: 4px; }
 .gf-range-note { border-left: 3px solid #e8a400; border-radius: 0; }
+
+/* Reset: destructive, so red */
+.gf .gf-danger { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 10px; border: 1px solid #c2412d; background: transparent; color: #c2412d; font-weight: 600; cursor: pointer; }
+.gf .gf-danger:hover { background: rgba(194, 65, 45, 0.1); }
+.gf .gf-danger-solid { background: #c2412d; color: #fff; }
+.gf .gf-danger-solid:hover { background: #a8331e; }
+.gf .gf-danger:focus-visible { outline: 3px solid rgba(194, 65, 45, 0.45); outline-offset: 2px; }
+.gf .gf-danger:disabled { opacity: 0.6; cursor: default; }
