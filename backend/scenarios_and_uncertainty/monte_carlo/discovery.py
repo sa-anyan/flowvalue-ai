@@ -493,7 +493,7 @@ def discover(state):
                 p.get("fraction"),
                 p.get("low", low),
                 p.get("high", high),
-                auto_enable=False,
+                auto_enable=True,  # published Garrett range: varied unless the user unticks it
                 source=(
                     "Garrett Ch. 4 method range"
                     if low is not None and high is not None
@@ -526,7 +526,7 @@ def discover(state):
             value,
             low,
             high,
-            auto_enable=False,
+            auto_enable=True,  # published range: varied unless the user unticks it
             source="Saved capital-factor selection; published allowable ranges are not calibrated probabilities",
             rationale="Review distribution within the documented method limits",
             kind="economic",
@@ -577,7 +577,7 @@ def discover(state):
             value,
             low,
             high,
-            auto_enable=False,
+            auto_enable=True,  # published range: varied unless the user unticks it
             source=str(
                 (definition.get("source") or {}).get("reference")
                 or "Canonical CAPEX factor catalogue"

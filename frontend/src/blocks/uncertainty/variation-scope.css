@@ -28,3 +28,13 @@
 .mc-run-table button,.mc-driver-inspect { cursor:pointer; }
 .mc-config-groups { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
 .mc-config-values { overflow-wrap:anywhere; white-space:pre-wrap; }
+
+/* Range coverage tools: select all, inputs without a range, default ±% table */
+.mc-range-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 4px 0 12px; }
+.mc-percent { display: inline-flex; align-items: center; gap: 6px; }
+.mc-percent input { width: 64px; }
+.mc-category-tools { display: flex; justify-content: flex-end; margin: 6px 0; }
+.mc-percent-table { margin: 0 0 12px; }
+.mc-percent-table input { width: 64px; }
+.mc-no-range th, .mc-no-range td { background: color-mix(in srgb, #e8a400 7%, transparent); }
+.mc-link { background: none; border: 0; padding: 0; color: inherit; text-decoration: underline; cursor: pointer; font: inherit; }

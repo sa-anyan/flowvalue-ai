@@ -17,7 +17,7 @@ def test_default_capital_factors_have_published_ranges_and_recalculate():
         p for p in settings.parameters if p.id == "capex.selected_factors.piping"
     )
     assert (piping.minimum, piping.mode, piping.maximum) == (0.15, 0.15, 0.7)
-    assert not piping.enabled
+    assert piping.enabled  # published Garrett range: varied by default
     piping.enabled = True
     plan = prepare(state, settings)
     assert plan["capex"]["selected_factors"]["piping"] == 0.15

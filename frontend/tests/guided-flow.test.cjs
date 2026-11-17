@@ -542,3 +542,18 @@ test('equipment sizing edits: impossible values refused, M&E link kept and resto
  assert.match(note,/minimum size, 0\.4 m3 \(yours: 0\.09 m3\)/);
  assert.equal(lib.sizeRangeNote({calculation:{evidence:{}}}),null);
 });
+
+test('Monte Carlo: inputs without a range can be varied by a labelled default percentage',()=>{
+ const mc=require('../src/lib/monte-carlo.ts');
+ const p=(o)=>({id:'x',label:'Tariff',enabled:false,targets:[],unit:'USD/kWh',distribution:'triangular',minimum:null,mode:0.07,maximum:null,stddev:null,choices:[],probabilities:[],source:'Saved value',rationale:'',uncertainty:'',confidence:'',kind:'economic',hard_min:null,hard_max:null,strictly_positive:false,...o});
+ assert.equal(mc.hasRange(p()),false);
+ const r=mc.percentRange(p(),10);
+ assert.deepEqual([r.minimum,r.mode,r.maximum,r.enabled],[0.063,0.07,0.077,true]);
+ assert.ok(mc.percentApplied({...p(),...r})); assert.equal(mc.appliedPercent({...p(),...r}),10);
+ assert.equal(mc.percentRange(p({mode:0}),10),null); // no non-zero value: user enters a range
+ const frac=mc.percentRange(p({mode:0.95,unit:'fraction',hard_max:1}),20);
+ assert.equal(frac.maximum,1); // hard limit respected
+ const neg=mc.percentRange(p({mode:-50}),10);
+ assert.ok(neg.minimum<neg.maximum&&neg.minimum===-55);
+ assert.equal(mc.hasRange(p({minimum:1,maximum:2})),true);
+});
